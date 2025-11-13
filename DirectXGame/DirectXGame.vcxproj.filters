@@ -6,13 +6,19 @@
     <ClCompile Include="Engine\Logger\Logger.cpp" />
     <ClCompile Include="Engine\Utility\MyMath\MyMath.cpp" />
     <ClCompile Include="Engine\SHEngine.cpp" />
-    <ClCompile Include="Engine\Core\Window\Window.cpp" />
-    <ClCompile Include="Engine\Core\Window\WindowsApp\WindowsApp.cpp" />
+    <ClCompile Include="Engine\Display\Display.cpp" />
     <ClCompile Include="Engine\Utility\Operator\Operator.cpp" />
     <ClCompile Include="Engine\Utility\MatrixFactory\MatrixFactory.cpp" />
     <ClCompile Include="Engine\Utility\Quaternion.h" />
     <ClCompile Include="Engine\Core\Command\Command.cpp" />
     <ClCompile Include="Engine\Core\Render\Render.cpp" />
+    <ClCompile Include="Engine\Core\View\SRVManager.cpp" />
+    <ClCompile Include="Engine\Core\View\Data\Function.h" />
+    <ClCompile Include="Engine\Assets\AssetsLoader.cpp" />
+    <ClCompile Include="Engine\Assets\Texture\TextureManager.cpp" />
+    <ClCompile Include="Engine\Assets\Texture\TextureData.cpp" />
+    <ClCompile Include="Engine\Utility\CreateResource.h" />
+    <ClCompile Include="Engine\Utility\InsertBarrier.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\Device\DXDevice.h" />
@@ -20,8 +26,7 @@
     <ClInclude Include="Engine\Utility\LeakChecker.h" />
     <ClInclude Include="Engine\Utility\MyMath\MyMath.h" />
     <ClInclude Include="Engine\SHEngine.h" />
-    <ClInclude Include="Engine\Core\Window\Window.h" />
-    <ClInclude Include="Engine\Core\Window\WindowsApp\WindowsApp.h" />
+    <ClInclude Include="Engine\Display\Display.h" />
     <ClInclude Include="Engine\Utility\Operator\Operator.h" />
     <ClInclude Include="Engine\Utility\Matrix.h" />
     <ClInclude Include="Engine\Utility\Vector.h" />
@@ -30,5 +35,9 @@
     <ClInclude Include="Engine\Utility\ConvertString.h" />
     <ClInclude Include="Engine\Core\Command\Command.h" />
     <ClInclude Include="Engine\Core\Render\Render.h" />
+    <ClInclude Include="Engine\Core\View\SRVManager.h" />
+    <ClInclude Include="Engine\Assets\AssetsLoader.h" />
+    <ClInclude Include="Engine\Assets\Texture\TextureManager.h" />
+    <ClInclude Include="Engine\Assets\Texture\TextureData.h" />
   </ItemGroup>
 </Project>

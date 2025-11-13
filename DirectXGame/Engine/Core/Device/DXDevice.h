@@ -15,6 +15,13 @@ public:
 
 	void Initialize();
 
+	ID3D12Device* GetDevice() { return device_.Get(); }
+	ID3D12CommandQueue* GetCommandQueue() { return commandQueue_.Get(); }
+
+	uint32_t GetDescriptorSizeSRV() { return descriptorSizeSRV; }
+	uint32_t GetDescriptorSizeRTV() { return descriptorSizeRTV; }
+	uint32_t GetDescriptorSizeDSV() { return descriptorSizeDSV; }
+
 private:
 
 	ComPtr<ID3D12Debug1> debugController_ = nullptr;

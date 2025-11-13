@@ -1,4 +1,10 @@
 #pragma once
-class Render {
-};
 
+class Render {
+public:
+
+private:
+
+
+
+};
