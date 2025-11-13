@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Engine\Core\Device\DXDevice.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Engine\Logger\Logger.cpp" />
+    <ClCompile Include="Engine\Utility\MyMath\MyMath.cpp" />
+    <ClCompile Include="Engine\SHEngine.cpp" />
+    <ClCompile Include="Engine\Core\Window\Window.cpp" />
+    <ClCompile Include="Engine\Core\Window\WindowsApp\WindowsApp.cpp" />
+    <ClCompile Include="Engine\Utility\Operator\Operator.cpp" />
+    <ClCompile Include="Engine\Utility\MatrixFactory\MatrixFactory.cpp" />
+    <ClCompile Include="Engine\Utility\Quaternion.h" />
+    <ClCompile Include="Engine\Core\Command\Command.cpp" />
+    <ClCompile Include="Engine\Core\Render\Render.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Engine\Core\Device\DXDevice.h" />
+    <ClInclude Include="Engine\Logger\Logger.h" />
+    <ClInclude Include="Engine\Utility\LeakChecker.h" />
+    <ClInclude Include="Engine\Utility\MyMath\MyMath.h" />
+    <ClInclude Include="Engine\SHEngine.h" />
+    <ClInclude Include="Engine\Core\Window\Window.h" />
+    <ClInclude Include="Engine\Core\Window\WindowsApp\WindowsApp.h" />
+    <ClInclude Include="Engine\Utility\Operator\Operator.h" />
+    <ClInclude Include="Engine\Utility\Matrix.h" />
+    <ClInclude Include="Engine\Utility\Vector.h" />
+    <ClInclude Include="Engine\Utility\MatrixFactory\MatrixFactory.h" />
+    <ClInclude Include="Engine\Utility\SearchFile.h" />
+    <ClInclude Include="Engine\Utility\ConvertString.h" />
+    <ClInclude Include="Engine\Core\Command\Command.h" />
+    <ClInclude Include="Engine\Core\Render\Render.h" />
+  </ItemGroup>
+</Project>
