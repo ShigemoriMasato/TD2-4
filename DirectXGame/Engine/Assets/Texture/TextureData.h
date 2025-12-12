@@ -1,18 +1,16 @@
 #pragma once
 #include <string>
 #include <d3d12.h>
-#include <Core/View/SRVManager.h>
+#include <Core/SRVManager.h>
 #include <utility>
 #include <Utility/Vector.h>
+#include <DirectXTex/DirectXTex.h>
 
 class TextureData {
 public:
 
 	TextureData() = default;
 	~TextureData() = default;
-
-	//Window用のテクスチャを作成
-	void Create(uint32_t width, uint32_t height, Vector4 clearColor, bool forSwapChain, ID3D12Device* device, SRVManager* srvManager);
 
 	int GetOffset() const { return srvHandle_.GetOffset(); }
 	ID3D12Resource* GetResource() const { return textureResource_.Get(); }
@@ -21,9 +19,15 @@ public:
 private:
 
 	friend class TextureManager;
-	void Create(std::string filePath, ID3D12Device* device, ID3D12GraphicsCommandList* commandList, SRVManager* srvManager);
+	std::pair<ID3D12Resource*, DirectX::ScratchImage> Create(std::string filePath, ID3D12Device* device, SRVManager* srvManager);
+	//Window用のテクスチャを作成
+	void Create(uint32_t width, uint32_t height, Vector4 clearColor, ID3D12Device* device, SRVManager* srvManager);
+	//SwapChain用のテクスチャを作成
+	void Create(ID3D12Resource* resource, ID3D12Device* device, SRVManager* manager);
 
 private:
+
+	static inline int debugTextureCount = 0;
 
 	uint32_t width_ = 0;
 	uint32_t height_ = 0;

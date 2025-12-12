@@ -12,7 +12,7 @@ PSOManager::PSOManager(ID3D12Device* device) {
 	inputLayoutShelf_ = std::make_unique<InputLayoutShelf>();
 	binaryManager_ = std::make_unique<BinaryManager>();
 
-	logger_ = Logger::getLogger("Core");
+	logger_ = LogSystem::getLogger("Core");
 
 	device_ = device;
 

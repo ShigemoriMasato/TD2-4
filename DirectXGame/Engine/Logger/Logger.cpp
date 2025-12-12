@@ -34,7 +34,7 @@ namespace {
     }
 }
 
-void Logger::Initialize() {
+void LogSystem::Initialize() {
 #ifdef SH_DEBUG
     spdlog::set_level(spdlog::level::debug);
 #else
@@ -44,7 +44,7 @@ void Logger::Initialize() {
     spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] %v");
 }
 
-std::shared_ptr<spdlog::logger> Logger::getLogger(const std::string& name, uint32_t flug) {
+Logger LogSystem::getLogger(const std::string& name, uint32_t flug) {
     auto existing = spdlog::get(name);
     if (existing) return existing;
 

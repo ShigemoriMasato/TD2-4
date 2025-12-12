@@ -1,6 +1,9 @@
 #include "Display.h"
 #include <Utility/InsertBarrier.h>
 #include <Utility/Color.h>
+#include <Assets/Texture/TextureData.h>
+#include <Core/DSVManager.h>
+#include <Core/RTVManager.h>
 
 ID3D12Device* Display::device_ = nullptr;
 RTVManager* Display::rtvManager_ = nullptr;

@@ -92,7 +92,7 @@
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
-copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
+xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -120,7 +120,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
-copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"
 xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -149,19 +148,19 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
-copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
+xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Core\src\CmdListManager.cpp" />
+    <ClCompile Include="Engine\Core\Data\CommandObject.cpp" />
     <ClCompile Include="Engine\Utility\Color.cpp" />
-    <ClCompile Include="Engine\Core\View\DSVManager.cpp" />
-    <ClCompile Include="Engine\Core\Command\Command.cpp" />
-    <ClCompile Include="Engine\Core\Device\DXDevice.cpp" />
-    <ClCompile Include="Engine\Core\View\Data\Function.cpp" />
-    <ClCompile Include="Engine\Core\View\Data\Function.h" />
-    <ClCompile Include="Engine\Core\View\SRVManager.cpp" />
+    <ClCompile Include="Engine\Core\src\DSVManager.cpp" />
+    <ClCompile Include="Engine\Core\src\DXDevice.cpp" />
+    <ClCompile Include="Engine\Core\Data\Function.cpp" />
+    <ClCompile Include="Engine\Core\Data\Function.h" />
+    <ClCompile Include="Engine\Core\src\SRVManager.cpp" />
     <ClCompile Include="Engine\Display\Display.cpp" />
-    <ClCompile Include="Engine\Display\SwapChain.cpp" />
     <ClCompile Include="Engine\Logger\Logger.cpp" />
     <ClCompile Include="Engine\PSO\PSOEditor.cpp" />
     <ClCompile Include="Engine\PSO\PSOManager.cpp" />
@@ -187,19 +186,20 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Utility\Operator\Operator.cpp" />
     <ClCompile Include="Engine\Utility\MatrixFactory\MatrixFactory.cpp" />
     <ClCompile Include="Engine\Display\WindowsApp\WindowsApp.cpp" />
-    <ClCompile Include="Engine\Core\Render\Render.cpp" />
+    <ClCompile Include="Engine\Core\src\Render.cpp" />
     <ClCompile Include="Engine\Assets\Texture\TextureData.cpp" />
     <ClCompile Include="Engine\Assets\Texture\TextureManager.cpp" />
-    <ClCompile Include="Engine\Core\View\RTVManager.cpp" />
+    <ClCompile Include="Engine\Core\src\RTVManager.cpp" />
+    <ClCompile Include="Engine\Display\SwapChain\SwapChain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Core\CmdListManager.h" />
+    <ClInclude Include="Engine\Core\Data\CommandObject.h" />
     <ClInclude Include="Engine\Utility\Color.h" />
-    <ClInclude Include="Engine\Core\View\DSVManager.h" />
-    <ClInclude Include="Engine\Core\Command\Command.h" />
-    <ClInclude Include="Engine\Core\Device\DXDevice.h" />
-    <ClInclude Include="Engine\Core\View\SRVManager.h" />
+    <ClInclude Include="Engine\Core\DSVManager.h" />
+    <ClInclude Include="Engine\Core\DXDevice.h" />
+    <ClInclude Include="Engine\Core\SRVManager.h" />
     <ClInclude Include="Engine\Display\Display.h" />
-    <ClInclude Include="Engine\Display\SwapChain.h" />
     <ClInclude Include="Engine\PSO\PSOConfig.h" />
     <ClInclude Include="Engine\PSO\PSOEditor.h" />
     <ClInclude Include="Engine\PSO\PSOManager.h" />
@@ -225,10 +225,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Utility\Vector.h" />
     <ClInclude Include="Engine\Utility\MatrixFactory\MatrixFactory.h" />
     <ClInclude Include="Engine\Display\WindowsApp\WindowsApp.h" />
-    <ClInclude Include="Engine\Core\Render\Render.h" />
+    <ClInclude Include="Engine\Core\Render.h" />
     <ClInclude Include="Engine\Assets\Texture\TextureData.h" />
     <ClInclude Include="Engine\Assets\Texture\TextureManager.h" />
-    <ClInclude Include="Engine\Core\View\RTVManager.h" />
+    <ClInclude Include="Engine\Core\RTVManager.h" />
+    <ClInclude Include="Engine\Display\SwapChain\SwapChain.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

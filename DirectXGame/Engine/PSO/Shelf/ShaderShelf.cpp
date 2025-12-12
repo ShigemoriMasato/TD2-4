@@ -90,7 +90,7 @@ ShaderShelf::ShaderShelf() {
     hr = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
     assert(SUCCEEDED(hr));
 
-	logger_ = Logger::getLogger("Core");
+	logger_ = LogSystem::getLogger("Core");
 
 	compileVersions_[0] = L"vs_6_0"; // Vertex Shader
     compileVersions_[1] = L"ps_6_0"; // Pixel Shader

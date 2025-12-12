@@ -1,5 +1,4 @@
 #include "TextureData.h"
-#include <DirectXTex/DirectXTex.h>
 #include <DirectXTex/d3dx12.h>
 #include <Utility/ConvertString.h>
 #include <Utility/CreateResource.h>
@@ -47,28 +46,9 @@ namespace {
         assert(SUCCEEDED(hr));
         return resource;
     }
-
-    [[nodiscard]]
-    ID3D12Resource* UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, ID3D12Device* device, ID3D12GraphicsCommandList* commandList) {
-        std::vector<D3D12_SUBRESOURCE_DATA> subresources;
-        DirectX::PrepareUpload(device, mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresources);
-        uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subresources.size()));
-        ID3D12Resource* intermediateResource = CreateBufferResource(device, intermediateSize);
-        UpdateSubresources(commandList, texture, intermediateResource, 0, 0, UINT(subresources.size()), subresources.data());
-
-        D3D12_RESOURCE_BARRIER barrier{};
-        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-        barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-        barrier.Transition.pResource = texture;
-        barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
-        barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-        commandList->ResourceBarrier(1, &barrier);
-        return intermediateResource;
-    }
 }
 
-void TextureData::Create(uint32_t width, uint32_t height, Vector4 clearColor, bool forSwapChain, ID3D12Device* device, SRVManager* srvManager) {
+void TextureData::Create(uint32_t width, uint32_t height, Vector4 clearColor, ID3D12Device* device, SRVManager* srvManager) {
     //PostEffect用のリソースの作成
     D3D12_RESOURCE_DESC desc = {};
     desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -85,7 +65,7 @@ void TextureData::Create(uint32_t width, uint32_t height, Vector4 clearColor, bo
     heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;              // defaultのヒープを使用
 
 	D3D12_CLEAR_VALUE clearValue = {};
-	clearValue.Format = forSwapChain ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM;
+	clearValue.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     for (int i = 0; i < 4; ++i) {
 		clearValue.Color[i] = clearColor[i];
     }
@@ -115,19 +95,45 @@ void TextureData::Create(uint32_t width, uint32_t height, Vector4 clearColor, bo
 
     width_ = width;
     height_ = height;
+
+	textureResource_->SetName(LPCWSTR(ConvertString("WindowTexture : " + std::to_string(debugTextureCount++)).c_str()));
 }
 
-void TextureData::Create(std::string filePath, ID3D12Device* device, ID3D12GraphicsCommandList* commandList, SRVManager* srvManager) {
+void TextureData::Create(ID3D12Resource* resource, ID3D12Device* device, SRVManager* manager) {
+	textureResource_.Attach(resource);
+
+    // metadataがないのでフォーマットとミップ数は手動設定
+    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+    srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+    //!mipmapを使うかどうかは今後要検討
+    srvDesc.Texture2D.MipLevels = 1;
+
+    // SRV用ディスクリプタ位置を確保
+    srvHandle_.UpdateHandle(manager);
+
+    // SRVを作成
+    device->CreateShaderResourceView(textureResource_.Get(), &srvDesc, srvHandle_.GetCPU());
+
+    auto desc = resource->GetDesc();
+
+    width_ = static_cast<uint32_t>(desc.Width);
+    height_ = static_cast<uint32_t>(desc.Height);
+
+    textureResource_->SetName(LPCWSTR(ConvertString("WindowTexture : " + std::to_string(debugTextureCount++)).c_str()));
+}
+
+std::pair<ID3D12Resource*, DirectX::ScratchImage> TextureData::Create(std::string filePath, ID3D12Device* device, SRVManager* srvManager) {
     //TextureResourceを作成
     DirectX::ScratchImage mipImages = CreateMipImages(filePath);
     const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 
     textureResource_.Attach(CreateTextureResource(device, metadata));
-    intermadiateResource_.Attach(UploadTextureData(textureResource_.Get(), mipImages, device, commandList));
 
     //画像サイズの取得
-    width_ = static_cast<int>(metadata.width);
-    height_ = static_cast<int>(metadata.height);
+    width_ = static_cast<uint32_t>(metadata.width);
+    height_ = static_cast<uint32_t>(metadata.height);
 
     //metadataをもとにSRVの設定
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
@@ -141,4 +147,7 @@ void TextureData::Create(std::string filePath, ID3D12Device* device, ID3D12Graph
 
     //SRVを作成する
     device->CreateShaderResourceView(textureResource_.Get(), &srvDesc, srvHandle_.GetCPU());
+
+    std::pair<ID3D12Resource*, DirectX::ScratchImage> result = { textureResource_.Get(), std::move(mipImages) };
+    return result;
 }

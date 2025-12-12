@@ -1,7 +1,7 @@
 #include "PSOEditor.h"
 
 PSOEditor::PSOEditor(ID3D12Device* device) {
-	logger_ = Logger::getLogger("Core");
+	logger_ = LogSystem::getLogger("Core");
 
 	psoManager_ = std::make_unique<PSOManager>(device);
 }

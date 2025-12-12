@@ -2,7 +2,9 @@
 #include <spdlog/spdlog.h>
 #include <string>
 
-namespace Logger {
+using Logger = std::shared_ptr<spdlog::logger>;
+
+namespace LogSystem {
 
 	enum LoggerFlag : uint32_t {
 		None = 0,
@@ -12,6 +14,6 @@ namespace Logger {
 
 	void Initialize();
 
-	std::shared_ptr<spdlog::logger> getLogger(const std::string& name, uint32_t flug = MakeFile | UseConsole);
+	Logger getLogger(const std::string& name, uint32_t flug = MakeFile | UseConsole);
 
 }

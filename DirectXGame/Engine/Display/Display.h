@@ -1,8 +1,10 @@
 #pragma once
-#include <Core/View/DSVManager.h>
-#include <Core/View/RTVManager.h>
-#include <Assets/Texture/TextureData.h>
+#include <Core/DSVManager.h>
+#include <Core/RTVManager.h>
 #include <Utility/Vector.h>
+
+class TextureData;
+
 
 class Display {
 public:

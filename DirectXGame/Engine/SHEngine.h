@@ -1,11 +1,11 @@
 #pragma once
-#include "Core/Device/DXDevice.h"
+#include "Core/DXDevice.h"
 #include <Utility/LeakChecker.h>
-#include <Core/View/SRVManager.h>
-#include <Core/View/RTVManager.h>
-#include <Core/View/DSVManager.h>
+#include <Core/SRVManager.h>
+#include <Core/RTVManager.h>
+#include <Core/DSVManager.h>
 #include <Assets/Texture/TextureManager.h>
-#include <Display/SwapChain.h>
+#include <Core/CmdListManager.h>
 #include <memory>
 
 class SHEngine {
@@ -21,7 +21,11 @@ public:
 	void Update();
 
 	void PreDraw();
-	void EndFrame(ID3D12CommandList** commandLists);
+	void EndFrame();
+
+private:
+
+	void ExecuteMessage();
 
 private:
 
@@ -35,8 +39,14 @@ private:
 private:
 
 	std::unique_ptr<DXDevice> dxDevice_;
+	std::unique_ptr<CmdListManager> cmdListManager_;
 
 	std::unique_ptr<TextureManager> textureManager_;
+
+private:
+
+	bool exit_ = false;
+	bool pushedCrossButton_ = false;
 
 	MSG msg_;
 
