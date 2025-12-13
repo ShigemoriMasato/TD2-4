@@ -1,6 +1,5 @@
 #pragma once
-#include <Core/DSVManager.h>
-#include <Core/RTVManager.h>
+#include <Core/DXDevice.h>
 #include <Utility/Vector.h>
 
 class TextureData;
@@ -9,13 +8,13 @@ class TextureData;
 class Display {
 public:
 
-	static void StaticInitialize(ID3D12Device* device, RTVManager* rtvManager, DSVManager* dsvManager);
+	static void StaticInitialize(DXDevice* device);
 
 	Display() = default;
 	~Display() = default;
 
 	void Initialize(TextureData* data, uint32_t clearColor);
-	void DrawReady(ID3D12GraphicsCommandList* commandList, bool isClear);
+	void PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear);
 
 	void EditBarrier(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
 
@@ -24,9 +23,7 @@ public:
 
 private:
 
-	static ID3D12Device* device_;
-	static RTVManager* rtvManager_;
-	static DSVManager* dsvManager_;
+	static DXDevice* device_;
 
 private:
 

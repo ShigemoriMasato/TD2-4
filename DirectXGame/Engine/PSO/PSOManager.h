@@ -3,7 +3,7 @@
 #include <wrl.h>
 #include <dxcapi.h>
 #include <vector>
-#include <Tools/Binary/BinaryManager.h>
+#include <Tool/Binary/BinaryManager.h>
 #include <PSO/PSOConfig.h>
 
 //あらゆるPSOを管理するクラス

@@ -1,8 +1,9 @@
-#include "../RTVManager.h"
+#include "RTVManager.h"
+#include <stdexcept>
 
-RTVManager::RTVManager(DXDevice* device, int num) : maxCount(num), descriptorSizeRTV(device->GetDescriptorSizeRTV()) {
+RTVManager::RTVManager(ID3D12Device* device, uint32_t size, int num) : maxCount(num), descriptorSizeRTV(size) {
 
-	srvDescriptorHeap.Attach(CreateDescriptorHeap(device->GetDevice(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, maxCount, false));
+	srvDescriptorHeap.Attach(CreateDescriptorHeap(device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, maxCount, false));
 
 	isUsed_.resize(maxCount, false);
 }

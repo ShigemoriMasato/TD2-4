@@ -1,14 +1,17 @@
 #pragma once
-#include "Data/Function.h"
+#include "ViewFunc.h"
+#include <cstdint>
+#include <vector>
+#include <wrl.h>
 
-class SRVManager;
+class DSVManager;
 
-class SRVHandle final {
+class DSVHandle final {
 public:
-	SRVHandle() = default;
-	~SRVHandle();
+	DSVHandle() = default;
+	~DSVHandle();
 
-	void UpdateHandle(SRVManager* manager, int operateIndex = -1);
+	void UpdateHandle(DSVManager* manager, int operateIndex = 0);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPU() const { return CPU; }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPU() const { return GPU; }
@@ -20,16 +23,16 @@ private:
 	D3D12_GPU_DESCRIPTOR_HANDLE GPU;
 	int offset_;
 
-	SRVManager* manager_;
+	DSVManager* manager_;
 
 	bool isUpdated_ = false;
 };
 
-class SRVManager {
+class DSVManager {
 public:
 
-	SRVManager(DXDevice* device, int num);
-	~SRVManager() = default;
+	DSVManager(ID3D12Device* device, uint32_t size, int num);
+	~DSVManager() = default;
 
 	ID3D12DescriptorHeap* GetHeap() { return srvDescriptorHeap.Get(); }
 
@@ -39,14 +42,16 @@ public:
 
 private:
 
-	friend class SRVHandle;
+	friend class DSVHandle;
 
-	//SRVHeap
+	//DSVHeap
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap = nullptr;
 
 	std::vector<bool> isUsed_;
 
-	const uint32_t descriptorSizeSRV = 0;
+	const uint32_t descriptorSizeDSV = 0;
 	const uint32_t maxCount;
 
 };
+
+

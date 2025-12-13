@@ -1,8 +1,8 @@
-#include "SwapChain.h"
+#include "../SwapChain.h"
 
 using namespace LogSystem;
 
-void SwapChain::Initialize(DXDevice* device, TextureManager* textureManager, ID3D12CommandQueue* commandQueue, WindowsApp* window) {
+void SwapChain::Initialize(DXDevice* device, TextureManager* textureManager, ID3D12CommandQueue* commandQueue, WindowsApp* window, uint32_t clearColor) {
     logger_ = getLogger("Engine");
 
 	logger_->info("=== Start create SwapChain ===");
@@ -32,20 +32,35 @@ void SwapChain::Initialize(DXDevice* device, TextureManager* textureManager, ID3
 
     logger_->info("Complete create SwapChain");
 
-	ID3D12Resource* swapChainResources[2] = { nullptr, nullptr };
-    //SwapChainからResourceを取得する
-    hr = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResources[0]));
-    assert(SUCCEEDED(hr));
-    hr = swapChain_->GetBuffer(1, IID_PPV_ARGS(&swapChainResources[1]));
-    assert(SUCCEEDED(hr));
+	ID3D12Resource* swapChainResources;
+    for(int i = 0; i < 2; i++) {
+        //SwapChainからResourceを取得する
+        hr = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResources));
+        assert(SUCCEEDED(hr));
 
-	int offset1 = textureManager->CreateSwapChainTexture(swapChainResources[0]);
-	int offset2 = textureManager->CreateSwapChainTexture(swapChainResources[1]);
+        //TextureManagerにSwapChain用Textureを作成してもらう
+        int handle = textureManager->CreateSwapChainTexture(swapChainResources);
+		TextureData* data = textureManager->GetTextureData(handle);
 
-    Display display1;
-	display1.Initialize(textureManager->GetTextureData(offset1), 0x00000000);
-	Display display2;
-	display2.Initialize(textureManager->GetTextureData(offset2), 0x00000000);
+        //Displayを初期化する
+        displays_[i].Initialize(data, clearColor);
+	}
 
 	logger_->info("=== Complete create SwapChain ===");
+}
+
+void SwapChain::PreDraw(ID3D12GraphicsCommandList* cmdList, bool isClear) {
+	int index = swapChain_->GetCurrentBackBufferIndex();
+	displays_[index].PreDraw(cmdList, isClear);
+}
+
+void SwapChain::ToTexture(ID3D12GraphicsCommandList* cmdList) {
+    int index = swapChain_->GetCurrentBackBufferIndex();
+	displays_[index].EditBarrier(cmdList, D3D12_RESOURCE_STATE_COPY_SOURCE);
+}
+
+void SwapChain::Present() {
+    //画面に表示する
+    HRESULT hr = swapChain_->Present(1, 0);
+	assert(SUCCEEDED(hr));
 }

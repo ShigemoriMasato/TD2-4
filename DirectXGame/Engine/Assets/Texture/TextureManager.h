@@ -1,5 +1,6 @@
 #pragma once
 #include "TextureData.h"
+#include <Core/DXDevice.h>
 #include <map>
 #include <memory>
 
@@ -9,7 +10,7 @@ public:
 	TextureManager() = default;
 	~TextureManager() = default;
 
-	void Initialize(DXDevice* device, SRVManager* srvManager);
+	void Initialize(DXDevice* device);
 
 	int LoadTexture(const std::string& filePath);
 	int CreateWindowTexture(uint32_t width, uint32_t height, uint32_t clearColor);

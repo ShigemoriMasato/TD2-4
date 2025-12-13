@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <d3d12.h>
-#include <Core/SRVManager.h>
+#include <Core/View/SRVManager.h>
 #include <utility>
 #include <Utility/Vector.h>
 #include <DirectXTex/DirectXTex.h>

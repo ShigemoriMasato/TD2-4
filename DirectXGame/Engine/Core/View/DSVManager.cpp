@@ -1,8 +1,9 @@
-#include "../DSVManager.h"
+#include "DSVManager.h"
+#include <stdexcept>
 
-DSVManager::DSVManager(DXDevice* device, int num) : maxCount(num), descriptorSizeDSV(device->GetDescriptorSizeDSV()) {
+DSVManager::DSVManager(ID3D12Device* device, uint32_t size, int num) : maxCount(num), descriptorSizeDSV(size) {
 
-	srvDescriptorHeap.Attach(CreateDescriptorHeap(device->GetDevice(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, maxCount, false));
+	srvDescriptorHeap.Attach(CreateDescriptorHeap(device, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, maxCount, false));
 
 	isUsed_.resize(maxCount, false);
 }

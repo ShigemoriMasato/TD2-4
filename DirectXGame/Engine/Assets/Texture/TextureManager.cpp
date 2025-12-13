@@ -23,9 +23,9 @@ namespace {
 	}
 }
 
-void TextureManager::Initialize(DXDevice* device, SRVManager* srvManager) {
+void TextureManager::Initialize(DXDevice* device) {
 	device_ = device;
-	srvManager_ = srvManager;
+	srvManager_ = device->GetSRVManager();
 }
 
 int TextureManager::LoadTexture(const std::string& filePath) {

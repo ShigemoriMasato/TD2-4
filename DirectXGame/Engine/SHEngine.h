@@ -1,11 +1,7 @@
 #pragma once
-#include "Core/DXDevice.h"
+#include <Core/DXDevice.h>
 #include <Utility/LeakChecker.h>
-#include <Core/SRVManager.h>
-#include <Core/RTVManager.h>
-#include <Core/DSVManager.h>
-#include <Assets/Texture/TextureManager.h>
-#include <Core/CmdListManager.h>
+#include <Screen/Window.h>
 #include <memory>
 
 class SHEngine {
@@ -17,11 +13,11 @@ public:
 	void Initialize();
 
 	bool IsLoop();
-
 	void Update();
-
 	void PreDraw();
 	void EndFrame();
+
+	std::unique_ptr<Window> MakeWindow(const WindowConfig& config, uint32_t clearColor);
 
 private:
 
@@ -30,24 +26,22 @@ private:
 private:
 
 	//LeakChecker
-	D3DResourceLeakChecker leakChecker_;
+	D3DResourceLeakChecker leakChecker_{};
 
-	std::unique_ptr<SRVManager> srvManager_;
-	std::unique_ptr<RTVManager> rtvManager_;
-	std::unique_ptr<DSVManager> dsvManager_;
+	//最後に削除する
+	std::unique_ptr<DXDevice> dxDevice_ = nullptr;
 
 private:
 
-	std::unique_ptr<DXDevice> dxDevice_;
-	std::unique_ptr<CmdListManager> cmdListManager_;
+	std::unique_ptr<CmdListManager> cmdListManager_ = nullptr;
 
-	std::unique_ptr<TextureManager> textureManager_;
+	std::unique_ptr<TextureManager> textureManager_ = nullptr;
 
 private:
 
 	bool exit_ = false;
 	bool pushedCrossButton_ = false;
 
-	MSG msg_;
+	MSG msg_{};
 
 };

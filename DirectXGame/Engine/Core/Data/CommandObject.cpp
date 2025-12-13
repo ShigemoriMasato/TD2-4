@@ -5,6 +5,7 @@ CommandObject::~CommandObject() {
 }
 
 void CommandObject::Initialize(ID3D12Device* device) {
+	cmdLists_.resize(2);
     //コマンドリスト作成
     for (int i = 0; i < 2; ++i) {
         //CommandAllocator

@@ -1,13 +1,9 @@
-#include "Display.h"
+#include "../Display.h"
 #include <Utility/InsertBarrier.h>
 #include <Utility/Color.h>
 #include <Assets/Texture/TextureData.h>
-#include <Core/DSVManager.h>
-#include <Core/RTVManager.h>
 
-ID3D12Device* Display::device_ = nullptr;
-RTVManager* Display::rtvManager_ = nullptr;
-DSVManager* Display::dsvManager_ = nullptr;
+DXDevice* Display::device_ = nullptr;
 
 namespace {
 
@@ -48,13 +44,15 @@ namespace {
 
 }
 
-void Display::StaticInitialize(ID3D12Device* device, RTVManager* rtvManager, DSVManager* dsvManager) {
+void Display::StaticInitialize(DXDevice* device) {
 	device_ = device;
-	rtvManager_ = rtvManager;
-	dsvManager_ = dsvManager;
 }
 
 void Display::Initialize(TextureData* data, uint32_t clearColor) {
+	ID3D12Device* device = device_->GetDevice();
+	DSVManager* dsvManager = device_->GetDSVManager();
+	RTVManager* rtvManager = device_->GetRTVManager();
+
 	textureResource_ = data->GetResource();
 	width_ = data->GetSize().first;
 	height_ = data->GetSize().second;
@@ -64,26 +62,26 @@ void Display::Initialize(TextureData* data, uint32_t clearColor) {
     resourceState_ = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
     //RTVの設定
-    rtvHandle_.UpdateHandle(rtvManager_);
+    rtvHandle_.UpdateHandle(rtvManager);
 
     D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
     rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;	//出力結果をSRGBに変換して書き込む
     rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;	//2Dテクスチャとしてよみこむ
-	device_->CreateRenderTargetView(textureResource_, &rtvDesc, rtvHandle_.GetCPU());
+	device->CreateRenderTargetView(textureResource_, &rtvDesc, rtvHandle_.GetCPU());
 
 	//DSVの設定
-    dsvHandle_.UpdateHandle(dsvManager_);
+    dsvHandle_.UpdateHandle(dsvManager);
 
     D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
     dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
     dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 
-    depthStencilResource_.Attach(CreateDepthStencilTextureResource(device_, width_, height_));
+    depthStencilResource_.Attach(CreateDepthStencilTextureResource(device, width_, height_));
 
-    device_->CreateDepthStencilView(depthStencilResource_.Get(), &dsvDesc, dsvHandle_.GetCPU());
+    device->CreateDepthStencilView(depthStencilResource_.Get(), &dsvDesc, dsvHandle_.GetCPU());
 }
 
-void Display::DrawReady(ID3D12GraphicsCommandList* commandList, bool isClear) {
+void Display::PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear) {
 	EditBarrier(commandList, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
     auto dsvCpu = dsvHandle_.GetCPU();

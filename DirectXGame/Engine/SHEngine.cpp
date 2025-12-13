@@ -1,17 +1,16 @@
 #include "SHEngine.h"
+#include <Tool/Dump/CreateDump.h>
+
+#pragma comment(lib, "Dbghelp.lib")
+
+static LONG WINAPI ClashHandler(EXCEPTION_POINTERS* pExceptionPointers) {
+	LogSystem::LogFlush();
+	CreateDump(pExceptionPointers);
+	return EXCEPTION_EXECUTE_HANDLER;
+}
 
 SHEngine::SHEngine() {
-	dxDevice_ = std::make_unique<DXDevice>();
-	dxDevice_->Initialize();
-
-	srvManager_ = std::make_unique<SRVManager>(dxDevice_.get(), 2048);
-	rtvManager_ = std::make_unique<RTVManager>(dxDevice_.get(), 128);
-	dsvManager_ = std::make_unique<DSVManager>(dxDevice_.get(), 128);
-
-	cmdListManager_ = std::make_unique<CmdListManager>();
-	cmdListManager_->Initialize(dxDevice_.get());
-
-	textureManager_ = std::make_unique<TextureManager>();
+	SetUnhandledExceptionFilter(ClashHandler);
 }
 
 SHEngine::~SHEngine() {
@@ -19,7 +18,14 @@ SHEngine::~SHEngine() {
 }
 
 void SHEngine::Initialize() {
-	textureManager_->Initialize(dxDevice_.get(), srvManager_.get());
+	dxDevice_ = std::make_unique<DXDevice>();
+	dxDevice_->Initialize();
+
+	cmdListManager_ = std::make_unique<CmdListManager>();
+	cmdListManager_->Initialize(dxDevice_.get());
+
+	textureManager_ = std::make_unique<TextureManager>();
+	textureManager_->Initialize(dxDevice_.get());
 }
 
 bool SHEngine::IsLoop() {
@@ -40,6 +46,10 @@ void SHEngine::EndFrame() {
 	ExecuteMessage();
 	//バツを押されたら終了する
 	exit_ = pushedCrossButton_;
+}
+
+std::unique_ptr<Window> SHEngine::MakeWindow(const WindowConfig& config, uint32_t clearColor) {
+	return std::unique_ptr<Window>();
 }
 
 void SHEngine::ExecuteMessage() {

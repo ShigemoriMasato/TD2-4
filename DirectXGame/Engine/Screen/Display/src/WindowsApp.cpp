@@ -1,6 +1,6 @@
-#include "WindowsApp.h"
+#include "../WindowsApp.h"
 #include <unordered_map>
-#include <Logger/Logger.h>
+#include <Tool/Logger/Logger.h>
 
 namespace {
 	std::unordered_map<HWND, std::function<LRESULT(HWND, UINT, WPARAM, LPARAM)>> windowProcMap;

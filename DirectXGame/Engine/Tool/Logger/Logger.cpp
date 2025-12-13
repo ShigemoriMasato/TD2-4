@@ -1,6 +1,7 @@
 #include "Logger.h"
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/msvc_sink.h>
 #include <spdlog/sinks/daily_file_sink.h>
 
 #include <filesystem>
@@ -40,7 +41,7 @@ void LogSystem::Initialize() {
 #else
 	spdlog::set_level(spdlog::level::info);
 #endif
-
+	spdlog::flush_on(spdlog::level::warn);
     spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] %v");
 }
 
@@ -68,9 +69,13 @@ Logger LogSystem::getLogger(const std::string& name, uint32_t flug) {
         archiveOldLogs("Logs/" + name, 5);
     }
 
+    if (flug & UseDebugString) {
+        sinks.push_back(std::make_shared<spdlog::sinks::msvc_sink_mt>());
+    }
+
     if (flug & UseConsole) {
         sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-    }
+	}
 
     auto logger = std::make_shared<spdlog::logger>(name, sinks.begin(), sinks.end());
     spdlog::register_logger(logger);

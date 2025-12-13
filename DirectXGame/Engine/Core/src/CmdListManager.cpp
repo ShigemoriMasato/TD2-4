@@ -31,6 +31,11 @@ void CmdListManager::Execute() {
 }
 
 void CmdListManager::Reset() {
+	if (frameChecker_ < 2) {
+		++frameChecker_;
+		return;
+	}
+
 	for (const auto& commandObject : commandObjects_) {
 		commandObject->Reset();
 	}
