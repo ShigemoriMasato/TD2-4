@@ -3,13 +3,15 @@
 #include <wrl.h>
 #include <vector>
 
+class CmdListManager;
+
 class CommandObject {
 public:
 
 	CommandObject() = default;
 	~CommandObject();
 
-	void Initialize(ID3D12Device* device);
+	int Initialize(ID3D12Device* device, CmdListManager* manager);
 
 	ID3D12GraphicsCommandList* GetCommandList() const;
 
@@ -28,4 +30,9 @@ private:
 
 	//次使うコマンドリストのインデックス
 	int index_ = 0;
+
+	static inline int nextCmdObjId_ = 0;
+	int cmdObjId_ = nextCmdObjId_++;
+
+	CmdListManager* manager_ = nullptr;
 };

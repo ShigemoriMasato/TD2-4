@@ -1,7 +1,6 @@
 #include "TextureData.h"
 #include <DirectXTex/d3dx12.h>
 #include <Utility/ConvertString.h>
-#include <Utility/CreateResource.h>
 
 namespace {
     DirectX::ScratchImage CreateMipImages(const std::string& filePath) {
@@ -88,7 +87,7 @@ void TextureData::Create(uint32_t width, uint32_t height, Vector4 clearColor, ID
     srvDesc.Texture2D.MipLevels = 1;
 
     // SRV用ディスクリプタ位置を確保
-    srvHandle_.UpdateHandle(srvManager);
+    srvHandle_.UpdateHandle(srvManager, 1);
 
     // SRVを作成
     device->CreateShaderResourceView(textureResource_.Get(), &srvDesc, srvHandle_.GetCPU());
@@ -111,7 +110,7 @@ void TextureData::Create(ID3D12Resource* resource, ID3D12Device* device, SRVMana
     srvDesc.Texture2D.MipLevels = 1;
 
     // SRV用ディスクリプタ位置を確保
-    srvHandle_.UpdateHandle(manager);
+    srvHandle_.UpdateHandle(manager, 1);
 
     // SRVを作成
     device->CreateShaderResourceView(textureResource_.Get(), &srvDesc, srvHandle_.GetCPU());
@@ -143,7 +142,7 @@ std::pair<ID3D12Resource*, DirectX::ScratchImage> TextureData::Create(std::strin
     srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
 
     //SRVを作成するDescriptorHeapの場所を決める
-    srvHandle_.UpdateHandle(srvManager, true);
+    srvHandle_.UpdateHandle(srvManager, 1);
 
     //SRVを作成する
     device->CreateShaderResourceView(textureResource_.Get(), &srvDesc, srvHandle_.GetCPU());

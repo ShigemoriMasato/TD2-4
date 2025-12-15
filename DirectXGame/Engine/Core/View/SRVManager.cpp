@@ -26,7 +26,7 @@ SRVHandle::~SRVHandle() {
 }
 
 void SRVHandle::UpdateHandle(SRVManager* manager, int operateIndex) {
-	if(isUpdated_)
+	if (isUpdated_)
 		return;
 
 	if (operateIndex == -1) {

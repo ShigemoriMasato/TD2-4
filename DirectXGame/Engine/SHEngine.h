@@ -2,6 +2,7 @@
 #include <Core/DXDevice.h>
 #include <Utility/LeakChecker.h>
 #include <Screen/Window.h>
+#include <Core/FenceManager.h>
 #include <memory>
 
 class SHEngine {
@@ -34,10 +35,12 @@ private:
 private:
 
 	std::unique_ptr<CmdListManager> cmdListManager_ = nullptr;
-
 	std::unique_ptr<TextureManager> textureManager_ = nullptr;
+	std::unique_ptr<FenceManager> fenceManager_ = nullptr;
 
 private:
+
+	std::vector<Window*> windows_{};
 
 	bool exit_ = false;
 	bool pushedCrossButton_ = false;

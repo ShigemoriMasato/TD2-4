@@ -1,4 +1,4 @@
-#include "Color.h"
+#include "../Color.h"
 
 Vector4 ConvertColor(uint32_t color) {
 	float r = ((color >> 24) & 0xFF) / 255.0f;

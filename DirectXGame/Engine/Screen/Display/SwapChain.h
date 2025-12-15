@@ -11,11 +11,17 @@ public:
 
 	void PreDraw(ID3D12GraphicsCommandList* cmdList, bool isClear);
 	void ToTexture(ID3D12GraphicsCommandList* cmdList);
+	void PostDraw(ID3D12GraphicsCommandList* cmdList);
 	void Present();
 
 private:
 
+	int currentBackBufferIndex_ = 0;
+
+	static inline int nextDebugID_ = 0;
+	int debugID_ = nextDebugID_++;
+
 	Logger logger_ = nullptr;
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_ = nullptr;
-	std::array<Display, 2> displays_{};
+	std::array<std::unique_ptr<Display>, 2> displays_{};
 };

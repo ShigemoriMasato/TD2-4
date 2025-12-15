@@ -1,6 +1,7 @@
-#include "Operator.h"
-#include "../Vector.h"
+#include "../Operator.h"
 #include "../Matrix.h"
+#include "../Vector.h"
+#include <cmath>
 #include <cassert>
 
 namespace {

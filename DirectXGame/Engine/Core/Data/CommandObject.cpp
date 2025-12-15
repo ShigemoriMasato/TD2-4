@@ -1,10 +1,12 @@
 #include "CommandObject.h"
+#include <Core/CmdListManager.h>
 #include <cassert>
 
 CommandObject::~CommandObject() {
+	manager_->DeleteCommandObject(cmdObjId_);
 }
 
-void CommandObject::Initialize(ID3D12Device* device) {
+int CommandObject::Initialize(ID3D12Device* device, CmdListManager* manager) {
 	cmdLists_.resize(2);
     //コマンドリスト作成
     for (int i = 0; i < 2; ++i) {
@@ -18,6 +20,10 @@ void CommandObject::Initialize(ID3D12Device* device) {
         //コマンドリストの生成がうまくいかなかったので起動できない
         assert(SUCCEEDED(hr));
     }
+
+	manager_ = manager;
+
+	return cmdObjId_;
 }
 
 ID3D12GraphicsCommandList* CommandObject::GetCommandList() const {

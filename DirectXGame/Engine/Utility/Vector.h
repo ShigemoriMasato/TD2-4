@@ -1,13 +1,13 @@
 #pragma once
 #include <cmath>
-#include "Operator/Operator.h"
+#include "Operator.h"
 
 struct Vector3;
 struct Vector2 final {
 	float x;
 	float y;
 
-    Vector2() :x(0.0f), y(0.0f) {}
+	Vector2() :x(0.0f), y(0.0f) {}
 	Vector2(float x_, float y_) :x(x_), y(y_) {}
 	Vector2(const Vector3& v);
 
@@ -58,6 +58,10 @@ struct Vector4 final {
 	float y;
 	float z;
 	float w;
+
+	Vector4() :x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
+	Vector4(float x_, float y_, float z_, float w_) :x(x_), y(y_), z(z_), w(w_) {}
+	Vector4(const Vector3& v, float w = 1.0f) { x = v.x; y = v.y; z = v.z; this->w = w; }
 
 	float Length() const {
 		return sqrtf(x * x + y * y + z * z + w * w);

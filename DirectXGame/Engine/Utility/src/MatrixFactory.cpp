@@ -1,4 +1,4 @@
-#include "MatrixFactory.h"
+#include "../MatrixFactory.h"
 
 Matrix3x3 Matrix::MakeTranslationMatrix(const Vector2& translation) {
 	return {

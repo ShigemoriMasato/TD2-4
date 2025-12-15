@@ -1,5 +1,5 @@
 #pragma once
-#include "Operator/Operator.h"
+#include "Operator.h"
 #include "Vector.h"
 #include "Matrix.h"
 

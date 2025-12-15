@@ -4,21 +4,19 @@
     <ClCompile Include="Engine\Core\src\DXDevice.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Tool\Logger\Logger.cpp" />
-    <ClCompile Include="Engine\Utility\MyMath\MyMath.cpp" />
+    <ClCompile Include="Engine\Utility\src\MyMath.cpp" />
     <ClCompile Include="Engine\SHEngine.cpp" />
     <ClCompile Include="Engine\Screen\Display\src\WindowsApp.cpp" />
-    <ClCompile Include="Engine\Utility\Operator\Operator.cpp" />
-    <ClCompile Include="Engine\Utility\MatrixFactory\MatrixFactory.cpp" />
+    <ClCompile Include="Engine\Utility\src\Operator.cpp" />
+    <ClCompile Include="Engine\Utility\src\MatrixFactory.cpp" />
     <ClCompile Include="Engine\Utility\Quaternion.h" />
     <ClCompile Include="Engine\Core\src\Render.cpp" />
     <ClCompile Include="Engine\Assets\Texture\TextureManager.cpp" />
     <ClCompile Include="Engine\Assets\Texture\TextureData.cpp" />
-    <ClCompile Include="Engine\Utility\CreateResource.h" />
     <ClCompile Include="Engine\Utility\InsertBarrier.h" />
     <ClCompile Include="Engine\Core\View\ViewFunc.cpp" />
-    <ClCompile Include="Engine\Utility\ConvertString.cpp" />
-    <ClCompile Include="Engine\Utility\CreateResource.cpp" />
-    <ClCompile Include="Engine\Utility\InsertBarrier.cpp" />
+    <ClCompile Include="Engine\Utility\src\ConvertString.cpp" />
+    <ClCompile Include="Engine\Utility\src\InsertBarrier.cpp" />
     <ClCompile Include="Engine\PSO\Shelf\BlendStateShelf.cpp" />
     <ClCompile Include="Engine\PSO\Shelf\DepthStencilShelf.cpp" />
     <ClCompile Include="Engine\PSO\Shelf\InputLayoutShelf.cpp" />
@@ -32,8 +30,7 @@
     <ClCompile Include="Engine\Tool\Binary\BinaryManager.cpp" />
     <ClCompile Include="Engine\Tool\FPS\FPSObserver.cpp" />
     <ClCompile Include="Engine\Screen\Display\src\Display.cpp" />
-    <ClCompile Include="Engine\Display\Display.cpp" />
-    <ClCompile Include="Engine\Utility\Color.cpp" />
+    <ClCompile Include="Engine\Utility\src\Color.cpp" />
     <ClCompile Include="Engine\Core\Data\CommandObject.cpp" />
     <ClCompile Include="Engine\Screen\Display\src\SwapChain.cpp" />
     <ClCompile Include="Engine\Core\src\CmdListManager.cpp" />
@@ -42,18 +39,19 @@
     <ClCompile Include="Engine\Core\View\SRVManager.cpp" />
     <ClCompile Include="Engine\Tool\Dump\CreateDump.cpp" />
     <ClCompile Include="Engine\Screen\Window.cpp" />
+    <ClCompile Include="Engine\Core\src\FenceManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\DXDevice.h" />
     <ClInclude Include="Engine\Tool\Logger\Logger.h" />
     <ClInclude Include="Engine\Utility\LeakChecker.h" />
-    <ClInclude Include="Engine\Utility\MyMath\MyMath.h" />
+    <ClInclude Include="Engine\Utility\MyMath.h" />
     <ClInclude Include="Engine\SHEngine.h" />
     <ClInclude Include="Engine\Screen\Display\WindowsApp.h" />
-    <ClInclude Include="Engine\Utility\Operator\Operator.h" />
+    <ClInclude Include="Engine\Utility\Operator.h" />
     <ClInclude Include="Engine\Utility\Matrix.h" />
     <ClInclude Include="Engine\Utility\Vector.h" />
-    <ClInclude Include="Engine\Utility\MatrixFactory\MatrixFactory.h" />
+    <ClInclude Include="Engine\Utility\MatrixFactory.h" />
     <ClInclude Include="Engine\Utility\SearchFile.h" />
     <ClInclude Include="Engine\Utility\ConvertString.h" />
     <ClInclude Include="Engine\Core\Render.h" />
@@ -74,7 +72,6 @@
     <ClInclude Include="Engine\Tool\Binary\BinaryManager.h" />
     <ClInclude Include="Engine\Tool\FPS\FPSObserver.h" />
     <ClInclude Include="Engine\Screen\Display\Display.h" />
-    <ClInclude Include="Engine\Display\Display.h" />
     <ClInclude Include="Engine\Utility\Color.h" />
     <ClInclude Include="Engine\Core\Data\CommandObject.h" />
     <ClInclude Include="Engine\Screen\Display\SwapChain.h" />
@@ -85,5 +82,6 @@
     <ClInclude Include="Engine\Core\View\SRVManager.h" />
     <ClInclude Include="Engine\Tool\Dump\CreateDump.h" />
     <ClInclude Include="Engine\Screen\Window.h" />
+    <ClInclude Include="Engine\Core\FenceManager.h" />
   </ItemGroup>
 </Project>

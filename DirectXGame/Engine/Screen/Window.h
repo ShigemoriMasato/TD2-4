@@ -25,10 +25,7 @@ public:
 	Window() = default;
 	~Window() = default;
 
-	void StaticInitialize(CmdListManager* manager) {
-		cmdObject_ = manager->GetCommandObject(CmdListType::SwapChain);
-	}
-	void Initialize(DXDevice* device, TextureManager* textureManager, ID3D12CommandQueue* commandQueue, const WindowConfig& config, uint32_t clearColor);
+	void Initialize(DXDevice* device, TextureManager* textureManager, CmdListManager* cmdListManager, const WindowConfig& config, uint32_t clearColor);
 
 	//描画可能状態にする
 	void PreDraw(bool isClear);
@@ -37,9 +34,12 @@ public:
 	//Presentして、テクスチャを切り替える
 	void PostDraw();
 
+	//エンジン側で呼ぶやつ
+	void Present();
+
 private:
 
-	static CommandObject* cmdObject_;
+	std::unique_ptr<CommandObject> cmdObject_ = nullptr;
 
 	std::unique_ptr<WindowsApp> windowApp_ = nullptr;
 	std::unique_ptr<SwapChain> swapChain_ = nullptr;

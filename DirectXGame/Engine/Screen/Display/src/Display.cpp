@@ -79,6 +79,8 @@ void Display::Initialize(TextureData* data, uint32_t clearColor) {
     depthStencilResource_.Attach(CreateDepthStencilTextureResource(device, width_, height_));
 
     device->CreateDepthStencilView(depthStencilResource_.Get(), &dsvDesc, dsvHandle_.GetCPU());
+
+    resourceState_ = D3D12_RESOURCE_STATE_COMMON;
 }
 
 void Display::PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear) {
@@ -117,6 +119,15 @@ void Display::PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear) {
 	}
 }
 
-void Display::EditBarrier(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState) {
-	InsertBarrier(commandList, newState, resourceState_, textureResource_);
+void Display::ToTexture(ID3D12GraphicsCommandList* commandList) {
+    EditBarrier(commandList, D3D12_RESOURCE_STATE_COPY_SOURCE);
+}
+
+void Display::PostDraw(ID3D12GraphicsCommandList* commandList) {
+    EditBarrier(commandList, D3D12_RESOURCE_STATE_PRESENT);
+	resourceState_ = D3D12_RESOURCE_STATE_COMMON;
+}
+
+void Display::EditBarrier(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES afterState) {
+    InsertBarrier(commandList, afterState, resourceState_, textureResource_);
 }

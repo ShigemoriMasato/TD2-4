@@ -11,23 +11,24 @@ void CmdListManager::Initialize(DXDevice* device) {
 	commandQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 	HRESULT hr = device_->GetDevice()->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&commandQueue_));
 	assert(SUCCEEDED(hr) && "Failed to create CommandQueue");
-
-	//コマンドオブジェクトの生成
-	for (int i = 0; i < static_cast<int>(CmdListType::Count); ++i) {
-		commandObjects_.emplace_back(std::make_unique<CommandObject>());
-		commandObjects_.back()->Initialize(device_->GetDevice());
-	}
 }
 
 void CmdListManager::Execute() {
 	std::vector<ID3D12CommandList*> commandLists;
-	for (const auto& commandObject : commandObjects_) {
-		auto cmdList = commandObject->GetCommandList();
-		cmdList->Close();
-		commandLists.push_back(cmdList);
-	}
+	auto beginObject = commandObjects_.begin();
 
-	commandQueue_->ExecuteCommandLists(static_cast<UINT>(commandLists.size()), commandLists.data());
+	for (int i = 0; i < int(commandObjects_.size()); i) {
+		commandLists.clear();
+
+		for (int limit = i + 8; i < int(commandObjects_.size()) && i < limit; ++i) {
+			auto commandList = beginObject->second->GetCommandList();
+			commandList->Close();
+			commandLists.push_back(commandList);
+			++beginObject;
+		}
+
+		commandQueue_->ExecuteCommandLists(static_cast<UINT>(commandLists.size()), commandLists.data());
+	}
 }
 
 void CmdListManager::Reset() {
@@ -36,11 +37,26 @@ void CmdListManager::Reset() {
 		return;
 	}
 
-	for (const auto& commandObject : commandObjects_) {
+	for (const auto& [id, commandObject] : commandObjects_) {
 		commandObject->Reset();
 	}
 }
 
-CommandObject* CmdListManager::GetCommandObject(CmdListType type) {
-	return commandObjects_[int(type)].get();
+void CmdListManager::DeleteCommandObject(int id) {
+	auto it = commandObjects_.find(id);
+	
+	if (it != commandObjects_.end()) {
+		commandObjects_.erase(it);
+		return;
+	}
+
+	logger_->warn("CmdListManager::DeleteCommandObject: Invalid CommandObject ID {}", id);
+	assert(false && "CmdListManager::DeleteCommandObject: Invalid CommandObject ID");
+}
+
+std::unique_ptr<CommandObject> CmdListManager::CreateCommandObject() {
+	auto commandObject = std::make_unique<CommandObject>();
+	int id = commandObject->Initialize(device_->GetDevice(), this);
+	commandObjects_[id] = commandObject.get();
+	return std::move(commandObject);
 }

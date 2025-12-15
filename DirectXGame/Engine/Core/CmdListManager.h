@@ -2,15 +2,7 @@
 #include "Data/CommandObject.h"
 #include <Core/DXDevice.h>
 #include <Tool/Logger/Logger.h>
-
-//処理順
-enum class CmdListType {
-	Texture,
-
-	SwapChain,
-
-	Count
-};
+#include <map>
 
 class CmdListManager {
 public:
@@ -21,15 +13,18 @@ public:
 	void Initialize(DXDevice* device);
 	void Execute();
 	void Reset();
+
+	void DeleteCommandObject(int id);
 	
-	CommandObject* GetCommandObject(CmdListType type);
+	std::unique_ptr<CommandObject> CreateCommandObject();
+	ID3D12CommandQueue* GetCommandQueue() const { return commandQueue_.Get(); }
 
 private:
 
 	DXDevice* device_ = nullptr;
 	Logger logger_ = nullptr;
 
-	std::vector<std::unique_ptr<CommandObject>> commandObjects_;
+	std::map<int, CommandObject*> commandObjects_;
 
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_ = nullptr;
 

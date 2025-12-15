@@ -1,6 +1,7 @@
 #pragma once
 #include "TextureData.h"
 #include <Core/DXDevice.h>
+#include <Core/CmdListManager.h>
 #include <map>
 #include <memory>
 
@@ -10,7 +11,8 @@ public:
 	TextureManager() = default;
 	~TextureManager() = default;
 
-	void Initialize(DXDevice* device);
+	void Initialize(DXDevice* device, CmdListManager* CmdListManager);
+	void Clear();
 
 	int LoadTexture(const std::string& filePath);
 	int CreateWindowTexture(uint32_t width, uint32_t height, uint32_t clearColor);
@@ -30,6 +32,7 @@ private:
 
 	DXDevice* device_ = nullptr;
 	SRVManager* srvManager_ = nullptr;
+	std::unique_ptr<CommandObject> cmdObject_ = nullptr;
 
 	const int maxTextureCount = 512;
 

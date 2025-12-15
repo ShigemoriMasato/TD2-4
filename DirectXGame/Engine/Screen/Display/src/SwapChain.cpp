@@ -35,7 +35,7 @@ void SwapChain::Initialize(DXDevice* device, TextureManager* textureManager, ID3
 	ID3D12Resource* swapChainResources;
     for(int i = 0; i < 2; i++) {
         //SwapChainからResourceを取得する
-        hr = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResources));
+        hr = swapChain_->GetBuffer(i, IID_PPV_ARGS(&swapChainResources));
         assert(SUCCEEDED(hr));
 
         //TextureManagerにSwapChain用Textureを作成してもらう
@@ -43,24 +43,44 @@ void SwapChain::Initialize(DXDevice* device, TextureManager* textureManager, ID3
 		TextureData* data = textureManager->GetTextureData(handle);
 
         //Displayを初期化する
-        displays_[i].Initialize(data, clearColor);
+		displays_[i] = std::make_unique<Display>();
+        displays_[i]->Initialize(data, clearColor);
 	}
 
-	logger_->info("=== Complete create SwapChain ===");
+    logger_->info("Initialized  id : {}    backBuffer : {}", debugID_, currentBackBufferIndex_);
+
+    logger_->info("=== Complete create SwapChain ===");
 }
 
 void SwapChain::PreDraw(ID3D12GraphicsCommandList* cmdList, bool isClear) {
-	int index = swapChain_->GetCurrentBackBufferIndex();
-	displays_[index].PreDraw(cmdList, isClear);
+    currentBackBufferIndex_ = swapChain_->GetCurrentBackBufferIndex();
+
+	displays_[currentBackBufferIndex_]->PreDraw(cmdList, isClear);
+
+    logger_->info("PreDraw  id : {}    backBuffer : {}", debugID_, currentBackBufferIndex_);
+
 }
 
 void SwapChain::ToTexture(ID3D12GraphicsCommandList* cmdList) {
-    int index = swapChain_->GetCurrentBackBufferIndex();
-	displays_[index].EditBarrier(cmdList, D3D12_RESOURCE_STATE_COPY_SOURCE);
+	displays_[currentBackBufferIndex_]->ToTexture(cmdList);
+}
+
+void SwapChain::PostDraw(ID3D12GraphicsCommandList* cmdList) {
+    currentBackBufferIndex_ = swapChain_->GetCurrentBackBufferIndex();
+
+    displays_[currentBackBufferIndex_]->PostDraw(cmdList);
+
+    logger_->info("PostDraw  id : {}    backBuffer : {}", debugID_, currentBackBufferIndex_);
+
 }
 
 void SwapChain::Present() {
+    currentBackBufferIndex_ = swapChain_->GetCurrentBackBufferIndex();
+
+    logger_->info("Present  id : {} BackBuffer : {}", debugID_, currentBackBufferIndex_);
     //画面に表示する
     HRESULT hr = swapChain_->Present(1, 0);
 	assert(SUCCEEDED(hr));
+
+    currentBackBufferIndex_ = swapChain_->GetCurrentBackBufferIndex();
 }

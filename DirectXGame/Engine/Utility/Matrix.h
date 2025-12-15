@@ -1,4 +1,5 @@
 #pragma once
+#include "Operator.h"
 
 struct Matrix4x4 final {
 

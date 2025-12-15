@@ -1,8 +1,6 @@
 #include "Window.h"
 
-CommandObject* Window::cmdObject_ = nullptr;
-
-void Window::Initialize(DXDevice* device, TextureManager* textureManager, ID3D12CommandQueue* commandQueue, const WindowConfig& config, uint32_t clearColor) {
+void Window::Initialize(DXDevice* device, TextureManager* textureManager, CmdListManager* cmdListManager, const WindowConfig& config, uint32_t clearColor) {
 	//Windowの作成
 	windowApp_ = std::make_unique<WindowsApp>();
 	windowApp_->SetWindowName(config.windowName);
@@ -10,10 +8,13 @@ void Window::Initialize(DXDevice* device, TextureManager* textureManager, ID3D12
 	windowApp_->SetSize(config.clientWidth, config.clientHeight);
 	windowApp_->SetWindowProc(config.windowProc);
 	windowApp_->Create();
+	windowApp_->Show();
 
 	//SwapChainの作成
 	swapChain_ = std::make_unique<SwapChain>();
-	swapChain_->Initialize(device, textureManager, commandQueue, windowApp_.get(), clearColor);
+	swapChain_->Initialize(device, textureManager, cmdListManager->GetCommandQueue(), windowApp_.get(), clearColor);
+
+	cmdObject_ = cmdListManager->CreateCommandObject();
 }
 
 void Window::PreDraw(bool isClear) {
@@ -25,5 +26,9 @@ void Window::ToTexture() {
 }
 
 void Window::PostDraw() {
+	swapChain_->PostDraw(cmdObject_->GetCommandList());
+}
+
+void Window::Present() {
 	swapChain_->Present();
 }

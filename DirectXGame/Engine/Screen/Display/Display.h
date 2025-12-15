@@ -16,10 +16,15 @@ public:
 	void Initialize(TextureData* data, uint32_t clearColor);
 	void PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear);
 
-	void EditBarrier(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
+	void ToTexture(ID3D12GraphicsCommandList* commandList);
+	void PostDraw(ID3D12GraphicsCommandList* commandList);
 
 	ID3D12Resource* GetTextureResource() const { return textureResource_; }
 	RTVHandle GetRTVHandle() const { return rtvHandle_; }
+
+private:
+
+	void EditBarrier(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES afterState);
 
 private:
 
