@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Development|x64">
@@ -182,6 +182,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Utility\InsertBarrier.h" />
     <ClCompile Include="Engine\Utility\src\MyMath.cpp" />
     <ClCompile Include="Engine\Utility\Quaternion.h" />
+    <ClCompile Include="AppSource\Scene\src\IScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\SHEngine.cpp" />
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
@@ -191,8 +192,12 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Assets\Texture\TextureData.cpp" />
     <ClCompile Include="Engine\Assets\Texture\TextureManager.cpp" />
     <ClCompile Include="Engine\Screen\Display\src\SwapChain.cpp" />
+    <ClCompile Include="AppSource\Scene\src\SceneManager.cpp" />
+    <ClCompile Include="AppSource\Core\Terminal.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AppSource\Scene\CommonData.h" />
+    <ClInclude Include="AppSource\Scene\src\CommonData.h" />
     <ClInclude Include="Engine\Core\CmdListManager.h" />
     <ClInclude Include="Engine\Core\Data\CommandObject.h" />
     <ClInclude Include="Engine\Core\FenceManager.h" />
@@ -234,6 +239,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Assets\Texture\TextureData.h" />
     <ClInclude Include="Engine\Assets\Texture\TextureManager.h" />
     <ClInclude Include="Engine\Screen\Display\SwapChain.h" />
+    <ClInclude Include="AppSource\Scene\SceneManager.h" />
+    <ClInclude Include="AppSource\Scene\IScene.h" />
+    <ClInclude Include="AppSource\Core\Terminal.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

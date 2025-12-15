@@ -40,6 +40,9 @@
     <ClCompile Include="Engine\Tool\Dump\CreateDump.cpp" />
     <ClCompile Include="Engine\Screen\Window.cpp" />
     <ClCompile Include="Engine\Core\src\FenceManager.cpp" />
+    <ClCompile Include="AppSource\Scene\src\IScene.cpp" />
+    <ClCompile Include="AppSource\Scene\src\SceneManager.cpp" />
+    <ClCompile Include="AppSource\Core\Terminal.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\DXDevice.h" />
@@ -83,5 +86,10 @@
     <ClInclude Include="Engine\Tool\Dump\CreateDump.h" />
     <ClInclude Include="Engine\Screen\Window.h" />
     <ClInclude Include="Engine\Core\FenceManager.h" />
+    <ClInclude Include="AppSource\Scene\src\CommonData.h" />
+    <ClInclude Include="AppSource\Scene\SceneManager.h" />
+    <ClInclude Include="AppSource\Scene\IScene.h" />
+    <ClInclude Include="AppSource\Scene\CommonData.h" />
+    <ClInclude Include="AppSource\Core\Terminal.h" />
   </ItemGroup>
 </Project>

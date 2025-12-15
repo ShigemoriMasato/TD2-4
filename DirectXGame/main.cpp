@@ -1,24 +1,10 @@
-#include <SHEngine.h>
-#include <Screen/Window.h>
+#include <Core/Terminal.h>
 
 int WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+	auto terminal = std::make_unique<Terminal>();
+	terminal->Initialize();
 
-	auto engine = std::make_unique<SHEngine>();
-	engine->Initialize();
-
-
-	while (engine->IsLoop()) {
-
-		//更新===
-		engine->Update();
-
-
-		//描画===
-		engine->PreDraw();
-
-		engine->EndFrame();
-
-	}
+	terminal->Run();
 
 	return 0;
 }
