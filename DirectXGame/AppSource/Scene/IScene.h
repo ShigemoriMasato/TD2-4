@@ -5,15 +5,18 @@
 class IScene {
 public:
 
-	IScene(CommonData* commonData);
+	IScene() = default;
 	virtual ~IScene() = default;
 
 	virtual void Initialize() = 0;
 	virtual std::unique_ptr<IScene> Update() = 0;
 	virtual void Draw() = 0;
 
-private:
+	void SwapScene(CommonData* commonData, SHEngine* engine);
+
+protected:
 
 	CommonData* commonData_;
+	SHEngine* engine_ = nullptr;
 
 };

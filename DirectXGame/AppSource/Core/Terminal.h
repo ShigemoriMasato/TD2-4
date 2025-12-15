@@ -14,7 +14,11 @@ public:
 
 private:
 
+	bool IsLoop();
+
 	std::unique_ptr<SHEngine> engine_;
 	std::unique_ptr<SceneManager> sceneManager_;
+
+	std::unique_ptr<Window> mainWindow_;
 
 };

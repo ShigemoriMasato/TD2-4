@@ -1,6 +1,5 @@
 #include "SHEngine.h"
 #include <Tool/Dump/CreateDump.h>
-#include "IScene.h"
 
 #pragma comment(lib, "Dbghelp.lib")
 

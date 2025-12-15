@@ -43,6 +43,8 @@
     <ClCompile Include="AppSource\Scene\src\IScene.cpp" />
     <ClCompile Include="AppSource\Scene\src\SceneManager.cpp" />
     <ClCompile Include="AppSource\Core\Terminal.cpp" />
+    <ClCompile Include="AppSource\Test\TestScene.cpp" />
+    <ClCompile Include="AppSource\Scene\src\InitializeScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\DXDevice.h" />
@@ -91,5 +93,7 @@
     <ClInclude Include="AppSource\Scene\IScene.h" />
     <ClInclude Include="AppSource\Scene\CommonData.h" />
     <ClInclude Include="AppSource\Core\Terminal.h" />
+    <ClInclude Include="AppSource\Test\TestScene.h" />
+    <ClInclude Include="AppSource\Scene\InitializeScene.h" />
   </ItemGroup>
 </Project>

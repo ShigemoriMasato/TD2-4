@@ -31,7 +31,7 @@ public:
 	void PreDraw(bool isClear);
 	//テクスチャとして使用可能な状態にする
 	void ToTexture();
-	//Presentして、テクスチャを切り替える
+	//Presentできる状態にする
 	void PostDraw();
 
 	//エンジン側で呼ぶやつ

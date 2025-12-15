@@ -1,5 +1,6 @@
 #include "../IScene.h"
 
-IScene::IScene(CommonData* commonData) {
+void IScene::SwapScene(CommonData* commonData, SHEngine* engine) {
 	commonData_ = commonData;
+	engine_ = engine;
 }

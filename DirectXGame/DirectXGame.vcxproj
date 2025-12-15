@@ -88,7 +88,7 @@
       <AdditionalLibraryDirectories>$(ProjectDir)externals\assimp\lib\$(Configuration)\;$(ProjectDir)externals\DirectXTex\lib\$(Configuration)\;$(ProjectDir)externals\imgui\lib\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DirectXTex.lib;imgui.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4049 /ignore:4048 %(AdditionalOptions)</AdditionalOptions>
-      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <TreatLinkerWarningAsErrors>false</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
@@ -183,6 +183,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Utility\src\MyMath.cpp" />
     <ClCompile Include="Engine\Utility\Quaternion.h" />
     <ClCompile Include="AppSource\Scene\src\IScene.cpp" />
+    <ClCompile Include="AppSource\Scene\src\InitializeScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\SHEngine.cpp" />
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
@@ -194,6 +195,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Screen\Display\src\SwapChain.cpp" />
     <ClCompile Include="AppSource\Scene\src\SceneManager.cpp" />
     <ClCompile Include="AppSource\Core\Terminal.cpp" />
+    <ClCompile Include="AppSource\Test\TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSource\Scene\CommonData.h" />
@@ -242,6 +244,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Scene\SceneManager.h" />
     <ClInclude Include="AppSource\Scene\IScene.h" />
     <ClInclude Include="AppSource\Core\Terminal.h" />
+    <ClInclude Include="AppSource\Test\TestScene.h" />
+    <ClInclude Include="AppSource\Scene\InitializeScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
