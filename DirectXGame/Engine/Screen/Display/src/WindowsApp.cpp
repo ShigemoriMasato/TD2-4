@@ -1,6 +1,7 @@
 #include "../WindowsApp.h"
 #include <unordered_map>
 #include <Tool/Logger/Logger.h>
+#include <Utility/ConvertString.h>
 
 namespace {
 	std::unordered_map<HWND, std::function<LRESULT(HWND, UINT, WPARAM, LPARAM)>> windowProcMap;
@@ -67,6 +68,8 @@ void WindowsApp::Create() {
     if (windowProc_) {
         windowProcMap[hwnd_] = windowProc_;
     }
+
+    logger->info("CreateWindow Success\nWindowName : {}\nWindowClassName : {}\nWindow Width / Height : {} / {}", ConvertString(windowName_), ConvertString(windowClassName_), clientWidth_, clientHeight_);
 }
 
 void WindowsApp::Show(ShowType cmd) {

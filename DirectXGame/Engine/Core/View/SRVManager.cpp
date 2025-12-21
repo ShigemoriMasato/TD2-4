@@ -11,6 +11,10 @@ SRVManager::SRVManager(ID3D12Device* device, uint32_t size, int num) : maxCount(
 uint32_t SRVManager::GetNextOffset(int startIndex) {
 	uint32_t i = startIndex;
 
+	if(i >= maxCount) {
+		i = 0;
+	}
+
 	for (i; i < maxCount; ++i) {
 		if (!isUsed_[i]) {
 			return i;
@@ -30,7 +34,7 @@ void SRVHandle::UpdateHandle(SRVManager* manager, int operateIndex) {
 		return;
 
 	if (operateIndex == -1) {
-		operateIndex = 1024;
+		operateIndex = manager->maxCount / 2;
 	}
 
 	offset_ = manager->GetNextOffset(operateIndex);

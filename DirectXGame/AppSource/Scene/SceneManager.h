@@ -7,7 +7,7 @@ public:
 	SceneManager() = default;
 	~SceneManager() = default;
 
-	void Initialize();
+	void Initialize(SHEngine* engine);
 	void Update();
 	void Draw();
 
@@ -15,9 +15,14 @@ public:
 
 private:
 
+	void SwapScene();
+
+private:
+
+	SHEngine* engine_;
+
 	std::unique_ptr<CommonData> commonData_;
 
 	std::unique_ptr<IScene> currentScene_;
 	std::unique_ptr<IScene> nextScene_;
-
 };

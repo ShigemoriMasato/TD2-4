@@ -19,4 +19,7 @@ protected:
 	CommonData* commonData_;
 	SHEngine* engine_ = nullptr;
 
+	TextureManager* textureManager_ = nullptr;
+	WindowMaker* windowMaker_ = nullptr;
+
 };

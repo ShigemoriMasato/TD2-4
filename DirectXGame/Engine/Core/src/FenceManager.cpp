@@ -25,13 +25,19 @@ void FenceManager::WaitForSignal(int offset) {
 		return;
 	}
 
+    int64_t waitFence = int64_t(fenceValue_);
+
+    if (waitFence < 0) {
+        return;
+    }
+
 	UINT64 waitValue = fenceValue_ - offset;
 
     //Fenceの値が指定したSignal値にたどり着いてるかを確認する
     //GetCompletedValueの初期値はFence作成時に渡した初期値
-    if (fence_->GetCompletedValue() < fenceValue_) {
+    if (fence_->GetCompletedValue() < UINT(waitFence)) {
         //指定したSignalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
-        fence_->SetEventOnCompletion(fenceValue_, fenceEvent_);
+        fence_->SetEventOnCompletion(waitFence, fenceEvent_);
         //イベントを待つ
         WaitForSingleObject(fenceEvent_, INFINITE);
     }

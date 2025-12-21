@@ -45,6 +45,9 @@
     <ClCompile Include="AppSource\Core\Terminal.cpp" />
     <ClCompile Include="AppSource\Test\TestScene.cpp" />
     <ClCompile Include="AppSource\Scene\src\InitializeScene.cpp" />
+    <ClCompile Include="Engine\Screen\WindowMaker.cpp" />
+    <ClCompile Include="AppSource\Common\GameWindow.cpp" />
+    <ClCompile Include="Engine\Core\src\ImGuiforEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\DXDevice.h" />
@@ -95,5 +98,17 @@
     <ClInclude Include="AppSource\Core\Terminal.h" />
     <ClInclude Include="AppSource\Test\TestScene.h" />
     <ClInclude Include="AppSource\Scene\InitializeScene.h" />
+    <ClInclude Include="externals\imgui\imconfig.h" />
+    <ClInclude Include="externals\imgui\imgui.h" />
+    <ClInclude Include="externals\imgui\imgui_impl_dx12.h" />
+    <ClInclude Include="externals\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="externals\imgui\imgui_internal.h" />
+    <ClInclude Include="externals\imgui\ImGuizmo.h" />
+    <ClInclude Include="externals\imgui\imstb_rectpack.h" />
+    <ClInclude Include="externals\imgui\imstb_textedit.h" />
+    <ClInclude Include="externals\imgui\imstb_truetype.h" />
+    <ClInclude Include="Engine\Screen\WindowMaker.h" />
+    <ClInclude Include="AppSource\Common\GameWindow.h" />
+    <ClInclude Include="Engine\Core\ImGuiforEngine.h" />
   </ItemGroup>
 </Project>

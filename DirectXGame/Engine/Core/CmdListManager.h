@@ -28,6 +28,4 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_ = nullptr;
 
-	int frameChecker_ = 0;
-
 };

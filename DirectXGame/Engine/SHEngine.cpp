@@ -10,6 +10,9 @@ static LONG WINAPI ClashHandler(EXCEPTION_POINTERS* pExceptionPointers) {
 }
 
 SHEngine::SHEngine() {
+
+	logger_ = LogSystem::getLogger("Engine");
+
 	//Initializeしても変わらない処理
 
 	SetUnhandledExceptionFilter(ClashHandler);
@@ -27,10 +30,18 @@ SHEngine::SHEngine() {
 
 	fenceManager_ = std::make_unique<FenceManager>();
 	fenceManager_->Initialize(cmdListManager_->GetCommandQueue(), dxDevice_->GetDevice());
+
+	windowMaker_ = std::make_unique<WindowMaker>();
+	windowMaker_->Initialize(dxDevice_.get(), textureManager_.get(), cmdListManager_.get());
+
+	imGuiForEngine_ = std::make_unique<ImGuiforEngine>();
 }
 
 SHEngine::~SHEngine() {
 	fenceManager_->Finalize();
+	if (imGuiActive_) {
+		imGuiForEngine_->Finalize();
+	}
 }
 
 void SHEngine::Initialize() {
@@ -44,6 +55,12 @@ bool SHEngine::IsLoop() {
 
 void SHEngine::Update() {
 	//todo inputとか
+
+	//ImGui
+	if (imGuiActive_) {
+		imGuiForEngine_->BeginFrame();
+		imguiDrawed_ = false;
+	}
 }
 
 void SHEngine::PreDraw() {
@@ -53,12 +70,14 @@ void SHEngine::PreDraw() {
 }
 
 void SHEngine::EndFrame() {
+	//PostDraw
+	windowMaker_->AllPostDraw();
+	//ImGui
+	ImGuiDraw();
 	//Execute
 	cmdListManager_->Execute();
-
-	for (const auto& window : windows_) {
-		window->Present();
-	}
+	//Present
+	windowMaker_->PresentAllWindows();
 
 	fenceManager_->SendSignal();
 
@@ -67,11 +86,20 @@ void SHEngine::EndFrame() {
 	exit_ = pushedCrossButton_;
 }
 
-std::unique_ptr<Window> SHEngine::MakeWindow(const WindowConfig& config, uint32_t clearColor) {
-	std::unique_ptr<Window> window = std::make_unique<Window>();
-	window->Initialize(dxDevice_.get(), textureManager_.get(), cmdListManager_.get(), config, clearColor);
-	windows_.push_back(window.get());
-	return std::move(window);
+void SHEngine::ImGuiActivate(Window* window) {
+	imGuiForEngine_->Initialize(dxDevice_.get(), cmdListManager_.get(), window);
+	imGuiForEngine_->BeginFrame();
+	imGuiActive_ = true;
+
+	logger_->info("ImGui activated");
+}
+
+void SHEngine::ImGuiDraw() {
+	//ImGui
+	if (imGuiActive_ && !imguiDrawed_) {
+		imGuiForEngine_->EndFrame();
+		imguiDrawed_ = true;
+	}
 }
 
 void SHEngine::ExecuteMessage() {
@@ -84,7 +112,7 @@ void SHEngine::ExecuteMessage() {
 			DispatchMessage(&msg_);
 		} else {
 			//メッセージがなければ処理を始める
-			pushedCrossButton_ = false;
+			return;
 		}
 	}
 

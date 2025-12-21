@@ -3,6 +3,8 @@
 #include <Utility/LeakChecker.h>
 #include <Screen/Window.h>
 #include <Core/FenceManager.h>
+#include <Screen/WindowMaker.h>
+#include <Core/ImGuiforEngine.h>
 #include <memory>
 
 class SHEngine {
@@ -18,7 +20,11 @@ public:
 	void PreDraw();
 	void EndFrame();
 
-	std::unique_ptr<Window> MakeWindow(const WindowConfig& config, uint32_t clearColor);
+	void ImGuiActivate(Window* window);
+	void ImGuiDraw();
+
+	TextureManager* GetTextureManager() { return textureManager_.get(); }
+	WindowMaker* GetWindowMaker() { return windowMaker_.get(); }
 
 private:
 
@@ -34,17 +40,24 @@ private:
 
 private:
 
+	//Engine側ツール
 	std::unique_ptr<CmdListManager> cmdListManager_ = nullptr;
-	std::unique_ptr<TextureManager> textureManager_ = nullptr;
 	std::unique_ptr<FenceManager> fenceManager_ = nullptr;
+	std::unique_ptr<ImGuiforEngine> imGuiForEngine_ = nullptr;
+
+	//App側ツール
+	std::unique_ptr<TextureManager> textureManager_ = nullptr;
+	std::unique_ptr<WindowMaker> windowMaker_ = nullptr;
 
 private:
-
-	std::vector<Window*> windows_{};
 
 	bool exit_ = false;
 	bool pushedCrossButton_ = false;
 
+	bool imGuiActive_ = false;
+	bool imguiDrawed_ = false;
+
 	MSG msg_{};
 
+	Logger logger_ = nullptr;
 };

@@ -37,11 +37,19 @@ public:
 	//エンジン側で呼ぶやつ
 	void Present();
 
+	HWND GetHwnd() const { return windowApp_->GetHwnd(); }
+	CommandObject* GetCommandObject() { return  cmdObject_.get(); }
+
 private:
 
 	std::unique_ptr<CommandObject> cmdObject_ = nullptr;
 
 	std::unique_ptr<WindowsApp> windowApp_ = nullptr;
 	std::unique_ptr<SwapChain> swapChain_ = nullptr;
+
+	//engine標準のSRV
+	SRVManager* srvManager_ = nullptr;
+
+	bool isPostDraw_ = false;
 
 };

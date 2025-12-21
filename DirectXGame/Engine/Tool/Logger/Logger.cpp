@@ -41,7 +41,7 @@ void LogSystem::Initialize() {
 #else
 	spdlog::set_level(spdlog::level::info);
 #endif
-	spdlog::flush_on(spdlog::level::warn);
+	spdlog::flush_on(spdlog::level::err);
     spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] %v");
 }
 

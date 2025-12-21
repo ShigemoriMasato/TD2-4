@@ -5,16 +5,10 @@ void Terminal::Initialize() {
 	engine_->Initialize();
 
 	sceneManager_ = std::make_unique<SceneManager>();
-	sceneManager_->Initialize();
+	sceneManager_->Initialize(engine_.get());
 }
 
 void Terminal::Run() {
-
-	std::vector<std::unique_ptr<Window>> windows;
-	windows.resize(50);
-	for (int i = 0; i < 50; ++i) {
-		windows[i] = engine_->MakeWindow(WindowConfig(), 0xffff00ff);
-	}
 
 	while (IsLoop()) {
 
@@ -27,13 +21,7 @@ void Terminal::Run() {
 		// 描画 ===
 		engine_->PreDraw();
 
-		for(const auto& window : windows) {
-			window->PreDraw(true);
-			window->PostDraw();
-		}
-
 		sceneManager_->Draw();
-
 
 		engine_->EndFrame();
 

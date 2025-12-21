@@ -12,6 +12,7 @@ void InsertBarrier(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES
     barrier.Type = type;
     barrier.Flags = flags;
     barrier.Transition.pResource = pResource;
+    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
     barrier.Transition.StateBefore = stateBefore;
     barrier.Transition.StateAfter = stateAfter;
 

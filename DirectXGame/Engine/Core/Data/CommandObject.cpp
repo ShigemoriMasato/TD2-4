@@ -19,6 +19,10 @@ int CommandObject::Initialize(ID3D12Device* device, CmdListManager* manager) {
         hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, cmdLists_[i].commandAllocator_.Get(), nullptr, IID_PPV_ARGS(&cmdLists_[i].commandList_));
         //コマンドリストの生成がうまくいかなかったので起動できない
         assert(SUCCEEDED(hr));
+
+        // 作成直後は Open 状態なので、Close して初期状態を揃える
+        hr = cmdLists_[i].commandList_->Close();
+        assert(SUCCEEDED(hr));
     }
 
 	manager_ = manager;

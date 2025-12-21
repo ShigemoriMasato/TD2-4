@@ -3,7 +3,7 @@
 
 RootSignatureShelf::RootSignatureShelf(ID3D12Device* device) {
 
-    logger_ = LogSystem::getLogger("Core");
+    logger_ = LogSystem::getLogger("Engine");
 
     rootSignatures_.resize(int(RootSignatureID::Count));
 
