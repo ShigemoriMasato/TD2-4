@@ -47,7 +47,7 @@ void InitializeScene::Initialize() {
 		auto textureData = textureManager_->GetTextureData(textureIndex);
 		display->Initialize(textureData, 0xff000000);
 
-		//commonData_->mainWindow->AddDisplay(textureIndex, "Main Display", 1280 / 2, 720 / 2);
+		commonData_->mainWindow->AddDisplay(textureIndex, "Main Display", 1280 / 2, 720 / 2);
 	}
 
 	//todo リソースの全読み込み
