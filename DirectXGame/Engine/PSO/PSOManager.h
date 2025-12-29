@@ -17,7 +17,7 @@ public:
 	
 	ID3D12PipelineState* GetPSO(const PSOConfig& config);
 
-	ID3D12RootSignature* GetRootSignature(const RootSignatureID id) const;
+	ID3D12RootSignature* GetRootSignature(const RootSignatureConfig& config) const;
 
 	ShaderShelf* GetShaderShelf() const { return shaderShelf_.get(); }
 

@@ -6,6 +6,7 @@
 enum class InputLayoutID : uint8_t {
 	Default = 0,
 	Model,
+	Vector3,
 
 	Count
 };

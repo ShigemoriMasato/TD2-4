@@ -1,5 +1,6 @@
 #pragma once
 #include <Screen/WindowMaker.h>
+#include <Screen/DualDisplay.h>
 
 class GameWindow {
 public:
@@ -11,10 +12,12 @@ public:
 	void PostDraw();
 
 	void AddDisplay(int textureIndex, std::string name, uint32_t width, uint32_t height);
+	void AddDisplay(DualDisplay* display, std::string name, uint32_t width, uint32_t height);
 
 	void SetState(WindowsApp::ShowType state);
 
 	Window* GetWindow() { return window_.get(); }
+	ID3D12GraphicsCommandList* GetCommandList() { return window_->GetCommandObject()->GetCommandList(); }
 
 private:
 
@@ -25,8 +28,16 @@ private:
 		uint32_t height;
 	};
 
+	struct DualDispConfig {
+		DualDisplay* display;
+		std::string name;
+		uint32_t width;
+		uint32_t height;
+	};
+
 	TextureManager* textureManager_ = nullptr;
 
 	std::unique_ptr<Window> window_;
 	std::vector<DispConfig> displayTextureIndices_{};
+	std::vector<DualDispConfig> dualDisplayTextureIndices_{};
 };

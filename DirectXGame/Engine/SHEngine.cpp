@@ -1,17 +1,18 @@
 #include "SHEngine.h"
 #include <Tool/Dump/CreateDump.h>
+#include <Screen/DualDisplay.h>
+#include <Render/RenderObject.h>
 
 #pragma comment(lib, "Dbghelp.lib")
 
 static LONG WINAPI ClashHandler(EXCEPTION_POINTERS* pExceptionPointers) {
-	LogSystem::LogFlush();
 	CreateDump(pExceptionPointers);
 	return EXCEPTION_EXECUTE_HANDLER;
 }
 
 SHEngine::SHEngine() {
 
-	logger_ = LogSystem::getLogger("Engine");
+	logger_ = getLogger("Engine");
 
 	//Initializeしても変わらない処理
 
@@ -20,6 +21,9 @@ SHEngine::SHEngine() {
 	dxDevice_ = std::make_unique<DXDevice>();
 	dxDevice_->Initialize();
 
+	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+	assert(SUCCEEDED(hr) && "SHEngine::SHEngine: Failed to initialize COM library");
+
 	cmdListManager_ = std::make_unique<CmdListManager>();
 	cmdListManager_->Initialize(dxDevice_.get());
 
@@ -27,6 +31,8 @@ SHEngine::SHEngine() {
 	textureManager_->Initialize(dxDevice_.get(), cmdListManager_.get());
 
 	Display::StaticInitialize(dxDevice_.get());
+	DualDisplay::StaticInitialize(dxDevice_.get());
+	RenderObject::StaticInitialize(dxDevice_.get());
 
 	fenceManager_ = std::make_unique<FenceManager>();
 	fenceManager_->Initialize(cmdListManager_->GetCommandQueue(), dxDevice_->GetDevice());
@@ -35,6 +41,8 @@ SHEngine::SHEngine() {
 	windowMaker_->Initialize(dxDevice_.get(), textureManager_.get(), cmdListManager_.get());
 
 	imGuiForEngine_ = std::make_unique<ImGuiforEngine>();
+
+	drawDataManager_ = std::make_unique<DrawDataManager>();
 }
 
 SHEngine::~SHEngine() {
@@ -46,7 +54,7 @@ SHEngine::~SHEngine() {
 
 void SHEngine::Initialize() {
 	//初期化処理
-	textureManager_->Clear();
+	drawDataManager_->Initialize(dxDevice_.get());
 }
 
 bool SHEngine::IsLoop() {
@@ -65,8 +73,10 @@ void SHEngine::Update() {
 
 void SHEngine::PreDraw() {
 	//Wait
-	fenceManager_->WaitForSignal(0);
+	fenceManager_->WaitForSignal();
 	cmdListManager_->Reset();
+	auto cmdObj = cmdListManager_->CreateCommandObject();
+	textureManager_->UploadTextures(cmdObj->GetCommandList());
 }
 
 void SHEngine::EndFrame() {

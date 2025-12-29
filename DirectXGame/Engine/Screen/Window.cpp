@@ -17,6 +17,7 @@ void Window::Initialize(DXDevice* device, TextureManager* textureManager, CmdLis
 	cmdObject_ = cmdListManager->CreateCommandObject();
 
 	srvManager_ = device->GetSRVManager();
+	isPostDraw_ = true;
 }
 
 void Window::PreDraw(bool isClear) {
@@ -40,6 +41,7 @@ void Window::PostDraw() {
 	}
 
 	swapChain_->PostDraw(cmdObject_->GetCommandList());
+	isPostDraw_ = true;
 }
 
 void Window::Present() {

@@ -152,6 +152,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Utility\src\DirectUtilFuncs.cpp" />
+    <ClCompile Include="Engine\Render\DrawDataManager.cpp" />
+    <ClCompile Include="Engine\Screen\DualDisplay.cpp" />
     <ClCompile Include="Engine\Core\src\FenceManager.cpp" />
     <ClCompile Include="Engine\Core\src\CmdListManager.cpp" />
     <ClCompile Include="Engine\Core\Data\CommandObject.cpp" />
@@ -178,8 +181,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Tool\Binary\Data\BinaryOutput.cpp" />
     <ClCompile Include="Engine\Tool\FPS\FPSObserver.cpp" />
     <ClCompile Include="Engine\Utility\src\ConvertString.cpp" />
-    <ClCompile Include="Engine\Utility\src\InsertBarrier.cpp" />
-    <ClCompile Include="Engine\Utility\InsertBarrier.h" />
     <ClCompile Include="Engine\Utility\src\MyMath.cpp" />
     <ClCompile Include="Engine\Utility\Quaternion.h" />
     <ClCompile Include="AppSource\Scene\src\IScene.cpp" />
@@ -191,7 +192,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
     <ClCompile Include="Engine\Utility\src\MatrixFactory.cpp" />
     <ClCompile Include="Engine\Screen\Display\src\WindowsApp.cpp" />
-    <ClCompile Include="Engine\Core\src\Render.cpp" />
     <ClCompile Include="Engine\Assets\Texture\TextureData.cpp" />
     <ClCompile Include="Engine\Assets\Texture\TextureManager.cpp" />
     <ClCompile Include="Engine\Screen\Display\src\SwapChain.cpp" />
@@ -199,10 +199,14 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Core\Terminal.cpp" />
     <ClCompile Include="AppSource\Test\TestScene.cpp" />
     <ClCompile Include="Engine\Screen\WindowMaker.cpp" />
+    <ClCompile Include="Engine\Render\RenderObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSource\Scene\CommonData.h" />
     <ClInclude Include="AppSource\Scene\src\CommonData.h" />
+    <ClInclude Include="Engine\Utility\DirectUtilFuncs.h" />
+    <ClInclude Include="Engine\Render\DrawDataManager.h" />
+    <ClInclude Include="Engine\Screen\DualDisplay.h" />
     <ClInclude Include="Engine\Core\CmdListManager.h" />
     <ClInclude Include="Engine\Core\Data\CommandObject.h" />
     <ClInclude Include="Engine\Core\FenceManager.h" />
@@ -229,7 +233,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Tool\Binary\Data\BinaryOutput.h" />
     <ClInclude Include="Engine\Tool\Binary\Data\Value.h" />
     <ClInclude Include="Engine\Tool\FPS\FPSObserver.h" />
-    <ClInclude Include="Engine\Utility\LeakChecker.h" />
     <ClInclude Include="Engine\Tool\Logger\Logger.h" />
     <ClInclude Include="Engine\Utility\ConvertString.h" />
     <ClInclude Include="Engine\Utility\Matrix.h" />
@@ -240,7 +243,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Utility\Vector.h" />
     <ClInclude Include="Engine\Utility\MatrixFactory.h" />
     <ClInclude Include="Engine\Screen\Display\WindowsApp.h" />
-    <ClInclude Include="Engine\Core\Render.h" />
     <ClInclude Include="Engine\Assets\Texture\TextureData.h" />
     <ClInclude Include="Engine\Assets\Texture\TextureManager.h" />
     <ClInclude Include="Engine\Screen\Display\SwapChain.h" />
@@ -261,6 +263,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Screen\WindowMaker.h" />
     <ClInclude Include="AppSource\Common\GameWindow.h" />
     <ClInclude Include="Engine\Core\ImGuiforEngine.h" />
+    <ClInclude Include="Engine\Render\RenderObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

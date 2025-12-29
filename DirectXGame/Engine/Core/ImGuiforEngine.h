@@ -17,7 +17,7 @@ private:
 
 	Logger logger_ = nullptr;
 
-	std::unique_ptr<SRVManager> srv_;
+	SRVManager* srv_;
 
 	SRVHandle srvHandle_;
 	SRVHandle srvHandle2_;

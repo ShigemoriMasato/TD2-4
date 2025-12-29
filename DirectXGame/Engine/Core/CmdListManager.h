@@ -14,17 +14,17 @@ public:
 	void Execute();
 	void Reset();
 
-	void DeleteCommandObject(int id);
-	
-	std::unique_ptr<CommandObject> CreateCommandObject();
+	std::shared_ptr<CommandObject> CreateCommandObject();
 	ID3D12CommandQueue* GetCommandQueue() const { return commandQueue_.Get(); }
 
 private:
 
 	DXDevice* device_ = nullptr;
+	SRVManager* srvManager_ = nullptr;
 	Logger logger_ = nullptr;
 
-	std::map<int, CommandObject*> commandObjects_;
+	std::map<int, std::shared_ptr<CommandObject>> commandObjects_;
+	std::vector<int> cmdObjectCounter_;
 
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_ = nullptr;
 

@@ -39,13 +39,15 @@ void InitializeScene::Initialize() {
 
 	{
 		auto& display = commonData_->display;
-		display = std::make_unique<Display>();
+		display = std::make_unique<DualDisplay>();
 
 		uint32_t clearColor = 0xff8080ff;
 
 		int textureIndex = textureManager_->CreateWindowTexture(1280, 720, clearColor);
+		int textureIndex2 = textureManager_->CreateWindowTexture(1280, 720, clearColor);
 		auto textureData = textureManager_->GetTextureData(textureIndex);
-		display->Initialize(textureData, 0xff000000);
+		auto textureData2 = textureManager_->GetTextureData(textureIndex2);
+		display->Initialize(textureData, textureData2);
 
 		commonData_->mainWindow->AddDisplay(textureIndex, "Main Display", 1280 / 2, 720 / 2);
 	}
@@ -58,4 +60,8 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 }
 
 void InitializeScene::Draw() {
+	commonData_->display->PreDraw(commonData_->mainWindow->GetCommandList(), true);
+	commonData_->display->PostDraw(commonData_->mainWindow->GetCommandList());
+	commonData_->mainWindow->PreDraw();
+	commonData_->mainWindow->PostDraw();
 }

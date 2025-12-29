@@ -4,7 +4,7 @@
 
 class TextureData;
 
-
+//非推奨クラス
 class Display {
 public:
 
@@ -13,7 +13,7 @@ public:
 	Display() = default;
 	~Display() = default;
 
-	void Initialize(TextureData* data, uint32_t clearColor);
+	void Initialize(TextureData* data, uint32_t color);
 	void PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear);
 
 	void ToTexture(ID3D12GraphicsCommandList* commandList);

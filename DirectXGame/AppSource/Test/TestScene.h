@@ -1,5 +1,6 @@
 #pragma once
 #include <Scene/IScene.h>
+#include <Render/RenderObject.h>
 
 class TestScene : public IScene {
 public:
@@ -13,6 +14,6 @@ public:
 
 private:
 
-
+	std::unique_ptr<RenderObject> renderObject_;
 
 };

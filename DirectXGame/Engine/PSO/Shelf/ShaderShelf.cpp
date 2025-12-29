@@ -16,7 +16,7 @@ namespace {
         IDxcIncludeHandler* includeHandler,
         spdlog::logger* logger) {
 
-        logger->info(ConvertString(std::format(L"Begin CompileShader, path: {}, profile: {}\n", filePath, profile)));
+        logger->info(ConvertString(std::format(L"Begin CompileShader, path: {}, profile: {}", filePath, profile)));
 
         //hlslファイルを読む
         IDxcBlobEncoding* shaderSource = nullptr;
@@ -64,7 +64,7 @@ namespace {
         hr = shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr);
         assert(SUCCEEDED(hr));
         //成功したログを出す
-        logger->info(ConvertString(std::format(L"Compile Successd, path: {}, profile: {}\n", filePath, profile)));
+        logger->info(ConvertString(std::format(L"Compile Successd, path: {}, profile: {}", filePath, profile)));
         //もう使わないリソースを開放
         shaderSource->Release();
         shaderResult->Release();
@@ -90,7 +90,7 @@ ShaderShelf::ShaderShelf() {
     hr = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
     assert(SUCCEEDED(hr));
 
-	logger_ = LogSystem::getLogger("Engine");
+	logger_ = getLogger("Engine");
 
 	compileVersions_[0] = L"vs_6_0"; // Vertex Shader
     compileVersions_[1] = L"ps_6_0"; // Pixel Shader

@@ -1,10 +1,11 @@
 #pragma once
 #include <Core/DXDevice.h>
-#include <Utility/LeakChecker.h>
+#include <Utility/DirectUtilFuncs.h>
 #include <Screen/Window.h>
 #include <Core/FenceManager.h>
 #include <Screen/WindowMaker.h>
 #include <Core/ImGuiforEngine.h>
+#include <Render/DrawDataManager.h>
 #include <memory>
 
 class SHEngine {
@@ -25,6 +26,7 @@ public:
 
 	TextureManager* GetTextureManager() { return textureManager_.get(); }
 	WindowMaker* GetWindowMaker() { return windowMaker_.get(); }
+	DrawDataManager* GetDrawDataManager() { return drawDataManager_.get(); }
 
 private:
 
@@ -48,6 +50,7 @@ private:
 	//App側ツール
 	std::unique_ptr<TextureManager> textureManager_ = nullptr;
 	std::unique_ptr<WindowMaker> windowMaker_ = nullptr;
+	std::unique_ptr<DrawDataManager> drawDataManager_ = nullptr;
 
 private:
 

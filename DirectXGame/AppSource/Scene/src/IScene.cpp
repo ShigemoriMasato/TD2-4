@@ -6,4 +6,5 @@ void IScene::SwapScene(CommonData* commonData, SHEngine* engine) {
 
 	textureManager_ = engine_->GetTextureManager();
 	windowMaker_ = engine_->GetWindowMaker();
+	drawDataManager_ = engine_->GetDrawDataManager();
 }

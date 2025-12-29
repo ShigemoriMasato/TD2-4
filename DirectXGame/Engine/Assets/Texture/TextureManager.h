@@ -32,9 +32,9 @@ private:
 
 	DXDevice* device_ = nullptr;
 	SRVManager* srvManager_ = nullptr;
-	std::unique_ptr<CommandObject> cmdObject_ = nullptr;
+	std::shared_ptr<CommandObject> cmdObject_ = nullptr;
 
-	const int maxTextureCount = 512;
+	const int maxTextureCount = 1024;
 
 	std::map<int, std::unique_ptr<TextureData>> textureDatas_;
 

@@ -1,7 +1,5 @@
 #include "../SwapChain.h"
 
-using namespace LogSystem;
-
 void SwapChain::Initialize(DXDevice* device, TextureManager* textureManager, ID3D12CommandQueue* commandQueue, WindowsApp* window, uint32_t clearColor) {
     logger_ = getLogger("Engine");
 

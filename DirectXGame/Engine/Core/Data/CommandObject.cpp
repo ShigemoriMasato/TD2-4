@@ -3,10 +3,9 @@
 #include <cassert>
 
 CommandObject::~CommandObject() {
-	manager_->DeleteCommandObject(cmdObjId_);
 }
 
-int CommandObject::Initialize(ID3D12Device* device, CmdListManager* manager) {
+int CommandObject::Initialize(ID3D12Device* device, CmdListManager* manager, SRVManager* srvManager) {
 	cmdLists_.resize(2);
     //コマンドリスト作成
     for (int i = 0; i < 2; ++i) {
@@ -26,6 +25,7 @@ int CommandObject::Initialize(ID3D12Device* device, CmdListManager* manager) {
     }
 
 	manager_ = manager;
+	srvManager_ = srvManager;
 
 	return cmdObjId_;
 }
@@ -39,6 +39,9 @@ void CommandObject::Reset() {
     assert(SUCCEEDED(hr));
     hr = cmdLists_[index_].commandList_->Reset(cmdLists_[index_].commandAllocator_.Get(), nullptr);
     assert(SUCCEEDED(hr));
+
+	ID3D12DescriptorHeap* heaps[] = { srvManager_->GetHeap() };
+	cmdLists_[index_].commandList_->SetDescriptorHeaps(1, heaps);
 }
 
 void CommandObject::Swap() {

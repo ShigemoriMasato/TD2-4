@@ -12,7 +12,7 @@ PSOManager::PSOManager(ID3D12Device* device) {
 	inputLayoutShelf_ = std::make_unique<InputLayoutShelf>();
 	binaryManager_ = std::make_unique<BinaryManager>();
 
-	logger_ = LogSystem::getLogger("Engine");
+	logger_ = getLogger("Engine");
 
 	device_ = device;
 
@@ -22,28 +22,6 @@ PSOManager::PSOManager(ID3D12Device* device) {
 }
 
 PSOManager::~PSOManager() {
-#ifdef SH_RELEASE
-	//ここを変更する場合はverを変更し、読み込みのコードは削除せず新しく追加すること
-	binaryManager_->RegistOutput(float(1.0f), "ver");
-	for (const auto& [config, pso] : psoMap_) {
-		binaryManager_->RegistOutput(config.ps, "");
-		binaryManager_->RegistOutput(config.vs, "");
-		binaryManager_->RegistOutput((int)config.rootID, "");
-		binaryManager_->RegistOutput((int)config.inputLayoutID, "");
-		binaryManager_->RegistOutput((int)config.blendID, "");
-		binaryManager_->RegistOutput((int)config.depthStencilID, "");
-		binaryManager_->RegistOutput(config.isSwapChain, "");
-		binaryManager_->RegistOutput((int)config.rasterizerID, "");
-		binaryManager_->RegistOutput((int)config.topology, "");
-
-		pso->Release();
-	}
-
-	binaryManager_->Write("UsedPSOConfig.bin");
-
-	return;
-#endif
-
 	for(const auto& [config, pso] : psoMap_) {
 		pso->Release();
 	}
@@ -58,26 +36,7 @@ void PSOManager::Initialize() {
 	}
 	psoMap_.clear();
 
-	auto data = binaryManager_->Read("UesdPSOConfig.bin");
-
-	for (int i = 1; i < data.size();) {
-		float version = static_cast<Value<float>*>(data.front().get())->value;
-
-		if (version == 1.0f) {
-			PSOConfig config;
-			config.ps = binaryManager_->Reverse<std::string>(data[i++]);
-			config.vs = binaryManager_->Reverse<std::string>(data[i++]);
-			config.rootID = (RootSignatureID)binaryManager_->Reverse<int>(data[i++]);
-			config.inputLayoutID = (InputLayoutID)binaryManager_->Reverse<int>(data[i++]);
-			config.blendID = (BlendStateID)binaryManager_->Reverse<int>(data[i++]);
-			config.depthStencilID = (DepthStencilID)binaryManager_->Reverse<int>(data[i++]);
-			config.isSwapChain = binaryManager_->Reverse<bool>(data[i++]);
-			config.rasterizerID = (RasterizerID)binaryManager_->Reverse<int>(data[i++]);
-			config.topology = (D3D12_PRIMITIVE_TOPOLOGY)binaryManager_->Reverse<int>(data[i++]);
-
-			CreatePSO(config);
-		}
-	}
+	//todo バイナリ保存ができたらいいなぁ
 }
 
 void PSOManager::CreatePSO(PSOConfig config) {
@@ -90,7 +49,7 @@ void PSOManager::CreatePSO(PSOConfig config) {
 	psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	//Configにあるやつ
-	psoDesc.pRootSignature = rootSignatureShelf_->GetRootSignature(config.rootID);
+	psoDesc.pRootSignature = rootSignatureShelf_->GetRootSignature(config.rootConfig);
 	psoDesc.VS = shaderShelf_->GetShaderBytecode(ShaderType::VERTEX_SHADER, config.vs);
 	psoDesc.PS = shaderShelf_->GetShaderBytecode(ShaderType::PIXEL_SHADER, config.ps);
 	psoDesc.DepthStencilState = depthStencilShelf_->GetDepthStencilDesc(config.depthStencilID);
@@ -122,6 +81,6 @@ ID3D12PipelineState* PSOManager::GetPSO(const PSOConfig& config) {
 	}
 }
 
-ID3D12RootSignature* PSOManager::GetRootSignature(const RootSignatureID id) const {
-	return rootSignatureShelf_->GetRootSignature(id);
+ID3D12RootSignature* PSOManager::GetRootSignature(const RootSignatureConfig& config) const {
+	return rootSignatureShelf_->GetRootSignature(config);
 }

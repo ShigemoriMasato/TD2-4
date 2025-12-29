@@ -5,8 +5,6 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 
-using namespace LogSystem;
-
 DXDevice::~DXDevice() {
 }
 
@@ -128,4 +126,11 @@ void DXDevice::Initialize() {
 	logger_->info("Debug layer is enabled.");
 
 #endif
+
+	psoEditor_ = std::make_unique<PSOEditor>(device_.Get());
+	psoEditor_->Initialize(device_.Get());
+}
+
+void DXDevice::SetPSO(ID3D12GraphicsCommandList* commandList, const PSOConfig& config) {
+	psoEditor_->SetPSO(commandList, config);
 }

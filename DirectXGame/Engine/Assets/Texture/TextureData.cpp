@@ -72,11 +72,13 @@ void TextureData::Create(uint32_t width, uint32_t height, Vector4 clearColor, ID
     HRESULT hr = device->CreateCommittedResource(
         &heapProps, D3D12_HEAP_FLAG_NONE,
         &desc,
-        D3D12_RESOURCE_STATE_RENDER_TARGET,
+        D3D12_RESOURCE_STATE_PRESENT,
         &clearValue,
         IID_PPV_ARGS(&textureResource_)
     );
     assert(SUCCEEDED(hr) && "Failed to create off-screen resource");
+
+	clearColor_ = clearColor;
 
     // metadataがないのでフォーマットとミップ数は手動設定
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
@@ -87,7 +89,7 @@ void TextureData::Create(uint32_t width, uint32_t height, Vector4 clearColor, ID
     srvDesc.Texture2D.MipLevels = 1;
 
     // SRV用ディスクリプタ位置を確保
-    srvHandle_.UpdateHandle(srvManager, 1);
+    srvHandle_.UpdateHandle(srvManager, 0);
 
     // SRVを作成
     device->CreateShaderResourceView(textureResource_.Get(), &srvDesc, srvHandle_.GetCPU());
@@ -110,7 +112,7 @@ void TextureData::Create(ID3D12Resource* resource, ID3D12Device* device, SRVMana
     srvDesc.Texture2D.MipLevels = 1;
 
     // SRV用ディスクリプタ位置を確保
-    srvHandle_.UpdateHandle(manager, 1);
+    srvHandle_.UpdateHandle(manager, 0);
 
     // SRVを作成
     device->CreateShaderResourceView(textureResource_.Get(), &srvDesc, srvHandle_.GetCPU());
@@ -142,7 +144,7 @@ std::pair<ID3D12Resource*, DirectX::ScratchImage> TextureData::Create(std::strin
     srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
 
     //SRVを作成するDescriptorHeapの場所を決める
-    srvHandle_.UpdateHandle(srvManager, 1);
+    srvHandle_.UpdateHandle(srvManager, 0);
 
     //SRVを作成する
     device->CreateShaderResourceView(textureResource_.Get(), &srvDesc, srvHandle_.GetCPU());

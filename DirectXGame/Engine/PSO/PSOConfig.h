@@ -10,13 +10,13 @@
 struct PSOConfig {
 	std::string vs = "Object3d.VS.hlsl";
 	std::string ps = "Object3d.PS.hlsl";
-	RootSignatureID rootID = RootSignatureID::Default;
+	RootSignatureConfig rootConfig = {};
 	InputLayoutID inputLayoutID = InputLayoutID::Default;
 	BlendStateID blendID = BlendStateID::Normal;
 	DepthStencilID depthStencilID = DepthStencilID::Default;
 	RasterizerID rasterizerID = RasterizerID::Fill;
 	D3D12_PRIMITIVE_TOPOLOGY topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	bool isSwapChain = true;
+	bool isSwapChain = false;
 
 	bool operator==(const PSOConfig& other) const {
 		return vs == other.vs &&
@@ -24,7 +24,7 @@ struct PSOConfig {
 			blendID == other.blendID &&
 			depthStencilID == other.depthStencilID &&
 			rasterizerID == other.rasterizerID &&
-			rootID == other.rootID &&
+			rootConfig == other.rootConfig &&
 			inputLayoutID == other.inputLayoutID &&
 			topology == other.topology &&
 			isSwapChain == other.isSwapChain;
@@ -45,7 +45,7 @@ namespace std {
 			hash_combine(h, hash<int>()(static_cast<int>(cfg.blendID)));
 			hash_combine(h, hash<int>()(static_cast<int>(cfg.depthStencilID)));
 			hash_combine(h, hash<int>()(static_cast<int>(cfg.rasterizerID)));
-			hash_combine(h, hash<int>()(static_cast<int>(cfg.rootID)));
+			hash_combine(h, hash<RootSignatureConfig>()((cfg.rootConfig)));
 			hash_combine(h, hash<int>()(static_cast<int>(cfg.inputLayoutID)));
 			hash_combine(h, hash<int>()(static_cast<int>(cfg.topology)));
 			hash_combine(h, hash<bool>()(cfg.isSwapChain));

@@ -4,10 +4,9 @@
 #include <imgui/imgui_impl_win32.h>
 
 void ImGuiforEngine::Initialize(DXDevice* device, CmdListManager* cmdManager, Window* window) {
-	logger_ = LogSystem::getLogger("ImGui");
-	logger_->set_level(spdlog::level::debug);
+	logger_ = getLogger("ImGui");
 
-	srv_ = std::make_unique<SRVManager>(device->GetDevice(), device->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV), 16);
+	srv_ = device->GetSRVManager();
 
 #ifdef USE_IMGUI
     IMGUI_CHECKVERSION();
@@ -19,12 +18,13 @@ void ImGuiforEngine::Initialize(DXDevice* device, CmdListManager* cmdManager, Wi
 
 	ImGui_ImplDX12_InitInfo initInfo;
 	initInfo.Device = device->GetDevice();
-	initInfo.NumFramesInFlight = 1;
+	initInfo.NumFramesInFlight = 2;
 	initInfo.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	initInfo.CommandQueue = cmdManager->GetCommandQueue();
 	initInfo.SrvDescriptorHeap = srv_->GetHeap();
 
-	srvHandle_.UpdateHandle(srv_.get(), 0);
+	srvHandle_.UpdateHandle(srv_);
+	srvHandle2_.UpdateHandle(srv_);
 
 	initInfo.LegacySingleSrvCpuDescriptor = srvHandle_.GetCPU();
 	initInfo.LegacySingleSrvGpuDescriptor = srvHandle_.GetGPU();

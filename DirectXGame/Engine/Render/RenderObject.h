@@ -1,0 +1,60 @@
+#pragma once
+#include "DrawDataManager.h"
+#include <Screen/Window.h>
+
+class RenderObject {
+public:
+
+	RenderObject(std::string debugName = "");
+	~RenderObject();
+
+	static void StaticInitialize(DXDevice* device);
+
+	void Initialize();
+
+	void SetDrawData(const DrawData& data);
+	int CreateCBV(size_t size, ShaderType type);
+	int CreateSRV(size_t size, uint32_t num, ShaderType type);
+
+	void CopyBufferData(int index, const void* data, size_t size);
+
+	void Draw(Window* window);
+
+	PSOConfig psoConfig_{};
+	bool useTexture_ = false;
+
+private://static
+
+	static DXDevice* device_;
+	static Logger logger_;
+
+private://データ管理
+
+	std::vector<D3D12_VERTEX_BUFFER_VIEW> vbv_{};
+	D3D12_INDEX_BUFFER_VIEW ibv_{};
+	uint32_t indexNum_ = 0;
+
+	struct BufferData {
+		void* mapped = nullptr;
+		size_t size = 0;
+	};
+	std::vector<std::vector<BufferData>> bufferDatas_{};
+
+	std::vector<std::vector<D3D12_GPU_VIRTUAL_ADDRESS>> cbvAddresses_{};
+	std::vector<std::vector<std::unique_ptr<SRVHandle>>> srvHandles_{};
+
+	//スワップチェーン対策
+	int index_ = 0;
+
+private://寿命管理
+
+	struct Resource {
+		Microsoft::WRL::ComPtr<ID3D12Resource> res = nullptr;
+	};
+	std::vector<Resource> resources_{};
+
+private://Debug
+
+	std::string debugName_;
+
+};

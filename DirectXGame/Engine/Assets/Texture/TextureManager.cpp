@@ -1,38 +1,9 @@
 #include "TextureManager.h"
 #include <Utility/Color.h>
+#include <Utility/DirectUtilFuncs.h>
 #include <DirectXTex/d3dx12.h>
 
 namespace {
-
-	ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
-		//頂点リソース用のヒープの設定
-		D3D12_HEAP_PROPERTIES uploadHeapProperties{};
-		uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;//uploadHeapを使う
-		//頂点リソースの設定
-		D3D12_RESOURCE_DESC bufferResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeInBytes);
-		//バッファリソース、テクスチャの場合はまた別の設定をする
-		bufferResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-		bufferResourceDesc.Width = sizeInBytes;
-		//バッファの場合はこれにする決まり
-		bufferResourceDesc.Height = 1;
-		bufferResourceDesc.DepthOrArraySize = 1;
-		bufferResourceDesc.MipLevels = 1;
-		bufferResourceDesc.SampleDesc.Count = 1;
-		//バッファの場合はこれにする決まり
-		bufferResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-
-		ID3D12Resource* bufferResource = nullptr;
-
-		HRESULT reason = device->GetDeviceRemovedReason();
-
-		HRESULT hr = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
-			&bufferResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-			IID_PPV_ARGS(&bufferResource));
-		assert(SUCCEEDED(hr));
-
-		return bufferResource;
-	}
-
 	[[nodiscard]]
 	ID3D12Resource* UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, ID3D12Device* device, ID3D12GraphicsCommandList* commandList) {
 		std::vector<D3D12_SUBRESOURCE_DATA> subresources;
@@ -58,6 +29,7 @@ void TextureManager::Initialize(DXDevice* device, CmdListManager* CmdListManager
 	device_ = device;
 	srvManager_ = device->GetSRVManager();
 	cmdObject_ = CmdListManager->CreateCommandObject();
+	LoadTexture("uvChecker.png");
 }
 
 void TextureManager::Clear() {
@@ -68,7 +40,25 @@ void TextureManager::Clear() {
 
 int TextureManager::LoadTexture(const std::string& filePath) {
 	auto textureData = std::make_unique<TextureData>();
-	auto uploadData = textureData->Create(filePath, device_->GetDevice(), srvManager_);
+
+	std::string formatFirst = "Assets/";
+	std::string factFilePath = "";
+	if(filePath.length() < formatFirst.length()) {
+		factFilePath = "Assets/Texture/" + filePath;
+	} else {
+		for (int i = 0; i < formatFirst.length(); ++i) {
+			if (filePath[i] != formatFirst[i]) {
+				factFilePath = "Assets/Texture/" + filePath;
+				break;
+			}
+
+			if (i == formatFirst.length() - 1) {
+				factFilePath = filePath;
+			}
+		}
+	}
+
+	uploadResources_.push_back(textureData->Create(factFilePath, device_->GetDevice(), srvManager_));
 	int offset = textureData->GetOffset();
 	textureDatas_[offset] = std::move(textureData);
 	CheckMaxCount(offset);
@@ -81,7 +71,6 @@ int TextureManager::CreateWindowTexture(uint32_t width, uint32_t height, uint32_
 	textureData->Create(width, height, clearColorVec, device_->GetDevice(), srvManager_);
 	int offset = textureData->GetOffset();
 	textureDatas_[offset] = std::move(textureData);
-	CheckMaxCount(offset);
 	return offset;
 }
 
@@ -90,7 +79,6 @@ int TextureManager::CreateSwapChainTexture(ID3D12Resource* resource) {
 	textureData->Create(resource, device_->GetDevice(), srvManager_);
 	int offset = textureData->GetOffset();
 	textureDatas_[offset] = std::move(textureData);
-	CheckMaxCount(offset);
 	return offset;
 }
 
@@ -99,9 +87,10 @@ TextureData* TextureManager::GetTextureData(int handle) {
 }
 
 void TextureManager::UploadTextures(ID3D12GraphicsCommandList* cmdList) {
+	intermediateResources_.clear();
 	for(const auto& [resource, mipImage] : uploadResources_) {
-		auto intermediateResource = UploadTextureData(resource, mipImage, device_->GetDevice(), cmdList);
-		intermediateResources_.push_back(intermediateResource);
+		intermediateResources_.push_back(nullptr);
+		intermediateResources_.back().Attach(UploadTextureData(resource, mipImage, device_->GetDevice(), cmdList));
 	}
 	uploadResources_.clear();
 }

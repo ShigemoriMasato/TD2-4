@@ -35,17 +35,7 @@ namespace {
     }
 }
 
-void LogSystem::Initialize() {
-#ifdef SH_DEBUG
-    spdlog::set_level(spdlog::level::debug);
-#else
-	spdlog::set_level(spdlog::level::info);
-#endif
-	spdlog::flush_on(spdlog::level::err);
-    spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] %v");
-}
-
-Logger LogSystem::getLogger(const std::string& name, uint32_t flug) {
+Logger getLogger(const std::string& name, uint32_t flug) {
     auto existing = spdlog::get(name);
     if (existing) return existing;
 
@@ -79,6 +69,14 @@ Logger LogSystem::getLogger(const std::string& name, uint32_t flug) {
 
     auto logger = std::make_shared<spdlog::logger>(name, sinks.begin(), sinks.end());
     spdlog::register_logger(logger);
+
+#ifdef SH_DEBUG
+    logger->set_level(spdlog::level::debug);
+#else
+    logger->set_level(spdlog::level::info);
+#endif
+
+    logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] %v");
 
     return logger;
 }

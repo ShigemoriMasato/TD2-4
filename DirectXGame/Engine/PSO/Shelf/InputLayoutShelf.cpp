@@ -72,6 +72,22 @@ InputLayoutShelf::InputLayoutShelf() {
         inputLayouts_[int(InputLayoutID::Model)] = inputLayoutDesc;
     }
 
+    {
+        inputElementsList_[int(InputLayoutID::Vector3)].resize(1);
+
+        //InputLayout
+        inputElementsList_[int(InputLayoutID::Vector3)][0].SemanticName = "POSITION";
+        inputElementsList_[int(InputLayoutID::Vector3)][0].SemanticIndex = 0;
+        inputElementsList_[int(InputLayoutID::Vector3)][0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+        inputElementsList_[int(InputLayoutID::Vector3)][0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
+        D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
+        inputLayoutDesc.pInputElementDescs = inputElementsList_[int(InputLayoutID::Vector3)].data();
+        inputLayoutDesc.NumElements = static_cast<UINT>(inputElementsList_[int(InputLayoutID::Vector3)].size());
+
+        inputLayouts_[int(InputLayoutID::Vector3)] = inputLayoutDesc;
+    }
+
 }
 
 InputLayoutShelf::~InputLayoutShelf() {

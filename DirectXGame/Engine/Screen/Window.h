@@ -42,7 +42,7 @@ public:
 
 private:
 
-	std::unique_ptr<CommandObject> cmdObject_ = nullptr;
+	std::shared_ptr<CommandObject> cmdObject_ = nullptr;
 
 	std::unique_ptr<WindowsApp> windowApp_ = nullptr;
 	std::unique_ptr<SwapChain> swapChain_ = nullptr;

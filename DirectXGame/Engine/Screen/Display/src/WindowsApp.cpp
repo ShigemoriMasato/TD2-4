@@ -30,7 +30,7 @@ void WindowsApp::SetWindowClassName(std::wstring name) {
 }
 
 void WindowsApp::Create() {
-	auto logger = LogSystem::getLogger("Window");
+	auto logger = getLogger("Window");
 
     //ウィンドウプロシージャ
     wc_.lpfnWndProc = WindowProc;

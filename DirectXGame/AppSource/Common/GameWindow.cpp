@@ -17,10 +17,21 @@ void GameWindow::PostDraw() {
 	for(const auto& config : displayTextureIndices_) {
 		ImGui::Begin(config.name.c_str());
 		TextureData* textureData = textureManager_->GetTextureData(config.textureIndex);
-		auto textureResource = textureManager_->GetTextureResource(config.textureIndex);
+		auto textureHandle = textureData->GetGPUHandle();
 		ImGuiIO& io = ImGui::GetIO();
 		ImGui::Image(
-			reinterpret_cast<ImTextureID>(textureResource.Get()),
+			ImTextureID(textureHandle.ptr),
+			ImVec2(static_cast<float>(config.width), static_cast<float>(config.height))
+		);
+		ImGui::End();
+	}
+
+	for(const auto& config : dualDisplayTextureIndices_) {
+		ImGui::Begin(config.name.c_str());
+		auto textureHandle = config.display->GetTextureResource();
+		ImGuiIO& io = ImGui::GetIO();
+		ImGui::Image(
+			ImTextureID(textureHandle),
 			ImVec2(static_cast<float>(config.width), static_cast<float>(config.height))
 		);
 		ImGui::End();
@@ -35,6 +46,15 @@ void GameWindow::AddDisplay(int textureIndex, std::string name, uint32_t width, 
 	config.width = width;
 	config.height = height;
 	displayTextureIndices_.push_back(config);
+}
+
+void GameWindow::AddDisplay(DualDisplay* display, std::string name, uint32_t width, uint32_t height) {
+	DualDispConfig config;
+	config.display = display;
+	config.name = name;
+	config.width = width;
+	config.height = height;
+	dualDisplayTextureIndices_.push_back(config);
 }
 
 void GameWindow::SetState(WindowsApp::ShowType state) {

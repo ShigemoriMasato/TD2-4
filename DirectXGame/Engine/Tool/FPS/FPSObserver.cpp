@@ -16,7 +16,7 @@ FPSObserver::FPSObserver(bool isfix, double targetfps) : targetFPS_(targetfps), 
 
     isFix_ = isfix;
 
-    logger_ = LogSystem::getLogger("FPS");
+    logger_ = getLogger("FPS");
 }
 
 FPSObserver::~FPSObserver() {

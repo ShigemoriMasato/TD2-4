@@ -10,13 +10,10 @@
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
     <ClCompile Include="Engine\Utility\src\MatrixFactory.cpp" />
     <ClCompile Include="Engine\Utility\Quaternion.h" />
-    <ClCompile Include="Engine\Core\src\Render.cpp" />
     <ClCompile Include="Engine\Assets\Texture\TextureManager.cpp" />
     <ClCompile Include="Engine\Assets\Texture\TextureData.cpp" />
-    <ClCompile Include="Engine\Utility\InsertBarrier.h" />
     <ClCompile Include="Engine\Core\View\ViewFunc.cpp" />
     <ClCompile Include="Engine\Utility\src\ConvertString.cpp" />
-    <ClCompile Include="Engine\Utility\src\InsertBarrier.cpp" />
     <ClCompile Include="Engine\PSO\Shelf\BlendStateShelf.cpp" />
     <ClCompile Include="Engine\PSO\Shelf\DepthStencilShelf.cpp" />
     <ClCompile Include="Engine\PSO\Shelf\InputLayoutShelf.cpp" />
@@ -48,11 +45,14 @@
     <ClCompile Include="Engine\Screen\WindowMaker.cpp" />
     <ClCompile Include="AppSource\Common\GameWindow.cpp" />
     <ClCompile Include="Engine\Core\src\ImGuiforEngine.cpp" />
+    <ClCompile Include="Engine\Screen\DualDisplay.cpp" />
+    <ClCompile Include="Engine\Render\RenderObject.cpp" />
+    <ClCompile Include="Engine\Render\DrawDataManager.cpp" />
+    <ClCompile Include="Engine\Utility\src\DirectUtilFuncs.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\DXDevice.h" />
     <ClInclude Include="Engine\Tool\Logger\Logger.h" />
-    <ClInclude Include="Engine\Utility\LeakChecker.h" />
     <ClInclude Include="Engine\Utility\MyMath.h" />
     <ClInclude Include="Engine\SHEngine.h" />
     <ClInclude Include="Engine\Screen\Display\WindowsApp.h" />
@@ -62,7 +62,6 @@
     <ClInclude Include="Engine\Utility\MatrixFactory.h" />
     <ClInclude Include="Engine\Utility\SearchFile.h" />
     <ClInclude Include="Engine\Utility\ConvertString.h" />
-    <ClInclude Include="Engine\Core\Render.h" />
     <ClInclude Include="Engine\Assets\Texture\TextureManager.h" />
     <ClInclude Include="Engine\Assets\Texture\TextureData.h" />
     <ClInclude Include="Engine\PSO\Shelf\BlendStateShelf.h" />
@@ -110,5 +109,9 @@
     <ClInclude Include="Engine\Screen\WindowMaker.h" />
     <ClInclude Include="AppSource\Common\GameWindow.h" />
     <ClInclude Include="Engine\Core\ImGuiforEngine.h" />
+    <ClInclude Include="Engine\Screen\DualDisplay.h" />
+    <ClInclude Include="Engine\Render\RenderObject.h" />
+    <ClInclude Include="Engine\Render\DrawDataManager.h" />
+    <ClInclude Include="Engine\Utility\DirectUtilFuncs.h" />
   </ItemGroup>
 </Project>

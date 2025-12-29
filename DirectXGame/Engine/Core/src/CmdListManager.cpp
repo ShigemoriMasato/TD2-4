@@ -2,7 +2,8 @@
 
 void CmdListManager::Initialize(DXDevice* device) {
 	device_ = device;
-	logger_ = LogSystem::getLogger("Engine");
+	srvManager_ = device->GetSRVManager();
+	logger_ = getLogger("Engine");
 
 	//コマンドキューの生成
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
@@ -11,6 +12,11 @@ void CmdListManager::Initialize(DXDevice* device) {
 	commandQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 	HRESULT hr = device_->GetDevice()->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&commandQueue_));
 	assert(SUCCEEDED(hr) && "Failed to create CommandQueue");
+
+
+	auto commandObject = std::make_unique<CommandObject>();
+	int id = commandObject->Initialize(device_->GetDevice(), this, srvManager_);
+	commandObjects_[0] = std::move(commandObject);
 }
 
 void CmdListManager::Execute() {
@@ -37,21 +43,6 @@ void CmdListManager::Reset() {
 	}
 }
 
-void CmdListManager::DeleteCommandObject(int id) {
-	auto it = commandObjects_.find(id);
-	
-	if (it != commandObjects_.end()) {
-		commandObjects_.erase(it);
-		return;
-	}
-
-	logger_->warn("CmdListManager::DeleteCommandObject: Invalid CommandObject ID {}", id);
-	assert(false && "CmdListManager::DeleteCommandObject: Invalid CommandObject ID");
-}
-
-std::unique_ptr<CommandObject> CmdListManager::CreateCommandObject() {
-	auto commandObject = std::make_unique<CommandObject>();
-	int id = commandObject->Initialize(device_->GetDevice(), this);
-	commandObjects_[id] = commandObject.get();
-	return std::move(commandObject);
+std::shared_ptr<CommandObject> CmdListManager::CreateCommandObject() {
+	return commandObjects_[0];
 }

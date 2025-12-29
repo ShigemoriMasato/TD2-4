@@ -49,7 +49,7 @@ private:
 
 	std::vector<bool> isUsed_;
 
-	const uint32_t descriptorSizeSRV = 0;
+	const uint32_t descriptorSizeSRV;
 	const uint32_t maxCount;
 
 };

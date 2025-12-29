@@ -10,6 +10,7 @@
 #include "View/RTVManager.h"
 #include "View/DSVManager.h"
 
+#include <PSO/PSOEditor.h>
 
 class DXDevice {
 public:
@@ -26,6 +27,8 @@ public:
 	RTVManager* GetRTVManager() { return rtvManager_.get(); }
 	DSVManager* GetDSVManager() { return dsvManager_.get(); }
 
+	void SetPSO(ID3D12GraphicsCommandList* commandList, const PSOConfig& config);
+
 private:
 
 	Microsoft::WRL::ComPtr<ID3D12Debug1> debugController_ = nullptr;
@@ -36,6 +39,8 @@ private:
 	std::unique_ptr<SRVManager> srvManager_;
 	std::unique_ptr<RTVManager> rtvManager_;
 	std::unique_ptr<DSVManager> dsvManager_;
+
+	std::unique_ptr<PSOEditor> psoEditor_;
 
 private:
 

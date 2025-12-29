@@ -2,6 +2,7 @@
 #include <d3d12.h>
 #include <wrl.h>
 #include <vector>
+#include <Core/View/SRVManager.h>
 
 class CmdListManager;
 
@@ -11,7 +12,7 @@ public:
 	CommandObject() = default;
 	~CommandObject();
 
-	int Initialize(ID3D12Device* device, CmdListManager* manager);
+	int Initialize(ID3D12Device* device, CmdListManager* manager, SRVManager* srvManager);
 
 	ID3D12GraphicsCommandList* GetCommandList() const;
 
@@ -30,6 +31,9 @@ private:
 
 	//次使うコマンドリストのインデックス
 	int index_ = 0;
+
+	//SetHeap用SRV
+	SRVManager* srvManager_;
 
 	static inline int nextCmdObjId_ = 0;
 	int cmdObjId_ = nextCmdObjId_++;

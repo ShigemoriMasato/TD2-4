@@ -1,5 +1,5 @@
 #include "../Display.h"
-#include <Utility/InsertBarrier.h>
+#include <Utility/DirectUtilFuncs.h>
 #include <Utility/Color.h>
 #include <Assets/Texture/TextureData.h>
 
@@ -48,28 +48,26 @@ void Display::StaticInitialize(DXDevice* device) {
 	device_ = device;
 }
 
-void Display::Initialize(TextureData* data, uint32_t clearColor) {
-	ID3D12Device* device = device_->GetDevice();
-	DSVManager* dsvManager = device_->GetDSVManager();
-	RTVManager* rtvManager = device_->GetRTVManager();
+void Display::Initialize(TextureData* data, uint32_t color) {
+    ID3D12Device* device = device_->GetDevice();
+    DSVManager* dsvManager = device_->GetDSVManager();
+    RTVManager* rtvManager = device_->GetRTVManager();
 
-	textureResource_ = data->GetResource();
-	width_ = data->GetSize().first;
-	height_ = data->GetSize().second;
-	clearColor_ = ConvertColor(clearColor);
+    textureResource_ = data->GetResource();
+    width_ = data->GetSize().first;
+    height_ = data->GetSize().second;
 
-    //バリアの初期状態を設定
-    resourceState_ = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	clearColor_ = ConvertColor(color);
 
     //RTVの設定
     rtvHandle_.UpdateHandle(rtvManager);
 
     D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
-    rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;	//出力結果をSRGBに変換して書き込む
+    rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
     rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;	//2Dテクスチャとしてよみこむ
-	device->CreateRenderTargetView(textureResource_, &rtvDesc, rtvHandle_.GetCPU());
+    device->CreateRenderTargetView(textureResource_, &rtvDesc, rtvHandle_.GetCPU());
 
-	//DSVの設定
+    //DSVの設定
     dsvHandle_.UpdateHandle(dsvManager);
 
     D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
@@ -80,7 +78,7 @@ void Display::Initialize(TextureData* data, uint32_t clearColor) {
 
     device->CreateDepthStencilView(depthStencilResource_.Get(), &dsvDesc, dsvHandle_.GetCPU());
 
-    resourceState_ = D3D12_RESOURCE_STATE_COMMON;
+    resourceState_ = D3D12_RESOURCE_STATE_PRESENT;
 }
 
 void Display::PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear) {
@@ -92,7 +90,7 @@ void Display::PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear) {
 
     if (isClear) {
         //レンダーターゲットのクリア
-        commandList->ClearRenderTargetView(rtvHandle_.GetCPU(), reinterpret_cast<const FLOAT*>(&clearColor_), 0, nullptr);
+        commandList->ClearRenderTargetView(rtvHandle_.GetCPU(), &clearColor_.x, 0, nullptr);
         //デプスステンシルビューのクリア
         commandList->ClearDepthStencilView(dsvHandle_.GetCPU(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
@@ -125,7 +123,6 @@ void Display::ToTexture(ID3D12GraphicsCommandList* commandList) {
 
 void Display::PostDraw(ID3D12GraphicsCommandList* commandList) {
     EditBarrier(commandList, D3D12_RESOURCE_STATE_PRESENT);
-	resourceState_ = D3D12_RESOURCE_STATE_COMMON;
 }
 
 void Display::EditBarrier(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES afterState) {

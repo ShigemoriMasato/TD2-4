@@ -6,23 +6,47 @@
 #include <Tool/Logger/Logger.h>
 #include "ShaderShelf.h"
 
-enum class RootSignatureID : uint8_t {
-	Default,
-	NonMatrix,
-	Particle,
-	LightParticle,
-	Model,
-	MP,
-	PostEffect,
+enum class SamplerID : uint32_t {
+	Non = 0,
+	Static = 1 << 0,
+	Clamp = 1 << 1,
 
 	Count
 };
 
+uint32_t operator|(SamplerID a, SamplerID b);
+uint32_t operator|(uint32_t a, SamplerID b);
+bool operator<(SamplerID a, SamplerID b);
+
 struct RootSignatureConfig {
-	std::vector<ShaderType> cbv;
-	std::vector<ShaderType> srv;
-	std::vector<ShaderType> uav;
+	std::pair<int, int> cbvNums{};							// <Vertex, Pixel>
+	std::pair<int, int> srvNums{};							// <Vertex, Pixel> 上限8
+	bool useTexture = false;								// テクスチャを使うか
+	uint32_t samplers = uint32_t(SamplerID::Static);		//SamplerIDのビットマスク
+
+	bool operator<(const RootSignatureConfig& other) const;
+	bool operator==(const RootSignatureConfig& other) const;
 };
+
+namespace std {
+	template<>
+	struct hash<RootSignatureConfig> {
+		size_t operator()(const RootSignatureConfig& cfg) const {
+			size_t h = 0;
+			hash_combine(h, hash<int>()(cfg.cbvNums.first));
+			hash_combine(h, hash<int>()(cfg.cbvNums.second));
+			hash_combine(h, hash<int>()(cfg.srvNums.first));
+			hash_combine(h, hash<int>()(cfg.srvNums.second));
+			hash_combine(h, hash<bool>()(cfg.useTexture));
+			hash_combine(h, hash<uint32_t>()(cfg.samplers));
+			return h;
+		}
+	private:
+		static void hash_combine(size_t& seed, size_t value) {
+			seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+		}
+	};
+}
 
 class RootSignatureShelf {
 public:
@@ -30,14 +54,16 @@ public:
 	RootSignatureShelf(ID3D12Device* device);
 	~RootSignatureShelf();
 
-	ID3D12RootSignature* GetRootSignature(RootSignatureID id) const;
-	std::vector<ID3D12RootSignature*> GetRootSignatures() const;
+	ID3D12RootSignature* GetRootSignature(const RootSignatureConfig& config);
 
 private:
 
-	void CreateRootSignature(D3D12_ROOT_SIGNATURE_DESC& desc, RootSignatureID id, ID3D12Device* device);
+	ID3D12RootSignature* CreateRootSignature(const RootSignatureConfig& config);
 
-	std::vector<ID3D12RootSignature*> rootSignatures_;
+	ID3D12Device* device_ = nullptr;
+
+	std::map<RootSignatureConfig, ID3D12RootSignature*> rootSignatureMap_;
+	std::map<SamplerID, D3D12_STATIC_SAMPLER_DESC> samplers_;
 
 	std::shared_ptr<spdlog::logger> logger_ = nullptr;
 
