@@ -3,8 +3,6 @@
 #include <functional>
 #include <string>
 
-static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
 class WindowsApp {
 public:
 
@@ -37,6 +35,8 @@ public:
 
 	HWND GetHwnd() const { return hwnd_; }
 	std::pair<int32_t, int32_t> GetWindowSize() const { return { clientWidth_, clientHeight_ }; }
+
+	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 private:
 

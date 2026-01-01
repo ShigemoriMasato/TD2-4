@@ -8,7 +8,7 @@ public:
 	Terminal() = default;
 	~Terminal() = default;
 
-	void Initialize();
+	void Initialize(HINSTANCE hInstance);
 
 	void Run();
 

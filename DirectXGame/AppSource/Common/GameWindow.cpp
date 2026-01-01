@@ -13,6 +13,8 @@ void GameWindow::PreDraw() {
 
 void GameWindow::PostDraw() {
 
+#ifdef USE_IMGUI
+
 	//todo ImGuiの描画とか
 	for(const auto& config : displayTextureIndices_) {
 		ImGui::Begin(config.name.c_str());
@@ -36,6 +38,8 @@ void GameWindow::PostDraw() {
 		);
 		ImGui::End();
 	}
+
+#endif
 
 }
 

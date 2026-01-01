@@ -2,6 +2,7 @@
 #include <Tool/Dump/CreateDump.h>
 #include <Screen/DualDisplay.h>
 #include <Render/RenderObject.h>
+#include <imgui/imgui.h>
 
 #pragma comment(lib, "Dbghelp.lib")
 
@@ -43,6 +44,10 @@ SHEngine::SHEngine() {
 	imGuiForEngine_ = std::make_unique<ImGuiforEngine>();
 
 	drawDataManager_ = std::make_unique<DrawDataManager>();
+
+	input_ = std::make_unique<Input>();
+
+	fpsObserver_ = std::make_unique<FPSObserver>();
 }
 
 SHEngine::~SHEngine() {
@@ -52,22 +57,26 @@ SHEngine::~SHEngine() {
 	}
 }
 
-void SHEngine::Initialize() {
+void SHEngine::Initialize(HINSTANCE hInstance) {
 	//初期化処理
 	drawDataManager_->Initialize(dxDevice_.get());
+	hInstance_ = hInstance;
+	input_->Initialize(hInstance_);
 }
 
 bool SHEngine::IsLoop() {
+	fpsObserver_->TimeAdjustment();
+
 	return !exit_;
 }
 
 void SHEngine::Update() {
-	//todo inputとか
-
 	//ImGui
 	if (imGuiActive_) {
 		imGuiForEngine_->BeginFrame();
 		imguiDrawed_ = false;
+		//FPS描画
+		FPSDraw();
 	}
 }
 
@@ -127,4 +136,17 @@ void SHEngine::ExecuteMessage() {
 	}
 
 	pushedCrossButton_ = true;
+}
+
+void SHEngine::FPSDraw() {
+	if (!imGuiActive_) {
+		return;
+	}
+
+#ifdef USE_IMGUI
+	ImGui::Begin("FPS");
+	ImGui::Text("FPS: %.2f ", 1.0f / fpsObserver_->GetDeltatime());
+	ImGui::Text("deltaTime: %.2f ms", fpsObserver_->GetDeltatime() * 100.0f);
+	ImGui::End();
+#endif
 }

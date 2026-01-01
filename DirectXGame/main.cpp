@@ -1,10 +1,8 @@
 #include <Core/Terminal.h>
 
-int WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+int WinMain(HINSTANCE hInstance, HINSTANCE prev, LPSTR str, int state) {
 	auto terminal = std::make_unique<Terminal>();
-	terminal->Initialize();
-
+	terminal->Initialize(hInstance);
 	terminal->Run();
-
 	return 0;
 }

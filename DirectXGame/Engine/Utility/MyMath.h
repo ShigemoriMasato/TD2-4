@@ -1,9 +1,9 @@
 #pragma once
 #include <cstdint>
 #include <vector>
-#include "../Quaternion.h"
-#include "../Matrix.h"
-#include "../Vector.h"
+#include "Quaternion.h"
+#include "Matrix.h"
+#include "Vector.h"
 
 namespace MyMath {
 	float lerp(float a, float b, float t);

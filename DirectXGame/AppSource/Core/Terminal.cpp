@@ -1,8 +1,8 @@
 #include "Terminal.h"
 
-void Terminal::Initialize() {
+void Terminal::Initialize(HINSTANCE hInstance) {
 	engine_ = std::make_unique<SHEngine>();
-	engine_->Initialize();
+	engine_->Initialize(hInstance);
 
 	sceneManager_ = std::make_unique<SceneManager>();
 	sceneManager_->Initialize(engine_.get());

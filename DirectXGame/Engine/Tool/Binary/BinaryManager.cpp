@@ -1,9 +1,13 @@
 #include "BinaryManager.h"
 #include <fstream>
 
+namespace fs = std::filesystem;
+
 BinaryManager::BinaryManager() {
 	input = std::make_unique<BinaryInput>();
 	output = std::make_unique<BinaryOutput>();
+
+	fs::create_directories(basePath);
 }
 
 BinaryManager::~BinaryManager() {

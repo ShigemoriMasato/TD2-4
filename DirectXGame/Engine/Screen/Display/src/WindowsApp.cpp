@@ -4,7 +4,7 @@
 #include <Utility/ConvertString.h>
 
 namespace {
-	std::unordered_map<HWND, std::function<LRESULT(HWND, UINT, WPARAM, LPARAM)>> windowProcMap;
+	std::unordered_map<HWND, WindowsApp*> windowProcMap;
 }
 
 WindowsApp::~WindowsApp() {
@@ -30,7 +30,7 @@ void WindowsApp::SetWindowClassName(std::wstring name) {
 }
 
 void WindowsApp::Create() {
-	auto logger = getLogger("Window");
+    auto logger = getLogger("Window");
 
     //ウィンドウプロシージャ
     wc_.lpfnWndProc = WindowProc;
@@ -64,10 +64,8 @@ void WindowsApp::Create() {
         wc_.hInstance,				//インスタンスハンドル
         nullptr);					//オプション
 
-	// ウィンドウプロシージャをマップに登録する
-    if (windowProc_) {
-        windowProcMap[hwnd_] = windowProc_;
-    }
+    // ウィンドウプロシージャをマップに登録する
+    windowProcMap[hwnd_] = this;
 
     logger->info("CreateWindow Success\nWindowName : {}\nWindowClassName : {}\nWindow Width / Height : {} / {}", ConvertString(windowName_), ConvertString(windowClassName_), clientWidth_, clientHeight_);
 }
@@ -84,11 +82,11 @@ inline void WindowsApp::Destroy() {
 	DestroyWindow(hwnd_);
 }
 
-LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+LRESULT WindowsApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	// 登録されたウィンドウプロシージャを呼び出す
 	auto it = windowProcMap.find(hwnd);
 	if(it != windowProcMap.end()) {
-		return it->second(hwnd, msg, wparam, lparam);
+		return it->second->windowProc_(hwnd, msg, wparam, lparam);
 	}
 
     //登録されてなかったとき用(バツを押されたらプログラムを止めるだけ)

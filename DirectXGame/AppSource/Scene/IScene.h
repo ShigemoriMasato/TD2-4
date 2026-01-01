@@ -22,5 +22,6 @@ protected:
 	TextureManager* textureManager_ = nullptr;
 	WindowMaker* windowMaker_ = nullptr;
 	DrawDataManager* drawDataManager_ = nullptr;
+	Input* input_ = nullptr;
 
 };

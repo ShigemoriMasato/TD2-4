@@ -1,16 +1,26 @@
 #include "../InitializeScene.h"
 #include <Test/TestScene.h>
+#include <Game/GameScene.h>
 #include <imgui/imgui.h>
 
 #ifdef USE_IMGUI
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif
 
+namespace {
+	struct VertexData {
+		Vector4 position;
+		Vector2 texcoord;
+		Vector3 normal;
+	};;
+}
+
 void InitializeScene::Initialize() {
 	{
 		WindowConfig config;
 		config.windowName = L"DirectXGame";
-		config.windowProc = [](HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)->LRESULT {
+		CommonData* cd = commonData_;
+		config.windowProc = [cd](HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)->LRESULT {
 
 #ifdef USE_IMGUI
 			if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
@@ -21,6 +31,8 @@ void InitializeScene::Initialize() {
 			switch (msg) {
 			case WM_DESTROY:
 				PostQuitMessage(0);
+				//WindowsProcが通っているかの確認用
+				cd->exeFinished_ = true;
 				return 0;
 			}
 			return DefWindowProc(hwnd, msg, wparam, lparam);
@@ -53,10 +65,162 @@ void InitializeScene::Initialize() {
 	}
 
 	//todo リソースの全読み込み
+
+	//BlockResourceの作成
+	std::vector<VertexData> vertices = {
+		// +Y 面
+		{{ 0.5f,  0.5f,  0.5f, 1.0f }, {0.0f, 1.0f}, {0.0f, 1.0f, 0.0f}},
+		{{-0.5f,  0.5f,  0.5f, 1.0f }, {1.0f, 1.0f}, {0.0f, 1.0f, 0.0f}},
+		{{-0.5f,  0.5f, -0.5f, 1.0f }, {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+		{{ 0.5f,  0.5f, -0.5f, 1.0f }, {0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+
+		// -Z 面
+		{{ 0.5f, -0.5f, -0.5f, 1.0f }, {0.0f, 1.0f}, {0.0f, 0.0f, -1.0f}},
+		{{ 0.5f,  0.5f, -0.5f, 1.0f }, {1.0f, 1.0f}, {0.0f, 0.0f, -1.0f}},
+		{{-0.5f,  0.5f, -0.5f, 1.0f }, {1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+		{{-0.5f, -0.5f, -0.5f, 1.0f }, {0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+
+		// -X 面
+		{{-0.5f, -0.5f, -0.5f, 1.0f }, {0.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}},
+		{{-0.5f,  0.5f, -0.5f, 1.0f }, {1.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}},
+		{{-0.5f,  0.5f,  0.5f, 1.0f }, {1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}},
+		{{-0.5f, -0.5f,  0.5f, 1.0f }, {0.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}},
+
+		// -Y 面
+		{{-0.5f, -0.5f,  0.5f, 1.0f }, {0.0f, 1.0f}, {0.0f, -1.0f, 0.0f}},
+		{{ 0.5f, -0.5f,  0.5f, 1.0f }, {1.0f, 1.0f}, {0.0f, -1.0f, 0.0f}},
+		{{ 0.5f, -0.5f, -0.5f, 1.0f }, {1.0f, 0.0f}, {0.0f, -1.0f, 0.0f}},
+		{{-0.5f, -0.5f, -0.5f, 1.0f }, {0.0f, 0.0f}, {0.0f, -1.0f, 0.0f}},
+
+		// +X 面
+		{{ 0.5f, -0.5f,  0.5f, 1.0f }, {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}},
+		{{ 0.5f,  0.5f,  0.5f, 1.0f }, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}},
+		{{ 0.5f,  0.5f, -0.5f, 1.0f }, {1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}},
+		{{ 0.5f, -0.5f, -0.5f, 1.0f }, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}},
+
+		// +Z 面
+		{{-0.5f, -0.5f,  0.5f, 1.0f }, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+		{{-0.5f,  0.5f,  0.5f, 1.0f }, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+		{{ 0.5f,  0.5f,  0.5f, 1.0f }, {1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+		{{ 0.5f, -0.5f,  0.5f, 1.0f }, {0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+	};
+
+	std::vector<uint32_t> index_ = {
+		3, 2, 1,
+		3, 1, 0,
+
+		7, 6, 5,
+		7, 5, 4,
+
+		11, 10, 9,
+		11, 9, 8,
+
+		15, 14, 13,
+		15, 13, 12,
+
+		19, 18, 17,
+		19, 17, 16,
+
+		23, 22, 21,
+		23, 21, 20
+	};
+
+	drawDataManager_->AddVertexBuffer(vertices);
+	drawDataManager_->AddIndexBuffer(index_);
+	commonData_->blockIndex = drawDataManager_->CreateDrawData();
+
+	//Input
+	input_->SetHWND(commonData_->mainWindow->GetWindow()->GetHwnd());
+
+	//FPS
+	auto fps = engine_->GetFPSObserver();
+	fps->SetIsFix(true);
+	fps->SetTargetFPS(60.0);
+
+	//KeyManager
+#pragma region 長いので折りたたみ
+	commonData_->keyManager = std::make_unique<KeyManager>();
+
+	auto keyManager = commonData_->keyManager.get();
+	keyManager->Initialize();
+
+	//KeyConfigの設定
+	keyManager->SetKey(Key::Right, DIK_D, KeyState::Hold);
+	keyManager->SetKey(Key::Right, DIK_RIGHTARROW, KeyState::Hold);
+	keyManager->SetButton(Key::Right, XBoxController::kRight, KeyState::Hold);
+	keyManager->SetStick(Key::Right, true, false, 0.5f);
+
+	keyManager->SetKey(Key::Left, DIK_A, KeyState::Hold);
+	keyManager->SetKey(Key::Left, DIK_LEFTARROW, KeyState::Hold);
+	keyManager->SetButton(Key::Left, XBoxController::kLeft, KeyState::Hold);
+	keyManager->SetStick(Key::Left, true, false, -0.5f);
+
+	keyManager->SetKey(Key::Up, DIK_W, KeyState::Hold);
+	keyManager->SetKey(Key::Up, DIK_UPARROW, KeyState::Hold);
+	keyManager->SetButton(Key::Up, XBoxController::kUp, KeyState::Hold);
+	keyManager->SetStick(Key::Up, true, true, 0.5f);
+
+	keyManager->SetKey(Key::Down, DIK_S, KeyState::Hold);
+	keyManager->SetKey(Key::Down, DIK_DOWNARROW, KeyState::Hold);
+	keyManager->SetButton(Key::Down, XBoxController::kDown, KeyState::Hold);
+	keyManager->SetStick(Key::Down, true, true, -0.5f);
+
+	//================================================================================
+
+	keyManager->SetKey(Key::HardDrop, DIK_W, KeyState::Trigger);
+	keyManager->SetKey(Key::HardDrop, DIK_SPACE, KeyState::Trigger);
+	keyManager->SetKey(Key::HardDrop, DIK_UPARROW, KeyState::Trigger);
+	keyManager->SetButton(Key::HardDrop, XBoxController::kUp, KeyState::Trigger);
+	keyManager->SetStick(Key::HardDrop, true, true, 0.5f);
+
+	keyManager->SetKey(Key::Hold, DIK_LSHIFT, KeyState::Trigger);
+	keyManager->SetKey(Key::Hold, DIK_C, KeyState::Trigger);
+	keyManager->SetKey(Key::Hold, DIK_H, KeyState::Trigger);
+	keyManager->SetKey(Key::Hold, DIK_L, KeyState::Trigger);
+	keyManager->SetKey(Key::Hold, DIK_RSHIFT, KeyState::Trigger);
+	keyManager->SetButton(Key::Hold, XBoxController::kLeftShoulder, KeyState::Trigger);
+	keyManager->SetButton(Key::Hold, XBoxController::kLeftTrigger, KeyState::Trigger);
+	keyManager->SetButton(Key::Hold, XBoxController::kRightShoulder, KeyState::Trigger);
+	keyManager->SetButton(Key::Hold, XBoxController::kLeftTrigger, KeyState::Trigger);
+
+	//================================================================================
+
+	keyManager->SetKey(Key::LRotate, DIK_Z, KeyState::Trigger);
+	keyManager->SetKey(Key::LRotate, DIK_J, KeyState::Trigger);
+	keyManager->SetButton(Key::LRotate, XBoxController::kX, KeyState::Trigger);
+
+	keyManager->SetKey(Key::RRotate, DIK_X, KeyState::Trigger);
+	keyManager->SetKey(Key::RRotate, DIK_K, KeyState::Trigger);
+	keyManager->SetButton(Key::RRotate, XBoxController::kY, KeyState::Trigger);
+
+	//================================================================================
+
+	keyManager->SetKey(Key::Correct, DIK_RETURN, KeyState::Trigger);
+	keyManager->SetKey(Key::Correct, DIK_SPACE, KeyState::Trigger);
+	keyManager->SetKey(Key::Correct, DIK_Z, KeyState::Trigger);
+	keyManager->SetButton(Key::Correct, XBoxController::kA, KeyState::Trigger);
+
+	keyManager->SetKey(Key::Reverse, DIK_X, KeyState::Trigger);
+	keyManager->SetButton(Key::Reverse, XBoxController::kB, KeyState::Trigger);
+
+	keyManager->SetKey(Key::Pause, DIK_ESCAPE, KeyState::Trigger);
+	keyManager->SetKey(Key::Pause, DIK_F1, KeyState::Trigger);
+	keyManager->SetButton(Key::Pause, XBoxController::kStart, KeyState::Trigger);
+
+	//================================================================================
+
+	keyManager->SetKey(Key::Restart, DIK_R, KeyState::Trigger);
+	keyManager->SetKey(Key::Restart, DIK_ESCAPE, KeyState::Trigger);
+	keyManager->SetButton(Key::Restart, XBoxController::kSelect, KeyState::Trigger);
+
+	keyManager->SetKey(Key::Debug1, DIK_F1, KeyState::Trigger);
+	keyManager->SetKey(Key::Debug2, DIK_F2, KeyState::Trigger);
+	keyManager->SetKey(Key::Debug3, DIK_F3, KeyState::Trigger);
+#pragma endregion
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
-	return std::make_unique<TestScene>();
+	return std::make_unique<GameScene>();
 }
 
 void InitializeScene::Draw() {

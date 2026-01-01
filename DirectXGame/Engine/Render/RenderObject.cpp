@@ -1,5 +1,6 @@
 #include "RenderObject.h"
 #include <Utility/DirectUtilFuncs.h>
+#include <Utility/ConvertString.h>
 
 DXDevice* RenderObject::device_ = nullptr;
 Logger RenderObject::logger_ = getLogger("Engine");
@@ -31,13 +32,14 @@ void RenderObject::SetDrawData(const DrawData& data) {
 	logger_->debug("Draw Data Set: {}", debugName_);
 }
 
-int RenderObject::CreateCBV(size_t size, ShaderType type) {
+int RenderObject::CreateCBV(size_t size, ShaderType type, std::string debugName) {
 	std::vector<BufferData> cbvBufferDatas;
 	std::vector<D3D12_GPU_VIRTUAL_ADDRESS> cbvAddresses;
 
 	for (int i = 0; i < 2; ++i) {
 		Resource res{};
 		res.res.Attach(CreateBufferResource(device_->GetDevice(), (size + 255) & ~255));	//256の倍数に揃える
+		res.res->SetName(ConvertString(debugName).c_str());
 		resources_.push_back(res);
 
 		//マッピング
@@ -67,21 +69,21 @@ int RenderObject::CreateCBV(size_t size, ShaderType type) {
 	return int(bufferDatas_.size() - 1);
 }
 
-int RenderObject::CreateSRV(size_t size, uint32_t num, ShaderType type) {
+int RenderObject::CreateSRV(size_t size, uint32_t num, ShaderType type, std::string debugName) {
 	std::vector<BufferData> srvBufferDatas;
 	std::vector<std::unique_ptr<SRVHandle>> srvHandles;
 
 	auto srv = device_->GetSRVManager();
 	for (int i = 0; i < 2; ++i) {
 		Resource res{};
-		size_t bufferSize = ((size + 255) & ~255) * num;
-		res.res.Attach(CreateBufferResource(device_->GetDevice(), bufferSize));	//256の倍数に揃えたうえでnum倍
+		size_t bufferSize = size;
+		res.res.Attach(CreateBufferResource(device_->GetDevice(), bufferSize * num));	//256の倍数に揃えたうえでnum倍
+		res.res->SetName(ConvertString(debugName).c_str());
 		resources_.push_back(res);
 
 		//SRVハンドルの取得
 		std::unique_ptr<SRVHandle> srvHandle = std::make_unique<SRVHandle>();
 		srvHandle->UpdateHandle(srv);
-		srvHandles.push_back(std::move(srvHandle));
 
 		//ParticleDataのSRV作成
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
@@ -94,6 +96,8 @@ int RenderObject::CreateSRV(size_t size, uint32_t num, ShaderType type) {
 		srvDesc.Buffer.StructureByteStride = UINT(bufferSize);
 
 		device_->GetDevice()->CreateShaderResourceView(res.res.Get(), &srvDesc, srvHandle->GetCPU());
+
+		srvHandles.push_back(std::move(srvHandle));
 
 		//マッピング
 		BufferData bufferData{};
@@ -121,7 +125,7 @@ int RenderObject::CreateSRV(size_t size, uint32_t num, ShaderType type) {
 void RenderObject::CopyBufferData(int index, const void* data, size_t size) {
 	auto& gpuData = bufferDatas_[index][index_];
 
-	if (size <= gpuData.size) {
+	if (size < gpuData.size) {
 		logger_->error("=========== CopyBufferData || Size exceeds buffer size ===========");
 		logger_->error("  RenderObject: {}\n  GPUSize: {}\n  DataSize: {}", debugName_, gpuData.size, size);
 		assert(false && "RenderObject::CopyBufferData: Size exceeds buffer size");
@@ -169,7 +173,7 @@ void RenderObject::Draw(Window* window) {
 	}
 
 	//描画コマンド
-	cmdList->DrawIndexedInstanced(indexNum_, 1, 0, 0, 0);
+	cmdList->DrawIndexedInstanced(indexNum_, instanceNum_, 0, 0, 0);
 
 	logger_->debug("Draw Called: {}", debugName_);
 }

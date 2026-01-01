@@ -13,8 +13,7 @@ struct ParticleData
     float4x4 vp;
     uint color;
     uint outlineColor;
-    float2 padding;
-    float4 padding2;
+    uint1x2 pad;
 };
 
 float4 ConvertColor(uint color)

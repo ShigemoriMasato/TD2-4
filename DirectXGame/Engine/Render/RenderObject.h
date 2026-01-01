@@ -1,6 +1,7 @@
 #pragma once
 #include "DrawDataManager.h"
 #include <Screen/Window.h>
+#include <Utility/Color.h>
 
 class RenderObject {
 public:
@@ -13,8 +14,8 @@ public:
 	void Initialize();
 
 	void SetDrawData(const DrawData& data);
-	int CreateCBV(size_t size, ShaderType type);
-	int CreateSRV(size_t size, uint32_t num, ShaderType type);
+	int CreateCBV(size_t size, ShaderType type, std::string debugName = "");
+	int CreateSRV(size_t size, uint32_t num, ShaderType type, std::string debugName = "");
 
 	void CopyBufferData(int index, const void* data, size_t size);
 
@@ -22,6 +23,7 @@ public:
 
 	PSOConfig psoConfig_{};
 	bool useTexture_ = false;
+	uint32_t instanceNum_ = 1;
 
 private://static
 

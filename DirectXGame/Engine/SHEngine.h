@@ -6,6 +6,8 @@
 #include <Screen/WindowMaker.h>
 #include <Core/ImGuiforEngine.h>
 #include <Render/DrawDataManager.h>
+#include <Input/Input.h>
+#include <Tool/FPS/FPSObserver.h>
 #include <memory>
 
 class SHEngine {
@@ -14,7 +16,7 @@ public:
 	SHEngine();
 	~SHEngine();
 
-	void Initialize();
+	void Initialize(HINSTANCE hInstance);
 
 	bool IsLoop();
 	void Update();
@@ -27,10 +29,13 @@ public:
 	TextureManager* GetTextureManager() { return textureManager_.get(); }
 	WindowMaker* GetWindowMaker() { return windowMaker_.get(); }
 	DrawDataManager* GetDrawDataManager() { return drawDataManager_.get(); }
+	Input* GetInput() { return input_.get(); }
+	FPSObserver* GetFPSObserver() { return fpsObserver_.get(); }
 
 private:
 
 	void ExecuteMessage();
+	void FPSDraw();
 
 private:
 
@@ -46,11 +51,14 @@ private:
 	std::unique_ptr<CmdListManager> cmdListManager_ = nullptr;
 	std::unique_ptr<FenceManager> fenceManager_ = nullptr;
 	std::unique_ptr<ImGuiforEngine> imGuiForEngine_ = nullptr;
+	bool inputActive_ = false;
 
 	//App側ツール
 	std::unique_ptr<TextureManager> textureManager_ = nullptr;
 	std::unique_ptr<WindowMaker> windowMaker_ = nullptr;
 	std::unique_ptr<DrawDataManager> drawDataManager_ = nullptr;
+	std::unique_ptr<Input> input_ = nullptr;
+	std::unique_ptr<FPSObserver> fpsObserver_ = nullptr;
 
 private:
 
@@ -60,6 +68,7 @@ private:
 	bool imGuiActive_ = false;
 	bool imguiDrawed_ = false;
 
+	HINSTANCE hInstance_ = nullptr;
 	MSG msg_{};
 
 	Logger logger_ = nullptr;
