@@ -49,9 +49,7 @@ void Tetris::Update(float deltaTime) {
 		auto mapData = field_->GetField();
 		blockRender_->SetStageData(mapData, player_->GetMoveMino());
 		std::vector<std::pair<int, int>> holdPos;
-		if (player_->GetHasMoveMino()) {
-			holdPos = tetrimino_->GetOffset(Tetrimino::Type(player_->GetHoldMino()));
-		}
+		holdPos = tetrimino_->GetOffset(Tetrimino::Type(player_->GetHoldMino()));
 		blockRender_->SetHoldMino(holdPos, Tetrimino::Hold);
 
 		//Next 4個分
@@ -70,7 +68,7 @@ void Tetris::Update(float deltaTime) {
 		auto fillLines = field_->FillLineIndex();
 		if (!fillLines.empty()) {
 			field_->DeleteFillLine();
-			//todo blockRender_->BeginDeleteEffect(fillLines, field_->GetField());
+			blockRender_->BeginDeleteEffect(fillLines, field_->GetField());
 			deletedLine_ = int(fillLines.size());
 		}
 

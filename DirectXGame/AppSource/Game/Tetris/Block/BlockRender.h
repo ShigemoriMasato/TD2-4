@@ -2,6 +2,8 @@
 #include <Camera/Camera.h>
 #include <Game/Tetris/Data.h>
 #include <Render/RenderObject.h>
+#include <Common/DataStructures.h>
+#include "Delete/DeleteEffect.h"
 
 class BlockRender {
 public:
@@ -19,12 +21,17 @@ public:
 	//4*5まで
 	void SetNextMino(std::vector<std::pair<int, int>> blockPos, int colorID);
 
+	void BeginDeleteEffect(std::vector<int> fillLines, std::vector<std::vector<int>> deletedField);
+
 	void Draw(Window* window);
 	void DrawImGui();
 
-	bool GetIsEffecting() const { return false; }
+	bool GetIsEffecting() const { return isDeleting_; }
 
 private:
+
+	void SetBlock(int x, int y, int configIndex);
+	void SetBlock(std::vector<std::vector<int>> allConfigIndices, MovableMino movableMino);
 
 	Logger logger_;
 
@@ -33,12 +40,6 @@ private:
 
 	//Field->Wall->Hold->Next
 	std::unique_ptr<RenderObject> blockObject_ = nullptr;
-	//todo いつかどっかに作る
-	struct Transform {
-		Vector3 scale = { 1.0f, 1.0f, 1.0f };
-		Vector3 rotate{};
-		Vector3 position{};
-	};
 	std::vector<Transform> blockTransforms_{};
 	std::vector<std::pair<uint32_t, uint32_t>> blockColors_{};
 
@@ -56,6 +57,13 @@ private:
 	//表示するフィールドサイズ
 	uint32_t fieldWidth_ = 0;
 	uint32_t fieldHeight_ = 0;
+
+private://DeleteEffect
+
+	std::unique_ptr<DeleteEffect> deleteEffect_ = nullptr;
+	std::vector<std::vector<int>> deletedField_{};
+	bool isDeleting_ = false;
+	std::vector<int> deletingLines_{};
 
 private://Binary保存
 

@@ -154,6 +154,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
   <ItemGroup>
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
     <ClCompile Include="AppSource\Game\GameScene.cpp" />
+    <ClCompile Include="AppSource\Game\Tetris\Block\Delete\DeleteEffect.cpp" />
     <ClCompile Include="AppSource\Game\Tetris\Field\Field.cpp" />
     <ClCompile Include="AppSource\Game\Tetris\Mino\Tetrimino.cpp" />
     <ClCompile Include="AppSource\Game\Tetris\Player\Player.cpp" />
@@ -193,6 +194,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Tool\Binary\Data\BinaryOutput.cpp" />
     <ClCompile Include="Engine\Tool\FPS\FPSObserver.cpp" />
     <ClCompile Include="Engine\Utility\src\ConvertString.cpp" />
+    <ClCompile Include="Engine\Utility\src\Easing.cpp" />
     <ClCompile Include="Engine\Utility\src\MyMath.cpp" />
     <ClCompile Include="Engine\Utility\Quaternion.h" />
     <ClCompile Include="AppSource\Scene\src\IScene.cpp" />
@@ -215,8 +217,10 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Render\RenderObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AppSource\Common\DataStructures.h" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\Game\GameScene.h" />
+    <ClInclude Include="AppSource\Game\Tetris\Block\Delete\DeleteEffect.h" />
     <ClInclude Include="AppSource\Game\Tetris\Data.h" />
     <ClInclude Include="AppSource\Game\Tetris\Field\Field.h" />
     <ClInclude Include="AppSource\Game\Tetris\Mino\Tetrimino.h" />
@@ -261,6 +265,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Tool\FPS\FPSObserver.h" />
     <ClInclude Include="Engine\Tool\Logger\Logger.h" />
     <ClInclude Include="Engine\Utility\ConvertString.h" />
+    <ClInclude Include="Engine\Utility\Easing.h" />
     <ClInclude Include="Engine\Utility\Matrix.h" />
     <ClInclude Include="Engine\Utility\MyMath.h" />
     <ClInclude Include="Engine\SHEngine.h" />

@@ -134,7 +134,7 @@ void InitializeScene::Initialize() {
 
 	//FPS
 	auto fps = engine_->GetFPSObserver();
-	fps->SetIsFix(false);
+	fps->SetIsFix(true);
 	fps->SetTargetFPS(300.0);
 
 	//KeyManager
