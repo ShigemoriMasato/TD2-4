@@ -1,6 +1,7 @@
 #pragma once
 #include <Screen/WindowMaker.h>
 #include <Screen/DualDisplay.h>
+#include <Render/RenderObject.h>
 
 class GameWindow {
 public:
@@ -40,4 +41,5 @@ private:
 	std::unique_ptr<Window> window_;
 	std::vector<DispConfig> displayTextureIndices_{};
 	std::vector<DualDispConfig> dualDisplayTextureIndices_{};
+	std::unique_ptr<RenderObject> renderObject_ = nullptr;
 };

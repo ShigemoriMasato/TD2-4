@@ -5,6 +5,10 @@
 void GameWindow::Initialize(SHEngine* engine, const WindowConfig& config, uint32_t clearColor) {
 	window_ = engine->GetWindowMaker()->MakeWindow(config, clearColor);
 	textureManager_ = engine->GetTextureManager();
+
+#ifdef SH_RELEASE
+
+#endif
 }
 
 void GameWindow::PreDraw() {
@@ -39,7 +43,17 @@ void GameWindow::PostDraw() {
 		ImGui::End();
 	}
 
+	return;
+
 #endif
+
+	if (dualDisplayTextureIndices_.size() < 1) {
+		return;
+	}
+
+	for (const auto& config : dualDisplayTextureIndices_) {
+
+	}
 
 }
 

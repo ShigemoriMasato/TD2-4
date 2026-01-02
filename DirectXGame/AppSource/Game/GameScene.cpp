@@ -20,7 +20,7 @@ void GameScene::Initialize() {
 }
 
 std::unique_ptr<IScene> GameScene::Update() {
-	float deltaTime = 1.0f / 60.0f;
+	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 
 	input_->Update();
 	commonData_->keyManager->Update();

@@ -20,7 +20,7 @@ public:
 
 	bool IsLoop();
 	void Update();
-	void PreDraw();
+	bool PreDraw();
 	void EndFrame();
 
 	void ImGuiActivate(Window* window);

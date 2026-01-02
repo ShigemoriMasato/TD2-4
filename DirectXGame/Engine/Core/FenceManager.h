@@ -13,7 +13,7 @@ public:
 
 	void SendSignal();
 
-	void WaitForSignal(int offset = 0);
+	bool SignalChecker(int offset = 0);
 
 	void Finalize();
 

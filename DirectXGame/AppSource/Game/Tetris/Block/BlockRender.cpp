@@ -154,6 +154,7 @@ void BlockRender::Draw(Window* window) {
 }
 
 void BlockRender::DrawImGui() {
+#ifdef USE_IMGUI
 	if (ImGui::Begin("BlockRender")) {
 		ImGui::InputFloat3("HoldBasePosition", &holdBasePosition_.x);
 		ImGui::InputFloat3("NextBasePosition", &nextBasePosition_.x);
@@ -189,6 +190,7 @@ void BlockRender::DrawImGui() {
 		colorMap_[colorMapEditID_].second = ConvertColor(colorBuffer);
 	}
 	ImGui::End();
+#endif
 }
 
 

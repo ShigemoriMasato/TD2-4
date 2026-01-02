@@ -71,21 +71,28 @@ bool SHEngine::IsLoop() {
 }
 
 void SHEngine::Update() {
+}
+
+bool SHEngine::PreDraw() {
+	//Wait
+	if (!fenceManager_->SignalChecker()) {
+		return false;
+	}
+	
 	//ImGui
 	if (imGuiActive_) {
-		imGuiForEngine_->BeginFrame();
-		imguiDrawed_ = false;
+		if (imguiDrawed_) {
+			imGuiForEngine_->BeginFrame();
+			imguiDrawed_ = false;
+		}
 		//FPS描画
 		FPSDraw();
 	}
-}
 
-void SHEngine::PreDraw() {
-	//Wait
-	fenceManager_->WaitForSignal();
 	cmdListManager_->Reset();
 	auto cmdObj = cmdListManager_->CreateCommandObject();
 	textureManager_->UploadTextures(cmdObj->GetCommandList());
+	return true;
 }
 
 void SHEngine::EndFrame() {
@@ -109,6 +116,7 @@ void SHEngine::ImGuiActivate(Window* window) {
 	imGuiForEngine_->Initialize(dxDevice_.get(), cmdListManager_.get(), window);
 	imGuiForEngine_->BeginFrame();
 	imGuiActive_ = true;
+	imguiDrawed_ = false;
 
 	logger_->info("ImGui activated");
 }

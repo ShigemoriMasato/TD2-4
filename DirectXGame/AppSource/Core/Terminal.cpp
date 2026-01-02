@@ -19,11 +19,12 @@ void Terminal::Run() {
 
 		
 		// 描画 ===
-		engine_->PreDraw();
+		if (engine_->PreDraw()) {
 
-		sceneManager_->Draw();
+			sceneManager_->Draw();
 
-		engine_->EndFrame();
+			engine_->EndFrame();
+		}
 
 	}
 }

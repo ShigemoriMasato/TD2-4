@@ -44,13 +44,6 @@ void TestScene::Initialize() {
 std::unique_ptr<IScene> TestScene::Update() {
 	input_->Update();
 
-	ImGui::Begin("Test Scene");
-	ImGui::Text("This is a test scene.");
-	if (ImGui::Button("Draw")) {
-		debug = !debug;
-	}
-	ImGui::End();
-
 	debugCamera_->Update();
 
 	vsData_.worldMatrix = Matrix4x4::Identity();

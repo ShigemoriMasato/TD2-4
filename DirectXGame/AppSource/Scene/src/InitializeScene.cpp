@@ -134,8 +134,8 @@ void InitializeScene::Initialize() {
 
 	//FPS
 	auto fps = engine_->GetFPSObserver();
-	fps->SetIsFix(true);
-	fps->SetTargetFPS(60.0);
+	fps->SetIsFix(false);
+	fps->SetTargetFPS(300.0);
 
 	//KeyManager
 #pragma region 長いので折りたたみ
