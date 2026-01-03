@@ -14,7 +14,8 @@ GameScene::GameScene() {
 
 void GameScene::Initialize() {
 	keyCoating_ = std::make_unique<KeyCoating>(commonData_->keyManager.get());
-	DrawData drawData = drawDataManager_->GetDrawData(commonData_->blockIndex);
+	auto model = modelManager_->GetNodeModelData(0);	//Cube
+	DrawData drawData = drawDataManager_->GetDrawData(model.drawDataIndex);
 
 	tetris_->Initialize(keyCoating_.get(), worldCamera_, drawData);
 }
@@ -29,6 +30,10 @@ std::unique_ptr<IScene> GameScene::Update() {
 	debugCamera_->Update();
 
 	tetris_->Update(deltaTime);
+
+	if (keyCoating_->GetKeyStates().at(Key::Debug1)) {
+		return std::make_unique<GameScene>();
+	}
 
 	return nullptr;
 }

@@ -32,6 +32,8 @@ void TextureManager::Initialize(DXDevice* device, CmdListManager* CmdListManager
 	LoadTexture("Assets/.EngineResource/Texture/white1x1.png");
 	LoadTexture("Assets/.EngineResource/Texture/uvChecker.png");
 	LoadTexture("Assets/.EngineResource/Texture/error.png");
+
+	logger_ = getLogger("TextureManager");
 }
 
 void TextureManager::Clear() {
@@ -58,6 +60,12 @@ int TextureManager::LoadTexture(const std::string& filePath) {
 				factFilePath = filePath;
 			}
 		}
+	}
+
+	if (!std::filesystem::exists(factFilePath)) {
+		logger_->error("Texture File is Not Found: {}", factFilePath);
+		assert(false && "Texture File is Not Found");
+		return 2;//ErrorTexture
 	}
 
 	uploadResources_.push_back(textureData->Create(factFilePath, device_->GetDevice(), srvManager_));

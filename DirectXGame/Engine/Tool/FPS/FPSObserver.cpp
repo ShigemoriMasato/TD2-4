@@ -55,9 +55,13 @@ void FPSObserver::TimeAdjustment() {
     deltatime_ = static_cast<float>(frameTime);
     frameCount_++;
 
-    if (deltatime_ > 5.0 / targetFPS_) {
+    if (deltatime_ > 20.0 / targetFPS_) {
 		logger_->warn("FPS Drop Detected: frameCount = {}  nowFPS = {:.2f}  TargetFPS = {:.2f}", frameCount_, 1.0f / deltatime_, float(targetFPS_));
     }
+
+    if (deltatime_ > 0.1f) {
+        deltatime_ = 0.1f; // 最大値を設定して極端な値を防ぐ
+	}
 
     // 次のフレームの開始時間を設定
     timeStart_ = timeEnd_;

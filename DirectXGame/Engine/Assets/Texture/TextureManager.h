@@ -41,5 +41,6 @@ private:
 	std::vector< std::pair<ID3D12Resource*, DirectX::ScratchImage>> uploadResources_;
 	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> intermediateResources_;
 
+	Logger logger_ = nullptr;
 };
 

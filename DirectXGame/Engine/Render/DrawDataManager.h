@@ -1,5 +1,6 @@
 #pragma once
 #include <Core/DXDevice.h>
+#include <Utility/DirectUtilFuncs.h>
 
 struct DrawData {
 	std::vector<D3D12_VERTEX_BUFFER_VIEW> vbv;

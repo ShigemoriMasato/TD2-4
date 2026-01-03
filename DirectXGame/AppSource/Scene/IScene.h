@@ -20,6 +20,7 @@ protected:
 	SHEngine* engine_ = nullptr;
 
 	TextureManager* textureManager_ = nullptr;
+	ModelManager* modelManager_ = nullptr;
 	WindowMaker* windowMaker_ = nullptr;
 	DrawDataManager* drawDataManager_ = nullptr;
 	Input* input_ = nullptr;

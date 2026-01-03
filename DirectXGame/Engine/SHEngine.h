@@ -1,13 +1,14 @@
 #pragma once
 #include <Core/DXDevice.h>
+#include <Core/FenceManager.h>
+#include <Core/ImGuiforEngine.h>
 #include <Utility/DirectUtilFuncs.h>
 #include <Screen/Window.h>
-#include <Core/FenceManager.h>
 #include <Screen/WindowMaker.h>
-#include <Core/ImGuiforEngine.h>
 #include <Render/DrawDataManager.h>
 #include <Input/Input.h>
 #include <Tool/FPS/FPSObserver.h>
+#include <Assets/Model/ModelManager.h>
 #include <memory>
 
 class SHEngine {
@@ -23,10 +24,13 @@ public:
 	bool PreDraw();
 	void EndFrame();
 
+	void WaitForGPU();
+
 	void ImGuiActivate(Window* window);
 	void ImGuiDraw();
 
 	TextureManager* GetTextureManager() { return textureManager_.get(); }
+	ModelManager* GetModelManager() { return modelManager_.get(); }
 	WindowMaker* GetWindowMaker() { return windowMaker_.get(); }
 	DrawDataManager* GetDrawDataManager() { return drawDataManager_.get(); }
 	Input* GetInput() { return input_.get(); }
@@ -55,8 +59,9 @@ private:
 
 	//App側ツール
 	std::unique_ptr<TextureManager> textureManager_ = nullptr;
-	std::unique_ptr<WindowMaker> windowMaker_ = nullptr;
+	std::unique_ptr<ModelManager> modelManager_ = nullptr;
 	std::unique_ptr<DrawDataManager> drawDataManager_ = nullptr;
+	std::unique_ptr<WindowMaker> windowMaker_ = nullptr;
 	std::unique_ptr<Input> input_ = nullptr;
 	std::unique_ptr<FPSObserver> fpsObserver_ = nullptr;
 

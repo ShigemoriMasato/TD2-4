@@ -59,69 +59,6 @@ void InitializeScene::Initialize() {
 
 	//todo リソースの全読み込み
 
-	//BlockResourceの作成
-	std::vector<VertexData> vertices = {
-		// +Y 面
-		{{ 0.5f,  0.5f,  0.5f, 1.0f }, {0.0f, 1.0f}, {0.0f, 1.0f, 0.0f}},
-		{{-0.5f,  0.5f,  0.5f, 1.0f }, {1.0f, 1.0f}, {0.0f, 1.0f, 0.0f}},
-		{{-0.5f,  0.5f, -0.5f, 1.0f }, {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}},
-		{{ 0.5f,  0.5f, -0.5f, 1.0f }, {0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}},
-
-		// -Z 面
-		{{ 0.5f, -0.5f, -0.5f, 1.0f }, {0.0f, 1.0f}, {0.0f, 0.0f, -1.0f}},
-		{{ 0.5f,  0.5f, -0.5f, 1.0f }, {1.0f, 1.0f}, {0.0f, 0.0f, -1.0f}},
-		{{-0.5f,  0.5f, -0.5f, 1.0f }, {1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
-		{{-0.5f, -0.5f, -0.5f, 1.0f }, {0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
-
-		// -X 面
-		{{-0.5f, -0.5f, -0.5f, 1.0f }, {0.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}},
-		{{-0.5f,  0.5f, -0.5f, 1.0f }, {1.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}},
-		{{-0.5f,  0.5f,  0.5f, 1.0f }, {1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}},
-		{{-0.5f, -0.5f,  0.5f, 1.0f }, {0.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}},
-
-		// -Y 面
-		{{-0.5f, -0.5f,  0.5f, 1.0f }, {0.0f, 1.0f}, {0.0f, -1.0f, 0.0f}},
-		{{ 0.5f, -0.5f,  0.5f, 1.0f }, {1.0f, 1.0f}, {0.0f, -1.0f, 0.0f}},
-		{{ 0.5f, -0.5f, -0.5f, 1.0f }, {1.0f, 0.0f}, {0.0f, -1.0f, 0.0f}},
-		{{-0.5f, -0.5f, -0.5f, 1.0f }, {0.0f, 0.0f}, {0.0f, -1.0f, 0.0f}},
-
-		// +X 面
-		{{ 0.5f, -0.5f,  0.5f, 1.0f }, {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}},
-		{{ 0.5f,  0.5f,  0.5f, 1.0f }, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}},
-		{{ 0.5f,  0.5f, -0.5f, 1.0f }, {1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}},
-		{{ 0.5f, -0.5f, -0.5f, 1.0f }, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}},
-
-		// +Z 面
-		{{-0.5f, -0.5f,  0.5f, 1.0f }, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
-		{{-0.5f,  0.5f,  0.5f, 1.0f }, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
-		{{ 0.5f,  0.5f,  0.5f, 1.0f }, {1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
-		{{ 0.5f, -0.5f,  0.5f, 1.0f }, {0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
-	};
-
-	std::vector<uint32_t> index_ = {
-		3, 2, 1,
-		3, 1, 0,
-
-		7, 6, 5,
-		7, 5, 4,
-
-		11, 10, 9,
-		11, 9, 8,
-
-		15, 14, 13,
-		15, 13, 12,
-
-		19, 18, 17,
-		19, 17, 16,
-
-		23, 22, 21,
-		23, 21, 20
-	};
-
-	drawDataManager_->AddVertexBuffer(vertices);
-	drawDataManager_->AddIndexBuffer(index_);
-	commonData_->blockIndex = drawDataManager_->CreateDrawData();
-
 	//Input
 	input_->SetHWND(commonData_->mainWindow->GetWindow()->GetHwnd());
 
@@ -213,7 +150,7 @@ void InitializeScene::Initialize() {
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
-	return std::make_unique<GameScene>();
+	return std::make_unique<TestScene>();
 }
 
 void InitializeScene::Draw() {

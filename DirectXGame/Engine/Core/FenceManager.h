@@ -14,6 +14,8 @@ public:
 	void SendSignal();
 
 	bool SignalChecker(int offset = 0);
+	//GPUの処理が完全に完了するまで待機する
+	void WaitForGPU();
 
 	void Finalize();
 

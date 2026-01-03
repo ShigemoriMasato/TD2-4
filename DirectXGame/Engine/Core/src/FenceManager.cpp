@@ -47,6 +47,15 @@ bool FenceManager::SignalChecker(int offset) {
     return true;
 }
 
+void FenceManager::WaitForGPU() {
+    if (fence_->GetCompletedValue() < fenceValue_) {
+        //指定したSignalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
+        fence_->SetEventOnCompletion(fenceValue_, fenceEvent_);
+        //イベントを待つ
+        WaitForSingleObject(fenceEvent_, INFINITE);
+    }
+}
+
 void FenceManager::Finalize() {
     SignalChecker(0);
 }

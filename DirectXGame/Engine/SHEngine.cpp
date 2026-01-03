@@ -48,6 +48,8 @@ SHEngine::SHEngine() {
 	input_ = std::make_unique<Input>();
 
 	fpsObserver_ = std::make_unique<FPSObserver>();
+
+	modelManager_ = std::make_unique<ModelManager>();
 }
 
 SHEngine::~SHEngine() {
@@ -62,6 +64,7 @@ void SHEngine::Initialize(HINSTANCE hInstance) {
 	drawDataManager_->Initialize(dxDevice_.get());
 	hInstance_ = hInstance;
 	input_->Initialize(hInstance_);
+	modelManager_->Initialize(textureManager_.get(), drawDataManager_.get());
 }
 
 bool SHEngine::IsLoop() {
@@ -110,6 +113,10 @@ void SHEngine::EndFrame() {
 	ExecuteMessage();
 	//バツを押されたら終了する
 	exit_ = pushedCrossButton_;
+}
+
+void SHEngine::WaitForGPU() {
+	fenceManager_->WaitForGPU();
 }
 
 void SHEngine::ImGuiActivate(Window* window) {

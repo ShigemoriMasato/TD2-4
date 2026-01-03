@@ -8,14 +8,12 @@ public:
 	~SceneManager() = default;
 
 	void Initialize(SHEngine* engine);
+	bool IsHasNextScene() const { return nextScene_ != nullptr; };
+	void SwapScene();
 	void Update();
 	void Draw();
 
 	CommonData* GetCommonData() const { return commonData_.get(); }
-
-private:
-
-	void SwapScene();
 
 private:
 

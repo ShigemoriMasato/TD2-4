@@ -79,7 +79,7 @@ std::vector<Material> ModelLoader::LoadMaterials(const aiScene* scene, std::stri
 		aiString texturePath;
 		if (ai_material->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath) == AI_SUCCESS) {
 			std::string path = texturePath.C_Str();
-			material.textureIndex = textureManager->LoadTexture(directoryPath + path);
+			material.textureIndex = textureManager->LoadTexture(directoryPath + "/" + path);
 		} else {
 			material.textureIndex = 0; //テクスチャが無い場合はデフォルトテクスチャを使う
 		}

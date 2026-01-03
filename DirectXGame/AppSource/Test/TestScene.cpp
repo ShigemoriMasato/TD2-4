@@ -32,7 +32,7 @@ void TestScene::Initialize() {
 	drawDataManager_->AddIndexBuffer(indices);
 
 	int drawDataIndex = drawDataManager_->CreateDrawData();
-	renderObject_->SetDrawData(drawDataManager_->GetDrawData(commonData_->blockIndex));
+	renderObject_->SetDrawData(drawDataManager_->GetDrawData(drawDataIndex));
 	renderObject_->psoConfig_.rootConfig.useTexture = true;
 
 	vsDataIndex_ = renderObject_->CreateCBV(sizeof(VSData), ShaderType::VERTEX_SHADER, "TestScene::VSData");

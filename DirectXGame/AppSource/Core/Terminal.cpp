@@ -15,6 +15,11 @@ void Terminal::Run() {
 		// 更新 ===
 		engine_->Update();
 
+		if (sceneManager_->IsHasNextScene()) {
+			engine_->WaitForGPU();
+			sceneManager_->SwapScene();
+		}
+
 		sceneManager_->Update();
 
 		
