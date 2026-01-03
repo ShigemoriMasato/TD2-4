@@ -49,8 +49,6 @@ void ImGuiforEngine::BeginFrame() {
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-	logger_->debug("ImGui Open");
-
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(1280.0f, 720.0f), ImGuiCond_Always);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -84,8 +82,6 @@ void ImGuiforEngine::EndFrame() {
 
     ImGui::Render();
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandObject_->GetCommandList());
-
-    logger_->debug("ImGui Close");
 
 #endif
 }

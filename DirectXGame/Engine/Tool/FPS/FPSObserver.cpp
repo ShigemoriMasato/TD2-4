@@ -52,9 +52,12 @@ void FPSObserver::TimeAdjustment() {
 
     }
 
-    logger_->debug(std::format("FPS: {}, Frame Time : {}", 1.0 / frameTime, frameTime * 1000.0f));
-
     deltatime_ = static_cast<float>(frameTime);
+    frameCount_++;
+
+    if (deltatime_ > 5.0 / targetFPS_) {
+		logger_->warn("FPS Drop Detected: frameCount = {}  nowFPS = {:.2f}  TargetFPS = {:.2f}", frameCount_, 1.0f / deltatime_, float(targetFPS_));
+    }
 
     // 次のフレームの開始時間を設定
     timeStart_ = timeEnd_;

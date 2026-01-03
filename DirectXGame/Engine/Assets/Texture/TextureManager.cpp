@@ -29,7 +29,9 @@ void TextureManager::Initialize(DXDevice* device, CmdListManager* CmdListManager
 	device_ = device;
 	srvManager_ = device->GetSRVManager();
 	cmdObject_ = CmdListManager->CreateCommandObject();
-	LoadTexture("uvChecker.png");
+	LoadTexture("Assets/.EngineResource/Texture/white1x1.png");
+	LoadTexture("Assets/.EngineResource/Texture/uvChecker.png");
+	LoadTexture("Assets/.EngineResource/Texture/error.png");
 }
 
 void TextureManager::Clear() {
@@ -43,7 +45,7 @@ int TextureManager::LoadTexture(const std::string& filePath) {
 
 	std::string formatFirst = "Assets/";
 	std::string factFilePath = "";
-	if(filePath.length() < formatFirst.length()) {
+	if (filePath.length() < formatFirst.length()) {
 		factFilePath = "Assets/Texture/" + filePath;
 	} else {
 		for (int i = 0; i < formatFirst.length(); ++i) {
@@ -88,7 +90,7 @@ TextureData* TextureManager::GetTextureData(int handle) {
 
 void TextureManager::UploadTextures(ID3D12GraphicsCommandList* cmdList) {
 	intermediateResources_.clear();
-	for(const auto& [resource, mipImage] : uploadResources_) {
+	for (const auto& [resource, mipImage] : uploadResources_) {
 		intermediateResources_.push_back(nullptr);
 		intermediateResources_.back().Attach(UploadTextureData(resource, mipImage, device_->GetDevice(), cmdList));
 	}

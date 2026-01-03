@@ -202,6 +202,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Common\GameWindow.cpp" />
     <ClCompile Include="Engine\Core\src\ImGuiforEngine.cpp" />
     <ClCompile Include="AppSource\Game\KeyCoating\KeyCoating.cpp" />
+    <ClCompile Include="Engine\Utility\src\SearchFile.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\SHEngine.cpp" />
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
@@ -215,9 +216,11 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Test\TestScene.cpp" />
     <ClCompile Include="Engine\Screen\WindowMaker.cpp" />
     <ClCompile Include="Engine\Render\RenderObject.cpp" />
+    <ClCompile Include="Engine\Assets\Model\ModelManager.cpp" />
+    <ClCompile Include="Engine\Assets\Model\ModelLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AppSource\Common\DataStructures.h" />
+    <ClInclude Include="Engine\Utility\DataStructures.h" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\Game\GameScene.h" />
     <ClInclude Include="AppSource\Game\Tetris\Block\Delete\DeleteEffect.h" />
@@ -231,6 +234,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Scene\CommonData.h" />
     <ClInclude Include="AppSource\Scene\src\CommonData.h" />
     <ClInclude Include="AppSource\Game\Tetris\Block\BlockRender.h" />
+    <ClInclude Include="Engine\Assets\Model\ModelData.h" />
     <ClInclude Include="Engine\Camera\Camera.h" />
     <ClInclude Include="Engine\Camera\DebugCamera.h" />
     <ClInclude Include="Engine\Input\Input.h" />
@@ -296,6 +300,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Core\ImGuiforEngine.h" />
     <ClInclude Include="Engine\Render\RenderObject.h" />
     <ClInclude Include="AppSource\Game\KeyCoating\KeyCoating.h" />
+    <ClInclude Include="Engine\Assets\Model\ModelManager.h" />
+    <ClInclude Include="Engine\Assets\Model\ModelLoader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

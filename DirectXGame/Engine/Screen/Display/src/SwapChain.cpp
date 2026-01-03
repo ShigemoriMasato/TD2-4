@@ -45,7 +45,6 @@ void SwapChain::Initialize(DXDevice* device, TextureManager* textureManager, ID3
         displays_[i]->Initialize(data, clearColor);
 	}
 
-    logger_->debug("Initialized  id : {}    backBuffer : {}", debugID_, currentBackBufferIndex_);
 	logger_->info("SwapChain Info: Width : {} Height : {} ClearColor : {:08X}", width, height, clearColor);
 
     logger_->info("=== Complete create SwapChain ===");
@@ -55,9 +54,6 @@ void SwapChain::PreDraw(ID3D12GraphicsCommandList* cmdList, bool isClear) {
     currentBackBufferIndex_ = swapChain_->GetCurrentBackBufferIndex();
 
 	displays_[currentBackBufferIndex_]->PreDraw(cmdList, isClear);
-
-    logger_->debug("PreDraw  id : {}    backBuffer : {}", debugID_, currentBackBufferIndex_);
-
 }
 
 void SwapChain::ToTexture(ID3D12GraphicsCommandList* cmdList) {
@@ -68,15 +64,11 @@ void SwapChain::PostDraw(ID3D12GraphicsCommandList* cmdList) {
     currentBackBufferIndex_ = swapChain_->GetCurrentBackBufferIndex();
 
     displays_[currentBackBufferIndex_]->PostDraw(cmdList);
-
-    logger_->debug("PostDraw  id : {}    backBuffer : {}", debugID_, currentBackBufferIndex_);
-
 }
 
 void SwapChain::Present() {
     currentBackBufferIndex_ = swapChain_->GetCurrentBackBufferIndex();
 
-    logger_->debug("Present  id : {} BackBuffer : {}", debugID_, currentBackBufferIndex_);
     //画面に表示する
     HRESULT hr = swapChain_->Present(1, 0);
 	assert(SUCCEEDED(hr));

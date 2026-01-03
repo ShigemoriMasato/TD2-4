@@ -64,6 +64,9 @@
     <ClCompile Include="AppSource\Game\KeyCoating\KeyCoating.cpp" />
     <ClCompile Include="Engine\Utility\src\Easing.cpp" />
     <ClCompile Include="AppSource\Game\Tetris\Block\Delete\DeleteEffect.cpp" />
+    <ClCompile Include="Engine\Assets\Model\ModelManager.cpp" />
+    <ClCompile Include="Engine\Assets\Model\ModelLoader.cpp" />
+    <ClCompile Include="Engine\Utility\src\SearchFile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\DXDevice.h" />
@@ -144,6 +147,9 @@
     <ClInclude Include="AppSource\Game\KeyCoating\KeyCoating.h" />
     <ClInclude Include="Engine\Utility\Easing.h" />
     <ClInclude Include="AppSource\Game\Tetris\Block\Delete\DeleteEffect.h" />
-    <ClInclude Include="AppSource\Common\DataStructures.h" />
+    <ClInclude Include="Engine\Utility\DataStructures.h" />
+    <ClInclude Include="Engine\Assets\Model\ModelData.h" />
+    <ClInclude Include="Engine\Assets\Model\ModelManager.h" />
+    <ClInclude Include="Engine\Assets\Model\ModelLoader.h" />
   </ItemGroup>
 </Project>

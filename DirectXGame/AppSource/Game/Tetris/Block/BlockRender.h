@@ -2,7 +2,7 @@
 #include <Camera/Camera.h>
 #include <Game/Tetris/Data.h>
 #include <Render/RenderObject.h>
-#include <Common/DataStructures.h>
+#include <Utility/DataStructures.h>
 #include "Delete/DeleteEffect.h"
 
 class BlockRender {

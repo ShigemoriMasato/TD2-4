@@ -42,4 +42,5 @@ private:
     void PreciseSleep(double seconds);
 
     std::shared_ptr<spdlog::logger> logger_;
+	uint32_t frameCount_ = 0;
 };

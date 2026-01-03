@@ -174,6 +174,4 @@ void RenderObject::Draw(Window* window) {
 
 	//描画コマンド
 	cmdList->DrawIndexedInstanced(indexNum_, instanceNum_, 0, 0, 0);
-
-	logger_->debug("Draw Called: {}", debugName_);
 }
