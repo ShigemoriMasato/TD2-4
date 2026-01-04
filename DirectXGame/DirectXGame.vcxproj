@@ -219,6 +219,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Render\RenderObject.cpp" />
     <ClCompile Include="Engine\Assets\Model\ModelManager.cpp" />
     <ClCompile Include="Engine\Assets\Model\ModelLoader.cpp" />
+    <ClCompile Include="Engine\Render\PostEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\DebugLine.h" />
@@ -304,6 +305,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Game\KeyCoating\KeyCoating.h" />
     <ClInclude Include="Engine\Assets\Model\ModelManager.h" />
     <ClInclude Include="Engine\Assets\Model\ModelLoader.h" />
+    <ClInclude Include="Engine\Render\PostEffect.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

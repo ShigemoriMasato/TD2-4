@@ -38,8 +38,8 @@ std::unique_ptr<IScene> TestScene::Update() {
 
 	debugCamera_->Update();
 
-	Animation animation = modelManager_->LoadAnimation(sneekWalk, 0);
-	auto model = modelManager_->GetSkinningModelData(modelManager_->LoadModel(sneekWalk));
+	static Animation animation = modelManager_->LoadAnimation(sneekWalk, 0);
+	static auto model = modelManager_->GetSkinningModelData(modelManager_->LoadModel(sneekWalk));
 
 	static float time = 0.0f;
 	time += engine_->GetFPSObserver()->GetDeltatime();

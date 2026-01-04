@@ -68,6 +68,7 @@
     <ClCompile Include="Engine\Assets\Model\ModelLoader.cpp" />
     <ClCompile Include="Engine\Utility\src\SearchFile.cpp" />
     <ClCompile Include="Engine\Render\DebugLine.cpp" />
+    <ClCompile Include="Engine\Render\PostEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\DXDevice.h" />
@@ -153,5 +154,6 @@
     <ClInclude Include="Engine\Assets\Model\ModelManager.h" />
     <ClInclude Include="Engine\Assets\Model\ModelLoader.h" />
     <ClInclude Include="Engine\Render\DebugLine.h" />
+    <ClInclude Include="Engine\Render\PostEffect.h" />
   </ItemGroup>
 </Project>
