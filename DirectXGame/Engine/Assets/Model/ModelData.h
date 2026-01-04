@@ -70,6 +70,7 @@ struct Joint {
 
 struct Skeleton {
 	int32_t root;
+	Matrix4x4 rootMatrix = Matrix4x4::Identity();
 	std::map<std::string, int32_t> jointMap;
 	std::vector<Joint> joints;
 };

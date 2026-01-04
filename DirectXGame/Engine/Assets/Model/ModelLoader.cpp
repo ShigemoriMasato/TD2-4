@@ -4,8 +4,6 @@
 Node ModelLoader::ReadNode(const aiNode* node) {
 	Node result;
 
-	result.name = node->mName.C_Str();// Node名を格納
-
 	//Transformの読み込み
 	aiVector3D scale, position;
 	aiQuaternion rotate;
@@ -13,12 +11,15 @@ Node ModelLoader::ReadNode(const aiNode* node) {
 	result.transform.scale = { scale.x, scale.y, scale.z };
 	result.transform.rotate = { rotate.x, rotate.y, rotate.z, rotate.w };
 	result.transform.position = { position.x, position.y, position.z };
-	
+
 	//ローカル行列の計算
 	result.localMatrix = 
 		Matrix::MakeScaleMatrix(result.transform.scale) * 
 		result.transform.rotate.ToMatrix() * 
 		Matrix::MakeTranslationMatrix(result.transform.position);
+
+	// Node名を格納
+	result.name = node->mName.C_Str();
 
 	for (uint32_t childIndex = 0; childIndex < node->mNumChildren; ++childIndex) {
 		//再帰的に読んで階層構造を作っていく
@@ -177,9 +178,16 @@ std::map<std::string, JointWeightData> ModelLoader::LoadSkinCluster(const aiScen
 	return skinClusterData;
 }
 
-Skeleton ModelLoader::CreateSkelton(const Node& rootNode) {
+Skeleton ModelLoader::CreateSkelton(const Node& rootNode, const aiScene* scene) {
 	Skeleton skeleton{};
-	skeleton.root = CreateJoint(rootNode, {}, skeleton.joints);
+	std::unordered_set<std::string> boneNames;
+
+	for (uint32_t i = 0; i < scene->mNumMeshes; ++i) {
+		for (uint32_t b = 0; b < scene->mMeshes[i]->mNumBones; ++b) {
+			boneNames.insert(scene->mMeshes[i]->mBones[b]->mName.C_Str());
+		}
+	}
+	skeleton.root = CreateJoint(rootNode, {}, skeleton, boneNames, Matrix4x4::Identity());
 
 	//名前とindexのマッピング
 	for (const Joint& joint : skeleton.joints) {
@@ -189,7 +197,19 @@ Skeleton ModelLoader::CreateSkelton(const Node& rootNode) {
 	return skeleton;
 }
 
-int32_t ModelLoader::CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints) {
+int32_t ModelLoader::CreateJoint(const Node& node, const std::optional<int32_t>& parent, Skeleton& skeleton, std::unordered_set<std::string>& boneNames, Matrix4x4 parentAccumulated) {
+	Matrix4x4 currentAccumulated = parentAccumulated * node.localMatrix;
+
+	auto& joints = skeleton.joints;
+	if (!boneNames.contains(node.name)) {
+		// Jointにしないが、子は見る
+		for (const Node& child : node.children) {
+			skeleton.rootMatrix = node.localMatrix * skeleton.rootMatrix;
+			CreateJoint(child, parent, skeleton, boneNames, currentAccumulated);
+		}
+		return -1;
+	}
+
 	Joint joint{};
 	joint.name = node.name;
 	joint.localMatrix = node.localMatrix;
@@ -200,8 +220,12 @@ int32_t ModelLoader::CreateJoint(const Node& node, const std::optional<int32_t>&
 
 	joints.push_back(joint);
 
+	if(!parent.has_value()) {
+		skeleton.rootMatrix = parentAccumulated;
+	}
+
 	for (const Node& child : node.children) {
-		int32_t childIndex = CreateJoint(child, joint.index, joints);
+		int32_t childIndex = CreateJoint(child, joint.index, skeleton, boneNames, Matrix4x4::Identity());
 		joints[joint.index].children.push_back(childIndex);
 	}
 

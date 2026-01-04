@@ -230,7 +230,7 @@ SkinningModelData ModelManager::WritingSkinningModelData(const aiScene* scene, s
 	result.indices = ModelLoader::LoadIndices(scene);
 	result.materials = ModelLoader::LoadMaterials(scene, filePath, textureManager_);
 	result.materialIndex = ModelLoader::LoadMaterialIndices(scene);
-	result.skeleton = ModelLoader::CreateSkelton(ModelLoader::ReadNode(scene->mRootNode));
+	result.skeleton = ModelLoader::CreateSkelton(ModelLoader::ReadNode(scene->mRootNode), scene);
 	result.skinClusterData = ModelLoader::LoadSkinCluster(scene);
 
 	//読み込めているかの確認
@@ -306,13 +306,13 @@ void SkeletonUpdate(Skeleton& skeleton) {
 		if (joint.parent) {
 			joint.skeletonSpaceMatrix = joint.localMatrix * skeleton.joints[*joint.parent].skeletonSpaceMatrix;
 		} else {
-			joint.skeletonSpaceMatrix = joint.localMatrix;
+			joint.skeletonSpaceMatrix = joint.localMatrix * skeleton.rootMatrix;
 		}
 	}
 }
 
 void SkinningUpdate(std::vector<WellForGPU>& result, std::map<std::string, JointWeightData> skinCluster, const Skeleton& skeleton) {
-	for(size_t jointIndex = 0; jointIndex < skeleton.joints.size(); ++jointIndex) {
+	for (size_t jointIndex = 0; jointIndex < skeleton.joints.size(); ++jointIndex) {
 		assert(jointIndex < skeleton.joints.size());
 		std::string key = skeleton.joints[jointIndex].name;
 		result[jointIndex].skeletonSpaceMatrix = 
