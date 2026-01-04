@@ -20,7 +20,7 @@ public:
 	void Initialize(TextureManager* textureManager, DrawDataManager* drawDataManager);
 
 	int LoadModel(std::string filePath);
-	Animation LoadAnimation(std::string filePath);
+	Animation LoadAnimation(std::string filePath, int index);
 
 	//失敗したらLogとキューブが返る
 	NodeModelData& GetNodeModelData(int id);
@@ -36,10 +36,10 @@ private:
 
 private://Model
 
-	std::unordered_map<std::string, int> modelFilePaths{};
+	std::unordered_map<std::string, int> modelFilePaths_{};
 
-	std::map<int, NodeModelData> nodeModelDataMap{};
-	std::map<int, SkinningModelData> skinningModelDataMap{};
+	std::vector<NodeModelData> nodeModelDatas_{};
+	std::vector<SkinningModelData> skinningModelDatas_{};
 
 	int nextID_ = 0;
 
@@ -48,10 +48,17 @@ private://Model
 
 private://Animation
 
-	std::unordered_map<std::string, Animation> animationFilePaths{};
+	std::unordered_map<std::string, std::vector<Animation>> animations_{};
 
 private://Debug
 
 	Logger logger_;
 
 };
+
+Matrix4x4 AnimationUpdate(const Animation& animation, float time, const Node& node);
+void AnimationUpdate(const Animation& animation, float time, Skeleton& skeleton);
+void SkeletonUpdate(Skeleton& skeleton);
+
+Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
+Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);

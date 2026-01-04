@@ -162,6 +162,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Game\Tetris\Score\ScoreManager.cpp" />
     <ClCompile Include="AppSource\Game\Tetris\Tetris.cpp" />
     <ClCompile Include="AppSource\Game\Tetris\Block\BlockRender.cpp" />
+    <ClCompile Include="Engine\Render\DebugLine.cpp" />
     <ClCompile Include="Engine\Camera\Camera.cpp" />
     <ClCompile Include="Engine\Camera\DebugCamera.cpp" />
     <ClCompile Include="Engine\Input\Input.cpp" />
@@ -220,6 +221,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Assets\Model\ModelLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Render\DebugLine.h" />
     <ClInclude Include="Engine\Utility\DataStructures.h" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\Game\GameScene.h" />

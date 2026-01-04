@@ -1,6 +1,7 @@
 #include "../Operator.h"
 #include "../Matrix.h"
 #include "../Vector.h"
+#include "../Quaternion.h"
 #include <cmath>
 #include <cassert>
 
@@ -470,4 +471,16 @@ bool operator==(const Matrix4x4& a, const Matrix4x4& b) {
 
 bool operator!=(const Matrix4x4& a, const Matrix4x4& b) {
 	return !(a == b);
+}
+
+Quaternion operator+(const Quaternion& a, const Quaternion& b) {
+	return { a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w };
+}
+
+Quaternion operator-(const Quaternion& a, const Quaternion& b) {
+	return { a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w };
+}
+
+Quaternion operator*(const Quaternion& a, const float b) {
+	return { a.x * b, a.y * b, a.z * b, a.w * b };
 }

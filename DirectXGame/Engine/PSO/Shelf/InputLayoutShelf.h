@@ -5,6 +5,7 @@
 
 enum class InputLayoutID : uint8_t {
 	Default = 0,
+	Textured,
 	Model,
 	Vector3,
 

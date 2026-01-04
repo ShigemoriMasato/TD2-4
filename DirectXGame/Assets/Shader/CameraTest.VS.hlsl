@@ -24,7 +24,7 @@ struct VSOutput
 VSOutput main(VertexShaderInput input)
 {
     VSOutput output;
-    output.position = mul(input.position, gTransformMatrix.world * gTransformMatrix.vp);
+    output.position = mul(input.position, mul(gTransformMatrix.world, gTransformMatrix.vp));
     output.texcoord = input.texcoord;
     output.normal = normalize(mul(input.normal, (float3x3) gTransformMatrix.world));
     return output;

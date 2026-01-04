@@ -5,6 +5,8 @@
 #include <Utility/DataStructures.h>
 #include <vector>
 #include <string>
+#include <optional>
+#include <map>
 #include <unordered_map>
 
 struct Material {
@@ -12,35 +14,10 @@ struct Material {
 };
 
 struct Node {
+	QuaternionTransform transform;
 	Matrix4x4 localMatrix;
 	std::string name;
 	std::vector<Node> children;
-};
-
-struct NodeModelData {
-	//VertexBufferView関連
-	std::vector<VertexData> vertices{};
-	std::vector<uint32_t> materialIndex{};
-
-	//IndexBufferView関連
-	std::vector<uint32_t> indices{};
-
-	//その他
-	Node rootNode{};
-	std::vector<Material> materials{};
-	int drawDataIndex = -1;
-};
-
-struct SkinningModelData {
-	//VertexBufferView関連
-	std::vector<VertexData> vertices{};
-	std::vector<uint32_t> materialIndex{};
-
-	//IndexBufferView関連
-	std::vector<uint32_t> indices{};
-
-	//その他
-	std::vector<Material> materials{};
 };
 
 template <typename T>
@@ -65,4 +42,59 @@ struct NodeAnimation {
 struct Animation {
 	float duration;
 	std::unordered_map<std::string, NodeAnimation> nodeAnimations;
+};
+
+struct NodeModelData {
+	//VertexBufferView関連
+	std::vector<VertexData> vertices{};
+	std::vector<uint32_t> materialIndex{};
+
+	//IndexBufferView関連
+	std::vector<uint32_t> indices{};
+
+	//その他
+	Node rootNode{};
+	std::vector<Material> materials{};
+	int drawDataIndex = -1;
+};
+
+struct Joint {
+	QuaternionTransform transform;
+	Matrix4x4 localMatrix;
+	Matrix4x4 skeletonSpaceMatrix;
+	std::string name;
+	std::vector<int32_t> children;
+	int32_t index;
+	std::optional<int32_t> parent;
+};
+
+struct Skeleton {
+	int32_t root;
+	std::map<std::string, int32_t> jointMap;
+	std::vector<Joint> joints;
+};
+
+struct VertexWeightData {
+	float weight;
+	uint32_t vertexIndex;
+};
+
+struct JointWeightData {
+	Matrix4x4 inverseBindPoseMatrix{};
+	std::vector<VertexWeightData> vertexWeights;
+};
+
+struct SkinningModelData {
+	//VertexBufferView関連
+	std::vector<VertexData> vertices{};
+	std::vector<uint32_t> materialIndex{};
+
+	//IndexBufferView関連
+	std::vector<uint32_t> indices{};
+
+	//その他
+	Skeleton skeleton{};
+	std::map<std::string, JointWeightData> skinClusterData{};
+	std::vector<Material> materials{};
+	int drawDataIndex = -1;
 };

@@ -6,6 +6,8 @@ struct Vector4;
 struct Matrix3x3;
 struct Matrix4x4;
 
+struct Quaternion;
+
 Vector2 operator+(const Vector2& a, const Vector2& b);
 Vector2 operator-(const Vector2& a, const Vector2& b);
 Vector2 operator*(const Vector2& a, const Vector2& b);
@@ -81,3 +83,7 @@ Matrix4x4 operator/=(Matrix4x4& a, const Matrix4x4& b);
 bool operator==(const Matrix4x4& a, const Matrix4x4& b);
 bool operator!=(const Matrix4x4& a, const Matrix4x4& b);
 
+//Easing用
+Quaternion operator+(const Quaternion& a, const Quaternion& b);
+Quaternion operator-(const Quaternion& a, const Quaternion& b);
+Quaternion operator*(const Quaternion& a, const float b);

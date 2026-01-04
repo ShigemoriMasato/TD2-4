@@ -77,6 +77,7 @@ Logger getLogger(const std::string& name, uint32_t flug) {
 #endif
 
     logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] %v");
+	logger->flush_on(spdlog::level::warn);
 
     return logger;
 }

@@ -17,7 +17,7 @@ RasterizerShelf::RasterizerShelf() {
     //裏面(時計回り)を表示しない
     wireframeDesc.CullMode = D3D12_CULL_MODE_BACK;
     //三角形の中を塗りつぶす
-    wireframeDesc.FillMode = D3D12_FILL_MODE_SOLID;
+    wireframeDesc.FillMode = D3D12_FILL_MODE_WIREFRAME;
 
     rasterizerDescs_[int(RasterizerID::Wireframe)] = wireframeDesc;
 }

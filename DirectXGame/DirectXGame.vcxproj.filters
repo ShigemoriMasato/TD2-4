@@ -67,6 +67,7 @@
     <ClCompile Include="Engine\Assets\Model\ModelManager.cpp" />
     <ClCompile Include="Engine\Assets\Model\ModelLoader.cpp" />
     <ClCompile Include="Engine\Utility\src\SearchFile.cpp" />
+    <ClCompile Include="Engine\Render\DebugLine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\DXDevice.h" />
@@ -151,5 +152,6 @@
     <ClInclude Include="Engine\Assets\Model\ModelData.h" />
     <ClInclude Include="Engine\Assets\Model\ModelManager.h" />
     <ClInclude Include="Engine\Assets\Model\ModelLoader.h" />
+    <ClInclude Include="Engine\Render\DebugLine.h" />
   </ItemGroup>
 </Project>

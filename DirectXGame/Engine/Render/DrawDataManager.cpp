@@ -53,7 +53,7 @@ int DrawDataManager::CreateDrawData() {
 	drawData.ibv = indexBufferView_;
 	drawData.vertexNum = vertexNum_;
 	drawData.indexNum = indexNum_;
-	drawDatas_.push_back(drawData);
+	drawDatas_.push_back({ drawData, mapData_ });
 	logger_->debug("DrawData Created: VertexCount {}, IndexCount {}", vertexNum_, drawData.indexNum);
 
 	//使用したVBVとIBVをクリア

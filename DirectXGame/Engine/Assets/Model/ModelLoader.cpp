@@ -1,20 +1,28 @@
 #include "ModelLoader.h"
+#include <Utility/MatrixFactory.h>
 
 Node ModelLoader::ReadNode(const aiNode* node) {
 	Node result;
 
-	aiMatrix4x4 aiLocalMatrix = node->mTransformation;
-	aiLocalMatrix.Transpose();
-	for (int i = 0; i < 4; ++i)
-		for (int j = 0; j < 4; ++j)
-			result.localMatrix.m[i][j] = aiLocalMatrix[i][j];
-
 	result.name = node->mName.C_Str();// Node名を格納
 
-	result.children.resize(node->mNumChildren); // 子供の数だけ確保
+	//Transformの読み込み
+	aiVector3D scale, position;
+	aiQuaternion rotate;
+	node->mTransformation.Decompose(scale, rotate, position);
+	result.transform.scale = { scale.x, scale.y, scale.z };
+	result.transform.rotate = { rotate.x, rotate.y, rotate.z, rotate.w };
+	result.transform.position = { position.x, position.y, position.z };
+	
+	//ローカル行列の計算
+	result.localMatrix = 
+		Matrix::MakeScaleMatrix(result.transform.scale) * 
+		result.transform.rotate.ToMatrix() * 
+		Matrix::MakeTranslationMatrix(result.transform.position);
+
 	for (uint32_t childIndex = 0; childIndex < node->mNumChildren; ++childIndex) {
 		//再帰的に読んで階層構造を作っていく
-		result.children[childIndex] = ReadNode(node->mChildren[childIndex]);
+		result.children.push_back(ReadNode(node->mChildren[childIndex]));
 	}
 
 	return result;
@@ -104,4 +112,119 @@ std::vector<uint32_t> ModelLoader::LoadMaterialIndices(const aiScene* scene) {
 	}
 
 	return result;
+}
+
+std::map<std::string, JointWeightData> ModelLoader::LoadSkinCluster(const aiScene* scene) {
+	std::map<std::string, JointWeightData> skinClusterData;
+
+	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
+		aiMesh* mesh = scene->mMeshes[meshIndex];
+
+		for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
+			aiBone* bone = mesh->mBones[boneIndex];
+			std::string jointName = bone->mName.C_Str();
+			JointWeightData& jointWeightData = skinClusterData[jointName];
+
+			aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
+			aiVector3D scale, translate;
+			aiQuaternion rotate;
+			bindPoseMatrixAssimp.Decompose(scale, rotate, translate);
+			Matrix4x4 bindPoseMatrix =
+				Matrix::MakeScaleMatrix({ scale.x, scale.y, scale.z }) *
+				Quaternion(rotate.x, rotate.y, rotate.z, rotate.w).ToMatrix() *
+				Matrix::MakeTranslationMatrix({ translate.x, translate.y, translate.z });
+			jointWeightData.inverseBindPoseMatrix = bindPoseMatrix.Inverse();
+
+			for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
+				jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight, bone->mWeights[weightIndex].mVertexId });
+			}
+		}
+	}
+
+	return skinClusterData;
+}
+
+Skeleton ModelLoader::CreateSkelton(const Node& rootNode) {
+	Skeleton skeleton{};
+	skeleton.root = CreateJoint(rootNode, {}, skeleton.joints);
+
+	//名前とindexのマッピング
+	for (const Joint& joint : skeleton.joints) {
+		skeleton.jointMap[joint.name] = joint.index;
+	}
+
+	return skeleton;
+}
+
+int32_t ModelLoader::CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints) {
+	Joint joint{};
+	joint.name = node.name;
+	joint.localMatrix = node.localMatrix;
+	joint.skeletonSpaceMatrix = Matrix4x4::Identity();
+	joint.transform = node.transform;
+	joint.index = static_cast<int32_t>(joints.size());
+	joint.parent = parent;
+
+	joints.push_back(joint);
+
+	for (const Node& child : node.children) {
+		int32_t childIndex = CreateJoint(child, joint.index, joints);
+		joints[joint.index].children.push_back(childIndex);
+	}
+
+	return joint.index;
+}
+
+std::vector<Animation> ModelLoader::LoadAnimations(const aiScene* scene) {
+	std::vector<Animation> animations{};
+
+	if(scene->mNumAnimations == 0) {
+		return animations;
+	}
+
+	for (uint32_t i = 0; i < scene->mNumAnimations; ++i) {
+		Animation animation{};
+		aiAnimation* ai_animation = scene->mAnimations[i];
+
+		animation.duration = static_cast<float>(ai_animation->mDuration / ai_animation->mTicksPerSecond);
+
+		for (uint32_t channelIndex = 0; channelIndex < ai_animation->mNumChannels; ++channelIndex) {
+			aiNodeAnim* ai_nodeAnim = ai_animation->mChannels[channelIndex];
+			NodeAnimation nodeAnimation{};
+			//位置
+			for (uint32_t posIndex = 0; posIndex < ai_nodeAnim->mNumPositionKeys; ++posIndex) {
+				KeyframeVector3 keyframe{};
+				keyframe.time = static_cast<float>(ai_nodeAnim->mPositionKeys[posIndex].mTime / ai_animation->mTicksPerSecond);
+				keyframe.value.x = ai_nodeAnim->mPositionKeys[posIndex].mValue.x;
+				keyframe.value.y = ai_nodeAnim->mPositionKeys[posIndex].mValue.y;
+				keyframe.value.z = ai_nodeAnim->mPositionKeys[posIndex].mValue.z;
+				nodeAnimation.position.keyframes.push_back(keyframe);
+			}
+			//回転
+			for (uint32_t rotIndex = 0; rotIndex < ai_nodeAnim->mNumRotationKeys; ++rotIndex) {
+				KeyframeQuaternion keyframe{};
+				keyframe.time = static_cast<float>(ai_nodeAnim->mRotationKeys[rotIndex].mTime / ai_animation->mTicksPerSecond);
+				keyframe.value.x = ai_nodeAnim->mRotationKeys[rotIndex].mValue.x;
+				keyframe.value.y = ai_nodeAnim->mRotationKeys[rotIndex].mValue.y;
+				keyframe.value.z = ai_nodeAnim->mRotationKeys[rotIndex].mValue.z;
+				keyframe.value.w = ai_nodeAnim->mRotationKeys[rotIndex].mValue.w;
+				nodeAnimation.rotate.keyframes.push_back(keyframe);
+			}
+			//スケール
+			for (uint32_t scaleIndex = 0; scaleIndex < ai_nodeAnim->mNumScalingKeys; ++scaleIndex) {
+				KeyframeVector3 keyframe{};
+				keyframe.time = static_cast<float>(ai_nodeAnim->mScalingKeys[scaleIndex].mTime / ai_animation->mTicksPerSecond);
+				keyframe.value.x = ai_nodeAnim->mScalingKeys[scaleIndex].mValue.x;
+				keyframe.value.y = ai_nodeAnim->mScalingKeys[scaleIndex].mValue.y;
+				keyframe.value.z = ai_nodeAnim->mScalingKeys[scaleIndex].mValue.z;
+				nodeAnimation.scale.keyframes.push_back(keyframe);
+			}
+
+			animation.nodeAnimations[ai_nodeAnim->mNodeName.C_Str()] = nodeAnimation;
+		}
+
+		animations.push_back(animation);
+	}
+
+	return animations;
 }

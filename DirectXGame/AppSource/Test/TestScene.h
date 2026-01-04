@@ -2,6 +2,7 @@
 #include <Scene/IScene.h>
 #include <Render/RenderObject.h>
 #include <Camera/DebugCamera.h>
+#include <Render/DebugLine.h>
 
 class TestScene : public IScene {
 public:
@@ -22,6 +23,7 @@ private:
 		Matrix4x4 vpMatrix = Matrix4x4::Identity();
 	};
 	std::unique_ptr<RenderObject> renderObject_;
+	std::unique_ptr<DebugLine> debugLine_;
 	VSData vsData_{};
 	int vsDataIndex_ = -1;
 
