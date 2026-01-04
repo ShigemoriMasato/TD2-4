@@ -226,6 +226,7 @@ SkinningModelData ModelManager::WritingSkinningModelData(const aiScene* scene, s
 	SkinningModelData result;
 	//コードがごちゃつくのでModelLoaderに処理を投げる
 	result.vertices = ModelLoader::LoadVertices(scene);
+	result.vertexInfluences = ModelLoader::LoadVertexInfluences(scene);
 	result.indices = ModelLoader::LoadIndices(scene);
 	result.materials = ModelLoader::LoadMaterials(scene, filePath, textureManager_);
 	result.materialIndex = ModelLoader::LoadMaterialIndices(scene);
@@ -236,6 +237,10 @@ SkinningModelData ModelManager::WritingSkinningModelData(const aiScene* scene, s
 	bool isCorrect = true;
 	if (result.vertices.empty()) {
 		logger_->warn("Vertex is Empty!");
+		isCorrect = false;
+	}
+	if (result.vertices.empty()) {
+		logger_->warn("VertexInfluence is Empty!");
 		isCorrect = false;
 	}
 	if (result.indices.empty()) {
@@ -262,6 +267,7 @@ SkinningModelData ModelManager::WritingSkinningModelData(const aiScene* scene, s
 	} else {
 		//DrawDataの作成
 		drawDataManager_->AddVertexBuffer(result.vertices);
+		drawDataManager_->AddVertexBuffer(result.vertexInfluences);
 		drawDataManager_->AddIndexBuffer(result.indices);
 		int drawDataIndex = drawDataManager_->CreateDrawData();
 		result.drawDataIndex = drawDataIndex;
@@ -302,6 +308,18 @@ void SkeletonUpdate(Skeleton& skeleton) {
 		} else {
 			joint.skeletonSpaceMatrix = joint.localMatrix;
 		}
+	}
+}
+
+void SkinningUpdate(std::vector<WellForGPU>& result, std::map<std::string, JointWeightData> skinCluster, const Skeleton& skeleton) {
+	for(size_t jointIndex = 0; jointIndex < skeleton.joints.size(); ++jointIndex) {
+		assert(jointIndex < skeleton.joints.size());
+		std::string key = skeleton.joints[jointIndex].name;
+		result[jointIndex].skeletonSpaceMatrix = 
+			skinCluster[key].inverseBindPoseMatrix * skeleton.joints[jointIndex].skeletonSpaceMatrix;
+
+		result[jointIndex].skeletonSpaceInverseTransposeMatrix =
+			Matrix::TransMatrix(result[jointIndex].skeletonSpaceMatrix.Inverse());
 	}
 }
 

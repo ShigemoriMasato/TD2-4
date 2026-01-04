@@ -84,9 +84,21 @@ struct JointWeightData {
 	std::vector<VertexWeightData> vertexWeights;
 };
 
+const uint32_t kMaxInfluences = 4;
+struct VertexInfluence {
+	float weights[kMaxInfluences];
+	int jointIndices[kMaxInfluences];
+};
+
+struct WellForGPU {
+	Matrix4x4 skeletonSpaceMatrix;//位置用
+	Matrix4x4 skeletonSpaceInverseTransposeMatrix;//normal用
+};
+
 struct SkinningModelData {
 	//VertexBufferView関連
 	std::vector<VertexData> vertices{};
+	std::vector<VertexInfluence> vertexInfluences{};
 	std::vector<uint32_t> materialIndex{};
 
 	//IndexBufferView関連

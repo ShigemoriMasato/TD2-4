@@ -64,7 +64,6 @@ int TextureManager::LoadTexture(const std::string& filePath) {
 
 	if (!std::filesystem::exists(factFilePath)) {
 		logger_->error("Texture File is Not Found: {}", factFilePath);
-		assert(false && "Texture File is Not Found");
 		return 2;//ErrorTexture
 	}
 

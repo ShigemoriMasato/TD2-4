@@ -58,6 +58,39 @@ std::vector<VertexData> ModelLoader::LoadVertices(const aiScene* scene) {
 	return vertices;
 }
 
+std::vector<VertexInfluence> ModelLoader::LoadVertexInfluences(const aiScene* scene) {
+	std::vector<VertexInfluence> vertexInfluences;
+	//頂点数分の空のデータを作成
+	uint32_t totalVertexCount = 0;
+	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
+		aiMesh* mesh = scene->mMeshes[meshIndex];
+		totalVertexCount += mesh->mNumVertices;
+	}
+	vertexInfluences.resize(totalVertexCount);
+	//各メッシュのボーン情報を読み込み
+	uint32_t vertexOffset = 0;
+	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
+		aiMesh* mesh = scene->mMeshes[meshIndex];
+		for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
+			aiBone* bone = mesh->mBones[boneIndex];
+			for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
+				aiVertexWeight weight = bone->mWeights[weightIndex];
+				VertexInfluence& vertexInfluence = vertexInfluences[vertexOffset + weight.mVertexId];
+				//影響度を追加
+				for (int i = 0; i < kMaxInfluences; ++i) {
+					if (vertexInfluence.weights[i] == 0.0f) {
+						vertexInfluence.weights[i] = weight.mWeight;
+						vertexInfluence.jointIndices[i] = boneIndex; //ボーンのインデックスを格納
+						break;
+					}
+				}
+			}
+		}
+		vertexOffset += mesh->mNumVertices;
+	}
+	return vertexInfluences;
+}
+
 std::vector<uint32_t> ModelLoader::LoadIndices(const aiScene* scene) {
 	std::vector<uint32_t> indices;
 

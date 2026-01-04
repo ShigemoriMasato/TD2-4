@@ -7,6 +7,7 @@ namespace ModelLoader {
 	Node ReadNode(const aiNode* node);
 
 	std::vector<VertexData> LoadVertices(const aiScene* scene);
+	std::vector<VertexInfluence> LoadVertexInfluences(const aiScene* scene);
 	std::vector<uint32_t> LoadIndices(const aiScene* scene);
 
 	std::vector<Material> LoadMaterials(const aiScene* scene, std::string directoryPath, TextureManager* textureManager);

@@ -59,6 +59,7 @@ private://Debug
 Matrix4x4 AnimationUpdate(const Animation& animation, float time, const Node& node);
 void AnimationUpdate(const Animation& animation, float time, Skeleton& skeleton);
 void SkeletonUpdate(Skeleton& skeleton);
+void SkinningUpdate(std::vector<WellForGPU>& result, std::map<std::string, JointWeightData> skinCluster, const Skeleton& skeleton);
 
 Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
 Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);

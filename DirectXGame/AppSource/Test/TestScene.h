@@ -22,6 +22,7 @@ private:
 		Matrix4x4 worldMatrix = Matrix4x4::Identity();
 		Matrix4x4 vpMatrix = Matrix4x4::Identity();
 	};
+	std::vector<WellForGPU> skinningMatrices_;
 	std::unique_ptr<RenderObject> renderObject_;
 	std::unique_ptr<DebugLine> debugLine_;
 	VSData vsData_{};
