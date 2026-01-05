@@ -21,8 +21,9 @@ public:
 
 	void Draw(Window* window);
 
+	void SetUseTexture(bool useTexture);
+
 	PSOConfig psoConfig_{};
-	bool useTexture_ = false;
 	uint32_t instanceNum_ = 1;
 
 private://static

@@ -1,12 +1,16 @@
 #include "PostEffect.hlsli"
 
-cbuffer GrayscaleParameters : register(b0)
+cbuffer GrayscaleParameters : register(b1)
 {
-    float2 padding;
     float intensity; // グレースケールの強度（0.0〜1.0）
 }
 
-Texture2D<float4> gTexture : register(t0);
+cbuffer TextureIndex : register(b0)
+{
+    int textureIndex; // 使用するテクスチャのインデックス
+};
+
+Texture2D<float4> gTexture[] : register(t8);
 SamplerState gSampler : register(s0);
 
 PixelShaderOutput main(PixelShaderInput input)
@@ -16,7 +20,7 @@ PixelShaderOutput main(PixelShaderInput input)
     float clampedIntensity = clamp(intensity, 0.0, 1.0);
     
     // 元の色をサンプリング
-    float4 color = gTexture.Sample(gSampler, input.texcoord);
+    float4 color = gTexture[textureIndex].Sample(gSampler, input.texcoord);
 
     // グレースケール変換（人間の視覚に基づく加重平均）
     float luminance = dot(color.rgb, float3(0.299, 0.587, 0.114));

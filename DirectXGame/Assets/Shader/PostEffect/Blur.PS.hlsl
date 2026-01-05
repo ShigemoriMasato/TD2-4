@@ -1,13 +1,18 @@
 #include "PostEffect.hlsli"
 
 // ブラーパラメータ用の定数バッファ
-cbuffer BlurParams : register(b0)
+cbuffer BlurParams : register(b1)
 {
     float intensity; // ブラー強度
     float kernelSize; // カーネルサイズ
 };
 
-Texture2D<float4> gTexture : register(t0);
+cbuffer TextureIndex : register(b0)
+{
+    int textureIndex; // 使用するテクスチャのインデックス
+};
+
+Texture2D<float4> gTexture[] : register(t8);
 SamplerState gSampler : register(s0);
 
 PixelShaderOutput main(PixelShaderInput input)
@@ -16,7 +21,7 @@ PixelShaderOutput main(PixelShaderInput input)
 
     if (kernelSize < 0.01f)
     {
-        output.color = gTexture.Sample(gSampler, input.texcoord);
+        output.color = gTexture[textureIndex].Sample(gSampler, input.texcoord);
         return output;
     }
 
@@ -35,7 +40,7 @@ PixelShaderOutput main(PixelShaderInput input)
             float distance = length(float2(x, y));
             float weight = exp(-0.5 * (distance * distance) / (sigma * sigma));
 
-            float4 tex = gTexture.Sample(gSampler, input.texcoord + offset);
+            float4 tex = gTexture[textureIndex].Sample(gSampler, input.texcoord + offset);
 
             // sRGB → Linear
             tex.rgb = pow(tex.rgb, 2.2f);
@@ -50,7 +55,7 @@ PixelShaderOutput main(PixelShaderInput input)
     // Linear → sRGB
     color.rgb = pow(color.rgb, 1.0f / 2.2f);
 
-    float4 originalColor = gTexture.Sample(gSampler, input.texcoord);
+    float4 originalColor = gTexture[textureIndex].Sample(gSampler, input.texcoord);
     output.color = lerp(originalColor, color, intensity);
     output.color = saturate(output.color);
 

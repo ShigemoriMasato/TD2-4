@@ -137,6 +137,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalIncludeDirectories>$(ProjectDir)externals\assimp\include\;$(ProjectDir)AppSource\;$(ProjectDir)Engine\;$(ProjectDir)externals\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -162,6 +163,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Game\Tetris\Score\ScoreManager.cpp" />
     <ClCompile Include="AppSource\Game\Tetris\Tetris.cpp" />
     <ClCompile Include="AppSource\Game\Tetris\Block\BlockRender.cpp" />
+    <ClCompile Include="AppSource\Game\Effect\BackGround.cpp" />
     <ClCompile Include="Engine\Render\DebugLine.cpp" />
     <ClCompile Include="Engine\Camera\Camera.cpp" />
     <ClCompile Include="Engine\Camera\DebugCamera.cpp" />
@@ -204,6 +206,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Core\src\ImGuiforEngine.cpp" />
     <ClCompile Include="AppSource\Game\KeyCoating\KeyCoating.cpp" />
     <ClCompile Include="Engine\Utility\src\SearchFile.cpp" />
+    <ClCompile Include="Engine\Screen\Display\src\IDisplay.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\SHEngine.cpp" />
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
@@ -222,7 +225,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Render\PostEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AppSource\Game\Effect\BackGround.h" />
     <ClInclude Include="Engine\Render\DebugLine.h" />
+    <ClInclude Include="Engine\Render\PostEffectData.h" />
     <ClInclude Include="Engine\Utility\DataStructures.h" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\Game\GameScene.h" />
@@ -306,6 +311,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Assets\Model\ModelManager.h" />
     <ClInclude Include="Engine\Assets\Model\ModelLoader.h" />
     <ClInclude Include="Engine\Render\PostEffect.h" />
+    <ClInclude Include="Engine\Screen\Display\IDisplay.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

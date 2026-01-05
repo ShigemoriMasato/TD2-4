@@ -1,15 +1,19 @@
 #include "PostEffect.hlsli"
 
-cbuffer SlowMotionParameters : register(b0)
+cbuffer SlowMotionParameters : register(b1)
 {
-    float4x4 padding;
     float ChromaticAberration;  // 色収差強度 (0.0 - 1.0)
     float VignetteStrength;     // ビネット強度 (0.0 - 1.0)
     float Saturation;           // 彩度 (0.0=モノクロ, 1.0=通常)
     float Intensity;            // 全体の強度 (0.0 - 1.0)
 }
 
-Texture2D<float4> gTexture : register(t0);
+cbuffer TextureIndex : register(b0)
+{
+    int textureIndex; // 使用するテクスチャのインデックス
+};
+
+Texture2D<float4> gTexture[] : register(t8);
 SamplerState gSampler : register(s0);
 
 // RGBをグレースケールに変換
@@ -56,9 +60,9 @@ float3 ChromaticAberrationEffect(float2 uv, float strength)
     float2 uvG = saturate(uv);
     float2 uvB = saturate(uv - direction * offset * 1.2);
     
-    float r = gTexture.Sample(gSampler, uvR).r;
-    float g = gTexture.Sample(gSampler, uvG).g;
-    float b = gTexture.Sample(gSampler, uvB).b;
+    float r = gTexture[textureIndex].Sample(gSampler, uvR).r;
+    float g = gTexture[textureIndex].Sample(gSampler, uvG).g;
+    float b = gTexture[textureIndex].Sample(gSampler, uvB).b;
     
     return float3(r, g, b);
 }
@@ -77,7 +81,7 @@ PixelShaderOutput main(PixelShaderInput input)
     }
     else
     {
-        color = gTexture.Sample(gSampler, uv).rgb;
+        color = gTexture[textureIndex].Sample(gSampler, uv).rgb;
     }
     
     // 彩度調整（より強く）

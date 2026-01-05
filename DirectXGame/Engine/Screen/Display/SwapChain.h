@@ -14,6 +14,8 @@ public:
 	void PostDraw(ID3D12GraphicsCommandList* cmdList);
 	void Present();
 
+	Display* GetCurrentDisplay() const { return displays_[currentBackBufferIndex_].get(); }
+
 private:
 
 	int currentBackBufferIndex_ = 0;

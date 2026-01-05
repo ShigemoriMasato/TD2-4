@@ -64,8 +64,8 @@ void DualDisplay::Initialize(TextureData* data, TextureData* data2) {
 
     clearColor_ = data->GetClearColor();
 
-	Displays_[0].textureResource_ = data->GetResource();
-	Displays_[1].textureResource_ = data2->GetResource();
+    Displays_[0].textureData_ = data;
+	Displays_[1].textureData_ = data2;
 
     for (int i = 0; i < 2; ++i) {
         width_ = data->GetSize().first;
@@ -80,7 +80,7 @@ void DualDisplay::Initialize(TextureData* data, TextureData* data2) {
         D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
         rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
         rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;	//2Dテクスチャとしてよみこむ
-        device->CreateRenderTargetView(Displays_[i].textureResource_, &rtvDesc, Displays_[i].rtvHandle_.GetCPU());
+        device->CreateRenderTargetView(Displays_[i].textureData_->GetResource(), &rtvDesc, Displays_[i].rtvHandle_.GetCPU());
 
         //DSVの設定
         Displays_[i].dsvHandle_.UpdateHandle(dsvManager);
@@ -133,11 +133,15 @@ void DualDisplay::PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear) 
     }
 }
 
+void DualDisplay::ToTexture(ID3D12GraphicsCommandList* commandList) {
+	EditBarrier(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+}
+
 void DualDisplay::PostDraw(ID3D12GraphicsCommandList* commandList) {
     EditBarrier(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	index_ = (index_ + 1) % 2;
 }
 
 void DualDisplay::EditBarrier(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES afterState) {
-    InsertBarrier(commandList, afterState, Displays_[index_].resourceState_, Displays_[index_].textureResource_);
+    InsertBarrier(commandList, afterState, Displays_[index_].resourceState_, Displays_[index_].textureData_->GetResource());
 }

@@ -2,6 +2,7 @@
 #include <Scene/IScene.h>
 #include <Game/Tetris/Tetris.h>
 #include <Camera/DebugCamera.h>
+#include <Render/PostEffect.h>
 
 class GameScene : public IScene {
 public:
@@ -21,5 +22,7 @@ private:
 
 	std::unique_ptr<KeyCoating> keyCoating_;
 	std::unique_ptr<Tetris> tetris_;
+	std::unique_ptr<PostEffect> postEffect_;
+	PostEffectConfig postEffectConfig_{};
 
 };

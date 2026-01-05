@@ -67,6 +67,14 @@ void InitializeScene::Initialize() {
 	fps->SetIsFix(true);
 	fps->SetTargetFPS(300.0);
 
+	std::vector<VertexData> vertices = {
+		{{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+		{{2.0f, 0.0f, 0.0f, 1.0f}, {2.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+		{{0.0f, 2.0f, 0.0f, 1.0f}, {0.0f, 2.0f}, {0.0f, 0.0f, -1.0f}}
+	};
+	drawDataManager_->AddVertexBuffer(vertices);
+	commonData_->postEffectDrawDataIndex = drawDataManager_->CreateDrawData();
+
 	//KeyManager
 #pragma region 長いので折りたたみ
 	commonData_->keyManager = std::make_unique<KeyManager>();

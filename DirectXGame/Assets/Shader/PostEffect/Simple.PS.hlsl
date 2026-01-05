@@ -1,6 +1,6 @@
 #include "PostEffect.hlsli"
 
-Texture2D<float4> gTexture[1024] : register(t8);
+Texture2D<float4> gTexture[] : register(t8);
 SamplerState gSampler : register(s0);
 
 cbuffer TextureIndexBuffer : register(b0)

@@ -1,8 +1,7 @@
 #pragma once
-#include <Core/DXDevice.h>
-#include <Assets/Texture/TextureManager.h>
+#include "Display/IDisplay.h"
 
-class DualDisplay {
+class DualDisplay : public IDisplay {
 public:
 
 	static void StaticInitialize(DXDevice* device);
@@ -11,12 +10,14 @@ public:
 	~DualDisplay() = default;
 
 	void Initialize(TextureData* data, TextureData* data2);
-	void PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear);
+	void PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear) override;
 
-	void PostDraw(ID3D12GraphicsCommandList* commandList);
+	void ToTexture(ID3D12GraphicsCommandList* commandList) override;
+	void PostDraw(ID3D12GraphicsCommandList* commandList) override;
 
-	ID3D12Resource* GetTextureResource() const { return Displays_[index_].textureResource_; }
-	RTVHandle GetRTVHandle() const { return Displays_[index_].rtvHandle_; }
+	ID3D12Resource* GetTextureResource() const override { return Displays_[index_].textureData_->GetResource(); }
+	RTVHandle GetRTVHandle() const override { return Displays_[index_].rtvHandle_; }
+	TextureData* GetTextureData() const override { return Displays_[index_].textureData_; }
 
 private:
 
@@ -28,13 +29,14 @@ private:
 
 private:
 
+	friend class Display;
 	struct DisplayData {
 		RTVHandle rtvHandle_;
 		DSVHandle dsvHandle_;
 
 		D3D12_RESOURCE_STATES resourceState_;
 
-		ID3D12Resource* textureResource_ = nullptr;
+		TextureData* textureData_ = nullptr;
 		Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_ = nullptr;
 	};
 

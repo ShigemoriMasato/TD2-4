@@ -1,10 +1,8 @@
 #include "PostEffect.hlsli"
 
 // グリッチパラメータ用の定数バッファ
-cbuffer GlitchParams : register(b0)
+cbuffer GlitchParams : register(b1)
 {
-    float4x4 padding;
-    float4 padding1;
     float intensity;            // 全体の強度 (0.0 - 1.0)
     float rgbSplit;             // RGB色収差の強度 (0.0 - 1.0)
     float scanlineIntensity;    // スキャンライン強度 (0.0 - 1.0)
@@ -12,7 +10,12 @@ cbuffer GlitchParams : register(b0)
     float time;                 // 時間パラメータ
 };
 
-Texture2D<float4> gTexture : register(t0);
+cbuffer TextureIndex : register(b0)
+{
+    int textureIndex; // 使用するテクスチャのインデックス
+};
+
+Texture2D<float4> gTexture[] : register(t8);
 SamplerState gSampler : register(s0);
 
 // ランダム関数（ハッシュベース）
@@ -44,7 +47,7 @@ PixelShaderOutput main(PixelShaderInput input)
     // 強度が0の場合はそのまま返す
     if (intensity < 0.001f)
     {
-        output.color = gTexture.Sample(gSampler, input.texcoord);
+        output.color = gTexture[textureIndex].Sample(gSampler, input.texcoord);
         return output;
     }
     
@@ -58,10 +61,10 @@ PixelShaderOutput main(PixelShaderInput input)
     float horizontalShift = splitAmount * randomOffset;
     
     // 各色チャンネルを別々にサンプリング
-    float r = gTexture.Sample(gSampler, uv + float2(horizontalShift, 0.0)).r;
-    float g = gTexture.Sample(gSampler, uv).g;
-    float b = gTexture.Sample(gSampler, uv - float2(horizontalShift, 0.0)).b;
-    float a = gTexture.Sample(gSampler, uv).a;
+    float r = gTexture[textureIndex].Sample(gSampler, uv + float2(horizontalShift, 0.0)).r;
+    float g = gTexture[textureIndex].Sample(gSampler, uv).g;
+    float b = gTexture[textureIndex].Sample(gSampler, uv - float2(horizontalShift, 0.0)).b;
+    float a = gTexture[textureIndex].Sample(gSampler, uv).a;
     
     float4 color = float4(r, g, b, a);
     
@@ -96,7 +99,7 @@ PixelShaderOutput main(PixelShaderInput input)
             // ブロックを水平にずらす
             float blockShift = (random(float2(blockY, floor(time * 5.0))) - 0.5) * 0.1;
             float2 blockUV = float2(uv.x + blockShift, uv.y);
-            color = gTexture.Sample(gSampler, blockUV);
+            color = gTexture[textureIndex].Sample(gSampler, blockUV);
             
             // ブロックに色ノイズを追加
             float colorNoise = random(float2(blockY, time * 3.0));
@@ -114,7 +117,7 @@ PixelShaderOutput main(PixelShaderInput input)
         float pixelNoise = noise(float2(uv.y * 10.0, time));
         if (pixelNoise > 0.8)
         {
-            color = gTexture.Sample(gSampler, pixelatedUV);
+            color = gTexture[textureIndex].Sample(gSampler, pixelatedUV);
         }
     }
     

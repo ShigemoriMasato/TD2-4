@@ -101,7 +101,7 @@ int RenderObject::CreateSRV(size_t size, uint32_t num, ShaderType type, std::str
 
 		//マッピング
 		BufferData bufferData{};
-		bufferData.size = size;
+		bufferData.size = size * num;
 		res.res->Map(0, nullptr, &bufferData.mapped);
 		srvBufferDatas.push_back(bufferData);
 	}
@@ -126,14 +126,14 @@ int RenderObject::CreateSRV(size_t size, uint32_t num, ShaderType type, std::str
 void RenderObject::CopyBufferData(int index, const void* data, size_t size) {
 	auto& gpuData = bufferDatas_[index][index_];
 
-	if (size < gpuData.size) {
+	if (size > gpuData.size) {
 		logger_->error("=========== CopyBufferData || Size exceeds buffer size ===========");
 		logger_->error("  RenderObject: {}\n  GPUSize: {}\n  DataSize: {}", debugName_, gpuData.size, size);
 		assert(false && "RenderObject::CopyBufferData: Size exceeds buffer size");
 		return;
 	}
 
-	memcpy(gpuData.mapped, data, size);
+	std::memcpy(gpuData.mapped, data, size);
 }
 
 void RenderObject::Draw(Window* window) {
@@ -175,4 +175,8 @@ void RenderObject::Draw(Window* window) {
 
 	//描画コマンド
 	cmdList->DrawIndexedInstanced(indexNum_, instanceNum_, 0, 0, 0);
+}
+
+void RenderObject::SetUseTexture(bool useTexture) {
+	psoConfig_.rootConfig.useTexture = useTexture;
 }

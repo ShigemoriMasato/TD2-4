@@ -1,17 +1,20 @@
 #include "PostEffect.hlsli"
 
 // 常時走査線パラメータ用の定数バッファ
-cbuffer ConstantScanlineParams : register(b0)
+cbuffer ConstantScanlineParams : register(b1)
 {
-    float4x4 padding;
-    float4x3 padding1;
     float intensity;      // 走査線の強度 (0.0 - 1.0)
     float speed;          // 走査線の移動速度
     float lineWidth;      // 走査線の幅
     float time;           // 時間パラメータ
 };
 
-Texture2D<float4> gTexture : register(t0);
+cbuffer TextureIndex : register(b0)
+{
+    int textureIndex; // 使用するテクスチャのインデックス
+};
+
+Texture2D<float4> gTexture[] : register(t8);
 SamplerState gSampler : register(s0);
 
 PixelShaderOutput main(PixelShaderInput input)

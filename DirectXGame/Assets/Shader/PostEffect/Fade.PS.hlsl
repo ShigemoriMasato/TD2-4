@@ -1,16 +1,18 @@
 #include "PostEffect.hlsli"
 
-cbuffer FadeParameters : register(b0)
+cbuffer FadeParameters : register(b1)
 {
-    float4 padding;
+    float3 FadeColor; // フェードカラー
     float FadeAmount; // フェードの進行度 (0.0 = no fade, 1.0 = full fade)
     float FadeType; // フェードタイプ (0=Black, 1=White, 2=Radial, 3=Wipe, 4=Dissolve)
-    float2 padding1;
-    
-    float3 FadeColor; // フェードカラー
 }
 
-Texture2D<float4> gTexture : register(t0);
+cbuffer TextureIndex : register(b1)
+{
+    int textureIndex; // 使用するテクスチャのインデックス
+};
+
+Texture2D<float4> gTexture[] : register(t8);
 SamplerState gSampler : register(s0);
 
 // ノイズ関数（ディゾルブ用）
@@ -103,7 +105,7 @@ PixelShaderOutput main(PixelShaderInput input)
     PixelShaderOutput output;
     
     // テクスチャから色をサンプリング
-    float4 textureColor = gTexture.Sample(gSampler, input.texcoord);
+    float4 textureColor = gTexture[textureIndex].Sample(gSampler, input.texcoord);
     
     float3 finalColor = textureColor.rgb;
     

@@ -69,6 +69,8 @@
     <ClCompile Include="Engine\Utility\src\SearchFile.cpp" />
     <ClCompile Include="Engine\Render\DebugLine.cpp" />
     <ClCompile Include="Engine\Render\PostEffect.cpp" />
+    <ClCompile Include="AppSource\Game\Effect\BackGround.cpp" />
+    <ClCompile Include="Engine\Screen\Display\src\IDisplay.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\DXDevice.h" />
@@ -155,5 +157,8 @@
     <ClInclude Include="Engine\Assets\Model\ModelLoader.h" />
     <ClInclude Include="Engine\Render\DebugLine.h" />
     <ClInclude Include="Engine\Render\PostEffect.h" />
+    <ClInclude Include="AppSource\Game\Effect\BackGround.h" />
+    <ClInclude Include="Engine\Screen\Display\IDisplay.h" />
+    <ClInclude Include="Engine\Render\PostEffectData.h" />
   </ItemGroup>
 </Project>

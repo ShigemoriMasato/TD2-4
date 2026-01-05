@@ -53,11 +53,11 @@ void Display::Initialize(TextureData* data, uint32_t color) {
     DSVManager* dsvManager = device_->GetDSVManager();
     RTVManager* rtvManager = device_->GetRTVManager();
 
-    textureResource_ = data->GetResource();
+    textureData = data;
     width_ = data->GetSize().first;
     height_ = data->GetSize().second;
 
-	clearColor_ = ConvertColor(color);
+    clearColor_ = ConvertColor(color);
 
     //RTVの設定
     rtvHandle_.UpdateHandle(rtvManager);
@@ -65,7 +65,7 @@ void Display::Initialize(TextureData* data, uint32_t color) {
     D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
     rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
     rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;	//2Dテクスチャとしてよみこむ
-    device->CreateRenderTargetView(textureResource_, &rtvDesc, rtvHandle_.GetCPU());
+    device->CreateRenderTargetView(textureData->GetResource(), &rtvDesc, rtvHandle_.GetCPU());
 
     //DSVの設定
     dsvHandle_.UpdateHandle(dsvManager);
@@ -126,5 +126,5 @@ void Display::PostDraw(ID3D12GraphicsCommandList* commandList) {
 }
 
 void Display::EditBarrier(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES afterState) {
-    InsertBarrier(commandList, afterState, resourceState_, textureResource_);
+    InsertBarrier(commandList, afterState, resourceState_, textureData->GetResource());
 }

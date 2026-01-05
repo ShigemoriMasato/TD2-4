@@ -39,6 +39,7 @@ public:
 
 	HWND GetHwnd() const { return windowApp_->GetHwnd(); }
 	CommandObject* GetCommandObject() { return  cmdObject_.get(); }
+	Display* GetDisplay() const { return swapChain_->GetCurrentDisplay(); }
 
 private:
 

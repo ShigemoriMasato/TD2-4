@@ -9,5 +9,5 @@ struct CommonData {
 	std::unique_ptr<KeyManager> keyManager;
 	bool exeFinished_ = false;
 
-	int blockIndex = -1;
+	int postEffectDrawDataIndex = -1;
 };

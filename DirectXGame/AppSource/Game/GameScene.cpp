@@ -1,6 +1,9 @@
 #include "GameScene.h"
 #include <imgui/imgui.h>
 
+namespace {
+}
+
 GameScene::GameScene() {
 	tetris_ = std::make_unique<Tetris>();
 	debugCamera_ = std::make_unique<DebugCamera>();
@@ -8,6 +11,7 @@ GameScene::GameScene() {
 	manualCamera_ = std::make_unique<Camera>();
 	manualCamera_->SetProjectionMatrix(PerspectiveFovDesc());
 	manualCamera_->MakeMatrix();
+	postEffect_ = std::make_unique<PostEffect>();
 
 	worldCamera_ = debugCamera_.get();
 }
@@ -18,6 +22,11 @@ void GameScene::Initialize() {
 	DrawData drawData = drawDataManager_->GetDrawData(model.drawDataIndex);
 
 	tetris_->Initialize(keyCoating_.get(), worldCamera_, drawData);
+
+	drawData = drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex);
+	postEffect_->Initialize(textureManager_, drawData);
+
+	postEffectConfig_.jobs_ = PostEffectJob::Blur | PostEffectJob::SlowMotion;
 }
 
 std::unique_ptr<IScene> GameScene::Update() {
@@ -54,12 +63,6 @@ void GameScene::Draw() {
 	manualCamera_->DrawImGui();
 	manualCamera_->MakeMatrix();
 	tetris_->DrawImGui();
-
-	ImGui::Begin("Debug");
-	ImGui::Text("A : %d", Input::GetKeyState(DIK_A));
-	ImGui::Text("Left : %d", commonData_->keyManager->GetKeyStates().at(Key::Left));
-	ImGui::Text("LeftCoated : %d", keyCoating_->GetKeyStates().at(Key::Left));
-	ImGui::End();
 #endif
 
 	engine_->ImGuiDraw();
