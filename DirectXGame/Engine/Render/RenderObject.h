@@ -2,6 +2,7 @@
 #include "DrawDataManager.h"
 #include <Screen/Window.h>
 #include <Utility/Color.h>
+#include <Camera/Camera.h>
 
 class RenderObject {
 public:

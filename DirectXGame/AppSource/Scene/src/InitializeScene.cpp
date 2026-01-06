@@ -1,6 +1,7 @@
 #include "../InitializeScene.h"
 #include <Test/TestScene.h>
 #include <Game/GameScene.h>
+#include <Title/TitleScene.h>
 #include <imgui/imgui.h>
 #include <Utility/DataStructures.h>
 
@@ -46,7 +47,7 @@ void InitializeScene::Initialize() {
 		auto& display = commonData_->display;
 		display = std::make_unique<DualDisplay>();
 
-		uint32_t clearColor = 0xff8080ff;
+		uint32_t clearColor = 0x000105ff;
 
 		int textureIndex = textureManager_->CreateWindowTexture(1280, 720, clearColor);
 		int textureIndex2 = textureManager_->CreateWindowTexture(1280, 720, clearColor);
@@ -68,9 +69,9 @@ void InitializeScene::Initialize() {
 	fps->SetTargetFPS(300.0);
 
 	std::vector<VertexData> vertices = {
-		{{0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
-		{{2.0f, 0.0f, 0.0f, 1.0f}, {2.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
-		{{0.0f, 2.0f, 0.0f, 1.0f}, {0.0f, 2.0f}, {0.0f, 0.0f, -1.0f}}
+		{{-1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+		{{3.0f, 1.0f, 0.0f, 1.0f}, {2.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+		{{-1.0f, -3.0f, 0.0f, 1.0f}, {0.0f, 2.0f}, {0.0f, 0.0f, -1.0f}}
 	};
 	drawDataManager_->AddVertexBuffer(vertices);
 	commonData_->postEffectDrawDataIndex = drawDataManager_->CreateDrawData();

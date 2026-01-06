@@ -47,6 +47,12 @@ void DualDisplay::StaticInitialize(DXDevice* device) {
     device_ = device;
 }
 
+DualDisplay::~DualDisplay() {
+    for (int i = 0; i < 2; ++i) {
+        Displays_[i].textureData_->Release();
+	}
+}
+
 void DualDisplay::Initialize(TextureData* data, TextureData* data2) {
     ID3D12Device* device = device_->GetDevice();
     DSVManager* dsvManager = device_->GetDSVManager();

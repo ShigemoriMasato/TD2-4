@@ -33,7 +33,7 @@ void TextureManager::Initialize(DXDevice* device, CmdListManager* CmdListManager
 	LoadTexture("Assets/.EngineResource/Texture/uvChecker.png");
 	LoadTexture("Assets/.EngineResource/Texture/error.png");
 
-	logger_ = getLogger("TextureManager");
+	logger_ = getLogger("Engine");
 }
 
 void TextureManager::Clear() {
@@ -69,6 +69,7 @@ int TextureManager::LoadTexture(const std::string& filePath) {
 
 	uploadResources_.push_back(textureData->Create(factFilePath, device_->GetDevice(), srvManager_));
 	int offset = textureData->GetOffset();
+	textureData->textureManager_ = this;
 	textureDatas_[offset] = std::move(textureData);
 	CheckMaxCount(offset);
 	return offset;
@@ -79,6 +80,7 @@ int TextureManager::CreateWindowTexture(uint32_t width, uint32_t height, uint32_
 	Vector4 clearColorVec = ConvertColor(clearColor);
 	textureData->Create(width, height, clearColorVec, device_->GetDevice(), srvManager_);
 	int offset = textureData->GetOffset();
+	textureData->textureManager_ = this;
 	textureDatas_[offset] = std::move(textureData);
 	return offset;
 }
@@ -86,9 +88,26 @@ int TextureManager::CreateWindowTexture(uint32_t width, uint32_t height, uint32_
 int TextureManager::CreateSwapChainTexture(ID3D12Resource* resource) {
 	auto textureData = std::make_unique<TextureData>();
 	textureData->Create(resource, device_->GetDevice(), srvManager_);
+	textureData->textureManager_ = this;
 	int offset = textureData->GetOffset();
 	textureDatas_[offset] = std::move(textureData);
 	return offset;
+}
+
+void TextureManager::DeleteTexture(int handle) {
+	auto it = textureDatas_.find(handle);
+	if (it != textureDatas_.end()) {
+		textureDatas_.erase(it);
+	}
+}
+
+void TextureManager::DeleteTexture(TextureData* textureData) {
+	for (const auto& [handle, data] : textureDatas_) {
+		if (data.get() == textureData) {
+			textureDatas_.erase(handle);
+			return;
+		}
+	}
 }
 
 TextureData* TextureManager::GetTextureData(int handle) {

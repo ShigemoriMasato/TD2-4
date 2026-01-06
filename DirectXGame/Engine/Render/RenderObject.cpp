@@ -16,7 +16,6 @@ RenderObject::~RenderObject() {
 
 void RenderObject::StaticInitialize(DXDevice* device) {
 	device_ = device;
-	logger_ = getLogger("RenderObject");
 }
 
 void RenderObject::Initialize() {

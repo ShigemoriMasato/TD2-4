@@ -7,7 +7,7 @@ public:
 	static void StaticInitialize(DXDevice* device);
 
 	DualDisplay() = default;
-	~DualDisplay() = default;
+	~DualDisplay();
 
 	void Initialize(TextureData* data, TextureData* data2);
 	void PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear) override;
@@ -40,12 +40,12 @@ private:
 		Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_ = nullptr;
 	};
 
-	DisplayData Displays_[2];
+	DisplayData Displays_[2]{};
 	int index_ = 0;
 
 	Vector4 clearColor_ = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-	int width_;
-	int height_;
+	int width_{};
+	int height_{};
 
 };

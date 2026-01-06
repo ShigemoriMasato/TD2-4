@@ -8,7 +8,6 @@ public:
 
 	void Update();
 
-	Vector3 GetPosition() const override;
 	Vector3 GetCenter() const;
 
 	void SetCenter(const Vector3& center) {

@@ -19,11 +19,11 @@ public:
 
 private:
 
-	D3D12_CPU_DESCRIPTOR_HANDLE CPU;
-	D3D12_GPU_DESCRIPTOR_HANDLE GPU;
-	int offset_;
+	D3D12_CPU_DESCRIPTOR_HANDLE CPU{};
+	D3D12_GPU_DESCRIPTOR_HANDLE GPU{};
+	int offset_{};
 
-	DSVManager* manager_;
+	DSVManager* manager_{};
 
 	bool isUpdated_ = false;
 };

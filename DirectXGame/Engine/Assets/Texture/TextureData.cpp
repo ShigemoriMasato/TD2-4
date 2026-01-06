@@ -1,6 +1,7 @@
 #include "TextureData.h"
 #include <DirectXTex/d3dx12.h>
 #include <Utility/ConvertString.h>
+#include <Assets/Texture/TextureManager.h>
 
 namespace {
     DirectX::ScratchImage CreateMipImages(const std::string& filePath) {
@@ -45,6 +46,10 @@ namespace {
         assert(SUCCEEDED(hr));
         return resource;
     }
+}
+
+void TextureData::Release() {
+	textureManager_->DeleteTexture(this);
 }
 
 void TextureData::Create(uint32_t width, uint32_t height, Vector4 clearColor, ID3D12Device* device, SRVManager* srvManager) {

@@ -35,17 +35,18 @@ struct VSInput
 
 VSOutput main(VSInput input, uint instance : SV_InstanceID)
 {
-    float x = (instance % size.x) - (size.x / 2);
-    float y = (instance / size.x) - (size.y / 2);
+    float2 start = -float2(size.x / 2, size.y / 2);
+    float x = (instance % size.x) + start.x;
+    float y = (instance / size.x) + start.y;
     
     float3 local = float3(x, 0.0f, y);
     float4 color = innerColor;
     
-    const uint waveCount = 16;
+    const uint waveCount = 8;
     
     for (uint i = 0; i < waveCount; ++i)
     {
-        if (waveData[i].strength <= 0.0f)
+        if (waveData[i].strength <= 0.0f|| waveData[i].lifeTime > waveData[i].lifeSpan)
         {
             continue;
         }
@@ -54,12 +55,17 @@ VSOutput main(VSInput input, uint instance : SV_InstanceID)
         float dist = distance(local.xz, waveData[i].generatePosition);
         float diff = rad - dist;
         
-        if (diff < waveData[i].tickness)
+        if (abs(diff) < waveData[i].tickness)
         {
             float lifeStrength = saturate(1.0f - (waveData[i].lifeTime / waveData[i].lifeSpan));
             float fact = saturate((waveData[i].tickness - diff) / waveData[i].tickness) * waveData[i].strength * lifeStrength;
             
-            local += waveData[i].direction * fact;
+            float3 adjustDirforScale;
+            adjustDirforScale.x = waveData[i].direction.x / parentMatrix[0][0];
+            adjustDirforScale.y = waveData[i].direction.y / parentMatrix[1][1];
+            adjustDirforScale.z = waveData[i].direction.z / parentMatrix[2][2];
+            
+            local += waveData[i].direction * fact * adjustDirforScale;
             color += waveData[i].color * fact;
         }
     }
@@ -70,7 +76,8 @@ VSOutput main(VSInput input, uint instance : SV_InstanceID)
     output.position = mul(pos, mul(parentMatrix, vpMatrix));
     output.texCoord = input.texcoord;
     output.normal = mul(input.normal, (float3x3) parentMatrix);
-    output.color = innerColor;
+    output.color = color;
     output.outlineColor = outerColor;
+    
     return output;
 }

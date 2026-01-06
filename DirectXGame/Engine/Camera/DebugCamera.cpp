@@ -49,19 +49,15 @@ void DebugCamera::Update() {
 
 	rotation_ = { -spherical_.y + std::numbers::pi_v<float> / 2, -spherical_.z - std::numbers::pi_v<float> / 2, 0.0f };
 	
-	// Actual camera position in world space
-	Vector3 actualCameraPosition = center_ + position_;
-
 	//===================
 	//座標の適用
 	//===================
 	SetTransform(MakeTranslationMatrix(center_) * MakeTranslationMatrix(position_).Inverse() * MakeRotationMatrix(rotation_).Inverse() * MakeScaleMatrix(scale_));
 	SetProjectionMatrix(PerspectiveFovDesc());
 	MakeMatrix();
-}
 
-Vector3 DebugCamera::GetPosition() const {
-	return center_ + position_;
+	// Actual camera position in world space
+	position_ += center_;
 }
 
 Vector3 DebugCamera::GetCenter() const {

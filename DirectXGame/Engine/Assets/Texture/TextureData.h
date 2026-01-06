@@ -12,6 +12,9 @@ public:
 	TextureData() = default;
 	~TextureData() = default;
 
+	//明示的な解放
+	void Release();
+
 	int GetOffset() const { return srvHandle_.GetOffset(); }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle() const { return srvHandle_.GetGPU(); }
 	ID3D12Resource* GetResource() const { return textureResource_.Get(); }
@@ -36,11 +39,9 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource_ = nullptr;
 
-	//CommandListが一度executeされたら削除するやつ
-	Microsoft::WRL::ComPtr<ID3D12Resource> intermadiateResource_ = nullptr;
-
 	SRVHandle srvHandle_{};
 	Vector4 clearColor_{};
 
+	TextureManager* textureManager_ = nullptr;
 };
 

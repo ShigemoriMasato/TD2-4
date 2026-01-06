@@ -48,6 +48,8 @@ SHEngine::SHEngine() {
 	input_ = std::make_unique<Input>();
 
 	fpsObserver_ = std::make_unique<FPSObserver>();
+	fpsObserver_->SetIsFix(false, FPSType::GPU);
+	fpsObserver_->SetTargetFPS(60.0, FPSType::GPU);
 
 	modelManager_ = std::make_unique<ModelManager>();
 }
@@ -81,7 +83,7 @@ bool SHEngine::PreDraw() {
 	if (!fenceManager_->SignalChecker()) {
 		return false;
 	}
-	
+
 	//ImGui
 	if (imGuiActive_) {
 		if (imguiDrawed_) {
@@ -92,6 +94,8 @@ bool SHEngine::PreDraw() {
 		FPSDraw();
 	}
 
+	fpsObserver_->TimeAdjustment(FPSType::GPU);
+	
 	cmdListManager_->Reset();
 	auto cmdObj = cmdListManager_->CreateCommandObject();
 	textureManager_->UploadTextures(cmdObj->GetCommandList());
@@ -160,8 +164,13 @@ void SHEngine::FPSDraw() {
 
 #ifdef USE_IMGUI
 	ImGui::Begin("FPS");
+	ImGui::Text("CPU");
 	ImGui::Text("FPS: %.2f ", 1.0f / fpsObserver_->GetDeltatime());
 	ImGui::Text("deltaTime: %.2f ms", fpsObserver_->GetDeltatime() * 100.0f);
+	ImGui::Separator();
+	ImGui::Text("GPU");
+	ImGui::Text("FPS: %.2f ", 1.0f / fpsObserver_->GetDeltatime(FPSType::GPU));
+	ImGui::Text("deltaTime: %.2f ms", fpsObserver_->GetDeltatime(FPSType::GPU) * 100.0f);
 	ImGui::End();
 #endif
 }

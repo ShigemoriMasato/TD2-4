@@ -71,6 +71,11 @@
     <ClCompile Include="Engine\Render\PostEffect.cpp" />
     <ClCompile Include="AppSource\Game\Effect\BackGround.cpp" />
     <ClCompile Include="Engine\Screen\Display\src\IDisplay.cpp" />
+    <ClCompile Include="AppSource\Game\Camera\GameCamera.cpp" />
+    <ClCompile Include="AppSource\Title\TitleScene.cpp" />
+    <ClCompile Include="AppSource\Title\WaterWave\WaterWave.cpp" />
+    <ClCompile Include="AppSource\Title\Title\Title.cpp" />
+    <ClCompile Include="AppSource\Game\Effect\FallLight.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\DXDevice.h" />
@@ -160,5 +165,10 @@
     <ClInclude Include="AppSource\Game\Effect\BackGround.h" />
     <ClInclude Include="Engine\Screen\Display\IDisplay.h" />
     <ClInclude Include="Engine\Render\PostEffectData.h" />
+    <ClInclude Include="AppSource\Game\Camera\GameCamera.h" />
+    <ClInclude Include="AppSource\Title\TitleScene.h" />
+    <ClInclude Include="AppSource\Title\WaterWave\WaterWave.h" />
+    <ClInclude Include="AppSource\Title\Title\Title.h" />
+    <ClInclude Include="AppSource\Game\Effect\FallLight.h" />
   </ItemGroup>
 </Project>

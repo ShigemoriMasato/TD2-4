@@ -207,6 +207,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Game\KeyCoating\KeyCoating.cpp" />
     <ClCompile Include="Engine\Utility\src\SearchFile.cpp" />
     <ClCompile Include="Engine\Screen\Display\src\IDisplay.cpp" />
+    <ClCompile Include="AppSource\Game\Camera\GameCamera.cpp" />
+    <ClCompile Include="AppSource\Game\Effect\FallLight.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\SHEngine.cpp" />
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
@@ -223,6 +225,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Assets\Model\ModelManager.cpp" />
     <ClCompile Include="Engine\Assets\Model\ModelLoader.cpp" />
     <ClCompile Include="Engine\Render\PostEffect.cpp" />
+    <ClCompile Include="AppSource\Title\TitleScene.cpp" />
+    <ClCompile Include="AppSource\Title\WaterWave\WaterWave.cpp" />
+    <ClCompile Include="AppSource\Title\Title\Title.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSource\Game\Effect\BackGround.h" />
@@ -312,6 +317,11 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Assets\Model\ModelLoader.h" />
     <ClInclude Include="Engine\Render\PostEffect.h" />
     <ClInclude Include="Engine\Screen\Display\IDisplay.h" />
+    <ClInclude Include="AppSource\Game\Camera\GameCamera.h" />
+    <ClInclude Include="AppSource\Title\TitleScene.h" />
+    <ClInclude Include="AppSource\Title\WaterWave\WaterWave.h" />
+    <ClInclude Include="AppSource\Title\Title\Title.h" />
+    <ClInclude Include="AppSource\Game\Effect\FallLight.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -48,6 +48,10 @@ void Display::StaticInitialize(DXDevice* device) {
 	device_ = device;
 }
 
+Display::~Display() {
+    textureData->Release();
+}
+
 void Display::Initialize(TextureData* data, uint32_t color) {
     ID3D12Device* device = device_->GetDevice();
     DSVManager* dsvManager = device_->GetDSVManager();

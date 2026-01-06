@@ -8,7 +8,7 @@ public:
 	static void StaticInitialize(DXDevice* device);
 
 	Display() = default;
-	~Display() = default;
+	~Display();
 
 	void Initialize(TextureData* data, uint32_t color);
 	void PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear) override;
