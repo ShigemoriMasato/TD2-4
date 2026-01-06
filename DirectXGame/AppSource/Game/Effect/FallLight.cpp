@@ -2,7 +2,7 @@
 #include <imgui/imgui.h>
 
 FallLight::~FallLight() {
-
+	Save();
 }
 
 void FallLight::Initialize(const DrawData& drawData, TextureManager* textureManager, Camera* camera) {
@@ -12,6 +12,7 @@ void FallLight::Initialize(const DrawData& drawData, TextureManager* textureMana
 	renderObject_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "FallLight::TextureIndex");
 	renderObject_->psoConfig_.vs = "Game/FallLight.VS.hlsl";
 	renderObject_->psoConfig_.ps = "Game/FallLight.PS.hlsl";
+	renderObject_->psoConfig_.blendID = BlendStateID::Add;
 	renderObject_->SetDrawData(drawData);
 	renderObject_->SetUseTexture(true);
 	renderObject_->instanceNum_ = maxInstance_;
@@ -37,18 +38,23 @@ void FallLight::Update(float deltaTime) {
 
 		bool backFirst = false;
 		uint32_t i;
-		for (int j = 0; j < 2; ++j) {
-			for (i = searchIndex_; i < maxInstance_; ++i) {
+		for(i = searchIndex_; i < maxInstance_; ++i) {
+			if (!isActive_[i]) {
+				break;
+			}
+		}
+
+		if (i == maxInstance_) {
+			for(i = 0; i < searchIndex_; ++i) {
 				if (!isActive_[i]) {
 					break;
 				}
 			}
-			if (i != maxInstance_) {
+
+			if (i == searchIndex_) {
+				//全て使用中
 				break;
 			}
-		}
-		if (i == maxInstance_) {
-			break;
 		}
 
 		VSData& data = instanceData_[i];
@@ -58,8 +64,9 @@ void FallLight::Update(float deltaTime) {
 		std::uniform_real_distribution<float> dirDist(-1.0f, 1.0f);
 		data.dir = { dirDist(rand_), dirDist(rand_), dirDist(rand_) };
 		data.dir = data.dir.Normalize();
+		std::uniform_real_distribution<float> positionDistZ(0.0f, 100.0f);
 		std::uniform_real_distribution<float> positionDist(-50.0f, 50.0f);
-		data.firstPosition = { positionDist(rand_), positionDist(rand_), positionDist(rand_) };
+		data.firstPosition = { positionDist(rand_), positionDist(rand_), positionDistZ(rand_) };
 		std::uniform_real_distribution<float> colorDist(minColorParam_, 1.0f);
 		data.color = { colorDist(rand_), colorDist(rand_), colorDist(rand_) };
 		data.timer = 0.0f;
@@ -100,7 +107,7 @@ void FallLight::DrawImGui() {
 		textureIndex_ = textureManager_->LoadTexture(textureFile_);
 		renderObject_->CopyBufferData(1, &textureIndex_, sizeof(int));
 	}
-	ImGui::DragFloat("CastTime", &castTime_, 0.01f);
+	ImGui::DragFloat("Speed", &speed_, 0.01f);
 	ImGui::DragFloat("LifeSpan", &lifeSpan_, 0.01f);
 	ImGui::DragFloat("MinColorParam", &minColorParam_, 0.01f, 0.0f, 1.0f);
 
@@ -112,7 +119,7 @@ void FallLight::DrawImGui() {
 void FallLight::Save() {
 	binaryManager_->RegistOutput(textureFile_);
 
-	binaryManager_->RegistOutput(castTime_);
+	binaryManager_->RegistOutput(speed_);
 	binaryManager_->RegistOutput(lifeSpan_);
 	binaryManager_->RegistOutput(minColorParam_);
 
@@ -130,7 +137,7 @@ void FallLight::Load() {
 
 	textureFile_ = binaryManager_->Reverse<std::string>(data[index++]);
 
-	castTime_ = binaryManager_->Reverse<float>(data[index++]);
+	speed_ = binaryManager_->Reverse<float>(data[index++]);
 	lifeSpan_ = binaryManager_->Reverse<float>(data[index++]);
 	minColorParam_ = binaryManager_->Reverse<float>(data[index++]);
 }

@@ -12,7 +12,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 void InitializeScene::Initialize() {
 	{
 		WindowConfig config;
-		config.windowName = L"DirectXGame";
+		config.windowName = L"LE2A_06_シゲモリ_マサト TETRIS";
 		CommonData* cd = commonData_;
 		config.windowProc = [cd](HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)->LRESULT {
 
@@ -159,7 +159,7 @@ void InitializeScene::Initialize() {
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
-	return std::make_unique<GameScene>();
+	return std::make_unique<TitleScene>();
 }
 
 void InitializeScene::Draw() {

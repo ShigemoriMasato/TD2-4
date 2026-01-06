@@ -66,7 +66,7 @@ VSOutput main(VSInput input, uint instance : SV_InstanceID)
             adjustDirforScale.z = waveData[i].direction.z / parentMatrix[2][2];
             
             local += waveData[i].direction * fact * adjustDirforScale;
-            color += waveData[i].color * fact;
+            color += waveData[i].color * fact * 0.5f;
         }
     }
     

@@ -30,6 +30,7 @@ private:
 	std::unique_ptr<BackGround> backGround_;
 	std::unique_ptr<FallLight> fallLight_;
 
+	std::unique_ptr<RenderObject> gameOverText = nullptr;
 	std::unique_ptr<RenderObject> gameMonitor_ = nullptr;
 
 	BackGround::Wave weakWave_;

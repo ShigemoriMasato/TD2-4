@@ -32,7 +32,7 @@ StructuredBuffer<VSData> data : register(t0);
 VSOutput main(VSInput input, uint instanceID : SV_InstanceID)
 {
     float3 position = input.position.xyz;
-    position = data[instanceID].firstPosition;
+    position += data[instanceID].firstPosition;
     
     float power = pow(saturate(-data[instanceID].timer / data[instanceID].lifeSpan + 1.0f), 3);
     

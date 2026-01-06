@@ -49,7 +49,7 @@ private:
 private://ParticleManagement
 
 	float timer_ = 0.0f;
-	float castTime_ = 0.1f;
+	float castTime_ = 0.005f;
 	float lifeSpan_ = 2.0f;
 	float speed_ = 0.0f;
 	float minColorParam_ = 0.3f;

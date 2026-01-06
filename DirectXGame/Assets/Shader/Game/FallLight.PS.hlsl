@@ -23,6 +23,6 @@ SamplerState gSampler : register(s0);
 PSOutput main(PSInput input)
 {
     PSOutput output;
-    output.color = gTexture[textureIndex].Sample(gSampler, input.texCoord) + input.color;
+    output.color = gTexture[textureIndex].Sample(gSampler, input.texCoord) * input.color;
     return output;
 }

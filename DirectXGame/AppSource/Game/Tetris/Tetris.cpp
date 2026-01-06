@@ -43,6 +43,7 @@ void Tetris::Update(float deltaTime) {
 			gameOver_ = true;
 			return;
 		}
+		gameOver_ = false;
 
 		player_->Update(deltaTime, key);
 

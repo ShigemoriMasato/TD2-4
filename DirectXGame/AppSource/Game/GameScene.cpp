@@ -1,8 +1,10 @@
 #include "GameScene.h"
 #include <imgui/imgui.h>
 #include <Utility/Color.h>
+#include <Title/TitleScene.h>
 
 namespace {
+	Matrix4x4 gameoverMat;
 }
 
 GameScene::GameScene() {
@@ -47,6 +49,22 @@ void GameScene::Initialize() {
 	gameMonitor_->psoConfig_.isSwapChain = true;
 
 	postEffectConfig_.jobs_ = PostEffectJob::Blur | PostEffectJob::SlowMotion;
+
+	gameOverText = std::make_unique<RenderObject>("GameOverText");
+	gameOverText->Initialize();
+	gameOverText->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "GameOverText::WVPMatrix");
+	gameOverText->psoConfig_.vs = "Simple.VS.hlsl";
+	gameOverText->psoConfig_.ps = "White.PS.hlsl";
+	int modelIndex = modelManager_->LoadModel("GameOver");
+	model = modelManager_->GetNodeModelData(modelIndex);
+	drawData = drawDataManager_->GetDrawData(model.drawDataIndex);
+	gameOverText->SetDrawData(drawData);
+
+	gameoverMat = Matrix::MakeAffineMatrix(
+		Vector3(1.0f, 1.0f, 1.0f),
+		Vector3(),
+		Vector3(0.0f, 0.0f, -5.0f)
+	);
 }
 
 std::unique_ptr<IScene> GameScene::Update() {
@@ -123,6 +141,10 @@ std::unique_ptr<IScene> GameScene::Update() {
 		return std::make_unique<GameScene>();
 	}
 
+	if (tetris_->IsGameOver() && (key.at(Key::HardDrop) || key.at(Key::Hold))) {
+		return std::make_unique<TitleScene>();
+	}
+
 	return nullptr;
 }
 
@@ -134,6 +156,11 @@ void GameScene::Draw() {
 	backGround_->Draw(window->GetWindow());
 	fallLight_->Draw(window->GetWindow());
 	tetris_->Draw(window->GetWindow());
+	if (tetris_->IsGameOver()) {
+		Matrix4x4 wvp = gameoverMat * worldCamera_->GetVPMatrix();
+		gameOverText->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
+		gameOverText->Draw(window->GetWindow());
+	}
 	display->PostDraw(window->GetCommandList());
 
 	window->PreDraw();
