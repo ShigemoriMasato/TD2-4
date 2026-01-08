@@ -32,7 +32,7 @@ void BackGround::Initialize(DrawData& drawData, Camera* camera) {
 }
 
 void BackGround::Update(float deltaTime) {
-	for(int i = 0; i < static_cast<int>(waves_.size()); ++i) {
+	for (int i = 0; i < static_cast<int>(waves_.size()); ++i) {
 		waves_[i].lifeTime += deltaTime;
 		if (waves_[i].lifeTime >= waves_[i].lifeSpan) {
 			waves_[i].strength = 0.0f;
@@ -40,7 +40,6 @@ void BackGround::Update(float deltaTime) {
 	}
 
 	vsData_.vpMatrix = camera_->GetVPMatrix();
-	vsData_.parentMatrix = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 	renderObject_->instanceNum_ = vsData_.x * vsData_.y;
 }
 

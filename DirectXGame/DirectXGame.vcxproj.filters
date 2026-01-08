@@ -171,7 +171,4 @@
     <ClInclude Include="AppSource\Title\Title\Title.h" />
     <ClInclude Include="AppSource\Game\Effect\FallLight.h" />
   </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Assets\Shader\Simple.VS.hlsl" />
-  </ItemGroup>
 </Project>
