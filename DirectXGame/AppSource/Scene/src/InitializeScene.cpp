@@ -1,7 +1,5 @@
 #include "../InitializeScene.h"
 #include <Test/TestScene.h>
-#include <Game/GameScene.h>
-#include <Title/TitleScene.h>
 #include <imgui/imgui.h>
 #include <Utility/DataStructures.h>
 
@@ -159,7 +157,7 @@ void InitializeScene::Initialize() {
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
-	return std::make_unique<TitleScene>();
+	return std::make_unique<TestScene>();
 }
 
 void InitializeScene::Draw() {
