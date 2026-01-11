@@ -5,7 +5,7 @@ namespace {
 	bool debug = false;
 
 	std::string simpleSkin = "Assets/.EngineResource/Model/SimpleSkin";
-	std::string sneekWalk = "SneekWalk";
+	std::string sneakWalk = "SneakWalk";
 }
 
 void TestScene::Initialize() {
@@ -15,7 +15,7 @@ void TestScene::Initialize() {
 	renderObject_->psoConfig_.vs = "Skinning.VS.hlsl";
 	renderObject_->psoConfig_.ps = "White.PS.hlsl";
 
-	int LoadModelID = modelManager_->LoadModel(sneekWalk);
+	int LoadModelID = modelManager_->LoadModel(sneakWalk);
 	auto model = modelManager_->GetSkinningModelData(LoadModelID);
 
 	renderObject_->SetDrawData(drawDataManager_->GetDrawData(model.drawDataIndex));
@@ -38,8 +38,8 @@ std::unique_ptr<IScene> TestScene::Update() {
 
 	debugCamera_->Update();
 
-	static Animation animation = modelManager_->LoadAnimation(sneekWalk, 0);
-	static auto model = modelManager_->GetSkinningModelData(modelManager_->LoadModel(sneekWalk));
+	static Animation animation = modelManager_->LoadAnimation(sneakWalk, 0);
+	static auto model = modelManager_->GetSkinningModelData(modelManager_->LoadModel(sneakWalk));
 
 	static float time = 0.0f;
 	time += engine_->GetFPSObserver()->GetDeltatime();

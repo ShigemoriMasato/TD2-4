@@ -61,6 +61,8 @@
     <ClCompile Include="Engine\Render\PostEffect.cpp" />
     <ClCompile Include="Engine\Screen\Display\src\IDisplay.cpp" />
     <ClCompile Include="AppSource\Common\Camera\GameCamera.cpp" />
+    <ClCompile Include="Engine\Collision\Collider.cpp" />
+    <ClCompile Include="Engine\Collision\ColliderManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\DXDevice.h" />
@@ -139,5 +141,8 @@
     <ClInclude Include="Engine\Screen\Display\IDisplay.h" />
     <ClInclude Include="Engine\Render\PostEffectData.h" />
     <ClInclude Include="AppSource\Common\Camera\GameCamera.h" />
+    <ClInclude Include="Engine\Collision\Collider.h" />
+    <ClInclude Include="Engine\Collision\ColliderManager.h" />
+    <ClInclude Include="Engine\Collision\Data\CollisionInfo.h" />
   </ItemGroup>
 </Project>
