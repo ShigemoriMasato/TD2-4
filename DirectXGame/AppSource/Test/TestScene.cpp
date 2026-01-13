@@ -1,5 +1,6 @@
 #include "TestScene.h"
 #include <imgui/imgui.h>
+#include"DebugParam/GameParamEditor.h"
 
 namespace {
 	bool debug = false;
@@ -9,6 +10,16 @@ namespace {
 }
 
 void TestScene::Initialize() {
+	// 登録するパラメータを設定
+	GameParamEditor::GetInstance()->SetActiveScene("TestScene");
+	// パラメーター管理の初期化
+	paramManager_ = std::make_unique<ParamManager>();
+
+	// テスト用パラメータを登録
+	GameParamEditor::GetInstance()->AddItem("TestGroup", "TestParam", testParam_);
+	// 適応
+	testParam_ = GameParamEditor::GetInstance()->GetValue<float>("TestGroup", "TestParam");
+
 	renderObject_ = std::make_unique<RenderObject>("TestRenderObject");
 	renderObject_->Initialize();
 	renderObject_->psoConfig_.inputLayoutID = InputLayoutID::Skinning;
@@ -33,6 +44,11 @@ void TestScene::Initialize() {
 }
 
 std::unique_ptr<IScene> TestScene::Update() {
+#ifdef USE_IMGUI
+	// 値の適応
+	testParam_ = GameParamEditor::GetInstance()->GetValue<float>("TestGroup", "TestParam");
+#endif
+
 	input_->Update();
 	debugLine_->Fresh();
 
@@ -71,5 +87,6 @@ void TestScene::Draw() {
 	window->PreDraw();
 	window->PostDraw();
 	//ImGui
+	paramManager_->Draw();
 	engine_->ImGuiDraw();
 }

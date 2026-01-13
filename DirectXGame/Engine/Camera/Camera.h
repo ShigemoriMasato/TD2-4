@@ -29,11 +29,13 @@ public:
 	void SetProjectionMatrix(PerspectiveFovDesc desc);
 	void SetProjectionMatrix(OrthographicDesc desc);
 
+	//TransformとProjectionMatrixをかけて、VPMatrixを作成する
 	void MakeMatrix();
 	void DrawImGui();
 
 	void SetTransform(Matrix4x4 mat);
 
+	//VPMatrixを取得
 	Matrix4x4 GetVPMatrix() const;
 
 	Vector3 position_ = { 0.0f, 0.0f, 0.0f };

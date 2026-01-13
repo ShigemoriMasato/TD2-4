@@ -4,6 +4,8 @@
 #include <Camera/DebugCamera.h>
 #include <Render/DebugLine.h>
 
+#include"DebugParam/ParamManager.h"
+
 class TestScene : public IScene {
 public:
 
@@ -28,4 +30,9 @@ private:
 	VSData vsData_{};
 	int vsDataIndex_ = -1;
 
+
+	// パラメーター管理
+	std::unique_ptr<ParamManager> paramManager_;
+	// テストパラメーター
+	float testParam_ = 0.0f;
 };

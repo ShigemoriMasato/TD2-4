@@ -61,6 +61,10 @@
     <ClCompile Include="Engine\Render\PostEffect.cpp" />
     <ClCompile Include="Engine\Screen\Display\src\IDisplay.cpp" />
     <ClCompile Include="AppSource\Common\Camera\GameCamera.cpp" />
+    <ClCompile Include="AppSource\DebugParam\GameParamEditor.cpp" />
+    <ClCompile Include="AppSource\DebugParam\HierarchyWindow.cpp" />
+    <ClCompile Include="AppSource\DebugParam\InspectorWindow.cpp" />
+    <ClCompile Include="AppSource\DebugParam\ParamManager.cpp" />
     <ClCompile Include="Engine\Collision\Collider.cpp" />
     <ClCompile Include="Engine\Collision\ColliderManager.cpp" />
     <ClCompile Include="Engine\Collision\Data\CollisionVisitor.cpp" />
@@ -142,6 +146,10 @@
     <ClInclude Include="Engine\Screen\Display\IDisplay.h" />
     <ClInclude Include="Engine\Render\PostEffectData.h" />
     <ClInclude Include="AppSource\Common\Camera\GameCamera.h" />
+    <ClInclude Include="AppSource\DebugParam\GameParamEditor.h" />
+    <ClInclude Include="AppSource\DebugParam\HierarchyWindow.h" />
+    <ClInclude Include="AppSource\DebugParam\InspectorWindow.h" />
+    <ClInclude Include="AppSource\DebugParam\ParamManager.h" />
     <ClInclude Include="Engine\Collision\Collider.h" />
     <ClInclude Include="Engine\Collision\ColliderManager.h" />
     <ClInclude Include="Engine\Collision\Data\CollisionInfo.h" />
