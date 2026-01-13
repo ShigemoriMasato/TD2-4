@@ -158,6 +158,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\DebugParam\HierarchyWindow.cpp" />
     <ClCompile Include="AppSource\DebugParam\InspectorWindow.cpp" />
     <ClCompile Include="AppSource\DebugParam\ParamManager.cpp" />
+    <ClCompile Include="Engine\Collision\Data\CollisionVisitor.cpp" />
+    <ClCompile Include="Engine\Collision\Collider.cpp" />
+    <ClCompile Include="Engine\Collision\ColliderManager.cpp" />
     <ClCompile Include="Engine\Render\DebugLine.cpp" />
     <ClCompile Include="Engine\Camera\Camera.cpp" />
     <ClCompile Include="Engine\Camera\DebugCamera.cpp" />
@@ -223,6 +226,10 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\DebugParam\HierarchyWindow.h" />
     <ClInclude Include="AppSource\DebugParam\InspectorWindow.h" />
     <ClInclude Include="AppSource\DebugParam\ParamManager.h" />
+    <ClInclude Include="Engine\Collision\Data\CollisionVisitor.h" />
+    <ClInclude Include="Engine\Collision\Collider.h" />
+    <ClInclude Include="Engine\Collision\ColliderManager.h" />
+    <ClInclude Include="Engine\Collision\Data\CollisionInfo.h" />
     <ClInclude Include="Engine\Render\DebugLine.h" />
     <ClInclude Include="Engine\Render\PostEffectData.h" />
     <ClInclude Include="Engine\Utility\DataStructures.h" />
@@ -299,6 +306,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Render\PostEffect.h" />
     <ClInclude Include="Engine\Screen\Display\IDisplay.h" />
     <ClInclude Include="AppSource\Common\Camera\GameCamera.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -56,7 +56,7 @@ void InitializeScene::Initialize() {
 		commonData_->mainWindow->AddDisplay(textureIndex, "Main Display", 1280 / 2, 720 / 2);
 	}
 
-	//todo リソースの全読み込み
+
 
 	//Input
 	input_->SetHWND(commonData_->mainWindow->GetWindow()->GetHwnd());

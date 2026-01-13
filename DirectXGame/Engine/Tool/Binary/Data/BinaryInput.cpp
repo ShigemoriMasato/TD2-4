@@ -53,11 +53,6 @@ std::shared_ptr<ValueBase> BinaryInput::ReadBinary(std::istream& in) {
 	{
 		return ValueDeserialize<double>(name, in);
 	}
-	case TypeID::Vector:
-	{
-		//todo std::vectorは未実装。いつかやる。工夫すればできるので各自工夫して
-		return {};
-	}
 	case TypeID::uint8_t:
 	{
 		return ValueDeserialize<uint8_t>(name, in);
