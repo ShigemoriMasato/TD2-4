@@ -63,6 +63,7 @@
     <ClCompile Include="AppSource\Common\Camera\GameCamera.cpp" />
     <ClCompile Include="Engine\Collision\Collider.cpp" />
     <ClCompile Include="Engine\Collision\ColliderManager.cpp" />
+    <ClCompile Include="Engine\Collision\Data\CollisionVisitor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\DXDevice.h" />
@@ -144,5 +145,9 @@
     <ClInclude Include="Engine\Collision\Collider.h" />
     <ClInclude Include="Engine\Collision\ColliderManager.h" />
     <ClInclude Include="Engine\Collision\Data\CollisionInfo.h" />
+    <ClInclude Include="Engine\Collision\Data\CollisionVisitor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

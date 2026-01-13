@@ -35,8 +35,6 @@ void PSOManager::Initialize() {
 		}
 	}
 	psoMap_.clear();
-
-	//todo バイナリ保存ができたらいいなぁ
 }
 
 void PSOManager::CreatePSO(PSOConfig config) {

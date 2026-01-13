@@ -19,7 +19,6 @@ void GameWindow::PostDraw() {
 
 #ifdef USE_IMGUI
 
-	//todo ImGuiの描画とか
 	for(const auto& config : displayTextureIndices_) {
 		ImGui::Begin(config.name.c_str());
 		TextureData* textureData = textureManager_->GetTextureData(config.textureIndex);
