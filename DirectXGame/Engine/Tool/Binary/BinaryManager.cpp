@@ -1,12 +1,12 @@
 #include "BinaryManager.h"
 #include <fstream>
 
+std::unique_ptr<BinaryInput> BinaryManager::input = std::make_unique<BinaryInput>();
+std::unique_ptr<BinaryOutput> BinaryManager::output = std::make_unique<BinaryOutput>();
+
 namespace fs = std::filesystem;
 
 BinaryManager::BinaryManager() {
-	input = std::make_unique<BinaryInput>();
-	output = std::make_unique<BinaryOutput>();
-
 	fs::create_directories(basePath);
 }
 
@@ -15,7 +15,7 @@ BinaryManager::~BinaryManager() {
 
 void BinaryManager::Write(std::string fileName) {
 
-	std::ofstream file(basePath + fileName, std::ios::binary);
+	std::ofstream file(basePath + fileName + ".sg", std::ios::binary);
 
 	if (!file.is_open()) {
 		return;

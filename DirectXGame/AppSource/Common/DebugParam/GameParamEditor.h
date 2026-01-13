@@ -163,7 +163,7 @@ private:
 	std::string activeSceneName_ = "None";
 
 	// グローバル変数の保存先ファイルパス
-	const std::string kDirectoryPath = "Assets/Json/GameData/";
+	const std::string kDirectoryPath = "GameParam/";
 
 	BinaryManager binaryManager_;
 

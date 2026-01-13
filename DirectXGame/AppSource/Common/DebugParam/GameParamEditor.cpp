@@ -29,13 +29,18 @@ void GameParamEditor::SaveFile(const std::string& groupName) {
 		const std::string& itemName = itItem->first;
 		// 項目の参照を取得
 		Item& item = itItem->second;
-		
+
 		// binaryに値を保存する
 		binaryManager_.RegistOutput(item.priority);
 		binaryManager_.RegistOutput(item.value.get());
 	}
 
-	binaryManager_.Write(groupName + ".sg");
+	// ディレクトリがなければ作成する
+	if (!std::filesystem::exists(kDirectoryPath)) {
+		std::filesystem::create_directories(kDirectoryPath);
+	}
+
+	binaryManager_.Write(kDirectoryPath + groupName);
 }
 
 void GameParamEditor::LoadFiles() {
@@ -48,27 +53,15 @@ void GameParamEditor::LoadFiles() {
 
 	std::filesystem::directory_iterator dir_it(kDirectoryPath);
 	for (const std::filesystem::directory_entry& entry : dir_it) {
-
-		// ファイルパスを取得
-		const std::filesystem::path& filePath = entry.path();
-
-		// ファイル拡張子を取得
-		std::string extension = filePath.extension().string();
-		// .jsonファイル以外はスキップ
-		if (extension.compare(".json") != 0) {
-			continue;
-		}
-
 		// ファイル読み込み
-		LoadFile(filePath.stem().string());
+		LoadFile(entry.path().stem().string());
 	}
-
 }
 
 void GameParamEditor::LoadFile(const std::string& groupName) {
 
 	// 読み込みJSONファイルのフルパスを合成する
-	std::string filePath = kDirectoryPath + groupName + ".json";
+	std::string filePath = kDirectoryPath + groupName;
 	// 読み込み用ファイルストリーム
 	std::ifstream ifs;
 	// ファイルを読み込み用に開く
@@ -83,8 +76,8 @@ void GameParamEditor::LoadFile(const std::string& groupName) {
 
 	datas_[groupName].items.clear();
 
-	auto values = binaryManager_.Read(groupName + ".sg");
-	if(values.empty()) {
+	auto values = binaryManager_.Read(kDirectoryPath + groupName);
+	if (values.empty()) {
 		return;
 	}
 

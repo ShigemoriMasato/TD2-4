@@ -61,13 +61,17 @@
     <ClCompile Include="Engine\Render\PostEffect.cpp" />
     <ClCompile Include="Engine\Screen\Display\src\IDisplay.cpp" />
     <ClCompile Include="AppSource\Common\Camera\GameCamera.cpp" />
-    <ClCompile Include="AppSource\DebugParam\GameParamEditor.cpp" />
-    <ClCompile Include="AppSource\DebugParam\HierarchyWindow.cpp" />
-    <ClCompile Include="AppSource\DebugParam\InspectorWindow.cpp" />
-    <ClCompile Include="AppSource\DebugParam\ParamManager.cpp" />
     <ClCompile Include="Engine\Collision\Collider.cpp" />
     <ClCompile Include="Engine\Collision\ColliderManager.cpp" />
     <ClCompile Include="Engine\Collision\Data\CollisionVisitor.cpp" />
+    <ClCompile Include="AppSource\Common\DebugParam\GameParamEditor.cpp" />
+    <ClCompile Include="AppSource\Common\DebugParam\HierarchyWindow.cpp" />
+    <ClCompile Include="AppSource\Common\DebugParam\InspectorWindow.cpp" />
+    <ClCompile Include="AppSource\Common\DebugParam\ParamManager.cpp" />
+    <ClCompile Include="AppSource\Game\GameScene.cpp" />
+    <ClCompile Include="AppSource\MapEditor\MapEditScene.cpp" />
+    <ClCompile Include="AppSource\MapEditor\MapData\Data\MapData.cpp" />
+    <ClCompile Include="AppSource\MapEditor\MapData\MapDataManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\DXDevice.h" />
@@ -146,16 +150,17 @@
     <ClInclude Include="Engine\Screen\Display\IDisplay.h" />
     <ClInclude Include="Engine\Render\PostEffectData.h" />
     <ClInclude Include="AppSource\Common\Camera\GameCamera.h" />
-    <ClInclude Include="AppSource\DebugParam\GameParamEditor.h" />
-    <ClInclude Include="AppSource\DebugParam\HierarchyWindow.h" />
-    <ClInclude Include="AppSource\DebugParam\InspectorWindow.h" />
-    <ClInclude Include="AppSource\DebugParam\ParamManager.h" />
     <ClInclude Include="Engine\Collision\Collider.h" />
     <ClInclude Include="Engine\Collision\ColliderManager.h" />
     <ClInclude Include="Engine\Collision\Data\CollisionInfo.h" />
     <ClInclude Include="Engine\Collision\Data\CollisionVisitor.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
+    <ClInclude Include="AppSource\Common\DebugParam\GameParamEditor.h" />
+    <ClInclude Include="AppSource\Common\DebugParam\HierarchyWindow.h" />
+    <ClInclude Include="AppSource\Common\DebugParam\InspectorWindow.h" />
+    <ClInclude Include="AppSource\Common\DebugParam\ParamManager.h" />
+    <ClInclude Include="AppSource\Game\GameScene.h" />
+    <ClInclude Include="AppSource\MapEditor\MapEditScene.h" />
+    <ClInclude Include="AppSource\MapEditor\MapData\Data\MapData.h" />
+    <ClInclude Include="AppSource\MapEditor\MapData\MapDataManager.h" />
   </ItemGroup>
 </Project>
