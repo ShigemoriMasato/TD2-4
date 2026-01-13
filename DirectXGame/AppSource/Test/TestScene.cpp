@@ -1,6 +1,6 @@
 #include "TestScene.h"
 #include <imgui/imgui.h>
-#include"DebugParam/GameParamEditor.h"
+#include"Common/DebugParam/GameParamEditor.h"
 
 namespace {
 	bool debug = false;
@@ -85,7 +85,7 @@ void TestScene::Draw() {
 	display->PostDraw(window->GetCommandList());
 
 	window->PreDraw();
-	window->PostDraw();
+	window->DrawDisplayWithImGui();
 	//ImGui
 	paramManager_->Draw();
 	engine_->ImGuiDraw();

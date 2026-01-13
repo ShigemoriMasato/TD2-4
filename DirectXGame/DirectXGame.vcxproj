@@ -154,10 +154,10 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
-    <ClCompile Include="AppSource\DebugParam\GameParamEditor.cpp" />
-    <ClCompile Include="AppSource\DebugParam\HierarchyWindow.cpp" />
-    <ClCompile Include="AppSource\DebugParam\InspectorWindow.cpp" />
-    <ClCompile Include="AppSource\DebugParam\ParamManager.cpp" />
+    <ClCompile Include="AppSource\Common\DebugParam\GameParamEditor.cpp" />
+    <ClCompile Include="AppSource\Common\DebugParam\HierarchyWindow.cpp" />
+    <ClCompile Include="AppSource\Common\DebugParam\InspectorWindow.cpp" />
+    <ClCompile Include="AppSource\Common\DebugParam\ParamManager.cpp" />
     <ClCompile Include="Engine\Collision\Data\CollisionVisitor.cpp" />
     <ClCompile Include="Engine\Collision\Collider.cpp" />
     <ClCompile Include="Engine\Collision\ColliderManager.cpp" />
@@ -204,6 +204,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Utility\src\SearchFile.cpp" />
     <ClCompile Include="Engine\Screen\Display\src\IDisplay.cpp" />
     <ClCompile Include="AppSource\Common\Camera\GameCamera.cpp" />
+    <ClCompile Include="AppSource\Game\GameScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\SHEngine.cpp" />
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
@@ -222,10 +223,10 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Render\PostEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AppSource\DebugParam\GameParamEditor.h" />
-    <ClInclude Include="AppSource\DebugParam\HierarchyWindow.h" />
-    <ClInclude Include="AppSource\DebugParam\InspectorWindow.h" />
-    <ClInclude Include="AppSource\DebugParam\ParamManager.h" />
+    <ClInclude Include="AppSource\Common\DebugParam\GameParamEditor.h" />
+    <ClInclude Include="AppSource\Common\DebugParam\HierarchyWindow.h" />
+    <ClInclude Include="AppSource\Common\DebugParam\InspectorWindow.h" />
+    <ClInclude Include="AppSource\Common\DebugParam\ParamManager.h" />
     <ClInclude Include="Engine\Collision\Data\CollisionVisitor.h" />
     <ClInclude Include="Engine\Collision\Collider.h" />
     <ClInclude Include="Engine\Collision\ColliderManager.h" />
@@ -306,9 +307,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Render\PostEffect.h" />
     <ClInclude Include="Engine\Screen\Display\IDisplay.h" />
     <ClInclude Include="AppSource\Common\Camera\GameCamera.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
+    <ClInclude Include="AppSource\Game\GameScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -15,7 +15,7 @@ void GameWindow::PreDraw() {
 	window_->PreDraw(true);
 }
 
-void GameWindow::PostDraw() {
+void GameWindow::DrawDisplayWithImGui() {
 
 #ifdef USE_IMGUI
 

@@ -164,5 +164,5 @@ void InitializeScene::Draw() {
 	commonData_->display->PreDraw(commonData_->mainWindow->GetCommandList(), true);
 	commonData_->display->PostDraw(commonData_->mainWindow->GetCommandList());
 	commonData_->mainWindow->PreDraw();
-	commonData_->mainWindow->PostDraw();
+	commonData_->mainWindow->DrawDisplayWithImGui();
 }
