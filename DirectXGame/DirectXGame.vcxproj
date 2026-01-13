@@ -158,6 +158,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Common\DebugParam\HierarchyWindow.cpp" />
     <ClCompile Include="AppSource\Common\DebugParam\InspectorWindow.cpp" />
     <ClCompile Include="AppSource\Common\DebugParam\ParamManager.cpp" />
+    <ClCompile Include="AppSource\MapEditor\MapData\Data\MapData.cpp" />
     <ClCompile Include="Engine\Collision\Data\CollisionVisitor.cpp" />
     <ClCompile Include="Engine\Collision\Collider.cpp" />
     <ClCompile Include="Engine\Collision\ColliderManager.cpp" />
@@ -222,7 +223,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Assets\Model\ModelLoader.cpp" />
     <ClCompile Include="Engine\Render\PostEffect.cpp" />
     <ClCompile Include="AppSource\MapEditor\MapEditScene.cpp" />
-    <ClCompile Include="AppSource\MapEditor\MapData\Data\MapData.cpp" />
     <ClCompile Include="AppSource\MapEditor\MapData\MapDataManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -230,6 +230,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Common\DebugParam\HierarchyWindow.h" />
     <ClInclude Include="AppSource\Common\DebugParam\InspectorWindow.h" />
     <ClInclude Include="AppSource\Common\DebugParam\ParamManager.h" />
+    <ClInclude Include="AppSource\MapEditor\MapData\Data\MapData.h" />
     <ClInclude Include="Engine\Collision\Data\CollisionVisitor.h" />
     <ClInclude Include="Engine\Collision\Collider.h" />
     <ClInclude Include="Engine\Collision\ColliderManager.h" />
@@ -312,7 +313,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Common\Camera\GameCamera.h" />
     <ClInclude Include="AppSource\Game\GameScene.h" />
     <ClInclude Include="AppSource\MapEditor\MapEditScene.h" />
-    <ClInclude Include="AppSource\MapEditor\MapData\Data\MapData.h" />
     <ClInclude Include="AppSource\MapEditor\MapData\MapDataManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
