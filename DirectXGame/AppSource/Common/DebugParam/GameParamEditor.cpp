@@ -22,14 +22,6 @@ void GameParamEditor::SaveFile(const std::string& groupName) {
 	// 未登録チェック
 	assert(itGroup != datas_.end());
 
-	json root;
-	root = json::object();
-	// jsonオブジェクト登録
-	root[groupName] = json::object();
-
-	// シーン名を保存
-	root[groupName]["SceneName"] = activeSceneName_;
-
 	// 各項目について
 	for (std::map<std::string, Item>::iterator itItem = itGroup->second.items.begin(); itItem != itGroup->second.items.end(); ++itItem) {
 
@@ -37,37 +29,13 @@ void GameParamEditor::SaveFile(const std::string& groupName) {
 		const std::string& itemName = itItem->first;
 		// 項目の参照を取得
 		Item& item = itItem->second;
-
-		// jsonに値を保存する
-		json & jsonNode = root[groupName][itemName];
-		std::visit(JsonSaveVisitor{ jsonNode }, item.value);
+		
+		// binaryに値を保存する
+		binaryManager_.RegistOutput(item.priority);
+		binaryManager_.RegistOutput(item.value.get());
 	}
 
-	// ディレクトリがなければ作成する
-	std::filesystem::path dir(kDirectoryPath);
-	if (!std::filesystem::exists(kDirectoryPath)) {
-		std::filesystem::create_directory(kDirectoryPath);
-	}
-
-	// 書き込むJSONファイルのフルパスを合成する
-	std::string filePath = kDirectoryPath + groupName + ".json";
-	// 書き込み用ファイルストリーム
-	std::ofstream ofs;
-	// ファイルを書き込み用に開く
-	ofs.open(filePath);
-
-	// ファイルオープン失敗
-	if (ofs.fail()) {
-		std::string message = "Failed open data file for write.";
-		MessageBoxA(nullptr, message.c_str(), "GameParamEditor", 0);
-		assert(0);
-		return;
-	}
-
-	// ファイルにjson文字列を書き込む(インデント幅4)
-	ofs << std::setw(4) << root << std::endl;
-	// ファイルを閉じる
-	ofs.close();
+	binaryManager_.Write(groupName + ".sg");
 }
 
 void GameParamEditor::LoadFiles() {
@@ -113,92 +81,17 @@ void GameParamEditor::LoadFile(const std::string& groupName) {
 		assert(0);
 	}
 
-	
-	json root;
+	datas_[groupName].items.clear();
 
-	// json文字列からjsonのデータ構造に展開
-	ifs >> root;
-	// ファイルを閉じる
-	ifs.close();
-
-	// シーン名を読み込み
-	std::string sceneName = root[groupName]["SceneName"].get<std::string>();
-	datas_[groupName].sceneName = sceneName;
-
-	// グループを検索
-	json::iterator itGroup = root.find(groupName);
-	// 未登録チェック
-	assert(itGroup != root.end());
+	auto values = binaryManager_.Read(groupName + ".sg");
+	if(values.empty()) {
+		return;
+	}
 
 	// 各アイテムについて
-	for (json::iterator itItem = itGroup->begin(); itItem != itGroup->end(); ++itItem) {
-		// アイテム名を取得
-		const std::string& itemName = itItem.key();
-		if (itemName == "SceneName") {
-			continue;
-		}
-
-		// パラメータの型を取得
-		const auto itemType = itItem->type();
-
-		switch (itemType)
-		{
-			// bool型を取得
-		case json::value_t::boolean:
-			SetValue(groupName, itemName, itItem->get<bool>());
-			break;
-
-			// int32_t型を取得
-		case json::value_t::number_integer:
-			SetValue(groupName, itemName, itItem->get<int32_t>());
-			break;
-
-			// uint32_t型を取得
-		case json::value_t::number_unsigned:
-			SetValue(groupName, itemName, itItem->get<uint32_t>());
-			break;
-
-			// float型を取得
-		case json::value_t::number_float:
-			SetValue(groupName, itemName, itItem->get<float>());
-			break;
-
-			// Vector型を取得
-		case json::value_t::array:
-			if (itItem->size() == 3) {
-				Vector3 value = { itItem->at(0), itItem->at(1), itItem->at(2) };
-				SetValue(groupName, itemName, value);
-			} else if (itItem->size() == 2) {
-				Vector2 value = { itItem->at(0), itItem->at(1) };
-				SetValue(groupName, itemName, value);
-			} else if (itItem->size() == 4) {
-				Vector4 value = { itItem->at(0), itItem->at(1), itItem->at(2),itItem->at(3) };
-				SetValue(groupName, itemName, value);
-			}
-			break;
-
-		case json::value_t::object: {
-			std::map<std::string, uint32_t> mapValue;
-
-			for (auto& [key, val] : itItem->items()) {
-				// JSON が整数なら uint32_t として取得
-				if (val.is_number_unsigned() || val.is_number_integer()) {
-					mapValue[key] = val.get<uint32_t>();
-				}
-			}
-
-			SetValue(groupName, itemName, mapValue);
-			break;
-		}
-
-			// std::string型を取得
-		case json::value_t::string:
-			SetValue(groupName, itemName, itItem->get<std::string>());
-			break;
-
-		default:
-			break;
-		}
+	for (size_t i = 0; i < values.size(); ) {
+		int priority = binaryManager_.Reverse<int>(values[i++].get());
+		AddItem(groupName, values[i++].get(), priority);
 	}
 }
 
@@ -221,6 +114,23 @@ void GameParamEditor::RemoveItem(const std::string& groupName, const std::string
 	if (itItem != items.end()) {
 		items.erase(itItem);
 	}
+}
+
+void GameParamEditor::AddItem(const std::string& groupName, ValueBase* value, int priority) {
+	Group& group = datas_[groupName];
+	std::string& key = value->name;
+
+	// すでに登録されていれば何もしない
+	if (group.items.find(key) != group.items.end()) {
+		group.items[key].priority = priority; // 優先順位は別なので取得する
+		return;
+	}
+
+	Item newItem{};
+	newItem.priority = priority;
+	newItem.value = value->Clone();
+
+	group.items[key] = newItem;
 }
 
 void GameParamEditor::SelectGroup(const std::string& groupName) {

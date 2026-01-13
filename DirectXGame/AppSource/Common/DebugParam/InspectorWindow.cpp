@@ -84,7 +84,7 @@ void InspectorWindow::Draw() {
         ImGui::PushID(itemName.c_str());
 
         // 型に応じて編集UI表示
-        std::visit(DebugParameterVisitor{ itemName }, itemPtr->value);
+        itemPtr->value->DrawImGui();
 
         ImGui::PopID();
     }

@@ -21,9 +21,13 @@ public:
 		values.push_back(std::make_shared<Value<T>>(value, name));
 	};
 
+	void RegistOutput(ValueBase* value) {
+		values.push_back(value->Clone());
+	}
+
 	template<typename T>
-	static T Reverse(std::shared_ptr<ValueBase> value) {
-		return static_cast<Value<T>*>(value.get())->value;
+	static T Reverse(ValueBase* value) {
+		return static_cast<Value<T>*>(value)->value;
 	}
 
 	/// <summary>

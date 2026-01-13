@@ -87,8 +87,8 @@ void GameCamera::Load() {
 
 	uint32_t index = 0;
 
-	Vector3 position = BinaryManager::Reverse<Vector3>(data[index++]);
-	Vector3 rotate = BinaryManager::Reverse<Vector3>(data[index++]);
+	Vector3 position = BinaryManager::Reverse<Vector3>(data[index++].get());
+	Vector3 rotate = BinaryManager::Reverse<Vector3>(data[index++].get());
 
 	position_ = position;
 	camera_->rotation_ = rotate;
@@ -97,6 +97,6 @@ void GameCamera::Load() {
 		return;
 	}
 
-	beginningPos_ = BinaryManager::Reverse<Vector3>(data[index++]);
-	beginningRot_ = BinaryManager::Reverse<Vector3>(data[index++]);
+	beginningPos_ = BinaryManager::Reverse<Vector3>(data[index++].get());
+	beginningRot_ = BinaryManager::Reverse<Vector3>(data[index++].get());
 }

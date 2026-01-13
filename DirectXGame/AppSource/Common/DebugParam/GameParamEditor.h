@@ -4,17 +4,15 @@
 #include<map>
 #include<string>
 
-#include"nlohmannjson/json.hpp"
 #include"Utility/MyMath.h"
-
-using json = nlohmann::json;
+#include <Tool/Binary/BinaryManager.h>
 
 class GameParamEditor final {
 public:
 
 	// 項目
 	struct Item {
-		std::variant<int32_t, uint32_t, float, Vector2, Vector3,Vector4, bool, std::string, std::map<std::string, uint32_t>> value;
+		std::shared_ptr<ValueBase> value; // 値
 		int priority = INT_MAX; // 優先順位
 	};
 
@@ -107,7 +105,7 @@ public:
 
 		// 新しい項目のデータを設定
 		Item newItem{};
-		newItem.value = value;
+		newItem.value = std::make_shared<Value<T>>(value, key);
 		newItem.priority = priority;
 		// 設定した項目をstd::mapに追加
 		group.items[key] = newItem;
@@ -131,11 +129,15 @@ public:
 
 		auto itItem = group.items.find(key);
 
-		// 型があるかを確認する
-		assert(std::holds_alternative<T>(itItem->second.value));
+		// 型が一致しない場合はデフォルト値を返す
+		if(uint8_t(TypeIDResolver<T>::id) != itItem->second.value->GetTypeID()) {
+			//todo Logを出す
+			assert(false && "GameParamEditor::GetValue() failed: Type mismatch");
+			return T();
+		}
 
 		// グループの参照を取得
-		return std::get<T>(itItem->second.value);
+		return binaryManager_.Reverse<T>(itItem->second.value.get());
 	}
 
 	/// <summary>
@@ -163,39 +165,7 @@ private:
 	// グローバル変数の保存先ファイルパス
 	const std::string kDirectoryPath = "Assets/Json/GameData/";
 
-private:
-
-	// jsonファイルに値を保存するためのビジター
-	struct JsonSaveVisitor {
-		json& jsonData;
-		explicit JsonSaveVisitor(json& jsonNode) : jsonData(jsonNode){}
-
-		void operator()(const std::map<std::string, uint32_t>& value) const {
-			json j = json::object();
-			// キーと値をそのまま入れる
-			for (const auto& [key, val] : value) {
-				j[key] = val;  
-			}
-			jsonData = j;
-		}
-
-		void operator()(const Vector4& value) const {
-			jsonData = json::array({ value.x, value.y, value.z,value.w });
-		}
-		
-		void operator()(const Vector3& value) const {
-			jsonData = json::array({ value.x, value.y, value.z });
-		}
-
-		void operator()(const Vector2& value) const {
-			jsonData = json::array({ value.x, value.y });
-		}
-
-		template<typename T>
-		void operator()(const T& value) const {
-			jsonData = value;
-		}
-	};
+	BinaryManager binaryManager_;
 
 private:
 
@@ -210,10 +180,23 @@ private:
 	void SetValue(const std::string& groupName, const std::string& key, T value) {
 		// グループの参照を取得
 		Group& group = datas_[groupName];
+		Item& item = group.items[key];
+
+		if (static_cast<uint8_t>(TypeIDResolver<T>::id) != item.value->GetTypeID()) {
+			//todo Logを出す
+			return;
+		}
+
 		// 新しい項目のデータを設定
-		Item newItem{};
-		newItem.value = value;
-		// 設定した項目をstd::mapに追加
-		group.items[key] = newItem;
+		static_cast<Value<T>*>(item.value.get())->set(value);
 	}
+
+	/// <summary>
+	/// 読み込んだ値を登録する
+	/// </summary>
+	/// <param name="groupName"></param>
+	/// <param name="key"></param>
+	/// <param name="value"></param>
+	/// <param name="priority"></param>
+	void AddItem(const std::string& groupName, ValueBase* value, int priority = INT_MAX);
 };

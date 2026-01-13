@@ -5,8 +5,11 @@
 #include <cassert>
 #include <istream>
 #include <ostream>
+#include <memory>
+#include <type_traits>
 #include <Utility/Vector.h>
 #include <PSO/PSOConfig.h>
+#include <imgui/imgui.h>
 
 enum class TypeID : uint8_t {
 	kUnknown = 0x00,	//不明な型
@@ -58,6 +61,8 @@ public:
 	ValueBase(std::string name) : name(name) {}
 	virtual ~ValueBase() = default;
 
+	virtual std::shared_ptr<ValueBase> Clone() const = 0;
+
 	template<typename T>
 	T get() {
 		std::any buffer = GetValueData();
@@ -77,6 +82,7 @@ public:
 
 	virtual void Serialize(std::ostream& out) const = 0;
 	virtual void Deserialize(std::istream& in) = 0;
+	virtual void DrawImGui() = 0;
 
 	std::string name;		//変数名
 
@@ -96,6 +102,10 @@ public:
 	Value(T value, std::string name = "default") : ValueBase(name), value(value) {};
 	~Value() override = default;
 
+	std::shared_ptr<ValueBase> Clone() const override {
+		return std::make_shared<Value<T>>(this->value, this->name);
+	}
+
 	//値を変更する
 	void set(const T& newValue) {
 		value = newValue;
@@ -113,7 +123,29 @@ public:
 		in.read(reinterpret_cast<char*>(&value), sizeof(T));
 	}
 
-	T value;				//値
+	void DrawImGui() override {
+#ifdef USE_IMGUI
+		if constexpr (std::is_same<T, int>::value) {
+			ImGui::DragInt(name.c_str(), &value, 1);
+		} else if constexpr (std::is_same<T, float>::value) {
+			ImGui::DragFloat(name.c_str(), &value);
+		} else if constexpr (std::is_same<T, bool>::value) {
+			ImGui::Checkbox(name.c_str(), &value);
+		} else if constexpr (std::is_same<T, uint32_t>::value) {
+			ImGui::DragScalar(name.c_str(), ImGuiDataType_U32, &value, 1.0f);
+		} else if constexpr (std::is_same<T, Vector2>::value) {
+			ImGui::DragFloat2(name.c_str(), reinterpret_cast<float*>(&value));
+		} else if constexpr (std::is_same<T, Vector3>::value) {
+			ImGui::DragFloat3(name.c_str(), reinterpret_cast<float*>(&value));
+		} else if constexpr (std::is_same<T, Vector4>::value) {
+			ImGui::DragFloat4(name.c_str(), reinterpret_cast<float*>(&value));
+		} else {
+			ImGui::Text("[%s]は未対応の型です", name.c_str());
+		}
+#endif
+	}
+
+	T value;	//値
 
 private:
 	//親クラスが値を取得する用関数

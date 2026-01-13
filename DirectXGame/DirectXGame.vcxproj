@@ -221,6 +221,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Assets\Model\ModelManager.cpp" />
     <ClCompile Include="Engine\Assets\Model\ModelLoader.cpp" />
     <ClCompile Include="Engine\Render\PostEffect.cpp" />
+    <ClCompile Include="AppSource\MapEditor\MapEditScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSource\Common\DebugParam\GameParamEditor.h" />
@@ -308,6 +309,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Screen\Display\IDisplay.h" />
     <ClInclude Include="AppSource\Common\Camera\GameCamera.h" />
     <ClInclude Include="AppSource\Game\GameScene.h" />
+    <ClInclude Include="AppSource\MapEditor\MapEditScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
