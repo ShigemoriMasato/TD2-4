@@ -5,48 +5,93 @@
 #include <timeapi.h>
 #include <Tool/Logger/Logger.h>
 
+/**
+ * @enum FPSType
+ * @brief FPSの種類を定義
+ */
 enum class FPSType {
-    CPU,
-    GPU,
-    Count
+    CPU,   ///< CPU処理のFPS
+    GPU,   ///< GPU処理のFPS
+    Count  ///< 種類数
 };
 
+/**
+ * @class FPSObserver
+ * @brief FPS（フレームレート）を監視・管理するクラス
+ * 
+ * CPUとGPUのフレームレートを個別に測定し、ターゲットFPSに合わせるための
+ * 待機処理を行う。デルタタイムの管理とFPSの固定化を担当する。
+ */
 class FPSObserver {
 public:
 
-    /// <summary>
-    /// fpsを管理するクラス
-    /// </summary>
-    /// <param name="isFix">fpsを固定するかどうか</param>
-    /// <param name="targetFps">固定するときの目標fps</param>
+    /**
+     * @brief FPS監視クラスを構築
+     * @param isFix FPSを固定するかどうか
+     * @param targetFps 目標FPS
+     */
     FPSObserver(bool isFix = true, double targetFps = 60.0);
+    
+    /// @brief デストラクタ
     ~FPSObserver();
 
+    /**
+     * @brief FPS固定の有効/無効を設定
+     * @param isFix FPSを固定するかどうか
+     * @param type FPSの種類
+     */
     void SetIsFix(bool isFix, FPSType type = FPSType::CPU) { isFix_[int(type)] = isFix; };
+    
+    /**
+     * @brief 目標FPSを設定
+     * @param targetfps 目標FPS
+     * @param type FPSの種類
+     */
     void SetTargetFPS(double targetfps, FPSType type = FPSType::CPU);
+    
+    /**
+     * @brief デルタタイムを取得
+     * @param type FPSの種類
+     * @return デルタタイム（秒）
+     */
     float GetDeltatime(FPSType type = FPSType::CPU) { return deltatime_[int(type)]; }
 
-    // FPSを固定するため処理時間に余裕がある場合その分待つ
+    /**
+     * @brief フレーム間の時間調整を行う
+     * 
+     * FPSを固定する場合、処理時間に余裕がある際に待機する。
+     * @param type FPSの種類
+     */
     void TimeAdjustment(FPSType type = FPSType::CPU);
 
 private:
+    /// @brief デルタタイム（秒）
     static std::vector<float> deltatime_;
 
+    /// @brief 目標FPS
     std::vector<double> targetFPS_;
+    /// @brief フレーム時間（秒）
     std::vector<double> frameTime_;
 
+    /// @brief FPS固定の有効/無効
     std::vector<bool> isFix_;
 
-    // 計測開始時間
+    /// @brief 計測開始時間
     std::vector<LARGE_INTEGER> timeStart_{};
-    // 計測終了時間  
+    /// @brief 計測終了時間  
     std::vector<LARGE_INTEGER> timeEnd_{};
-    // 計測周波数
+    /// @brief 計測周波数
     std::vector<LARGE_INTEGER> timeFreq_{};
 
-    // より精密な時間待機
+    /**
+     * @brief 高精度な時間待機を行う
+     * @param seconds 待機時間（秒）
+     * @param type FPSの種類
+     */
     void PreciseSleep(double seconds, FPSType type);
 
+    /// @brief ロガー
     std::shared_ptr<spdlog::logger> logger_;
+    /// @brief フレームカウント
 	uint32_t frameCount_ = 0;
 };

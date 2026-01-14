@@ -1,6 +1,7 @@
 #include "MapDataManager.h"
 
 void MapDataManager::Initialize() {
+	logger_ = getLogger("Game");
 	Load();
 }
 
@@ -8,7 +9,7 @@ MapDataManager::~MapDataManager() {
 	Save();
 }
 
-MapData* MapDataManager::GetMapData(const std::string& modelFilePath) {
+MapDataForBin* MapDataManager::GetMapData(const std::string& modelFilePath) {
 	for (auto& map : mapData_) {
 		if (map.modelFilePath == modelFilePath) {
 			return &map;
@@ -17,7 +18,7 @@ MapData* MapDataManager::GetMapData(const std::string& modelFilePath) {
 	return nullptr;
 }
 
-MapData* MapDataManager::GetMapData(int mapID) {
+MapDataForBin* MapDataManager::GetMapData(int mapID) {
 	for (auto& map : mapData_) {
 		if (map.mapID == mapID) {
 			return &map;
@@ -60,15 +61,19 @@ void MapDataManager::Load() {
 	size_t index = 0;
 	int mapCount = BinaryManager::Reverse<int>(values[index++].get());
 	mapData_.resize(mapCount);
+	int nextID = 0;
 	for (int i = 0; i < mapCount; ++i) {
 		mapData_[i].modelFilePath = BinaryManager::Reverse<std::string>(values[index++].get());
 		mapData_[i].width = BinaryManager::Reverse<int>(values[index++].get());
 		mapData_[i].height = BinaryManager::Reverse<int>(values[index++].get());
 		mapData_[i].mapID = BinaryManager::Reverse<int>(values[index++].get());
+
 		int tileDataSize = BinaryManager::Reverse<int>(values[index++].get());
-		mapData_[i].tileData.resize(tileDataSize);
+		mapData_[i].tileData.reserve(10000);
 		for (int j = 0; j < tileDataSize; ++j) {
-			mapData_[i].tileData[j] = BinaryManager::Reverse<int>(values[index++].get());
+			mapData_[i].tileData.push_back((TileType)BinaryManager::Reverse<int>(values[index++].get()));
 		}
+
+		mapData_[i].Verify();
 	}
 }

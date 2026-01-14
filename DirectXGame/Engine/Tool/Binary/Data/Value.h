@@ -139,6 +139,11 @@ public:
 			ImGui::DragFloat3(name.c_str(), reinterpret_cast<float*>(&value));
 		} else if constexpr (std::is_same<T, Vector4>::value) {
 			ImGui::DragFloat4(name.c_str(), reinterpret_cast<float*>(&value));
+		} else if constexpr (std::is_same<T, std::string>::value) {
+			static char buffer[256];
+			std::memcpy(buffer, value.c_str(), std::min(value.size() + 1, sizeof(buffer)));
+			ImGui::InputText(name.c_str(), buffer, 256);
+			value = std::string(buffer);
 		} else {
 			ImGui::Text("[%s]は未対応の型です", name.c_str());
 		}

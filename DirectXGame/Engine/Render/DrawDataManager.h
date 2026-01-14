@@ -2,13 +2,28 @@
 #include <Core/DXDevice.h>
 #include <Utility/DirectUtilFuncs.h>
 
+/**
+ * @struct DrawData
+ * @brief 描画に必要なデータをまとめた構造体
+ */
 struct DrawData {
+	/// @brief 頂点バッファビューの配列
 	std::vector<D3D12_VERTEX_BUFFER_VIEW> vbv;
+	/// @brief インデックスバッファビュー
 	D3D12_INDEX_BUFFER_VIEW ibv;
+	/// @brief 頂点数
 	uint32_t vertexNum;
+	/// @brief インデックス数
 	uint32_t indexNum;
 };
 
+/**
+ * @class DrawDataManager
+ * @brief 描画データ（頂点バッファ、インデックスバッファ）を管理するクラス
+ * 
+ * 頂点データとインデックスデータをGPUリソースに変換し、
+ * 描画に必要なDrawDataを作成・管理する。
+ */
 class DrawDataManager {
 public:
 
@@ -27,31 +42,51 @@ public:
 	//即席
 	void CopyBufferData(int drawDataIndex, const void* data, size_t size) {
 		assert(drawDataIndex >= 0 && drawDataIndex < static_cast<int>(drawDataList_.size()) && "DrawDataManager::CoppyBufferData: Invalid DrawData index");
-		MapData& mapData = drawDataList_[drawDataIndex].second;
+		MapDataForBin& mapData = drawDataList_[drawDataIndex].second;
 		assert(size <= mapData.size && "DrawDataManager::CopyBufferData: Data size exceeds mapped buffer size");
 		std::memcpy(mapData.mapped, data, size);
 	}
 
 private:
 
+	/// @brief DirectX12デバイスへのポインタ
 	DXDevice* device_ = nullptr;
+	/// @brief ロガー
 	Logger logger_ = nullptr;
 
-	struct MapData {
+	/**
+	 * @struct MapDataForBin
+	 * @brief マップされたバッファ情報
+	 */
+	struct MapDataForBin {
+		/// @brief マップされたメモリへのポインタ
 		void* mapped = nullptr;
+		/// @brief バッファサイズ
 		size_t size = 0;
 	};
+	/// @brief 頂点バッファビューの一時リスト
 	std::vector<D3D12_VERTEX_BUFFER_VIEW> vertexBufferViews_;
+	/// @brief インデックスバッファビュー
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_;
-	MapData mapData_;
+	/// @brief マップデータ
+	MapDataForBin mapData_;
 
+	/// @brief 頂点数
 	uint32_t vertexNum_ = 0;
+	/// @brief インデックス数
 	uint32_t indexNum_ = 0;
-	std::vector<std::pair<DrawData, MapData>> drawDataList_;
+	/// @brief DrawDataとMapDataのペアのリスト
+	std::vector<std::pair<DrawData, MapDataForBin>> drawDataList_;
 
+	/**
+	 * @struct Resource
+	 * @brief リソースラッパー
+	 */
 	struct Resource {
+		/// @brief ID3D12ResourceのComポインタ
 		Microsoft::WRL::ComPtr<ID3D12Resource> res;
 	};
+	/// @brief リソースのリスト
 	std::vector<Resource> resources_;
 
 };

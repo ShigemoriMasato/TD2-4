@@ -18,7 +18,6 @@ void GameScene::Initialize() {
 	inst->AddItem("Test", "param3", param3, 2);
 	inst->AddItem("Test", "param4", param4, 3);
 	inst->AddItem("Test", "param5", param5, 4);
-
 }
 
 std::unique_ptr<IScene> GameScene::Update() {

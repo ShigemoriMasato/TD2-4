@@ -6,23 +6,48 @@
 #include <Tool/Logger/Logger.h>
 #include "ShaderShelf.h"
 
+/**
+ * @enum SamplerID
+ * @brief サンプラーID(ビットフラグで複数指定可能)
+ */
 enum class SamplerID : uint32_t {
-	Non = 0,
-	Static = 1 << 0,
-	Clamp = 1 << 1,
+	Non = 0,             ///< サンプラーなし
+	Static = 1 << 0,     ///< リピートサンプラー
+	Clamp = 1 << 1,      ///< クランプサンプラー
 
-	Count
+	Count                ///< サンプラーIDの総数
 };
 
+/**
+ * @brief SamplerIDのビットOR演算子
+ * @return ビットORの結果
+ */
 uint32_t operator|(SamplerID a, SamplerID b);
+
+/**
+ * @brief uint32_tとSamplerIDのビットOR演算子
+ * @return ビットORの結果
+ */
 uint32_t operator|(uint32_t a, SamplerID b);
+
+/**
+ * @brief SamplerIDの比較演算子
+ * @return a < bの結果
+ */
 bool operator<(SamplerID a, SamplerID b);
 
+/**
+ * @struct RootSignatureConfig
+ * @brief ルートシグネチャの設定情報
+ * 
+ * ルートシグネチャに必要な定数バッファ、シェーダーリソース、
+ * テクスチャ、サンプラーの設定をまとめた構造体。
+ */
 struct RootSignatureConfig {
-	std::pair<int, int> cbvNums{};							// <Vertex, Pixel>
-	std::pair<int, int> srvNums{};							// <Vertex, Pixel> 上限8
-	bool useTexture = false;								// テクスチャを使うか
-	uint32_t samplers = uint32_t(SamplerID::Static);		//SamplerIDのビットマスク
+	std::pair<int, int> cbvNums{};                         ///< 定数バッファ数<Vertex, Pixel>
+	std::pair<int, int> srvNums{};                         ///< シェーダーリソース数<Vertex, Pixel>（上限8）
+	bool useTexture = false;                                ///< テクスチャを使用するか
+	uint32_t samplers = uint32_t(SamplerID::Static);        ///< サンプラーIDのビットマスク
 
 	bool operator<(const RootSignatureConfig& other) const;
 	bool operator==(const RootSignatureConfig& other) const;

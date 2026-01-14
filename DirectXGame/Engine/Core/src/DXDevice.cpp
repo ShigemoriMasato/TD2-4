@@ -86,12 +86,12 @@ void DXDevice::Initialize() {
     // DescriptorSizeの取得
 
     uint32_t descriptorSizeSRV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-    uint32_t descriptorSizeRTV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    uint32_t descriptorSizeRTV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
     uint32_t descriptorSizeDSV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
 	//各種DescriptorHeapManagerの生成
     srvManager_ = std::make_unique<SRVManager>(device_.Get(), descriptorSizeSRV, 2048);
-    rtvManager_ =  std::make_unique<RTVManager>(device_.Get(), descriptorSizeRTV, 128);
+    rtvManager_ =  std::make_unique<RTVManager>(device_.Get(), descriptorSizeRTV_, 128);
     dsvManager_ =  std::make_unique<DSVManager>(device_.Get(), descriptorSizeDSV, 128);
 	logger_->info("Complete create DescriptorHeapManagers");
 

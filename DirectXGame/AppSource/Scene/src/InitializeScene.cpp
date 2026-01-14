@@ -1,5 +1,6 @@
 #include "../InitializeScene.h"
 #include <Test/TestScene.h>
+#include <Game/GameScene.h>
 #include <imgui/imgui.h>
 #include <Utility/DataStructures.h>
 
@@ -8,6 +9,33 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 #endif
 
 void InitializeScene::Initialize() {
+
+	CreateDisplay();
+	EngineSetup();
+	SetupKeyManager();
+
+	//OffScreen用の頂点データ登録
+	std::vector<VertexData> vertices = {
+		{{-1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+		{{3.0f, 1.0f, 0.0f, 1.0f}, {2.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+		{{-1.0f, -3.0f, 0.0f, 1.0f}, {0.0f, 2.0f}, {0.0f, 0.0f, -1.0f}}
+	};
+	drawDataManager_->AddVertexBuffer(vertices);
+	commonData_->postEffectDrawDataIndex = drawDataManager_->CreateDrawData();
+}
+
+std::unique_ptr<IScene> InitializeScene::Update() {
+	return std::make_unique<GameScene>();
+}
+
+void InitializeScene::Draw() {
+	commonData_->display->PreDraw(commonData_->mainWindow->GetCommandList(), true);
+	commonData_->display->PostDraw(commonData_->mainWindow->GetCommandList());
+	commonData_->mainWindow->PreDraw();
+	commonData_->mainWindow->DrawDisplayWithImGui();
+}
+
+void InitializeScene::CreateDisplay() {
 	{
 		WindowConfig config;
 		config.windowName = L"LE2A_06_シゲモリ_マサト TETRIS";
@@ -56,8 +84,9 @@ void InitializeScene::Initialize() {
 		commonData_->mainWindow->AddDisplay(textureIndex, "Main Display", 1280 / 2, 720 / 2);
 	}
 
+}
 
-
+void InitializeScene::EngineSetup() {
 	//Input
 	input_->SetHWND(commonData_->mainWindow->GetWindow()->GetHwnd());
 
@@ -65,17 +94,9 @@ void InitializeScene::Initialize() {
 	auto fps = engine_->GetFPSObserver();
 	fps->SetIsFix(true);
 	fps->SetTargetFPS(300.0);
+}
 
-	std::vector<VertexData> vertices = {
-		{{-1.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
-		{{3.0f, 1.0f, 0.0f, 1.0f}, {2.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
-		{{-1.0f, -3.0f, 0.0f, 1.0f}, {0.0f, 2.0f}, {0.0f, 0.0f, -1.0f}}
-	};
-	drawDataManager_->AddVertexBuffer(vertices);
-	commonData_->postEffectDrawDataIndex = drawDataManager_->CreateDrawData();
-
-	//KeyManager
-#pragma region 長いので折りたたみ
+void InitializeScene::SetupKeyManager() {
 	commonData_->keyManager = std::make_unique<KeyManager>();
 
 	auto keyManager = commonData_->keyManager.get();
@@ -153,16 +174,4 @@ void InitializeScene::Initialize() {
 	keyManager->SetKey(Key::Debug1, DIK_F1, KeyState::Trigger);
 	keyManager->SetKey(Key::Debug2, DIK_F2, KeyState::Trigger);
 	keyManager->SetKey(Key::Debug3, DIK_F3, KeyState::Trigger);
-#pragma endregion
-}
-
-std::unique_ptr<IScene> InitializeScene::Update() {
-	return std::make_unique<TestScene>();
-}
-
-void InitializeScene::Draw() {
-	commonData_->display->PreDraw(commonData_->mainWindow->GetCommandList(), true);
-	commonData_->display->PostDraw(commonData_->mainWindow->GetCommandList());
-	commonData_->mainWindow->PreDraw();
-	commonData_->mainWindow->DrawDisplayWithImGui();
 }

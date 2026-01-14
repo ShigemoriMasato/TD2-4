@@ -20,6 +20,7 @@
     <ProjectGuid>{303aa779-afdf-40c9-842a-f121d04240e3}</ProjectGuid>
     <RootNamespace>DirectXGame</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>DirectXGame</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -75,7 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NOMINMAX;USE_IMGUI;_DEBUG;_WINDOWS;SH_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp23</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalOptions>/utf-8 /wd5260 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -103,7 +104,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NOMINMAX;NDEBUG;_WINDOWS;SH_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp23</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalOptions>/utf-8 /wd5260 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -131,7 +132,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NOMINMAX;USE_IMGUI;NDEBUG;_WINDOWS;SH_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp23</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalOptions>/utf-8 /wd5260 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -158,7 +159,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Common\DebugParam\HierarchyWindow.cpp" />
     <ClCompile Include="AppSource\Common\DebugParam\InspectorWindow.cpp" />
     <ClCompile Include="AppSource\Common\DebugParam\ParamManager.cpp" />
-    <ClCompile Include="AppSource\MapEditor\MapData\Data\MapData.cpp" />
+    <ClCompile Include="AppSource\Game\MapData\Data\MapData.cpp" />
+    <ClCompile Include="AppSource\MapEditor\Editor\Data\Campus.cpp" />
     <ClCompile Include="Engine\Assets\Audio\AudioManager.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\AudioData.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\MP3Data.cpp" />
@@ -227,14 +229,19 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Assets\Model\ModelLoader.cpp" />
     <ClCompile Include="Engine\Render\PostEffect.cpp" />
     <ClCompile Include="AppSource\MapEditor\MapEditScene.cpp" />
-    <ClCompile Include="AppSource\MapEditor\MapData\MapDataManager.cpp" />
+    <ClCompile Include="AppSource\Game\MapData\MapDataManager.cpp" />
+    <ClCompile Include="AppSource\MapEditor\Editor\MapEditor.cpp" />
+    <ClCompile Include="AppSource\MapEditor\Editor\MapEditWithImGui.cpp" />
+    <ClCompile Include="AppSource\MapEditor\Editor\Data\Pallet.cpp" />
+    <ClCompile Include="AppSource\MapEditor\Editor\Data\Pencil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSource\Common\DebugParam\GameParamEditor.h" />
     <ClInclude Include="AppSource\Common\DebugParam\HierarchyWindow.h" />
     <ClInclude Include="AppSource\Common\DebugParam\InspectorWindow.h" />
     <ClInclude Include="AppSource\Common\DebugParam\ParamManager.h" />
-    <ClInclude Include="AppSource\MapEditor\MapData\Data\MapData.h" />
+    <ClInclude Include="AppSource\Game\MapData\Data\MapData.h" />
+    <ClInclude Include="AppSource\MapEditor\Editor\Data\Campus.h" />
     <ClInclude Include="Engine\Assets\Audio\AudioManager.h" />
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
     <ClInclude Include="Engine\Assets\Audio\Data\MP3Data.h" />
@@ -321,7 +328,11 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Common\Camera\GameCamera.h" />
     <ClInclude Include="AppSource\Game\GameScene.h" />
     <ClInclude Include="AppSource\MapEditor\MapEditScene.h" />
-    <ClInclude Include="AppSource\MapEditor\MapData\MapDataManager.h" />
+    <ClInclude Include="AppSource\Game\MapData\MapDataManager.h" />
+    <ClInclude Include="AppSource\MapEditor\Editor\MapEditor.h" />
+    <ClInclude Include="AppSource\MapEditor\Editor\MapEditWithImGui.h" />
+    <ClInclude Include="AppSource\MapEditor\Editor\Data\Pallet.h" />
+    <ClInclude Include="AppSource\MapEditor\Editor\Data\Pencil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
