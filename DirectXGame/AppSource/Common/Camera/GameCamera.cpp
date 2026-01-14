@@ -71,10 +71,10 @@ void GameCamera::DrawImGui() {
 }
 
 void GameCamera::Save() {
-	binaryManager_->RegistOutput(position_);
-	binaryManager_->RegistOutput(camera_->rotation_);
-	binaryManager_->RegistOutput(beginningPos_);
-	binaryManager_->RegistOutput(beginningRot_);
+	binaryManager_->RegisterOutput(position_);
+	binaryManager_->RegisterOutput(camera_->rotation_);
+	binaryManager_->RegisterOutput(beginningPos_);
+	binaryManager_->RegisterOutput(beginningRot_);
 	binaryManager_->Write(saveFile_);
 }
 

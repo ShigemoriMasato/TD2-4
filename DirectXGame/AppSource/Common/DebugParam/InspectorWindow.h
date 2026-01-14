@@ -9,7 +9,7 @@ public:
 	void Draw();
 	std::string GetName() const { return "ParameterInspector"; }
 
-	static void EditTexutre(std::map<std::string, uint32_t>& value);
+	static void EditTexture(std::map<std::string, uint32_t>& value);
 };
 
 // 入力変数
@@ -56,7 +56,7 @@ struct DebugParameterVisitor {
 
 	void operator()(std::map<std::string, uint32_t>& value) const {
 		if (ImGui::TreeNode(itemName.c_str())) {
-			InspectorWindow::EditTexutre(value);
+			InspectorWindow::EditTexture(value);
 			ImGui::TreePop();
 		}
 	}

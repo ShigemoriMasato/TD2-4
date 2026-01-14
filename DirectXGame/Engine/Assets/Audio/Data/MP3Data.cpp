@@ -1,6 +1,6 @@
 #include "MP3Data.h"
 #include <cassert>
-#include <Func/MyString.h>
+#include <Utility/ConvertString.h>
 
 #include <mfapi.h>
 #include <mfidl.h>
@@ -8,7 +8,7 @@
 
 namespace fs = std::filesystem;
 
-void MP3Data::Load(std::filesystem::path filepath) {
+void MP3Data::Load(const std::filesystem::path& filepath) {
 	// 音声データを登録
 	type_ = AudioType::mp3;
 	name_ = filepath.string();
@@ -66,11 +66,11 @@ void MP3Data::Load(std::filesystem::path filepath) {
 	}
 
 	// 読み込んだデータをメモリにコピー
-	BYTE* pAudioData = new BYTE[bufferData.size()];
-	memcpy(pAudioData, bufferData.data(), bufferData.size());
+	auto pAudioData = std::make_unique<BYTE[]>(bufferData.size());
+	memcpy(pAudioData.get(), bufferData.data(), bufferData.size());
 
 	wfex_ = *waveFormat;
-	pBuffer_ = pAudioData;
+	pBuffer_ = std::move(pAudioData);
 	bufferSize_ = static_cast<UINT32>(bufferData.size());
 
 	// 解放処理
@@ -85,7 +85,7 @@ int MP3Data::Play(IXAudio2* xAudio, bool isLoop) {
 	pSourceVoice->SetVolume(volume_);
 
 	XAUDIO2_BUFFER buffer{ 0 };
-	buffer.pAudioData = pBuffer_;
+	buffer.pAudioData = pBuffer_.get();
 	buffer.Flags = XAUDIO2_END_OF_STREAM;
 	buffer.AudioBytes = sizeof(BYTE) * static_cast<UINT32>(bufferSize_);
 	buffer.LoopCount = isLoop ? XAUDIO2_LOOP_INFINITE : 0;

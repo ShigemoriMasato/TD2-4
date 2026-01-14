@@ -7,7 +7,7 @@ public:
 	MP3Data() = default;
 	~MP3Data() = default;
 
-	void Load(std::filesystem::path filepath) override;
+	void Load(const std::filesystem::path& filepath) override;
 	int Play(IXAudio2* xAudio, bool isLoop) override;
 
 private:

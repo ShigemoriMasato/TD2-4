@@ -113,7 +113,7 @@ T lerp(const T& start, const T& end, float t, EaseType type = EaseType::Linear) 
 /// @param goType    行きのイージング
 /// @param backType 帰りのイージング
 template<typename T>
-T lerp_GAB(const T& start, const T& end, float t,
+T lerp_RoundTrip(const T& start, const T& end, float t,
 	EaseType goType = EaseType::Linear, EaseType backType = EaseType::Linear) {
 
 	// 0〜1 に Clamp

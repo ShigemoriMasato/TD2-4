@@ -75,7 +75,7 @@ void DebugLine::Draw(Window* window) {
 	}
 
 	if (currentLineNum_ > 0) {
-		drawDataManager_->CoppyBufferData(drawDataIndex_, lineVertices_.data(), sizeof(Vector3) * currentLineNum_);
+		drawDataManager_->CopyBufferData(drawDataIndex_, lineVertices_.data(), sizeof(Vector3) * currentLineNum_);
 		line_->CopyBufferData(0, &vpMatrix, sizeof(Matrix4x4));
 		line_->instanceNum_ = currentLineNum_ / 2;
 		line_->Draw(window);

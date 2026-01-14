@@ -104,13 +104,6 @@ void Input::Update() {
 		ControllerClear();
 	}
 
-	//XINPUT_VIBRATION vibration;
-	//ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
-	//vibration.wLeftMotorSpeed = 0;  // 左モーター
-	//vibration.wRightMotorSpeed = 0; // 右モーター
-
-	//XInputSetState(0, &vibration);
-
 	//HWNDが必要な奴らなので、hwndがnullptrなら抜ける
 	if (hwnd_ == nullptr) {
 		MouseKeyboardClear();

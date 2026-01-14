@@ -92,7 +92,7 @@ void InspectorWindow::Draw() {
     ImGui::End();
 }
 
-void InspectorWindow::EditTexutre(std::map<std::string, uint32_t>& value) {
+void InspectorWindow::EditTexture(std::map<std::string, uint32_t>& value) {
    
     // リストの表示と削除
     ImGui::Text("Current Textures (%d)", (int)value.size());

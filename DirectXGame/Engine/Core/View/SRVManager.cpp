@@ -39,8 +39,8 @@ void SRVHandle::UpdateHandle(SRVManager* manager, int operateIndex) {
 
 	offset_ = manager->GetNextOffset(operateIndex);
 	manager_ = manager;
-	CPU = GetCPUDesscriptorHandle(manager->GetHeap(), manager->descriptorSizeSRV, offset_);
-	GPU = GetGPUDesscriptorHandle(manager->GetHeap(), manager->descriptorSizeSRV, offset_);
+	CPU = GetCPUDescriptorHandle(manager->GetHeap(), manager->descriptorSizeSRV, offset_);
+	GPU = GetGPUDescriptorHandle(manager->GetHeap(), manager->descriptorSizeSRV, offset_);
 	manager_->isUsed_[offset_] = true;
 
 	isUpdated_ = true;
