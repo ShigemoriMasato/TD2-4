@@ -1,7 +1,11 @@
 #include "MapDataManager.h"
 
-void MapDataManager::Initialize(TextureManager* textureManager) {
-	textureManager_ = textureManager;
+void MapDataManager::Initialize() {
+	Load();
+}
+
+MapDataManager::~MapDataManager() {
+	Save();
 }
 
 MapData* MapDataManager::GetMapData(const std::string& modelFilePath) {
@@ -29,9 +33,6 @@ int MapDataManager::GetMapTextureOffset(int mapID) {
 		}
 	}
 	return -1;
-}
-
-void MapDataManager::CreateMapTexture() {
 }
 
 void MapDataManager::Save() {
