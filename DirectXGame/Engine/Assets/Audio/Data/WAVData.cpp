@@ -4,7 +4,7 @@
 
 namespace fs = std::filesystem;
 
-void WAVData::Load(fs::path filepath) {
+void WAVData::Load(const fs::path& filepath) {
 
 	// ファイル入力ストリームのインスタンス
 	std::ifstream file;
@@ -63,8 +63,8 @@ void WAVData::Load(fs::path filepath) {
 		assert(0);
 	}
 	// Dataチャンクのデータ部（波形データ）の読み込み
-	char* pBuffer = new char[data.size];
-	file.read(pBuffer, data.size);
+	auto pBuffer = std::make_unique<BYTE[]>(data.size);
+	file.read(reinterpret_cast<char*>(pBuffer.get()), data.size);
 	// Waveファイルを閉じる
 	file.close();
 
@@ -72,7 +72,7 @@ void WAVData::Load(fs::path filepath) {
 	
 	// returnする為の音声データ
 	wfex_ = format.fmt;
-	pBuffer_ = reinterpret_cast<BYTE*>(pBuffer);
+	pBuffer_ = std::move(pBuffer);
 	bufferSize_ = data.size;
 	name_ = path.string();
 	type_ = AudioType::wav;
@@ -87,7 +87,7 @@ int WAVData::Play(IXAudio2* xAudio, bool isLoop) {
 
 	// 再生する波形データの設定
 	XAUDIO2_BUFFER buf{};
-	buf.pAudioData = pBuffer_;
+	buf.pAudioData = pBuffer_.get();
 	buf.AudioBytes = bufferSize_;
 	buf.Flags = XAUDIO2_END_OF_STREAM;
 	buf.LoopCount = isLoop ? XAUDIO2_LOOP_INFINITE : 0;

@@ -3,8 +3,6 @@
 AudioData::~AudioData() {
 	for(const auto& resource : playResource_) {
 		if (resource) {
-			delete pBuffer_;
-			pBuffer_ = nullptr;
 			bufferSize_ = 0;
 			wfex_ = {};
 		}

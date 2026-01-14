@@ -35,7 +35,7 @@ public:
 	AudioData() = default;
 	~AudioData();
 
-	virtual void Load(std::filesystem::path filePath) = 0;
+	virtual void Load(const std::filesystem::path& filePath) = 0;
 
 	void SetVolume(float volume);
 
@@ -53,7 +53,7 @@ protected:
 	// 波形フォーマット
 	WAVEFORMATEX wfex_;
 	// バッファの先頭アドレス
-	BYTE* pBuffer_;
+	std::unique_ptr<BYTE[]> pBuffer_;
 	// バッファのサイズ
 	unsigned int bufferSize_;
 	// 音声データの名前

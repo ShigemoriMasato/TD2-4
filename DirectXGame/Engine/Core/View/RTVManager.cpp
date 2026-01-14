@@ -31,7 +31,7 @@ void RTVHandle::UpdateHandle(RTVManager* manager, int operateIndex) {
 
 	offset_ = manager->GetNextOffset(operateIndex);
 	manager_ = manager;
-	CPU = GetCPUDesscriptorHandle(manager->GetHeap(), manager->descriptorSizeRTV, offset_);
+	CPU = GetCPUDescriptorHandle(manager->GetHeap(), manager->descriptorSizeRTV, offset_);
 	manager_->isUsed_[offset_] = true;
 
 	isUpdated_ = true;

@@ -23,16 +23,10 @@ void GameParamEditor::SaveFile(const std::string& groupName) {
 	assert(itGroup != datas_.end());
 
 	// 各項目について
-	for (std::map<std::string, Item>::iterator itItem = itGroup->second.items.begin(); itItem != itGroup->second.items.end(); ++itItem) {
-
-		// 項目名を取得
-		const std::string& itemName = itItem->first;
-		// 項目の参照を取得
-		Item& item = itItem->second;
-
+	for (const auto& [name, item] : itGroup->second.items) {
 		// binaryに値を保存する
-		binaryManager_.RegistOutput(item.priority);
-		binaryManager_.RegistOutput(item.value.get());
+		binaryManager_.RegisterOutput(item.priority);
+		binaryManager_.RegisterOutput(item.value.get(), name);
 	}
 
 	// ディレクトリがなければ作成する

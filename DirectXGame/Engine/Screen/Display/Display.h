@@ -1,7 +1,7 @@
 #pragma once
 #include "IDisplay.h"
 
-//非推奨クラス
+//SwapChain専用クラス
 class Display : public IDisplay {
 public:
 

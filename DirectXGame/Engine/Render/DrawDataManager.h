@@ -20,15 +20,15 @@ public:
 	int CreateDrawData();
 
 	DrawData GetDrawData(int index) const {
-		assert(index >= 0 && index < static_cast<int>(drawDatas_.size()) && "DrawDataManager::GetDrawData: Invalid DrawData index");
-		return drawDatas_[index].first;
+		assert(index >= 0 && index < static_cast<int>(drawDataList_.size()) && "DrawDataManager::GetDrawData: Invalid DrawData index");
+		return drawDataList_[index].first;
 	}
 
 	//即席
-	void CoppyBufferData(int drawDataIndex, const void* data, size_t size) {
-		assert(drawDataIndex >= 0 && drawDataIndex < static_cast<int>(drawDatas_.size()) && "DrawDataManager::CoppyBufferData: Invalid DrawData index");
-		MapData& mapData = drawDatas_[drawDataIndex].second;
-		assert(size <= mapData.size && "DrawDataManager::CoppyBufferData: Data size exceeds mapped buffer size");
+	void CopyBufferData(int drawDataIndex, const void* data, size_t size) {
+		assert(drawDataIndex >= 0 && drawDataIndex < static_cast<int>(drawDataList_.size()) && "DrawDataManager::CoppyBufferData: Invalid DrawData index");
+		MapData& mapData = drawDataList_[drawDataIndex].second;
+		assert(size <= mapData.size && "DrawDataManager::CopyBufferData: Data size exceeds mapped buffer size");
 		std::memcpy(mapData.mapped, data, size);
 	}
 
@@ -47,7 +47,7 @@ private:
 
 	uint32_t vertexNum_ = 0;
 	uint32_t indexNum_ = 0;
-	std::vector<std::pair<DrawData, MapData>> drawDatas_;
+	std::vector<std::pair<DrawData, MapData>> drawDataList_;
 
 	struct Resource {
 		Microsoft::WRL::ComPtr<ID3D12Resource> res;

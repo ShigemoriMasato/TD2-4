@@ -159,6 +159,10 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Common\DebugParam\InspectorWindow.cpp" />
     <ClCompile Include="AppSource\Common\DebugParam\ParamManager.cpp" />
     <ClCompile Include="AppSource\MapEditor\MapData\Data\MapData.cpp" />
+    <ClCompile Include="Engine\Assets\Audio\AudioManager.cpp" />
+    <ClCompile Include="Engine\Assets\Audio\Data\AudioData.cpp" />
+    <ClCompile Include="Engine\Assets\Audio\Data\MP3Data.cpp" />
+    <ClCompile Include="Engine\Assets\Audio\Data\WAVData.cpp" />
     <ClCompile Include="Engine\Collision\Data\CollisionVisitor.cpp" />
     <ClCompile Include="Engine\Collision\Collider.cpp" />
     <ClCompile Include="Engine\Collision\ColliderManager.cpp" />
@@ -231,6 +235,10 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Common\DebugParam\InspectorWindow.h" />
     <ClInclude Include="AppSource\Common\DebugParam\ParamManager.h" />
     <ClInclude Include="AppSource\MapEditor\MapData\Data\MapData.h" />
+    <ClInclude Include="Engine\Assets\Audio\AudioManager.h" />
+    <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
+    <ClInclude Include="Engine\Assets\Audio\Data\MP3Data.h" />
+    <ClInclude Include="Engine\Assets\Audio\Data\WAVData.h" />
     <ClInclude Include="Engine\Collision\Data\CollisionVisitor.h" />
     <ClInclude Include="Engine\Collision\Collider.h" />
     <ClInclude Include="Engine\Collision\ColliderManager.h" />

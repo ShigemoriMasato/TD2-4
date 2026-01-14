@@ -17,12 +17,12 @@ public:
 	~BinaryManager();
 
 	template<typename T>
-	void RegistOutput(T value, std::string name = "") {
-		values.push_back(std::make_shared<Value<T>>(value, name));
+	void RegisterOutput(T value, std::string name = "") {
+		values_.push_back(std::make_shared<Value<T>>(value, name));
 	};
 
-	void RegistOutput(ValueBase* value) {
-		values.push_back(value->Clone());
+	void RegisterOutput(ValueBase* value) {
+		values_.push_back(value->Clone());
 	}
 
 	template<typename T>
@@ -31,7 +31,7 @@ public:
 	}
 
 	/// <summary>
-	/// 実行後RegistしたValueはflushします
+	/// 実行後RegisterしたValueはflushします
 	/// </summary>
 	void Write(std::string fileName);
 
@@ -43,10 +43,9 @@ public:
 
 private:
 
-	static std::unique_ptr<BinaryInput> input;
-	static std::unique_ptr<BinaryOutput> output;
-	std::vector<std::shared_ptr<ValueBase>> values;
+	static std::unique_ptr<BinaryInput> input_;
+	static std::unique_ptr<BinaryOutput> output_;
+	std::vector<std::shared_ptr<ValueBase>> values_;
 
-	inline static const std::string basePath = "Assets/Binary/"; // データの保存先パス
-
+	static const std::string basePath_; // データの保存先パス
 };

@@ -11,5 +11,4 @@ struct MapData {
 	std::vector<int> tileData;
 
 	bool Verify() const;
-	void Load(const std::vector<std::shared_ptr<ValueBase>>& values);
 };

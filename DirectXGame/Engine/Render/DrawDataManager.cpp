@@ -3,7 +3,7 @@
 
 void DrawDataManager::Initialize(DXDevice* device) {
 	device_ = device;
-	drawDatas_.clear();
+	drawDataList_.clear();
 	resources_.clear();
 	logger_ = getLogger("Engine");
 	logger_->info("DrawDataManager Initialized");
@@ -53,7 +53,7 @@ int DrawDataManager::CreateDrawData() {
 	drawData.ibv = indexBufferView_;
 	drawData.vertexNum = vertexNum_;
 	drawData.indexNum = indexNum_;
-	drawDatas_.push_back({ drawData, mapData_ });
+	drawDataList_.push_back({ drawData, mapData_ });
 	logger_->debug("DrawData Created: VertexCount {}, IndexCount {}", vertexNum_, drawData.indexNum);
 
 	//使用したVBVとIBVをクリア
@@ -62,5 +62,5 @@ int DrawDataManager::CreateDrawData() {
 	vertexNum_ = 0;
 	indexNum_ = 0;
 
-	return static_cast<int>(drawDatas_.size() - 1);
+	return static_cast<int>(drawDataList_.size() - 1);
 }

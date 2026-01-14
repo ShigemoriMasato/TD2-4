@@ -1,21 +1,20 @@
 #include "MapData.h"
 
 bool MapData::Verify() const {
-	return false;
-}
-
-void MapData::Load(const std::vector<std::shared_ptr<ValueBase>>& values) {
-	if (values.empty()) {
-		return;
+	bool valid = true;
+	if (width <= 0 || height <= 0) {
+		valid = false;
 	}
-
-	int index = 0;
-	modelFilePath = BinaryManager::Reverse<std::string>(values[index++].get());
-	width = BinaryManager::Reverse<int>(values[index++].get());
-	height = BinaryManager::Reverse<int>(values[index++].get());
-	mapID = BinaryManager::Reverse<int>(values[index++].get());
-	tileData.clear();
-	for (int i = 0; i < width * height; ++i) {
-		tileData.push_back(BinaryManager::Reverse<int>(values[index++].get()));
+	if (modelFilePath.empty()) {
+		valid = false;
 	}
+	if (tileData.size() != static_cast<size_t>(width * height)) {
+		assert(false && "MapData::Verify() failed: mapID is negative");
+		valid = false;
+	}
+	if (mapID < 0) {
+		assert(false && "MapData::Verify() failed: mapID is negative");
+		valid = false;
+	}
+	return valid;
 }
