@@ -76,6 +76,13 @@
     <ClCompile Include="Engine\Assets\Audio\Data\MP3Data.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\WAVData.cpp" />
     <ClCompile Include="Engine\Assets\Audio\AudioManager.cpp" />
+    <ClCompile Include="AppSource\GameCamera\CameraController.cpp" />
+    <ClCompile Include="AppSource\Unit\MapChipField.cpp" />
+    <ClCompile Include="AppSource\Unit\Ore\OreUnit.cpp" />
+    <ClCompile Include="AppSource\Unit\Ore\OreUnitObject.cpp" />
+    <ClCompile Include="AppSource\Unit\Player\PlayerUnit.cpp" />
+    <ClCompile Include="AppSource\Unit\Player\PlayerUnitObject.cpp" />
+    <ClCompile Include="AppSource\Unit\UnitManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Core\DXDevice.h" />
@@ -170,5 +177,17 @@
     <ClInclude Include="Engine\Assets\Audio\Data\MP3Data.h" />
     <ClInclude Include="Engine\Assets\Audio\Data\WAVData.h" />
     <ClInclude Include="Engine\Assets\Audio\AudioManager.h" />
+    <ClInclude Include="AppSource\GameCamera\CameraController.h" />
+    <ClInclude Include="AppSource\Unit\MapChipField.h" />
+    <ClInclude Include="AppSource\Unit\Ore\OreUnit.h" />
+    <ClInclude Include="AppSource\Unit\Ore\OreUnitObject.h" />
+    <ClInclude Include="AppSource\Unit\Player\PlayerUnit.h" />
+    <ClInclude Include="AppSource\Unit\Player\PlayerUnitObject.h" />
+    <ClInclude Include="AppSource\Unit\UnitManager.h" />
+    <ClInclude Include="AppSource\FpsCount.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Assets\Shader\Object3d.PS.hlsl" />
+    <FxCompile Include="Assets\Shader\Object3d.VS.hlsl" />
   </ItemGroup>
 </Project>

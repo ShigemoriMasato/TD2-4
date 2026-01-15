@@ -3,6 +3,10 @@
 #include <Camera/DebugCamera.h>
 #include <Common/DebugParam/ParamManager.h>
 
+#include"Unit/UnitManager.h"
+#include"Unit/MapChipField.h"
+#include"GameCamera/CameraController.h"
+
 class GameScene : public IScene {
 public:
 
@@ -28,4 +32,12 @@ private:
 
 	std::unique_ptr<ParamManager> paramManager_ = nullptr;
 
+	// ユニット管理
+	std::unique_ptr<UnitManager> unitManager_;
+
+	// マップデータの中間管理職
+	std::unique_ptr<MapChipField> mapChipField_;
+
+	// ゲームカメラの管理
+	std::unique_ptr<CameraController> cameraController_;
 };
