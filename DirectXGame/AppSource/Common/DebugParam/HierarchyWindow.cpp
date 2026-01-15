@@ -4,6 +4,8 @@
 #include <format>
 
 void HierarchyWindow::Draw() {
+#ifdef USE_IMGUI
+
     if (!ImGui::Begin("ParameterHierarchy")) {
         ImGui::End();
         return;
@@ -55,4 +57,6 @@ void HierarchyWindow::Draw() {
     }
 
     ImGui::End();
+
+#endif
 }

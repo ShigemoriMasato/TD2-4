@@ -5,6 +5,7 @@ InspectorWindow::InspectorWindow() {
 }
 
 void InspectorWindow::Draw() {
+#ifdef USE_IMGUI
  
     if (!ImGui::Begin("ParameterInspector")) {
         ImGui::End();
@@ -90,10 +91,12 @@ void InspectorWindow::Draw() {
     }
 
     ImGui::End();
+#endif
 }
 
 void InspectorWindow::EditTexture(std::map<std::string, uint32_t>& value) {
-   
+#ifdef USE_IMGUi
+
     // リストの表示と削除
     ImGui::Text("Current Textures (%d)", (int)value.size());
     ImGui::Separator();
@@ -132,4 +135,5 @@ void InspectorWindow::EditTexture(std::map<std::string, uint32_t>& value) {
 
     ImGui::Separator();
     ImGui::Spacing();
+#endif
 }
