@@ -15,6 +15,7 @@ void ImGuiforEngine::Initialize(DXDevice* device, CmdListManager* cmdManager, Wi
     ImGui_ImplWin32_Init(window->GetHwnd());
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // ドッキングを有効化
+    io.IniFilename = "Assets/.EngineResource/imgui.ini";
 
 	ImGui_ImplDX12_InitInfo initInfo;
 	initInfo.Device = device->GetDevice();

@@ -9,9 +9,9 @@ public:
 	~MapDataManager();
 
 	void Initialize();
-	
-	MapData* GetMapData(const std::string& modelFilePath);
-	MapData* GetMapData(int mapID);
+
+	MapDataForBin* GetMapData(const std::string& modelFilePath);
+	MapDataForBin* GetMapData(int mapID);
 
 	int GetMapTextureOffset(int mapID);
 
@@ -20,9 +20,11 @@ private:
 	void Save();
 	void Load();
 
-	std::vector<MapData> mapData_;
-	std::vector<TextureData*> mapTextures_;
+	std::vector<MapDataForBin> mapData_{};
+	std::vector<TextureData*> mapTextures_{};
 
 	std::unique_ptr<BinaryManager> binaryManager_ = nullptr;
 	const std::string saveFile_ = "MapData";
+
+	Logger logger_ = nullptr;
 };

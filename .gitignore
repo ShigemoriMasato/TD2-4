@@ -1,5 +1,6 @@
+# 100%無いと死ぬ系
 /.vs/
-
 *Generated/
 *[L,l]ogs/
-*[D, d]umps/
+*[D,d]umps/
+*.ini
