@@ -26,4 +26,9 @@ namespace Matrix {
 
 
 	Matrix4x4 MakeUVMatrix(Vector2 scale, float rotate, Vector2 position);
+
+	Matrix4x4 InverseMatrix(const Matrix4x4& matrix);
+	Matrix4x4 Transpose(const Matrix4x4& matrix);
+
+	Matrix4x4 InverseTranspose(const Matrix4x4& m);
 }

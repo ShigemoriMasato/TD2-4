@@ -1,6 +1,7 @@
 #include "TestScene.h"
 #include <imgui/imgui.h>
 #include"Common/DebugParam/GameParamEditor.h"
+#include"FpsCount.h"
 
 namespace {
 	bool debug = false;
@@ -49,6 +50,10 @@ std::unique_ptr<IScene> TestScene::Update() {
 	testParam_ = GameParamEditor::GetInstance()->GetValue<float>("TestGroup", "TestParam");
 #endif
 
+	// Δタイムを取得する
+	FpsCount::deltaTime = engine_->GetFPSObserver()->GetDeltatime();
+
+	commonData_->keyManager->Update();
 	input_->Update();
 	debugLine_->Fresh();
 
