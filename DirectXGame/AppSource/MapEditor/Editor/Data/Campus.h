@@ -13,6 +13,10 @@ namespace MapEditor {
 		void Initialize();
 		void DrawImGui(MapDataForBin& data);
 
+		std::map<TileType, ImU32> GetTileColorMap() const {
+			return tileColorMap_;
+		}
+
 	private:
 
 		void Save();
@@ -24,7 +28,14 @@ namespace MapEditor {
 
 		int tileSize_ = 32;
 
+		bool preLeftMouse_ = false;
+		bool preRightMouse_ = false;
+		bool preUndo_ = false;
+		int preMapID_ = 0;
+
 		BinaryManager binaryManager_;
+
+		std::vector<std::vector<TileType>> undoStack_;
 
 	};
 

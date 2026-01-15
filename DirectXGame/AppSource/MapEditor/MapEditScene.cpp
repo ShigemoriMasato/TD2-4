@@ -6,6 +6,8 @@ void MapEditScene::Initialize() {
 }
 
 std::unique_ptr<IScene> MapEditScene::Update() {
+	engine_->GetInput()->Update();
+
 	return std::unique_ptr<IScene>();
 }
 

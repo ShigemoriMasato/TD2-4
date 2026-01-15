@@ -2,6 +2,7 @@
 #include <Game/MapData/MapDataManager.h>
 #include <MapEditor/Editor/MapEditWithImGui.h>
 #include <MapEditor/Editor/Data/Campus.h>
+#include <MapEditor/Editor/Data/StageEditor.h>
 
 namespace MapEditor {
 
@@ -19,7 +20,7 @@ namespace MapEditor {
 
 		std::unique_ptr<EditConfig> mapEdit_ = nullptr;
 		std::unique_ptr<Campus> campus_ = nullptr;
-
+		std::unique_ptr<StageEditor> stageEditor_ = nullptr;
 	};
 
 }
