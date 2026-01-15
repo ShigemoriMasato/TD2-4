@@ -10,7 +10,25 @@ MapDataManager::~MapDataManager() {
 	Save();
 }
 
-MapDataForBin* MapDataManager::GetMapData(const std::string& modelFilePath) {
+MapData MapDataManager::GetMapData(int stageID) {
+	int i;
+	for (i = 0; i < stageData_.size(); ++i) {
+		if (stageData_[i].stageID == stageID) {
+			break;
+		}
+	}
+
+	if (i == stageData_.size()) {
+		logger_->error("MapDataManager::GetMapData() failed: Stage ID {} not found", stageID);
+		return {};
+	}
+
+	MapDataForBin* rawData = GetRawMapData(stageData_[i].mapID);
+	MapData mapData{};
+	return mapData;
+}
+
+MapDataForBin* MapDataManager::GetRawMapData(const std::string& modelFilePath) {
 	for (auto& map : mapData_) {
 		if (map.modelFilePath == modelFilePath) {
 			return &map;
@@ -19,7 +37,7 @@ MapDataForBin* MapDataManager::GetMapData(const std::string& modelFilePath) {
 	return nullptr;
 }
 
-MapDataForBin* MapDataManager::GetMapData(int mapID) {
+MapDataForBin* MapDataManager::GetRawMapData(int mapID) {
 	for (auto& map : mapData_) {
 		if (map.mapID == mapID) {
 			return &map;
@@ -57,18 +75,29 @@ void MapDataManager::Save() {
 		}
 	}
 
-	binaryManager_->Write(saveFile_);
+	binaryManager_->Write(mapSaveFile_);
+
+	binaryManager_->RegisterOutput(int(stageData_.size()));
+	for (const auto& stage : stageData_) {
+		binaryManager_->RegisterOutput(stage.stageID);
+		binaryManager_->RegisterOutput(stage.mapID);
+		binaryManager_->RegisterOutput(int(stage.direction));
+		binaryManager_->RegisterOutput(stage.goldFrequency);
+	}
+	binaryManager_->Write(stageSaveFile_);
 }
 
 void MapDataManager::Load() {
-	auto values = binaryManager_->Read(saveFile_);
-	if (values.empty()) {
-		return;
-	}
+	auto values = binaryManager_->Read(mapSaveFile_);
 	size_t index = 0;
-	int mapCount = BinaryManager::Reverse<int>(values[index++].get());
+	int mapCount = 0;
+
+	if (values.empty()) {
+		goto StageDataLoad;
+	}
+
+	mapCount = BinaryManager::Reverse<int>(values[index++].get());
 	mapData_.resize(mapCount);
-	int nextID = 0;
 	for (int i = 0; i < mapCount; ++i) {
 		mapData_[i].modelFilePath = BinaryManager::Reverse<std::string>(values[index++].get());
 		mapData_[i].width = BinaryManager::Reverse<int>(values[index++].get());
@@ -76,7 +105,7 @@ void MapDataManager::Load() {
 		mapData_[i].mapID = BinaryManager::Reverse<int>(values[index++].get());
 
 		int tileDataSize = BinaryManager::Reverse<int>(values[index++].get());
-		if(values.size() < index + tileDataSize) {
+		if (values.size() < index + tileDataSize) {
 			logger_->error("MapDataManager::Load() failed: Incomplete data for map ID {}", mapData_[i].mapID);
 			mapData_[i].tileData.resize(tileDataSize);
 			break;
@@ -87,5 +116,20 @@ void MapDataManager::Load() {
 		}
 
 		mapData_[i].Verify();
+	}
+
+StageDataLoad:
+	values = binaryManager_->Read(stageSaveFile_);
+	if (values.empty()) {
+		return;
+	}
+	index = 0;
+	int stageCount = BinaryManager::Reverse<int>(values[index++].get());
+	stageData_.resize(stageCount);
+	for (int i = 0; i < stageCount; ++i) {
+		stageData_[i].stageID = BinaryManager::Reverse<int>(values[index++].get());
+		stageData_[i].mapID = BinaryManager::Reverse<int>(values[index++].get());
+		stageData_[i].direction = (Direction)BinaryManager::Reverse<int>(values[index++].get());
+		stageData_[i].goldFrequency = BinaryManager::Reverse<float>(values[index++].get());
 	}
 }

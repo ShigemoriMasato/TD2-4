@@ -1,6 +1,8 @@
 #include "Campus.h"
 #include <imgui/imgui.h>
 #include <Utility/Color.h>
+#include <Input/Input.h>
+
 using namespace MapEditor;
 
 void Campus::Initialize() {
@@ -13,6 +15,11 @@ void Campus::Initialize() {
 
 void MapEditor::Campus::DrawImGui(MapDataForBin& data) {
 #ifdef USE_IMGUI
+
+	if (preMapID_ != data.mapID) {
+		undoStack_.clear();
+		preMapID_ = data.mapID;
+	}
 
 	ImGui::Begin("Campus");
 	
@@ -76,13 +83,25 @@ void MapEditor::Campus::DrawImGui(MapDataForBin& data) {
 
 			// クリック
 			if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+				if (!preLeftMouse_) {
+					undoStack_.push_back(data.tileData);
+					preLeftMouse_ = true;
+				}
 				int idx = tileY * data.width + tileX;
 				data.tileData[idx] = pencil_.type;
+			} else {
+				preLeftMouse_ = false;
 			}
 			//右クリックで空気にする
 			if(ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
+				if(!preRightMouse_) {
+					undoStack_.push_back(data.tileData);
+					preRightMouse_ = true;
+				}
 				int idx = tileY * data.width + tileX;
 				data.tileData[idx] = TileType::Air;
+			} else {
+				preRightMouse_ = false;
 			}
 		}
 	}
@@ -97,7 +116,7 @@ void MapEditor::Campus::DrawImGui(MapDataForBin& data) {
 
 	origin = ImGui::GetCursorScreenPos();
 	const float baseSize = 24.0f;
-	const float serectedSize = 32.0f;
+	const float selectedSize = 32.0f;
 	
 	for (int i = 0; i < static_cast<int>(TileType::Count); ++i) {
 		Vector2 pos = { float(i % 4) * 36.0f, float(i / 4) * 36.0f };
@@ -105,7 +124,7 @@ void MapEditor::Campus::DrawImGui(MapDataForBin& data) {
 		ImVec2 min = ImVec2(origin.x + pos.x, origin.y + pos.y);
 		ImVec2 max{};
 		if (i == static_cast<int>(pencil_.type)) {
-			max = ImVec2(origin.x + pos.x + serectedSize, origin.y + pos.y + serectedSize);
+			max = ImVec2(origin.x + pos.x + selectedSize, origin.y + pos.y + selectedSize);
 		} else {
 			max = ImVec2(origin.x + pos.x + baseSize, origin.y + pos.y + baseSize);
 		}
@@ -126,7 +145,7 @@ void MapEditor::Campus::DrawImGui(MapDataForBin& data) {
 			int idx = tileY * 4 + tileX;
 			float tmpSize = baseSize;
 			if (idx == static_cast<int>(pencil_.type)) {
-				tmpSize = serectedSize;
+				tmpSize = selectedSize;
 			}
 
 			// ホバー表示（確認用）
@@ -157,17 +176,26 @@ void MapEditor::Campus::DrawImGui(MapDataForBin& data) {
 		float(float(TileType::Count) / 4.0f * tileSize_)
 	);
 
-	ImGui::InvisibleButton("Pallete", mapSize);
+	ImGui::InvisibleButton("Pallet", mapSize);
 
 	Vector4 buffer = ConvertColorForImGui(uint32_t(tileColorMap_[pencil_.type]));
 	ImGui::ColorEdit4("EditColor", &buffer.x);
 	tileColorMap_[pencil_.type] = ImU32(ConvertColorForImGui(buffer));
 
 	ImGui::Separator();
-
 	ImGui::DragInt("TileSize", &tileSize_, 1.0f, 8, 128, "%.0f");
-
+	
 	ImGui::End();
+
+	if (Input::GetKeyState(DIK_LCONTROL) && Input::GetKeyState(DIK_Z)) {
+		if (!undoStack_.empty() && !preUndo_) {
+			data.tileData = undoStack_.back();
+			undoStack_.pop_back();
+			preUndo_ = true;
+		}
+	} else {
+		preUndo_ = false;
+	}
 
 #endif
 }
