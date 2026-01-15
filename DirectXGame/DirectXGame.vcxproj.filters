@@ -1,0 +1,582 @@
+﻿<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="AppSource">
+      <UniqueIdentifier>{168f5ad9-c57f-4896-8d79-17bedc6f0b27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\Common">
+      <UniqueIdentifier>{ab4c48a8-fb7c-4605-a5f1-1fb71e328ea4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\Common\Camera">
+      <UniqueIdentifier>{75bfeeb6-cb88-483d-bd53-b79afc8fc495}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\Common\DebugParam">
+      <UniqueIdentifier>{ace1869b-6ed1-4621-ad5b-55928f3b686c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\Common\KeyConfig">
+      <UniqueIdentifier>{f0808a50-5b7d-4479-8eb4-102985923ce1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\Core">
+      <UniqueIdentifier>{e78386d4-3c8b-469f-8b6b-b6668c331ff1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\Game">
+      <UniqueIdentifier>{5a87585e-73ad-4940-bc49-16063c834101}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\Game\MapData">
+      <UniqueIdentifier>{7203bbd7-cd4f-4229-abb6-96f84c3a7937}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\Game\MapData\Data">
+      <UniqueIdentifier>{7bbf7171-4df6-462f-8313-eceb8a6ca814}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\GameCamera">
+      <UniqueIdentifier>{97ee920c-c477-4a0d-b236-a788d3a00b65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\MapEditor">
+      <UniqueIdentifier>{3f5db4f2-b7ab-4bd5-bf65-8709befe31d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\MapEditor\Editor">
+      <UniqueIdentifier>{6acc04e9-8c5c-42e5-ae2d-7f410c991375}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\MapEditor\Editor\Data">
+      <UniqueIdentifier>{ed782fef-d347-4415-ad37-b61bede8a11d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\Scene">
+      <UniqueIdentifier>{bc472ef5-dfca-42b4-b95e-e1731a5206db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\Scene\src">
+      <UniqueIdentifier>{8b5ae023-ca41-44c0-b6f7-1d5f7661a754}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\Test">
+      <UniqueIdentifier>{753bd940-6f0d-4d76-b11c-b0b890b31228}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\Unit">
+      <UniqueIdentifier>{483f0310-f6f8-4707-9bed-11067b857d92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\Unit\Ore">
+      <UniqueIdentifier>{26888b22-f6ed-4baf-b87f-2a93e8e32aa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AppSource\Unit\Player">
+      <UniqueIdentifier>{40732a5f-7b04-46c5-b34e-bf90a8313531}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{947825b6-d008-40d5-838c-b77f66b522f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Assets">
+      <UniqueIdentifier>{39a893ab-755f-4bde-94b5-4afb8bad6e7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Assets\Audio">
+      <UniqueIdentifier>{4419d91c-b0a5-4407-9bf1-260194eccf3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Assets\Audio\Data">
+      <UniqueIdentifier>{6f5e66c7-c534-415a-9459-985c646a362b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Assets\Model">
+      <UniqueIdentifier>{f0f74d6a-d079-4f23-b223-2634eba76479}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Assets\Texture">
+      <UniqueIdentifier>{c081ba9f-b261-4350-8cd0-78ad1f717b34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Camera">
+      <UniqueIdentifier>{83ea256e-1eac-4085-ac53-29926c2d3e25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Collision">
+      <UniqueIdentifier>{07a2d203-c8ff-4e79-a968-e29691de3289}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Collision\Data">
+      <UniqueIdentifier>{521f481d-cf49-47e9-92ce-9e355b10e9c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Core">
+      <UniqueIdentifier>{7f33168d-6ca2-4ba4-8c86-8a7144e247ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Core\Data">
+      <UniqueIdentifier>{3608cb46-e876-4492-a601-2074bce42902}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Core\src">
+      <UniqueIdentifier>{45bcc2f9-78b7-4337-933c-dcf08da09975}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Core\View">
+      <UniqueIdentifier>{2aaa6131-5891-4ce2-a773-442d13867400}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Input">
+      <UniqueIdentifier>{3684cff4-8a8b-4492-bef9-2c55f9aa4789}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\PSO">
+      <UniqueIdentifier>{669e9c89-8613-4bf3-bb87-2b801e134990}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\PSO\Shelf">
+      <UniqueIdentifier>{4bdcb727-c9db-472c-869b-972fffb637a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Render">
+      <UniqueIdentifier>{086b6b0b-176d-42ef-a4ac-c18bfdfd5db0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Screen">
+      <UniqueIdentifier>{29a63d10-1d28-4ee8-9a1b-11676fed1266}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Screen\Display">
+      <UniqueIdentifier>{92e4c251-955c-483c-84a1-bc46fea834db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Screen\Display\src">
+      <UniqueIdentifier>{55037813-6df2-49c7-af75-a90a28eef367}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Tool">
+      <UniqueIdentifier>{ecbab7cd-4b23-490c-b2ff-bd5a118574d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Tool\Binary">
+      <UniqueIdentifier>{590944fe-53bc-4c5c-85d2-108370fe0247}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Tool\Binary\Data">
+      <UniqueIdentifier>{b8855879-9386-4015-b71d-385d9acbb2fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Tool\Dump">
+      <UniqueIdentifier>{8095bde2-2717-40a3-bf71-9a208737cb45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Tool\FPS">
+      <UniqueIdentifier>{acdf6985-c1ba-43fd-ac1d-6e7eab6a07ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Tool\Logger">
+      <UniqueIdentifier>{b3d33bb8-262b-4f84-adda-fb89954a59e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Utility">
+      <UniqueIdentifier>{5482929b-d6e6-4d09-bc8a-1a59a7b5ddc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Utility\src">
+      <UniqueIdentifier>{9c6a3cdc-7766-487c-9ef5-4d2e3ac8800a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals">
+      <UniqueIdentifier>{fcb0c7a4-8414-4a9e-946a-45fe36cfa55a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\assimp">
+      <UniqueIdentifier>{fe690347-284a-46d1-b992-385c1f0ced29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\assimp\include">
+      <UniqueIdentifier>{5f1e2925-14c3-4a93-9117-5610c08a863c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\assimp\include\assimp">
+      <UniqueIdentifier>{9f39812d-16f9-49cd-a443-90e01003ec3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\assimp\include\assimp\Compiler">
+      <UniqueIdentifier>{d89669df-1f05-4ebe-916d-c2625b72bf11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\assimp\include\assimp\port">
+      <UniqueIdentifier>{9885c30d-09da-4f8b-834c-6cf7aab76037}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\assimp\include\assimp\port\AndroidJNI">
+      <UniqueIdentifier>{00d9e6bb-33e4-49ab-9137-d70443ebe131}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\DirectXTex">
+      <UniqueIdentifier>{73a9d289-215c-416d-9d95-0ba1b6cd52d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\imgui">
+      <UniqueIdentifier>{1b756b29-c85e-4c08-b9d5-43a0c7e93380}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\nlohmannjson">
+      <UniqueIdentifier>{c25cfd4c-06b4-4507-8a18-5e878b2534e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\spdlog">
+      <UniqueIdentifier>{a2764990-a90a-41d4-ba51-3da48de1eeec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\spdlog\cfg">
+      <UniqueIdentifier>{3c0b63ba-da05-4498-8b7a-1a00ff132af4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\spdlog\details">
+      <UniqueIdentifier>{b6c6347e-acc4-42c3-bd4b-3aff1b8f2ad7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\spdlog\fmt">
+      <UniqueIdentifier>{88604e01-10a5-431f-9dca-3c76149777bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\spdlog\fmt\bundled">
+      <UniqueIdentifier>{efe1c46a-cc29-4cc7-b58d-770ed95e8a20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\spdlog\sinks">
+      <UniqueIdentifier>{f408a499-cb48-4a1b-b482-84e9a4301f75}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="AppSource\Common\GameWindow.cpp"><Filter>AppSource\Common</Filter></ClCompile>
+    <ClCompile Include="AppSource\Common\Camera\GameCamera.cpp"><Filter>AppSource\Common\Camera</Filter></ClCompile>
+    <ClCompile Include="AppSource\Common\DebugParam\GameParamEditor.cpp"><Filter>AppSource\Common\DebugParam</Filter></ClCompile>
+    <ClCompile Include="AppSource\Common\DebugParam\HierarchyWindow.cpp"><Filter>AppSource\Common\DebugParam</Filter></ClCompile>
+    <ClCompile Include="AppSource\Common\DebugParam\InspectorWindow.cpp"><Filter>AppSource\Common\DebugParam</Filter></ClCompile>
+    <ClCompile Include="AppSource\Common\DebugParam\ParamManager.cpp"><Filter>AppSource\Common\DebugParam</Filter></ClCompile>
+    <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp"><Filter>AppSource\Common\KeyConfig</Filter></ClCompile>
+    <ClCompile Include="AppSource\Core\Terminal.cpp"><Filter>AppSource\Core</Filter></ClCompile>
+    <ClCompile Include="AppSource\Game\GameScene.cpp"><Filter>AppSource\Game</Filter></ClCompile>
+    <ClCompile Include="AppSource\Game\MapData\MapDataManager.cpp"><Filter>AppSource\Game\MapData</Filter></ClCompile>
+    <ClCompile Include="AppSource\Game\MapData\Data\MapData.cpp"><Filter>AppSource\Game\MapData\Data</Filter></ClCompile>
+    <ClCompile Include="AppSource\GameCamera\CameraController.cpp"><Filter>AppSource\GameCamera</Filter></ClCompile>
+    <ClCompile Include="AppSource\MapEditor\MapEditScene.cpp"><Filter>AppSource\MapEditor</Filter></ClCompile>
+    <ClCompile Include="AppSource\MapEditor\Editor\MapEditor.cpp"><Filter>AppSource\MapEditor\Editor</Filter></ClCompile>
+    <ClCompile Include="AppSource\MapEditor\Editor\MapEditWithImGui.cpp"><Filter>AppSource\MapEditor\Editor</Filter></ClCompile>
+    <ClCompile Include="AppSource\MapEditor\Editor\Data\Campus.cpp"><Filter>AppSource\MapEditor\Editor\Data</Filter></ClCompile>
+    <ClCompile Include="AppSource\MapEditor\Editor\Data\Pencil.cpp"><Filter>AppSource\MapEditor\Editor\Data</Filter></ClCompile>
+    <ClCompile Include="AppSource\Scene\src\InitializeScene.cpp"><Filter>AppSource\Scene\src</Filter></ClCompile>
+    <ClCompile Include="AppSource\Scene\src\IScene.cpp"><Filter>AppSource\Scene\src</Filter></ClCompile>
+    <ClCompile Include="AppSource\Scene\src\SceneManager.cpp"><Filter>AppSource\Scene\src</Filter></ClCompile>
+    <ClCompile Include="AppSource\Test\TestScene.cpp"><Filter>AppSource\Test</Filter></ClCompile>
+    <ClCompile Include="AppSource\Unit\MapChipField.cpp"><Filter>AppSource\Unit</Filter></ClCompile>
+    <ClCompile Include="AppSource\Unit\UnitManager.cpp"><Filter>AppSource\Unit</Filter></ClCompile>
+    <ClCompile Include="AppSource\Unit\Ore\OreUnit.cpp"><Filter>AppSource\Unit\Ore</Filter></ClCompile>
+    <ClCompile Include="AppSource\Unit\Ore\OreUnitObject.cpp"><Filter>AppSource\Unit\Ore</Filter></ClCompile>
+    <ClCompile Include="AppSource\Unit\Player\PlayerUnit.cpp"><Filter>AppSource\Unit\Player</Filter></ClCompile>
+    <ClCompile Include="AppSource\Unit\Player\PlayerUnitObject.cpp"><Filter>AppSource\Unit\Player</Filter></ClCompile>
+    <ClCompile Include="Engine\SHEngine.cpp"><Filter>Engine</Filter></ClCompile>
+    <ClCompile Include="Engine\Assets\Audio\AudioManager.cpp"><Filter>Engine\Assets\Audio</Filter></ClCompile>
+    <ClCompile Include="Engine\Assets\Audio\Data\AudioData.cpp"><Filter>Engine\Assets\Audio\Data</Filter></ClCompile>
+    <ClCompile Include="Engine\Assets\Audio\Data\MP3Data.cpp"><Filter>Engine\Assets\Audio\Data</Filter></ClCompile>
+    <ClCompile Include="Engine\Assets\Audio\Data\WAVData.cpp"><Filter>Engine\Assets\Audio\Data</Filter></ClCompile>
+    <ClCompile Include="Engine\Assets\Model\ModelLoader.cpp"><Filter>Engine\Assets\Model</Filter></ClCompile>
+    <ClCompile Include="Engine\Assets\Model\ModelManager.cpp"><Filter>Engine\Assets\Model</Filter></ClCompile>
+    <ClCompile Include="Engine\Assets\Texture\TextureData.cpp"><Filter>Engine\Assets\Texture</Filter></ClCompile>
+    <ClCompile Include="Engine\Assets\Texture\TextureManager.cpp"><Filter>Engine\Assets\Texture</Filter></ClCompile>
+    <ClCompile Include="Engine\Camera\Camera.cpp"><Filter>Engine\Camera</Filter></ClCompile>
+    <ClCompile Include="Engine\Camera\DebugCamera.cpp"><Filter>Engine\Camera</Filter></ClCompile>
+    <ClCompile Include="Engine\Collision\Collider.cpp"><Filter>Engine\Collision</Filter></ClCompile>
+    <ClCompile Include="Engine\Collision\ColliderManager.cpp"><Filter>Engine\Collision</Filter></ClCompile>
+    <ClCompile Include="Engine\Collision\Data\CollisionVisitor.cpp"><Filter>Engine\Collision\Data</Filter></ClCompile>
+    <ClCompile Include="Engine\Core\Data\CommandObject.cpp"><Filter>Engine\Core\Data</Filter></ClCompile>
+    <ClCompile Include="Engine\Core\src\CmdListManager.cpp"><Filter>Engine\Core\src</Filter></ClCompile>
+    <ClCompile Include="Engine\Core\src\DXDevice.cpp"><Filter>Engine\Core\src</Filter></ClCompile>
+    <ClCompile Include="Engine\Core\src\FenceManager.cpp"><Filter>Engine\Core\src</Filter></ClCompile>
+    <ClCompile Include="Engine\Core\src\ImGuiforEngine.cpp"><Filter>Engine\Core\src</Filter></ClCompile>
+    <ClCompile Include="Engine\Core\View\DSVManager.cpp"><Filter>Engine\Core\View</Filter></ClCompile>
+    <ClCompile Include="Engine\Core\View\RTVManager.cpp"><Filter>Engine\Core\View</Filter></ClCompile>
+    <ClCompile Include="Engine\Core\View\SRVManager.cpp"><Filter>Engine\Core\View</Filter></ClCompile>
+    <ClCompile Include="Engine\Core\View\ViewFunc.cpp"><Filter>Engine\Core\View</Filter></ClCompile>
+    <ClCompile Include="Engine\Input\Input.cpp"><Filter>Engine\Input</Filter></ClCompile>
+    <ClCompile Include="Engine\PSO\PSOEditor.cpp"><Filter>Engine\PSO</Filter></ClCompile>
+    <ClCompile Include="Engine\PSO\PSOManager.cpp"><Filter>Engine\PSO</Filter></ClCompile>
+    <ClCompile Include="Engine\PSO\Shelf\BlendStateShelf.cpp"><Filter>Engine\PSO\Shelf</Filter></ClCompile>
+    <ClCompile Include="Engine\PSO\Shelf\DepthStencilShelf.cpp"><Filter>Engine\PSO\Shelf</Filter></ClCompile>
+    <ClCompile Include="Engine\PSO\Shelf\InputLayoutShelf.cpp"><Filter>Engine\PSO\Shelf</Filter></ClCompile>
+    <ClCompile Include="Engine\PSO\Shelf\RasterizerShelf.cpp"><Filter>Engine\PSO\Shelf</Filter></ClCompile>
+    <ClCompile Include="Engine\PSO\Shelf\RootSignatureShelf.cpp"><Filter>Engine\PSO\Shelf</Filter></ClCompile>
+    <ClCompile Include="Engine\PSO\Shelf\ShaderShelf.cpp"><Filter>Engine\PSO\Shelf</Filter></ClCompile>
+    <ClCompile Include="Engine\Render\DebugLine.cpp"><Filter>Engine\Render</Filter></ClCompile>
+    <ClCompile Include="Engine\Render\DrawDataManager.cpp"><Filter>Engine\Render</Filter></ClCompile>
+    <ClCompile Include="Engine\Render\PostEffect.cpp"><Filter>Engine\Render</Filter></ClCompile>
+    <ClCompile Include="Engine\Render\RenderObject.cpp"><Filter>Engine\Render</Filter></ClCompile>
+    <ClCompile Include="Engine\Screen\DualDisplay.cpp"><Filter>Engine\Screen</Filter></ClCompile>
+    <ClCompile Include="Engine\Screen\Window.cpp"><Filter>Engine\Screen</Filter></ClCompile>
+    <ClCompile Include="Engine\Screen\WindowMaker.cpp"><Filter>Engine\Screen</Filter></ClCompile>
+    <ClCompile Include="Engine\Screen\Display\src\Display.cpp"><Filter>Engine\Screen\Display\src</Filter></ClCompile>
+    <ClCompile Include="Engine\Screen\Display\src\IDisplay.cpp"><Filter>Engine\Screen\Display\src</Filter></ClCompile>
+    <ClCompile Include="Engine\Screen\Display\src\SwapChain.cpp"><Filter>Engine\Screen\Display\src</Filter></ClCompile>
+    <ClCompile Include="Engine\Screen\Display\src\WindowsApp.cpp"><Filter>Engine\Screen\Display\src</Filter></ClCompile>
+    <ClCompile Include="Engine\Tool\Binary\BinaryManager.cpp"><Filter>Engine\Tool\Binary</Filter></ClCompile>
+    <ClCompile Include="Engine\Tool\Binary\Data\BinaryInput.cpp"><Filter>Engine\Tool\Binary\Data</Filter></ClCompile>
+    <ClCompile Include="Engine\Tool\Binary\Data\BinaryOutput.cpp"><Filter>Engine\Tool\Binary\Data</Filter></ClCompile>
+    <ClCompile Include="Engine\Tool\Dump\CreateDump.cpp"><Filter>Engine\Tool\Dump</Filter></ClCompile>
+    <ClCompile Include="Engine\Tool\FPS\FPSObserver.cpp"><Filter>Engine\Tool\FPS</Filter></ClCompile>
+    <ClCompile Include="Engine\Tool\Logger\Logger.cpp"><Filter>Engine\Tool\Logger</Filter></ClCompile>
+    <ClCompile Include="Engine\Utility\src\Color.cpp"><Filter>Engine\Utility\src</Filter></ClCompile>
+    <ClCompile Include="Engine\Utility\src\ConvertString.cpp"><Filter>Engine\Utility\src</Filter></ClCompile>
+    <ClCompile Include="Engine\Utility\src\DirectUtilFuncs.cpp"><Filter>Engine\Utility\src</Filter></ClCompile>
+    <ClCompile Include="Engine\Utility\src\Easing.cpp"><Filter>Engine\Utility\src</Filter></ClCompile>
+    <ClCompile Include="Engine\Utility\src\MatrixFactory.cpp"><Filter>Engine\Utility\src</Filter></ClCompile>
+    <ClCompile Include="Engine\Utility\src\MyMath.cpp"><Filter>Engine\Utility\src</Filter></ClCompile>
+    <ClCompile Include="Engine\Utility\src\Operator.cpp"><Filter>Engine\Utility\src</Filter></ClCompile>
+    <ClCompile Include="Engine\Utility\src\SearchFile.cpp"><Filter>Engine\Utility\src</Filter></ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AppSource\FpsCount.h"><Filter>AppSource</Filter></ClInclude>
+    <ClInclude Include="AppSource\Common\GameWindow.h"><Filter>AppSource\Common</Filter></ClInclude>
+    <ClInclude Include="AppSource\Common\Camera\GameCamera.h"><Filter>AppSource\Common\Camera</Filter></ClInclude>
+    <ClInclude Include="AppSource\Common\DebugParam\GameParamEditor.h"><Filter>AppSource\Common\DebugParam</Filter></ClInclude>
+    <ClInclude Include="AppSource\Common\DebugParam\HierarchyWindow.h"><Filter>AppSource\Common\DebugParam</Filter></ClInclude>
+    <ClInclude Include="AppSource\Common\DebugParam\InspectorWindow.h"><Filter>AppSource\Common\DebugParam</Filter></ClInclude>
+    <ClInclude Include="AppSource\Common\DebugParam\ParamManager.h"><Filter>AppSource\Common\DebugParam</Filter></ClInclude>
+    <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h"><Filter>AppSource\Common\KeyConfig</Filter></ClInclude>
+    <ClInclude Include="AppSource\Core\Terminal.h"><Filter>AppSource\Core</Filter></ClInclude>
+    <ClInclude Include="AppSource\Game\GameScene.h"><Filter>AppSource\Game</Filter></ClInclude>
+    <ClInclude Include="AppSource\Game\MapData\MapDataManager.h"><Filter>AppSource\Game\MapData</Filter></ClInclude>
+    <ClInclude Include="AppSource\Game\MapData\Data\MapData.h"><Filter>AppSource\Game\MapData\Data</Filter></ClInclude>
+    <ClInclude Include="AppSource\GameCamera\CameraController.h"><Filter>AppSource\GameCamera</Filter></ClInclude>
+    <ClInclude Include="AppSource\MapEditor\MapEditScene.h"><Filter>AppSource\MapEditor</Filter></ClInclude>
+    <ClInclude Include="AppSource\MapEditor\Editor\MapEditor.h"><Filter>AppSource\MapEditor\Editor</Filter></ClInclude>
+    <ClInclude Include="AppSource\MapEditor\Editor\MapEditWithImGui.h"><Filter>AppSource\MapEditor\Editor</Filter></ClInclude>
+    <ClInclude Include="AppSource\MapEditor\Editor\Data\Campus.h"><Filter>AppSource\MapEditor\Editor\Data</Filter></ClInclude>
+    <ClInclude Include="AppSource\MapEditor\Editor\Data\Pencil.h"><Filter>AppSource\MapEditor\Editor\Data</Filter></ClInclude>
+    <ClInclude Include="AppSource\Scene\CommonData.h"><Filter>AppSource\Scene</Filter></ClInclude>
+    <ClInclude Include="AppSource\Scene\InitializeScene.h"><Filter>AppSource\Scene</Filter></ClInclude>
+    <ClInclude Include="AppSource\Scene\IScene.h"><Filter>AppSource\Scene</Filter></ClInclude>
+    <ClInclude Include="AppSource\Scene\SceneManager.h"><Filter>AppSource\Scene</Filter></ClInclude>
+    <ClInclude Include="AppSource\Test\TestScene.h"><Filter>AppSource\Test</Filter></ClInclude>
+    <ClInclude Include="AppSource\Unit\MapChipField.h"><Filter>AppSource\Unit</Filter></ClInclude>
+    <ClInclude Include="AppSource\Unit\UnitManager.h"><Filter>AppSource\Unit</Filter></ClInclude>
+    <ClInclude Include="AppSource\Unit\Ore\OreUnit.h"><Filter>AppSource\Unit\Ore</Filter></ClInclude>
+    <ClInclude Include="AppSource\Unit\Ore\OreUnitObject.h"><Filter>AppSource\Unit\Ore</Filter></ClInclude>
+    <ClInclude Include="AppSource\Unit\Player\PlayerUnit.h"><Filter>AppSource\Unit\Player</Filter></ClInclude>
+    <ClInclude Include="AppSource\Unit\Player\PlayerUnitObject.h"><Filter>AppSource\Unit\Player</Filter></ClInclude>
+    <ClInclude Include="Engine\SHEngine.h"><Filter>Engine</Filter></ClInclude>
+    <ClInclude Include="Engine\Assets\Audio\AudioManager.h"><Filter>Engine\Assets\Audio</Filter></ClInclude>
+    <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h"><Filter>Engine\Assets\Audio\Data</Filter></ClInclude>
+    <ClInclude Include="Engine\Assets\Audio\Data\MP3Data.h"><Filter>Engine\Assets\Audio\Data</Filter></ClInclude>
+    <ClInclude Include="Engine\Assets\Audio\Data\WAVData.h"><Filter>Engine\Assets\Audio\Data</Filter></ClInclude>
+    <ClInclude Include="Engine\Assets\Model\ModelData.h"><Filter>Engine\Assets\Model</Filter></ClInclude>
+    <ClInclude Include="Engine\Assets\Model\ModelLoader.h"><Filter>Engine\Assets\Model</Filter></ClInclude>
+    <ClInclude Include="Engine\Assets\Model\ModelManager.h"><Filter>Engine\Assets\Model</Filter></ClInclude>
+    <ClInclude Include="Engine\Assets\Texture\TextureData.h"><Filter>Engine\Assets\Texture</Filter></ClInclude>
+    <ClInclude Include="Engine\Assets\Texture\TextureManager.h"><Filter>Engine\Assets\Texture</Filter></ClInclude>
+    <ClInclude Include="Engine\Camera\Camera.h"><Filter>Engine\Camera</Filter></ClInclude>
+    <ClInclude Include="Engine\Camera\DebugCamera.h"><Filter>Engine\Camera</Filter></ClInclude>
+    <ClInclude Include="Engine\Collision\Collider.h"><Filter>Engine\Collision</Filter></ClInclude>
+    <ClInclude Include="Engine\Collision\ColliderManager.h"><Filter>Engine\Collision</Filter></ClInclude>
+    <ClInclude Include="Engine\Collision\Data\CollisionInfo.h"><Filter>Engine\Collision\Data</Filter></ClInclude>
+    <ClInclude Include="Engine\Collision\Data\CollisionVisitor.h"><Filter>Engine\Collision\Data</Filter></ClInclude>
+    <ClInclude Include="Engine\Core\CmdListManager.h"><Filter>Engine\Core</Filter></ClInclude>
+    <ClInclude Include="Engine\Core\DXDevice.h"><Filter>Engine\Core</Filter></ClInclude>
+    <ClInclude Include="Engine\Core\FenceManager.h"><Filter>Engine\Core</Filter></ClInclude>
+    <ClInclude Include="Engine\Core\ImGuiforEngine.h"><Filter>Engine\Core</Filter></ClInclude>
+    <ClInclude Include="Engine\Core\Data\CommandObject.h"><Filter>Engine\Core\Data</Filter></ClInclude>
+    <ClInclude Include="Engine\Core\View\DSVManager.h"><Filter>Engine\Core\View</Filter></ClInclude>
+    <ClInclude Include="Engine\Core\View\RTVManager.h"><Filter>Engine\Core\View</Filter></ClInclude>
+    <ClInclude Include="Engine\Core\View\SRVManager.h"><Filter>Engine\Core\View</Filter></ClInclude>
+    <ClInclude Include="Engine\Core\View\ViewFunc.h"><Filter>Engine\Core\View</Filter></ClInclude>
+    <ClInclude Include="Engine\Input\Input.h"><Filter>Engine\Input</Filter></ClInclude>
+    <ClInclude Include="Engine\PSO\PSOConfig.h"><Filter>Engine\PSO</Filter></ClInclude>
+    <ClInclude Include="Engine\PSO\PSOEditor.h"><Filter>Engine\PSO</Filter></ClInclude>
+    <ClInclude Include="Engine\PSO\PSOManager.h"><Filter>Engine\PSO</Filter></ClInclude>
+    <ClInclude Include="Engine\PSO\Shelf\BlendStateShelf.h"><Filter>Engine\PSO\Shelf</Filter></ClInclude>
+    <ClInclude Include="Engine\PSO\Shelf\DepthStencilShelf.h"><Filter>Engine\PSO\Shelf</Filter></ClInclude>
+    <ClInclude Include="Engine\PSO\Shelf\InputLayoutShelf.h"><Filter>Engine\PSO\Shelf</Filter></ClInclude>
+    <ClInclude Include="Engine\PSO\Shelf\RasterizerShelf.h"><Filter>Engine\PSO\Shelf</Filter></ClInclude>
+    <ClInclude Include="Engine\PSO\Shelf\RootSignatureShelf.h"><Filter>Engine\PSO\Shelf</Filter></ClInclude>
+    <ClInclude Include="Engine\PSO\Shelf\ShaderShelf.h"><Filter>Engine\PSO\Shelf</Filter></ClInclude>
+    <ClInclude Include="Engine\Render\DebugLine.h"><Filter>Engine\Render</Filter></ClInclude>
+    <ClInclude Include="Engine\Render\DrawDataManager.h"><Filter>Engine\Render</Filter></ClInclude>
+    <ClInclude Include="Engine\Render\PostEffect.h"><Filter>Engine\Render</Filter></ClInclude>
+    <ClInclude Include="Engine\Render\PostEffectData.h"><Filter>Engine\Render</Filter></ClInclude>
+    <ClInclude Include="Engine\Render\RenderObject.h"><Filter>Engine\Render</Filter></ClInclude>
+    <ClInclude Include="Engine\Screen\DualDisplay.h"><Filter>Engine\Screen</Filter></ClInclude>
+    <ClInclude Include="Engine\Screen\Window.h"><Filter>Engine\Screen</Filter></ClInclude>
+    <ClInclude Include="Engine\Screen\WindowMaker.h"><Filter>Engine\Screen</Filter></ClInclude>
+    <ClInclude Include="Engine\Screen\Display\Display.h"><Filter>Engine\Screen\Display</Filter></ClInclude>
+    <ClInclude Include="Engine\Screen\Display\IDisplay.h"><Filter>Engine\Screen\Display</Filter></ClInclude>
+    <ClInclude Include="Engine\Screen\Display\SwapChain.h"><Filter>Engine\Screen\Display</Filter></ClInclude>
+    <ClInclude Include="Engine\Screen\Display\WindowsApp.h"><Filter>Engine\Screen\Display</Filter></ClInclude>
+    <ClInclude Include="Engine\Tool\Binary\BinaryManager.h"><Filter>Engine\Tool\Binary</Filter></ClInclude>
+    <ClInclude Include="Engine\Tool\Binary\Data\BinaryInput.h"><Filter>Engine\Tool\Binary\Data</Filter></ClInclude>
+    <ClInclude Include="Engine\Tool\Binary\Data\BinaryOutput.h"><Filter>Engine\Tool\Binary\Data</Filter></ClInclude>
+    <ClInclude Include="Engine\Tool\Binary\Data\Value.h"><Filter>Engine\Tool\Binary\Data</Filter></ClInclude>
+    <ClInclude Include="Engine\Tool\Dump\CreateDump.h"><Filter>Engine\Tool\Dump</Filter></ClInclude>
+    <ClInclude Include="Engine\Tool\FPS\FPSObserver.h"><Filter>Engine\Tool\FPS</Filter></ClInclude>
+    <ClInclude Include="Engine\Tool\Logger\Logger.h"><Filter>Engine\Tool\Logger</Filter></ClInclude>
+    <ClInclude Include="Engine\Utility\Color.h"><Filter>Engine\Utility</Filter></ClInclude>
+    <ClInclude Include="Engine\Utility\ConvertString.h"><Filter>Engine\Utility</Filter></ClInclude>
+    <ClInclude Include="Engine\Utility\DataStructures.h"><Filter>Engine\Utility</Filter></ClInclude>
+    <ClInclude Include="Engine\Utility\DirectUtilFuncs.h"><Filter>Engine\Utility</Filter></ClInclude>
+    <ClInclude Include="Engine\Utility\Easing.h"><Filter>Engine\Utility</Filter></ClInclude>
+    <ClInclude Include="Engine\Utility\Matrix.h"><Filter>Engine\Utility</Filter></ClInclude>
+    <ClInclude Include="Engine\Utility\MatrixFactory.h"><Filter>Engine\Utility</Filter></ClInclude>
+    <ClInclude Include="Engine\Utility\MyMath.h"><Filter>Engine\Utility</Filter></ClInclude>
+    <ClInclude Include="Engine\Utility\Operator.h"><Filter>Engine\Utility</Filter></ClInclude>
+    <ClInclude Include="Engine\Utility\Quaternion.h"><Filter>Engine\Utility</Filter></ClInclude>
+    <ClInclude Include="Engine\Utility\SearchFile.h"><Filter>Engine\Utility</Filter></ClInclude>
+    <ClInclude Include="Engine\Utility\Vector.h"><Filter>Engine\Utility</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\aabb.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\ai_assert.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\anim.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\AssertHandler.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\Base64.hpp"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\BaseImporter.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\Bitmap.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\BlobIOSystem.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\ByteSwapper.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\camera.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\cexport.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\cfileio.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\cimport.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\ColladaMetaData.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\color4.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\commonMetaData.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\config.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\CreateAnimMesh.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\DefaultIOStream.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\DefaultIOSystem.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\DefaultLogger.hpp"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\defs.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\Exceptional.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\Exporter.hpp"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\fast_atof.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\GenericProperty.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\GltfMaterial.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\Hash.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\Importer.hpp"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\importerdesc.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\IOStream.hpp"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\IOStreamBuffer.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\IOSystem.hpp"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\light.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\LineSplitter.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\LogAux.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\Logger.hpp"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\LogStream.hpp"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\material.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\MathFunctions.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\matrix3x3.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\matrix4x4.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\MemoryIOWrapper.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\mesh.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\metadata.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\NullLogger.hpp"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\ObjMaterial.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\ParsingUtils.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\pbrmaterial.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\postprocess.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\Profiler.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\ProgressHandler.hpp"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\qnan.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\quaternion.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\RemoveComments.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\scene.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\SceneCombiner.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\SGSpatialSort.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\SkeletonMeshBuilder.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\SmallVector.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\SmoothingGroups.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\SpatialSort.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\StandardShapes.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\StreamReader.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\StreamWriter.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\StringComparison.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\StringUtils.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\Subdivision.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\texture.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\TinyFormatter.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\types.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\vector2.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\vector3.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\version.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\Vertex.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\XmlParser.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\XMLTools.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\ZipArchiveIOSystem.h"><Filter>externals\assimp\include\assimp</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\Compiler\poppack1.h"><Filter>externals\assimp\include\assimp\Compiler</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\Compiler\pstdint.h"><Filter>externals\assimp\include\assimp\Compiler</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\Compiler\pushpack1.h"><Filter>externals\assimp\include\assimp\Compiler</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\port\AndroidJNI\AndroidJNIIOSystem.h"><Filter>externals\assimp\include\assimp\port\AndroidJNI</Filter></ClInclude>
+    <ClInclude Include="externals\assimp\include\assimp\port\AndroidJNI\BundledAssetIOSystem.h"><Filter>externals\assimp\include\assimp\port\AndroidJNI</Filter></ClInclude>
+    <ClInclude Include="externals\DirectXTex\BC.h"><Filter>externals\DirectXTex</Filter></ClInclude>
+    <ClInclude Include="externals\DirectXTex\BCDirectCompute.h"><Filter>externals\DirectXTex</Filter></ClInclude>
+    <ClInclude Include="externals\DirectXTex\d3dx12.h"><Filter>externals\DirectXTex</Filter></ClInclude>
+    <ClInclude Include="externals\DirectXTex\DDS.h"><Filter>externals\DirectXTex</Filter></ClInclude>
+    <ClInclude Include="externals\DirectXTex\DirectXTex.h"><Filter>externals\DirectXTex</Filter></ClInclude>
+    <ClInclude Include="externals\DirectXTex\DirectXTexP.h"><Filter>externals\DirectXTex</Filter></ClInclude>
+    <ClInclude Include="externals\DirectXTex\filters.h"><Filter>externals\DirectXTex</Filter></ClInclude>
+    <ClInclude Include="externals\DirectXTex\scoped.h"><Filter>externals\DirectXTex</Filter></ClInclude>
+    <ClInclude Include="externals\imgui\imconfig.h"><Filter>externals\imgui</Filter></ClInclude>
+    <ClInclude Include="externals\imgui\imgui.h"><Filter>externals\imgui</Filter></ClInclude>
+    <ClInclude Include="externals\imgui\ImGuizmo.h"><Filter>externals\imgui</Filter></ClInclude>
+    <ClInclude Include="externals\imgui\imgui_impl_dx12.h"><Filter>externals\imgui</Filter></ClInclude>
+    <ClInclude Include="externals\imgui\imgui_impl_win32.h"><Filter>externals\imgui</Filter></ClInclude>
+    <ClInclude Include="externals\imgui\imgui_internal.h"><Filter>externals\imgui</Filter></ClInclude>
+    <ClInclude Include="externals\imgui\imstb_rectpack.h"><Filter>externals\imgui</Filter></ClInclude>
+    <ClInclude Include="externals\imgui\imstb_textedit.h"><Filter>externals\imgui</Filter></ClInclude>
+    <ClInclude Include="externals\imgui\imstb_truetype.h"><Filter>externals\imgui</Filter></ClInclude>
+    <ClInclude Include="externals\nlohmannjson\json.hpp"><Filter>externals\nlohmannjson</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\async.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\async_logger-inl.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\async_logger.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\common-inl.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\common.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\formatter.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fwd.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\logger-inl.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\logger.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\mdc.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\pattern_formatter-inl.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\pattern_formatter.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\spdlog-inl.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\spdlog.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\stopwatch.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\tweakme.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\version.h"><Filter>externals\spdlog</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\cfg\argv.h"><Filter>externals\spdlog\cfg</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\cfg\env.h"><Filter>externals\spdlog\cfg</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\cfg\helpers-inl.h"><Filter>externals\spdlog\cfg</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\cfg\helpers.h"><Filter>externals\spdlog\cfg</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\backtracer-inl.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\backtracer.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\circular_q.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\console_globals.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\file_helper-inl.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\file_helper.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\fmt_helper.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\log_msg-inl.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\log_msg.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\log_msg_buffer-inl.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\log_msg_buffer.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\mpmc_blocking_q.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\null_mutex.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\os-inl.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\os.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\periodic_worker-inl.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\periodic_worker.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\registry-inl.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\registry.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\synchronous_factory.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\tcp_client-windows.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\tcp_client.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\thread_pool-inl.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\thread_pool.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\udp_client-windows.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\udp_client.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\details\windows_include.h"><Filter>externals\spdlog\details</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\bin_to_hex.h"><Filter>externals\spdlog\fmt</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\chrono.h"><Filter>externals\spdlog\fmt</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\compile.h"><Filter>externals\spdlog\fmt</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\fmt.h"><Filter>externals\spdlog\fmt</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\ostr.h"><Filter>externals\spdlog\fmt</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\ranges.h"><Filter>externals\spdlog\fmt</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\std.h"><Filter>externals\spdlog\fmt</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\xchar.h"><Filter>externals\spdlog\fmt</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\bundled\args.h"><Filter>externals\spdlog\fmt\bundled</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\bundled\base.h"><Filter>externals\spdlog\fmt\bundled</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\bundled\chrono.h"><Filter>externals\spdlog\fmt\bundled</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\bundled\color.h"><Filter>externals\spdlog\fmt\bundled</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\bundled\compile.h"><Filter>externals\spdlog\fmt\bundled</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\bundled\core.h"><Filter>externals\spdlog\fmt\bundled</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\bundled\format-inl.h"><Filter>externals\spdlog\fmt\bundled</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\bundled\format.h"><Filter>externals\spdlog\fmt\bundled</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\bundled\os.h"><Filter>externals\spdlog\fmt\bundled</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\bundled\ostream.h"><Filter>externals\spdlog\fmt\bundled</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\bundled\printf.h"><Filter>externals\spdlog\fmt\bundled</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\bundled\ranges.h"><Filter>externals\spdlog\fmt\bundled</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\bundled\std.h"><Filter>externals\spdlog\fmt\bundled</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\fmt\bundled\xchar.h"><Filter>externals\spdlog\fmt\bundled</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\android_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\ansicolor_sink-inl.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\ansicolor_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\base_sink-inl.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\base_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\basic_file_sink-inl.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\basic_file_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\callback_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\daily_file_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\dist_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\dup_filter_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\hourly_file_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\kafka_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\mongo_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\msvc_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\null_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\ostream_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\qt_sinks.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\ringbuffer_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\rotating_file_sink-inl.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\rotating_file_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\sink-inl.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\stdout_color_sinks-inl.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\stdout_color_sinks.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\stdout_sinks-inl.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\stdout_sinks.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\syslog_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\systemd_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\tcp_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\udp_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\wincolor_sink-inl.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\wincolor_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+    <ClInclude Include="externals\spdlog\sinks\win_eventlog_sink.h"><Filter>externals\spdlog\sinks</Filter></ClInclude>
+  </ItemGroup>
+</Project>

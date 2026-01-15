@@ -68,7 +68,7 @@ struct RootSignatureConfig {
 	std::pair<int, int> cbvNums{};                         ///< 定数バッファ数<Vertex, Pixel>
 	std::pair<int, int> srvNums{};                         ///< シェーダーリソース数<Vertex, Pixel>（上限8）
 	bool useTexture = false;                                ///< テクスチャを使用するか
-	uint32_t samplers = uint32_t(SamplerID::Static);        ///< サンプラーIDのビットマスク
+	uint32_t samplers = uint32_t(SamplerID::Default);        ///< サンプラーIDのビットマスク
 
 	/**
 	 * @brief 比較演算子（less than）

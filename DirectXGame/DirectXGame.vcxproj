@@ -163,7 +163,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClCompile Include="AppSource\Common\DebugParam\InspectorWindow.cpp" />
     <ClCompile Include="AppSource\Common\DebugParam\ParamManager.cpp" />
     <ClCompile Include="AppSource\GameCamera\CameraController.cpp" />
-    <ClCompile Include="AppSource\MapEditor\MapData\Data\MapData.cpp" />
     <ClCompile Include="AppSource\Unit\MapChipField.cpp" />
     <ClCompile Include="AppSource\Unit\Ore\OreUnit.cpp" />
     <ClCompile Include="AppSource\Unit\Ore\OreUnitObject.cpp" />
@@ -251,7 +250,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClInclude Include="AppSource\Common\DebugParam\InspectorWindow.h" />
     <ClInclude Include="AppSource\Common\DebugParam\ParamManager.h" />
     <ClInclude Include="AppSource\GameCamera\CameraController.h" />
-    <ClInclude Include="AppSource\MapEditor\MapData\Data\MapData.h" />
     <ClInclude Include="AppSource\FpsCount.h" />
     <ClInclude Include="AppSource\Unit\MapChipField.h" />
     <ClInclude Include="AppSource\Unit\Ore\OreUnit.h" />

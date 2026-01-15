@@ -47,6 +47,7 @@ void GameScene::Initialize() {
 	unitManager_->Initalize(mapChipField_.get(),
 		drawDataManager_->GetDrawData(playerModel.drawDataIndex), drawDataManager_->GetDrawData(oreModel.drawDataIndex),
 		commonData_->keyManager.get());
+}
 
 std::unique_ptr<IScene> GameScene::Update() {
 
