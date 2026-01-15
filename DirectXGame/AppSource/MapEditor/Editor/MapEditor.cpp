@@ -10,6 +10,9 @@ void Editor::Initialize(MapDataManager* mapDataManager) {
 
 	campus_ = std::make_unique<Campus>();
 	campus_->Initialize();
+
+	stageEditor_ = std::make_unique<StageEditor>();
+	stageEditor_->Initialize();
 }
 
 void Editor::Update() {
@@ -27,6 +30,11 @@ void Editor::DrawImGui() {
 	
 	mapEdit_->DrawImGui(*currentMapData);
 	campus_->DrawImGui(*currentMapData);
+
+	stageEditor_->DrawImGui(
+		mapDataManager_->GetAllRawMapData(),
+		campus_->GetTileColorMap()
+	);
 
 #endif
 }

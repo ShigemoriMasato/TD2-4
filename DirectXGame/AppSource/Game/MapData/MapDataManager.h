@@ -16,6 +16,7 @@ public:
 
 	MapDataForBin* GetRawMapData(const std::string& modelFilePath);
 	MapDataForBin* GetRawMapData(int mapID);
+	const std::vector<MapDataForBin>& GetAllRawMapData() const { return mapData_; }
 
 	int GetMapTextureOffset(int mapID);
 

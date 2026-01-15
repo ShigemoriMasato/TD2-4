@@ -77,14 +77,7 @@ void MapDataManager::Save() {
 
 	binaryManager_->Write(mapSaveFile_);
 
-	binaryManager_->RegisterOutput(int(stageData_.size()));
-	for (const auto& stage : stageData_) {
-		binaryManager_->RegisterOutput(stage.stageID);
-		binaryManager_->RegisterOutput(stage.mapID);
-		binaryManager_->RegisterOutput(int(stage.direction));
-		binaryManager_->RegisterOutput(stage.goldFrequency);
-	}
-	binaryManager_->Write(stageSaveFile_);
+	//StageDataの保存権はStageEditorのみに限る
 }
 
 void MapDataManager::Load() {

@@ -184,6 +184,11 @@ void MapEditor::Campus::DrawImGui(MapDataForBin& data) {
 
 	ImGui::Separator();
 	ImGui::DragInt("TileSize", &tileSize_, 1.0f, 8, 128, "%.0f");
+
+	if (ImGui::Button("Clear")) {
+		undoStack_.push_back(data.tileData);
+		std::fill(data.tileData.begin(), data.tileData.end(), TileType::Air);
+	}
 	
 	ImGui::End();
 

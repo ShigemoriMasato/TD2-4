@@ -13,6 +13,10 @@ namespace MapEditor {
 		void Initialize();
 		void DrawImGui(MapDataForBin& data);
 
+		std::map<TileType, ImU32> GetTileColorMap() const {
+			return tileColorMap_;
+		}
+
 	private:
 
 		void Save();
