@@ -1,5 +1,6 @@
 #pragma once
 #include <Scene/IScene.h>
+#include "Editor/MapEditor.h"
 
 class MapEditScene : public IScene {
 public:
@@ -10,6 +11,6 @@ public:
 
 private:
 
-
+	std::unique_ptr<MapEditor::Editor> editor_ = nullptr;
 
 };

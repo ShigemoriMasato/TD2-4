@@ -1,6 +1,8 @@
 #include "MapDataManager.h"
 
 void MapDataManager::Initialize() {
+	binaryManager_ = std::make_unique<BinaryManager>();
+	logger_ = getLogger("Game");
 	Load();
 }
 
@@ -8,7 +10,7 @@ MapDataManager::~MapDataManager() {
 	Save();
 }
 
-MapData* MapDataManager::GetMapData(const std::string& modelFilePath) {
+MapDataForBin* MapDataManager::GetMapData(const std::string& modelFilePath) {
 	for (auto& map : mapData_) {
 		if (map.modelFilePath == modelFilePath) {
 			return &map;
@@ -17,13 +19,19 @@ MapData* MapDataManager::GetMapData(const std::string& modelFilePath) {
 	return nullptr;
 }
 
-MapData* MapDataManager::GetMapData(int mapID) {
+MapDataForBin* MapDataManager::GetMapData(int mapID) {
 	for (auto& map : mapData_) {
 		if (map.mapID == mapID) {
 			return &map;
 		}
 	}
-	return nullptr;
+
+	MapDataForBin newMap;
+	newMap.mapID = mapID;
+	newMap.tileData.reserve(10000);
+	newMap.tileData.push_back(TileType::Air);
+	mapData_.push_back(newMap);
+	return &mapData_.back();
 }
 
 int MapDataManager::GetMapTextureOffset(int mapID) {
@@ -45,7 +53,7 @@ void MapDataManager::Save() {
 		binaryManager_->RegisterOutput(map.mapID);
 		binaryManager_->RegisterOutput(int(map.tileData.size()));
 		for (const auto& tile : map.tileData) {
-			binaryManager_->RegisterOutput(tile);
+			binaryManager_->RegisterOutput(int(tile));
 		}
 	}
 
@@ -60,15 +68,24 @@ void MapDataManager::Load() {
 	size_t index = 0;
 	int mapCount = BinaryManager::Reverse<int>(values[index++].get());
 	mapData_.resize(mapCount);
+	int nextID = 0;
 	for (int i = 0; i < mapCount; ++i) {
 		mapData_[i].modelFilePath = BinaryManager::Reverse<std::string>(values[index++].get());
 		mapData_[i].width = BinaryManager::Reverse<int>(values[index++].get());
 		mapData_[i].height = BinaryManager::Reverse<int>(values[index++].get());
 		mapData_[i].mapID = BinaryManager::Reverse<int>(values[index++].get());
+
 		int tileDataSize = BinaryManager::Reverse<int>(values[index++].get());
-		mapData_[i].tileData.resize(tileDataSize);
-		for (int j = 0; j < tileDataSize; ++j) {
-			mapData_[i].tileData[j] = BinaryManager::Reverse<int>(values[index++].get());
+		if(values.size() < index + tileDataSize) {
+			logger_->error("MapDataManager::Load() failed: Incomplete data for map ID {}", mapData_[i].mapID);
+			mapData_[i].tileData.resize(tileDataSize);
+			break;
 		}
+		mapData_[i].tileData.reserve(10000);
+		for (int j = 0; j < tileDataSize; ++j) {
+			mapData_[i].tileData.push_back((TileType)BinaryManager::Reverse<int>(values[index++].get()));
+		}
+
+		mapData_[i].Verify();
 	}
 }

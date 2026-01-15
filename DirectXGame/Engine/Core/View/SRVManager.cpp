@@ -1,21 +1,21 @@
 #include "SRVManager.h"
 #include <stdexcept>
 
-SRVManager::SRVManager(ID3D12Device* device, uint32_t size, int num) : maxCount(num), descriptorSizeSRV(size) {
+SRVManager::SRVManager(ID3D12Device* device, uint32_t size, int num) : maxCount_(num), descriptorSizeSRV(size) {
 
-	srvDescriptorHeap.Attach(CreateDescriptorHeap(device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, maxCount, true));
+	heap_.Attach(CreateDescriptorHeap(device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, maxCount_, true));
 
-	isUsed_.resize(maxCount, false);
+	isUsed_.resize(maxCount_, false);
 }
 
 uint32_t SRVManager::GetNextOffset(int startIndex) {
 	uint32_t i = startIndex;
 
-	if(i >= maxCount) {
+	if(i >= maxCount_) {
 		i = 0;
 	}
 
-	for (i; i < maxCount; ++i) {
+	for (i; i < maxCount_; ++i) {
 		if (!isUsed_[i]) {
 			return i;
 		}
@@ -34,7 +34,7 @@ void SRVHandle::UpdateHandle(SRVManager* manager, int operateIndex) {
 		return;
 
 	if (operateIndex == -1) {
-		operateIndex = manager->maxCount / 2;
+		operateIndex = manager->maxCount_ / 2;
 	}
 
 	offset_ = manager->GetNextOffset(operateIndex);

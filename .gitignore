@@ -1,5 +1,21 @@
+# 100%無いと死ぬ系
 /.vs/
-
 *Generated/
 *[L,l]ogs/
-*[D, d]umps/
+*[D,d]umps/
+
+# VisualStudio関係
+*.suo
+*.vs.db
+
+#生成ファイル
+/x64/
+
+# 必要ないけど一応
+*.exe
+*.dll
+
+# c++のビルド関係
+*.tlog
+*.log
+*.lastbuildstate

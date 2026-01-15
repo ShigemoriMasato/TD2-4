@@ -1,6 +1,8 @@
 #include "MapEditScene.h"
 
 void MapEditScene::Initialize() {
+	editor_ = std::make_unique<MapEditor::Editor>();
+	editor_->Initialize(commonData_->mapDataManager.get());
 }
 
 std::unique_ptr<IScene> MapEditScene::Update() {
@@ -18,7 +20,7 @@ void MapEditScene::Draw() {
 	window.PreDraw();
 
 #ifdef USE_IMGUI
-
+	editor_->DrawImGui();
 
 	window.DrawDisplayWithImGui();
 	engine_->ImGuiDraw();
