@@ -162,6 +162,14 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClCompile Include="AppSource\Common\DebugParam\HierarchyWindow.cpp" />
     <ClCompile Include="AppSource\Common\DebugParam\InspectorWindow.cpp" />
     <ClCompile Include="AppSource\Common\DebugParam\ParamManager.cpp" />
+    <ClCompile Include="AppSource\GameCamera\CameraController.cpp" />
+    <ClCompile Include="AppSource\MapEditor\MapData\Data\MapData.cpp" />
+    <ClCompile Include="AppSource\Unit\MapChipField.cpp" />
+    <ClCompile Include="AppSource\Unit\Ore\OreUnit.cpp" />
+    <ClCompile Include="AppSource\Unit\Ore\OreUnitObject.cpp" />
+    <ClCompile Include="AppSource\Unit\Player\PlayerUnit.cpp" />
+    <ClCompile Include="AppSource\Unit\Player\PlayerUnitObject.cpp" />
+    <ClCompile Include="AppSource\Unit\UnitManager.cpp" />
     <ClCompile Include="AppSource\Game\MapData\Data\MapData.cpp" />
     <ClCompile Include="AppSource\MapEditor\Editor\Data\Campus.cpp" />
     <ClCompile Include="Engine\Assets\Audio\AudioManager.cpp" />
@@ -242,6 +250,15 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClInclude Include="AppSource\Common\DebugParam\HierarchyWindow.h" />
     <ClInclude Include="AppSource\Common\DebugParam\InspectorWindow.h" />
     <ClInclude Include="AppSource\Common\DebugParam\ParamManager.h" />
+    <ClInclude Include="AppSource\GameCamera\CameraController.h" />
+    <ClInclude Include="AppSource\MapEditor\MapData\Data\MapData.h" />
+    <ClInclude Include="AppSource\FpsCount.h" />
+    <ClInclude Include="AppSource\Unit\MapChipField.h" />
+    <ClInclude Include="AppSource\Unit\Ore\OreUnit.h" />
+    <ClInclude Include="AppSource\Unit\Ore\OreUnitObject.h" />
+    <ClInclude Include="AppSource\Unit\Player\PlayerUnit.h" />
+    <ClInclude Include="AppSource\Unit\Player\PlayerUnitObject.h" />
+    <ClInclude Include="AppSource\Unit\UnitManager.h" />
     <ClInclude Include="AppSource\Game\MapData\Data\MapData.h" />
     <ClInclude Include="AppSource\MapEditor\Editor\Data\Campus.h" />
     <ClInclude Include="Engine\Assets\Audio\AudioManager.h" />
@@ -333,6 +350,24 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClInclude Include="AppSource\MapEditor\Editor\MapEditor.h" />
     <ClInclude Include="AppSource\MapEditor\Editor\MapEditWithImGui.h" />
     <ClInclude Include="AppSource\MapEditor\Editor\Data\Pencil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Assets\Shader\Object3d.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Development|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Assets\Shader\Object3d.VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Development|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
