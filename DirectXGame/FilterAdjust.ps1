@@ -5,6 +5,8 @@
 $proj    = Resolve-Path "DirectXGame.vcxproj"
 $filters = "$proj.filters"
 
+echo BeginFilterAdjustment
+
 try {
     # プロジェクトルート
     $root = (Split-Path $proj).TrimEnd('\')
@@ -81,3 +83,5 @@ try {
 catch {
     Write-Error $_.Exception.Message
 }
+
+echo EndFilterAdjustment
