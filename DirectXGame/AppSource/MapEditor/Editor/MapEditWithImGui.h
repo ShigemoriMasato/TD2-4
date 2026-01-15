@@ -22,7 +22,7 @@ namespace MapEditor {
 
 	private:
 
-		int requestMapID_ = -1;
+		int requestMapID_ = 0;
 		char modelFilePathBuffer_[256] = {};
 
 	};

@@ -38,5 +38,5 @@ void EditConfig::DrawImGui(MapDataForBin& mapData) {
 }
 
 int EditConfig::RequestMap() {
-	return 0;
+	return requestMapID_;
 }

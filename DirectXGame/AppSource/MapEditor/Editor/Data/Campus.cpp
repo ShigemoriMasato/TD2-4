@@ -1,6 +1,6 @@
 #include "Campus.h"
 #include <imgui/imgui.h>
-
+#include <Utility/Color.h>
 using namespace MapEditor;
 
 void Campus::Initialize() {
@@ -70,7 +70,7 @@ void MapEditor::Campus::DrawImGui(MapDataForBin& data) {
 
 			drawList->AddRect(
 				hMin, hMax,
-				IM_COL32(255, 255, 255, 255),
+				IM_COL32(255, 255, 0, 255),
 				0.0f, 0, 2.0f
 			);
 
@@ -152,7 +152,20 @@ void MapEditor::Campus::DrawImGui(MapDataForBin& data) {
 		}
 	}
 
-	ImGui::Text("UiUsingMouse: %d", uiUsingMouse);
+	mapSize = ImVec2(
+		float(4 * tileSize_),
+		float(float(TileType::Count) / 4.0f * tileSize_)
+	);
+
+	ImGui::InvisibleButton("Pallete", mapSize);
+
+	Vector4 buffer = ConvertColorForImGui(uint32_t(tileColorMap_[pencil_.type]));
+	ImGui::ColorEdit4("EditColor", &buffer.x);
+	tileColorMap_[pencil_.type] = ImU32(ConvertColorForImGui(buffer));
+
+	ImGui::Separator();
+
+	ImGui::DragInt("TileSize", &tileSize_, 1.0f, 8, 128, "%.0f");
 
 	ImGui::End();
 

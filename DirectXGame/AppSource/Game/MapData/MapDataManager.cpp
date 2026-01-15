@@ -53,7 +53,7 @@ void MapDataManager::Save() {
 		binaryManager_->RegisterOutput(map.mapID);
 		binaryManager_->RegisterOutput(int(map.tileData.size()));
 		for (const auto& tile : map.tileData) {
-			binaryManager_->RegisterOutput(tile);
+			binaryManager_->RegisterOutput(int(tile));
 		}
 	}
 
@@ -76,6 +76,11 @@ void MapDataManager::Load() {
 		mapData_[i].mapID = BinaryManager::Reverse<int>(values[index++].get());
 
 		int tileDataSize = BinaryManager::Reverse<int>(values[index++].get());
+		if(values.size() < index + tileDataSize) {
+			logger_->error("MapDataManager::Load() failed: Incomplete data for map ID {}", mapData_[i].mapID);
+			mapData_[i].tileData.resize(tileDataSize);
+			break;
+		}
 		mapData_[i].tileData.reserve(10000);
 		for (int j = 0; j < tileDataSize; ++j) {
 			mapData_[i].tileData.push_back((TileType)BinaryManager::Reverse<int>(values[index++].get()));

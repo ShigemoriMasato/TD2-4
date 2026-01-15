@@ -23,11 +23,9 @@ void Editor::Draw() {
 void Editor::DrawImGui() {
 #ifdef USE_IMGUI
 	int require = mapEdit_->RequestMap();
-
 	MapDataForBin* currentMapData = mapDataManager_->GetMapData(require);
 	
 	mapEdit_->DrawImGui(*currentMapData);
-
 	campus_->DrawImGui(*currentMapData);
 
 #endif
