@@ -94,7 +94,7 @@
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"
-powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)FilterAdjust.ps1"</Command>
+powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/FilterAdjust.ps1"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -123,7 +123,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)FilterAdjust.p
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"
-powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)FilterAdjust.ps1"</Command>
+powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/FilterAdjust.ps1"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
@@ -153,7 +153,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)FilterAdjust.p
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"
-powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)FilterAdjust.ps1"</Command>
+powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/FilterAdjust.ps1"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -206,7 +206,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)FilterAdjust.p
     <ClCompile Include="Engine\Utility\src\ConvertString.cpp" />
     <ClCompile Include="Engine\Utility\src\Easing.cpp" />
     <ClCompile Include="Engine\Utility\src\MyMath.cpp" />
-    <ClCompile Include="Engine\Utility\Quaternion.h" />
+    <ClInclude Include="Engine\Utility\Quaternion.h" />
     <ClCompile Include="AppSource\Scene\src\IScene.cpp" />
     <ClCompile Include="AppSource\Scene\src\InitializeScene.cpp" />
     <ClCompile Include="AppSource\Common\GameWindow.cpp" />
