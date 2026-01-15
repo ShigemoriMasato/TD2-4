@@ -1,17 +1,11 @@
 #pragma once
+#include <imgui/imgui.h>
+#include <Game/MapData/Data/MapData.h>
 
 namespace MapEditor {
 
-	class Pencil {
-	public:
-
-		void Initialize();
-		int& GetSelectedID();
-
-	private:
-
-		int selectedID_ = -1;
-
+	struct Pencil {
+		TileType type = TileType::Wall;
 	};
 
 }

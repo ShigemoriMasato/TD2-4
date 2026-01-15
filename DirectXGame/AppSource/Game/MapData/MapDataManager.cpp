@@ -1,6 +1,7 @@
 #include "MapDataManager.h"
 
 void MapDataManager::Initialize() {
+	binaryManager_ = std::make_unique<BinaryManager>();
 	logger_ = getLogger("Game");
 	Load();
 }
@@ -24,7 +25,13 @@ MapDataForBin* MapDataManager::GetMapData(int mapID) {
 			return &map;
 		}
 	}
-	return nullptr;
+
+	MapDataForBin newMap;
+	newMap.mapID = mapID;
+	newMap.tileData.reserve(10000);
+	newMap.tileData.push_back(TileType::Air);
+	mapData_.push_back(newMap);
+	return &mapData_.back();
 }
 
 int MapDataManager::GetMapTextureOffset(int mapID) {

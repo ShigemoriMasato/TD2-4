@@ -7,6 +7,9 @@ void Editor::Initialize(MapDataManager* mapDataManager) {
 
 	mapEdit_ = std::make_unique<EditConfig>();
 	mapEdit_->Initialize();
+
+	campus_ = std::make_unique<Campus>();
+	campus_->Initialize();
 }
 
 void Editor::Update() {
@@ -24,6 +27,8 @@ void Editor::DrawImGui() {
 	MapDataForBin* currentMapData = mapDataManager_->GetMapData(require);
 	
 	mapEdit_->DrawImGui(*currentMapData);
+
+	campus_->DrawImGui(*currentMapData);
 
 #endif
 }

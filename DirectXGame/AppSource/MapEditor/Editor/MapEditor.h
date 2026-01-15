@@ -1,6 +1,7 @@
 #pragma once
 #include <Game/MapData/MapDataManager.h>
 #include <MapEditor/Editor/MapEditWithImGui.h>
+#include <MapEditor/Editor/Data/Campus.h>
 
 namespace MapEditor {
 
@@ -16,7 +17,8 @@ namespace MapEditor {
 
 		MapDataManager* mapDataManager_ = nullptr;
 
-		std::unique_ptr<MapEditor::EditConfig> mapEdit_ = nullptr;
+		std::unique_ptr<EditConfig> mapEdit_ = nullptr;
+		std::unique_ptr<Campus> campus_ = nullptr;
 
 	};
 

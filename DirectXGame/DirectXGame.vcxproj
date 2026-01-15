@@ -235,7 +235,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)FilterAdjust.p
     <ClCompile Include="AppSource\Game\MapData\MapDataManager.cpp" />
     <ClCompile Include="AppSource\MapEditor\Editor\MapEditor.cpp" />
     <ClCompile Include="AppSource\MapEditor\Editor\MapEditWithImGui.cpp" />
-    <ClCompile Include="AppSource\MapEditor\Editor\Data\Pallet.cpp" />
     <ClCompile Include="AppSource\MapEditor\Editor\Data\Pencil.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -333,7 +332,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)FilterAdjust.p
     <ClInclude Include="AppSource\Game\MapData\MapDataManager.h" />
     <ClInclude Include="AppSource\MapEditor\Editor\MapEditor.h" />
     <ClInclude Include="AppSource\MapEditor\Editor\MapEditWithImGui.h" />
-    <ClInclude Include="AppSource\MapEditor\Editor\Data\Pallet.h" />
     <ClInclude Include="AppSource\MapEditor\Editor\Data\Pencil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

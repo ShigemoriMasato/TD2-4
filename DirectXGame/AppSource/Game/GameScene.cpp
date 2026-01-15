@@ -41,5 +41,6 @@ void GameScene::Draw() {
 	//ImGui
 	gameWindow_->DrawDisplayWithImGui();
 	paramManager_->Draw();
+
 	engine_->ImGuiDraw();
 }
