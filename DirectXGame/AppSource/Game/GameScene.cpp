@@ -73,6 +73,7 @@ void GameScene::Draw() {
 	display_->PostDraw(gameWindow_->GetCommandObject());
 
 	//PostEffectとか
+	postEffect_->Draw(postEffectConfig_);
 
 	gameWindow_->PreDraw();
 	

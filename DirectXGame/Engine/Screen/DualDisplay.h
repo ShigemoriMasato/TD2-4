@@ -17,7 +17,7 @@ public:
 	static void StaticInitialize(DXDevice* device);
 
 	/// @brief デフォルトコンストラクタ
-	DualDisplay() = default;
+	DualDisplay(std::string debugName = "UnknownName");
 
 	/// @brief デストラクタ
 	~DualDisplay();
@@ -83,6 +83,9 @@ private:
 private:
 
 	friend class Display;
+
+	Logger logger = nullptr;
+	std::string debugName_;
 
 	/**
 	 * @struct DisplayData

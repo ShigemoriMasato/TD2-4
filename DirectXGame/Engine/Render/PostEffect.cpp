@@ -22,7 +22,7 @@ bool operator<(PostEffectJob a, PostEffectJob b) {
 
 void PostEffect::Initialize(TextureManager* textureManager, DrawData drawData) {
 	//PostEffect用Displayの初期化
-	intermediateDisplay_ = std::make_unique<DualDisplay>();
+	intermediateDisplay_ = std::make_unique<DualDisplay>("PE:intermediate");
 	int textureIndex = textureManager->CreateWindowTexture(1280, 720, 0xff0000ff);
 	int textureIndex2 = textureManager->CreateWindowTexture(1280, 720, 0xff0000ff);
 	auto textureData = textureManager->GetTextureData(textureIndex);
@@ -98,4 +98,5 @@ void PostEffect::Draw(const PostEffectConfig& config) {
 	finalObj->CopyBufferData(0, &textureIndex, sizeof(int));
 	finalObj->psoConfig_.isSwapChain = output->GetRTVFormat() == DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	finalObj->Draw(config.window);
+	output->PostDraw(cmdObject);
 }

@@ -75,7 +75,7 @@ void InitializeScene::CreateDisplay() {
 
 	{
 		auto& display = commonData_->display;
-		display = std::make_unique<DualDisplay>();
+		display = std::make_unique<DualDisplay>("MainDisplay");
 
 		uint32_t clearColor = 0x000105ff;
 

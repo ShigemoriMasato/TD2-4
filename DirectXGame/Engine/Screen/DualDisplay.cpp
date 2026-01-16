@@ -41,10 +41,23 @@ namespace {
         return resource;
     }
 
+    std::map<D3D12_RESOURCE_STATES, std::string> resourceStateToString = {
+        {D3D12_RESOURCE_STATE_PRESENT, "PRESENT"},
+        {D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, "VERTEX_AND_CONSTANT_BUFFER"},
+        {D3D12_RESOURCE_STATE_INDEX_BUFFER, "INDEX_BUFFER"},
+        {D3D12_RESOURCE_STATE_RENDER_TARGET, "RENDER_TARGET"},
+        {D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, "PIXEL_SHADER_RESOURCE"},
+	};
 }
 
 void DualDisplay::StaticInitialize(DXDevice* device) {
     device_ = device;
+}
+
+DualDisplay::DualDisplay(std::string debugName) {
+	logger = getLogger("DualDisplay");
+	debugName_ = debugName;
+	logger->info("DualDisplay Created: {}", debugName_);
 }
 
 DualDisplay::~DualDisplay() {
@@ -104,8 +117,9 @@ void DualDisplay::Initialize(TextureData* data, TextureData* data2) {
 
 void DualDisplay::PreDraw(CommandObject* cmdObject, bool isClear) {
 	auto commandList = cmdObject->GetCommandList();
-    EditBarrier(commandList, D3D12_RESOURCE_STATE_RENDER_TARGET);
     index_ = cmdObject->GetCommandIndex();
+
+    EditBarrier(commandList, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
     auto dsvCpu = Displays_[index_].dsvHandle_.GetCPU();
     auto rtvCpu = Displays_[index_].rtvHandle_.GetCPU();
@@ -149,5 +163,9 @@ void DualDisplay::PostDraw(CommandObject* cmdObject) {
 }
 
 void DualDisplay::EditBarrier(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES afterState) {
+    logger->debug("{}::EditBarrier from {} to {}",
+        debugName_,
+        resourceStateToString[Displays_[index_].resourceState_],
+        resourceStateToString[afterState]);
     InsertBarrier(commandList, afterState, Displays_[index_].resourceState_, Displays_[index_].textureData_->GetResource());
 }
