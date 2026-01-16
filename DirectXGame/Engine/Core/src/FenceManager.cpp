@@ -19,29 +19,17 @@ void FenceManager::SendSignal() {
 }
 
 bool FenceManager::SignalChecker(int offset) {
-	//FenceValueがマイナスになる場合、無限ループになる可能性があるため回避(UINTとintの比較は危険なため、256に範囲を絞って検証する)
-	if (fenceValue_ < 256 && offset <= -256) {
-		assert(false && "FenceManager::WaitForSignal offset is too small.");
-		return false;
-	}
-
-    int64_t waitFence = int64_t(fenceValue_);
-
-    if (waitFence < 0) {
-        return true;
-    }
-
 	UINT64 waitValue = fenceValue_ - offset;
+    
+	//OverFlow対策
+    if(waitValue > fenceValue_) {
+        return true;
+	}
 
     //Fenceの値が指定したSignal値にたどり着いてるかを確認する
     //GetCompletedValueの初期値はFence作成時に渡した初期値
-    if (fence_->GetCompletedValue() < UINT(waitFence)) {
+    if (fence_->GetCompletedValue() < UINT(waitValue)) {
         return false;
-
-        //指定したSignalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
-        fence_->SetEventOnCompletion(waitFence, fenceEvent_);
-        //イベントを待つ
-        WaitForSingleObject(fenceEvent_, INFINITE);
     }
 
     return true;

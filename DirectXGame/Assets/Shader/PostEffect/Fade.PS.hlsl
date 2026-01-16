@@ -7,7 +7,7 @@ cbuffer FadeParameters : register(b1)
     float FadeType; // フェードタイプ (0=Black, 1=White, 2=Radial, 3=Wipe, 4=Dissolve)
 }
 
-cbuffer TextureIndex : register(b1)
+cbuffer TextureIndex : register(b0)
 {
     int textureIndex; // 使用するテクスチャのインデックス
 };

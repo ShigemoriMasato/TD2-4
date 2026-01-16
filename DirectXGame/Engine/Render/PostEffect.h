@@ -21,8 +21,8 @@ bool operator<(PostEffectJob a, PostEffectJob b);
 
 struct PostEffectConfig {
 	Window* window = nullptr;
-	std::pair<IDisplay*, bool> origin = { nullptr, false };
-	std::pair<IDisplay*, bool> output = { nullptr, false };	//nullptrの場合はoriginに描画する
+	IDisplay* origin = nullptr;
+	IDisplay* output = nullptr;	//nullptrの場合はoriginに描画する
 
 	uint32_t jobs_ = 0;
 
@@ -31,10 +31,10 @@ struct PostEffectConfig {
 class PostEffect {
 public:
 
-	void Initialize(TextureManager* textureManager, DrawData& drawData);
+	void Initialize(TextureManager* textureManager, DrawData drawData);
 	template<typename T>
 	void CopyBuffer(PostEffectJob job, const T& data);
-	void Draw(PostEffectConfig config);
+	void Draw(const PostEffectConfig& config);
 
 private:
 

@@ -29,12 +29,12 @@ void InitializeScene::Initialize() {
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
-	return std::make_unique<MapEditScene>();
+	return std::make_unique<GameScene>();
 }
 
 void InitializeScene::Draw() {
-	commonData_->display->PreDraw(commonData_->mainWindow->GetCommandList(), true);
-	commonData_->display->PostDraw(commonData_->mainWindow->GetCommandList());
+	commonData_->display->PreDraw(commonData_->mainWindow->GetCommandObject(), true);
+	commonData_->display->PostDraw(commonData_->mainWindow->GetCommandObject());
 	commonData_->mainWindow->PreDraw();
 	commonData_->mainWindow->DrawDisplayWithImGui();
 }
@@ -42,7 +42,7 @@ void InitializeScene::Draw() {
 void InitializeScene::CreateDisplay() {
 	{
 		WindowConfig config;
-		config.windowName = L"LE2A_06_シゲモリ_マサト TETRIS";
+		config.windowName = L"LE2A_06_シゲモリ_マサト";
 		CommonData* cd = commonData_;
 		config.windowProc = [cd](HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)->LRESULT {
 

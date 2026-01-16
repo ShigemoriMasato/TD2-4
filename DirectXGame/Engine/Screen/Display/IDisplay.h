@@ -2,6 +2,7 @@
 #include <Core/DXDevice.h>
 #include <Utility/Vector.h>
 #include <Assets/Texture/TextureData.h>
+#include <Core/Data/CommandObject.h>
 
 /**
  * @class IDisplay
@@ -19,19 +20,19 @@ public:
 	 * @param commandList コマンドリスト
 	 * @param isClear 画面をクリアするかどうか
 	 */
-	virtual void PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear) = 0;
+	virtual void PreDraw(CommandObject* cmdObject, bool isClear) = 0;
 
 	/**
 	 * @brief テクスチャとして使用可能な状態にする
 	 * @param commandList コマンドリスト
 	 */
-	virtual void ToTexture(ID3D12GraphicsCommandList* commandList) = 0;
+	virtual void ToTexture(CommandObject* cmdObject) = 0;
 
 	/**
 	 * @brief 描画後処理
 	 * @param commandList コマンドリスト
 	 */
-	virtual void PostDraw(ID3D12GraphicsCommandList* commandList) = 0;
+	virtual void PostDraw(CommandObject* cmdObject) = 0;
 
 	/**
 	 * @brief テクスチャリソースを取得
@@ -50,5 +51,11 @@ public:
 	 * @return TextureData*
 	 */
 	virtual TextureData* GetTextureData() const = 0;
+
+	DXGI_FORMAT GetRTVFormat() { return rtvFormat_; }
+
+protected:
+
+	DXGI_FORMAT rtvFormat_ = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 };

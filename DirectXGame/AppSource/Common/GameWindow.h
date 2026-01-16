@@ -19,7 +19,7 @@ public:
 
 	Window* GetWindow() { return window_.get(); }
 	Display* GetDualDisplay() { return window_->GetDisplay(); };
-	ID3D12GraphicsCommandList* GetCommandList() { return window_->GetCommandObject()->GetCommandList(); }
+	CommandObject* GetCommandObject() { return window_->GetCommandObject(); }
 
 private:
 

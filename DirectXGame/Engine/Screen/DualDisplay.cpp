@@ -83,8 +83,9 @@ void DualDisplay::Initialize(TextureData* data, TextureData* data2) {
         //RTVの設定
         Displays_[i].rtvHandle_.UpdateHandle(rtvManager);
 
+		rtvFormat_ = DXGI_FORMAT_R8G8B8A8_UNORM;
         D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
-        rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        rtvDesc.Format = rtvFormat_;
         rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;	//2Dテクスチャとしてよみこむ
         device->CreateRenderTargetView(Displays_[i].textureData_->GetResource(), &rtvDesc, Displays_[i].rtvHandle_.GetCPU());
 
@@ -99,13 +100,13 @@ void DualDisplay::Initialize(TextureData* data, TextureData* data2) {
 
         device->CreateDepthStencilView(Displays_[i].depthStencilResource_.Get(), &dsvDesc, Displays_[i].dsvHandle_.GetCPU());
     }
-
-    index_ = 0;
 }
 
-void DualDisplay::PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear) {
+void DualDisplay::PreDraw(CommandObject* cmdObject, bool isClear) {
+	auto commandList = cmdObject->GetCommandList();
     EditBarrier(commandList, D3D12_RESOURCE_STATE_RENDER_TARGET);
-    
+    index_ = cmdObject->GetCommandIndex();
+
     auto dsvCpu = Displays_[index_].dsvHandle_.GetCPU();
     auto rtvCpu = Displays_[index_].rtvHandle_.GetCPU();
     commandList->OMSetRenderTargets(1, &rtvCpu, false, &dsvCpu);
@@ -139,13 +140,12 @@ void DualDisplay::PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear) 
     }
 }
 
-void DualDisplay::ToTexture(ID3D12GraphicsCommandList* commandList) {
-	EditBarrier(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+void DualDisplay::ToTexture(CommandObject* cmdObject) {
+	EditBarrier(cmdObject->GetCommandList(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }
 
-void DualDisplay::PostDraw(ID3D12GraphicsCommandList* commandList) {
-    EditBarrier(commandList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	index_ = (index_ + 1) % 2;
+void DualDisplay::PostDraw(CommandObject* cmdObject) {
+    EditBarrier(cmdObject->GetCommandList(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }
 
 void DualDisplay::EditBarrier(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES afterState) {

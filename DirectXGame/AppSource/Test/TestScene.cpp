@@ -84,10 +84,10 @@ void TestScene::Draw() {
 	auto window = commonData_->mainWindow.get();
 	auto display = commonData_->display.get();
 
-	display->PreDraw(window->GetCommandList(), true);
+	display->PreDraw(window->GetCommandObject(), true);
 	renderObject_->Draw(window->GetWindow());
 	debugLine_->Draw(window->GetWindow());
-	display->PostDraw(window->GetCommandList());
+	display->PostDraw(window->GetCommandObject());
 
 	window->PreDraw();
 	window->DrawDisplayWithImGui();

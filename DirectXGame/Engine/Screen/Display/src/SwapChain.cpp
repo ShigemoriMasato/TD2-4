@@ -42,7 +42,7 @@ void SwapChain::Initialize(DXDevice* device, TextureManager* textureManager, ID3
 
         //Displayを初期化する
 		displays_[i] = std::make_unique<Display>();
-        displays_[i]->Initialize(data, clearColor);
+        displays_[i]->Initialize(data, clearColor, true);
 	}
 
 	logger_->info("SwapChain Info: Width : {} Height : {} ClearColor : {:08X}", width, height, clearColor);
@@ -50,20 +50,20 @@ void SwapChain::Initialize(DXDevice* device, TextureManager* textureManager, ID3
     logger_->info("=== Complete create SwapChain ===");
 }
 
-void SwapChain::PreDraw(ID3D12GraphicsCommandList* cmdList, bool isClear) {
+void SwapChain::PreDraw(CommandObject* cmdObject, bool isClear) {
     currentBackBufferIndex_ = swapChain_->GetCurrentBackBufferIndex();
 
-	displays_[currentBackBufferIndex_]->PreDraw(cmdList, isClear);
+	displays_[currentBackBufferIndex_]->PreDraw(cmdObject, isClear);
 }
 
-void SwapChain::ToTexture(ID3D12GraphicsCommandList* cmdList) {
-	displays_[currentBackBufferIndex_]->ToTexture(cmdList);
+void SwapChain::ToTexture(CommandObject* cmdObject) {
+	displays_[currentBackBufferIndex_]->ToTexture(cmdObject);
 }
 
-void SwapChain::PostDraw(ID3D12GraphicsCommandList* cmdList) {
+void SwapChain::PostDraw(CommandObject* cmdObject) {
     currentBackBufferIndex_ = swapChain_->GetCurrentBackBufferIndex();
 
-    displays_[currentBackBufferIndex_]->PostDraw(cmdList);
+    displays_[currentBackBufferIndex_]->PostDraw(cmdObject);
 }
 
 void SwapChain::Present() {

@@ -34,19 +34,19 @@ public:
 	 * @param commandList コマンドリスト
 	 * @param isClear 画面をクリアするかどうか
 	 */
-	void PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear) override;
+	void PreDraw(CommandObject* cmdObject, bool isClear) override;
 
 	/**
 	 * @brief テクスチャとして使用可能な状態にする
 	 * @param commandList コマンドリスト
 	 */
-	void ToTexture(ID3D12GraphicsCommandList* commandList) override;
+	void ToTexture(CommandObject* cmdObject) override;
 
 	/**
 	 * @brief 描画後処理
 	 * @param commandList コマンドリスト
 	 */
-	void PostDraw(ID3D12GraphicsCommandList* commandList) override;
+	void PostDraw(CommandObject* cmdObject) override;
 
 	/**
 	 * @brief テクスチャリソースを取得
@@ -100,7 +100,6 @@ private:
 
 	/// @brief ディスプレイバッファ（2つ）
 	DisplayData Displays_[2]{};
-	/// @brief 現在使用中のバッファインデックス
 	int index_ = 0;
 
 	/// @brief クリアカラー

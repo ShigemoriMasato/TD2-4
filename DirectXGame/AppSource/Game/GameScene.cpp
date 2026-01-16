@@ -2,7 +2,8 @@
 #include <Common/DebugParam/GameParamEditor.h>
 
 namespace {
-	bool debug = false;
+	//Minimap確認用
+	bool poseMode = false;
 
 	std::string playerModelName = "Player";
 }
@@ -36,17 +37,24 @@ void GameScene::Initialize() {
 
 	// プレイヤーモデルを取得
 	int playerModelID = modelManager_->LoadModel(playerModelName);
-	auto playerModel = modelManager_->GetSkinningModelData(playerModelID);
+	auto playerModel = modelManager_->GetNodeModelData(playerModelID);
 
 	// おれモデルを取得
 	int oreModelID = modelManager_->LoadModel(playerModelName);
-	auto oreModel = modelManager_->GetSkinningModelData(oreModelID);
+	auto oreModel = modelManager_->GetNodeModelData(oreModelID);
 
 	// ユニットの管理クラス
 	unitManager_ = std::make_unique<UnitManager>();
 	unitManager_->Initalize(mapChipField_.get(),
 		drawDataManager_->GetDrawData(playerModel.drawDataIndex), drawDataManager_->GetDrawData(oreModel.drawDataIndex),
 		commonData_->keyManager.get());
+
+	postEffect_ = std::make_unique<PostEffect>();
+	postEffect_->Initialize(textureManager_, drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex));
+
+	postEffectConfig_.window = gameWindow_->GetWindow();
+	postEffectConfig_.origin = display_;
+	postEffectConfig_.jobs_ = (uint32_t) PostEffectJob::Blur | PostEffectJob::Fade | PostEffectJob::Glitch;
 }
 
 std::unique_ptr<IScene> GameScene::Update() {
@@ -58,16 +66,18 @@ std::unique_ptr<IScene> GameScene::Update() {
 }
 
 void GameScene::Draw() {
-	display_->PreDraw(gameWindow_->GetCommandList(), true);
+	display_->PreDraw(gameWindow_->GetCommandObject(), true);
 
 	//Playerとかの処理
 
-	display_->PostDraw(gameWindow_->GetCommandList());
+	display_->PostDraw(gameWindow_->GetCommandObject());
+
+	//PostEffectとか
 
 	gameWindow_->PreDraw();
-	//PostEffectとか
 	
 	//ImGui
+
 	gameWindow_->DrawDisplayWithImGui();
 	paramManager_->Draw();
 

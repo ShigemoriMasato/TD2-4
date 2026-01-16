@@ -39,6 +39,13 @@ public:
 	ID3D12GraphicsCommandList* GetCommandList() const;
 
 	/**
+	 * @brief コマンドリストのインデックス取得
+	 * 
+	 * @return 現在のコマンドリストインデックス
+	 */
+	int GetCommandIndex() const { return index_; }
+
+	/**
 	 * @brief コマンドリストのリセット
 	 * 
 	 * 現在のコマンドアロケータをリセットし、コマンドリストを再利用可能にする。
