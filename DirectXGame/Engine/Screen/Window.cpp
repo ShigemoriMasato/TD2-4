@@ -21,17 +21,13 @@ void Window::Initialize(DXDevice* device, TextureManager* textureManager, CmdLis
 }
 
 void Window::PreDraw(bool isClear) {
-	auto cmdList = cmdObject_->GetCommandList();
-	swapChain_->PreDraw(cmdList, isClear);
+	swapChain_->PreDraw(cmdObject_.get(), isClear);
 	
-	ID3D12DescriptorHeap* heap[] = { srvManager_->GetHeap() };
-	cmdList->SetDescriptorHeaps(1, heap);
-
 	isPostDraw_ = false;
 }
 
 void Window::ToTexture() {
-	swapChain_->ToTexture(cmdObject_->GetCommandList());
+	swapChain_->ToTexture(cmdObject_.get());
 	isPostDraw_ = false;
 }
 
@@ -40,7 +36,7 @@ void Window::PostDraw() {
 		return;
 	}
 
-	swapChain_->PostDraw(cmdObject_->GetCommandList());
+	swapChain_->PostDraw(cmdObject_.get());
 	isPostDraw_ = true;
 }
 

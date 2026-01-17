@@ -2,6 +2,7 @@
 #include <Scene/IScene.h>
 #include <Camera/DebugCamera.h>
 #include <Common/DebugParam/ParamManager.h>
+#include <Render/PostEffect.h>
 
 #include"Unit/UnitManager.h"
 #include"Unit/MapChipField.h"
@@ -40,4 +41,8 @@ private:
 
 	// ゲームカメラの管理
 	std::unique_ptr<CameraController> cameraController_;
+
+	std::unique_ptr<PostEffect> postEffect_ = nullptr;
+	PostEffectConfig postEffectConfig_{};
+	Blur blur_{};
 };

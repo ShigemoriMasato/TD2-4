@@ -80,9 +80,11 @@ void SHEngine::Update() {
 
 bool SHEngine::PreDraw() {
 	//Wait
-	if (!fenceManager_->SignalChecker()) {
+	if (!fenceManager_->SignalChecker(0)) {
+		drawSkipCount_++;
 		return false;
 	}
+	drawCount_++;
 
 	//ImGui
 	if (imGuiActive_) {
@@ -92,6 +94,12 @@ bool SHEngine::PreDraw() {
 		}
 		//FPS描画
 		FPSDraw();
+
+		ImGui::Begin("DrawDebug");
+		ImGui::Text("DrawCount: %d", drawCount_);
+		ImGui::Text("DrawSkipCount: %d", drawSkipCount_);
+		ImGui::Text("CurrentFenceValue: %llu", fenceManager_->GetCurrentFenceValue());
+		ImGui::End();
 	}
 
 	fpsObserver_->TimeAdjustment(FPSType::GPU);

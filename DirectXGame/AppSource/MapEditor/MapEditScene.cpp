@@ -15,9 +15,9 @@ void MapEditScene::Draw() {
 	auto& display = *commonData_->display.get();
 	auto& window = *commonData_->mainWindow.get();
 
-	display.PreDraw(window.GetCommandList(), true);
+	display.PreDraw(window.GetCommandObject(), true);
 
-	display.PostDraw(window.GetCommandList());
+	display.PostDraw(window.GetCommandObject());
 
 	window.PreDraw();
 

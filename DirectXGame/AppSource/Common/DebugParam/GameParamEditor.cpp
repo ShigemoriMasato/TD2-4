@@ -26,11 +26,11 @@ void GameParamEditor::SaveFile(const std::string& groupName) {
 	for (const auto& [name, item] : itGroup->second.items) {
 		// binaryに値を保存する
 		binaryManager_.RegisterOutput(item.priority);
-		binaryManager_.RegisterOutput(item.value.get(), name);
+		binaryManager_.RegisterOutput(item.value.get());
 	}
 
 	// ディレクトリがなければ作成する
-	if (!std::filesystem::exists(kDirectoryPath)) {
+	if (!std::filesystem::exists("Assets/Binary/" + kDirectoryPath)) {
 		std::filesystem::create_directories(kDirectoryPath);
 	}
 
@@ -53,21 +53,6 @@ void GameParamEditor::LoadFiles() {
 }
 
 void GameParamEditor::LoadFile(const std::string& groupName) {
-
-	// 読み込みJSONファイルのフルパスを合成する
-	std::string filePath = kDirectoryPath + groupName;
-	// 読み込み用ファイルストリーム
-	std::ifstream ifs;
-	// ファイルを読み込み用に開く
-	ifs.open(filePath);
-
-	// ファイルオープン失敗
-	if (ifs.fail()) {
-		std::string message = "Failed open data file for load.";
-		MessageBoxA(nullptr, message.c_str(), "GameParamEditor", 0);
-		assert(0);
-	}
-
 	datas_[groupName].items.clear();
 
 	auto values = binaryManager_.Read(kDirectoryPath + groupName);

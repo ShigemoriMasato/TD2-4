@@ -52,7 +52,7 @@ Display::~Display() {
     textureData->Release();
 }
 
-void Display::Initialize(TextureData* data, uint32_t color) {
+void Display::Initialize(TextureData* data, uint32_t color, bool isSRGB) {
     ID3D12Device* device = device_->GetDevice();
     DSVManager* dsvManager = device_->GetDSVManager();
     RTVManager* rtvManager = device_->GetRTVManager();
@@ -66,8 +66,9 @@ void Display::Initialize(TextureData* data, uint32_t color) {
     //RTVの設定
     rtvHandle_.UpdateHandle(rtvManager);
 
+    rtvFormat_ = isSRGB ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM;
     D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
-    rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+    rtvDesc.Format = rtvFormat_;
     rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;	//2Dテクスチャとしてよみこむ
     device->CreateRenderTargetView(textureData->GetResource(), &rtvDesc, rtvHandle_.GetCPU());
 
@@ -85,7 +86,8 @@ void Display::Initialize(TextureData* data, uint32_t color) {
     resourceState_ = D3D12_RESOURCE_STATE_PRESENT;
 }
 
-void Display::PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear) {
+void Display::PreDraw(CommandObject* cmdObject, bool isClear) {
+    auto commandList = cmdObject->GetCommandList();
 	EditBarrier(commandList, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
     auto dsvCpu = dsvHandle_.GetCPU();
@@ -121,12 +123,12 @@ void Display::PreDraw(ID3D12GraphicsCommandList* commandList, bool isClear) {
 	}
 }
 
-void Display::ToTexture(ID3D12GraphicsCommandList* commandList) {
-    EditBarrier(commandList, D3D12_RESOURCE_STATE_COPY_SOURCE);
+void Display::ToTexture(CommandObject* cmdObject) {
+    EditBarrier(cmdObject->GetCommandList(), D3D12_RESOURCE_STATE_COPY_SOURCE);
 }
 
-void Display::PostDraw(ID3D12GraphicsCommandList* commandList) {
-    EditBarrier(commandList, D3D12_RESOURCE_STATE_PRESENT);
+void Display::PostDraw(CommandObject* cmdObject) {
+    EditBarrier(cmdObject->GetCommandList(), D3D12_RESOURCE_STATE_PRESENT);
 }
 
 void Display::EditBarrier(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES afterState) {

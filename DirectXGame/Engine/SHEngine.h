@@ -152,4 +152,7 @@ private:
 
 	/// @brief ロガー
 	Logger logger_ = nullptr;
+
+	int drawSkipCount_ = 0;
+	int drawCount_ = 0;
 };

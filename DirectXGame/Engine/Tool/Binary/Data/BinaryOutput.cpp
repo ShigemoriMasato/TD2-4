@@ -3,6 +3,7 @@
 void BinaryOutput::WriteBinary(std::ostream& out, const ValueBase* value) {
 	//型名を出力
 	uint8_t typeID = value->GetTypeID();
+	assert(typeID != 0); //不明な型は出力できない
 	out.write(reinterpret_cast<const char*>(&typeID), sizeof(typeID));
 
 	//変数名を出力

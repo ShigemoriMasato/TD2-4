@@ -52,6 +52,12 @@ public:
 	 */
 	void Finalize();
 
+	/**
+	 * @brief 現在のフェンス値を取得する
+	 * @return フェンス値
+	 */
+	UINT64 GetCurrentFenceValue() const { return fenceValue_; }
+
 private:
 
 	/// @brief コマンドキューへのポインタ

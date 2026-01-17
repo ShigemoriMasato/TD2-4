@@ -9,9 +9,9 @@ public:
 
 	void Initialize(DXDevice* device, TextureManager* textureManager, ID3D12CommandQueue* commandQueue, WindowsApp* window, uint32_t clearColor);
 
-	void PreDraw(ID3D12GraphicsCommandList* cmdList, bool isClear);
-	void ToTexture(ID3D12GraphicsCommandList* cmdList);
-	void PostDraw(ID3D12GraphicsCommandList* cmdList);
+	void PreDraw(CommandObject* cmdObject, bool isClear);
+	void ToTexture(CommandObject* cmdObject);
+	void PostDraw(CommandObject* cmdObject);
 	void Present();
 
 	Display* GetCurrentDisplay() const { return displays_[currentBackBufferIndex_].get(); }

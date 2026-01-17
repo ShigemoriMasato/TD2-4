@@ -13,16 +13,16 @@ uint32_t operator&(uint32_t a, PostEffectJob b) {
 }
 
 uint32_t operator~(PostEffectJob a) {
-    return ~uint32_t(a);
+	return ~uint32_t(a);
 }
 
 bool operator<(PostEffectJob a, PostEffectJob b) {
 	return uint32_t(a) < uint32_t(b);
 }
 
-void PostEffect::Initialize(TextureManager* textureManager, DrawData& drawData) {
+void PostEffect::Initialize(TextureManager* textureManager, DrawData drawData) {
 	//PostEffect用Displayの初期化
-	intermediateDisplay_ = std::make_unique<DualDisplay>();
+	intermediateDisplay_ = std::make_unique<DualDisplay>("PE:intermediate");
 	int textureIndex = textureManager->CreateWindowTexture(1280, 720, 0xff0000ff);
 	int textureIndex2 = textureManager->CreateWindowTexture(1280, 720, 0xff0000ff);
 	auto textureData = textureManager->GetTextureData(textureIndex);
@@ -51,44 +51,52 @@ void PostEffect::Initialize(TextureManager* textureManager, DrawData& drawData) 
 	createPostEffectObject(PostEffectJob::SlowMotion, "SlowMotion");
 }
 
-void PostEffect::Draw(PostEffectConfig config) {
-	std::pair<IDisplay*, bool> renderTarget = std::make_pair(intermediateDisplay_.get(), false);
-	std::pair<IDisplay*, bool> source = config.origin;
+void PostEffect::Draw(const PostEffectConfig& config) {
+	uint32_t jobs = config.jobs_;
+	IDisplay* origin = config.origin;
+	IDisplay* output = intermediateDisplay_.get();
+	auto cmdObject = config.window->GetCommandObject();
 
-	auto cmdList = config.window->GetCommandObject()->GetCommandList();
-	while (config.jobs_ != 0) {
-		PostEffectJob currentJob = PostEffectJob::None;
-		for(int i = 0; i < 32; ++i) {
-			uint32_t job = 1 << i;
-			if ((config.jobs_ & job) != 0) {
-				currentJob = PostEffectJob(job);
-				config.jobs_ &= ~job;
-				break;
-			}
+	for (const auto& [job, obj] : postEffectObjects_) {
+		//ジョブがなければ終了
+		if (!(jobs & job)) {
+			continue;
 		}
 
-		renderTarget.first->PreDraw(cmdList, true);
-		source.first->ToTexture(cmdList);
-		int offset = source.first->GetTextureData()->GetOffset();
-		postEffectObjects_[currentJob]->CopyBufferData(0, &offset, sizeof(int));
-		postEffectObjects_[currentJob]->psoConfig_.isSwapChain = renderTarget.second;
-		postEffectObjects_[currentJob]->Draw(config.window);
+		//描画処理
+		output->PreDraw(cmdObject, true);
+		origin->ToTexture(cmdObject);
+		//RenderObjectにテクスチャをセット
+		int textureIndex = origin->GetTextureData()->GetOffset();
+		obj->CopyBufferData(0, &textureIndex, sizeof(int));
+		obj->psoConfig_.isSwapChain = output->GetRTVFormat() == DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+		obj->Draw(config.window);
 
-		std::swap(renderTarget, source);
+		//描画先と描画元の入れ替え
+		std::swap(origin, output);
+		origin->ToTexture(cmdObject);
+		//jobを完遂したので削除
+		jobs &= ~job;
 	}
 
-	if (!config.output.first) {
-		config.output = config.origin;
+	//最終出力先に描画
+	output = config.output;
+	//outputがnullptrの場合はoriginに描画
+	if (!output) {
+		output = config.origin;
 	}
 
-	if (source.first->GetTextureResource() == config.output.first->GetTextureResource()) {
+	//すでに描画済みなので終了
+	if (output == origin) {
 		return;
 	}
 
-	config.output.first->PreDraw(cmdList, false);
-	source.first->ToTexture(cmdList);
-	int offset = source.first->GetTextureData()->GetOffset();
-	postEffectObjects_[PostEffectJob::None]->CopyBufferData(0, &offset, sizeof(int));
-	postEffectObjects_[PostEffectJob::None]->psoConfig_.isSwapChain = config.output.second;
-	postEffectObjects_[PostEffectJob::None]->Draw(config.window);
+	output->PreDraw(cmdObject, false);
+	origin->ToTexture(cmdObject);
+	int textureIndex = origin->GetTextureData()->GetOffset();
+	auto finalObj = postEffectObjects_.at(PostEffectJob::None).get();
+	finalObj->CopyBufferData(0, &textureIndex, sizeof(int));
+	finalObj->psoConfig_.isSwapChain = output->GetRTVFormat() == DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	finalObj->Draw(config.window);
+	output->PostDraw(cmdObject);
 }

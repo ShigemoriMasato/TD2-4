@@ -13,6 +13,7 @@ void MapChipField::SetDebugMapData() {
 
 	kNumBlockVirtical = 40;
 	kNumBlockHorizontal = 60;
+	data_.resize(kNumBlockVirtical, std::vector<BlockType>(kNumBlockHorizontal, BlockType::Air));
 
 	// デバックのマップデータを取得
 	for (int32_t z = 0; z < kNumBlockVirtical; ++z) {
