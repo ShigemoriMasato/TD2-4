@@ -94,4 +94,6 @@ private:
     std::shared_ptr<spdlog::logger> logger_;
     /// @brief フレームカウント
 	uint32_t frameCount_ = 0;
+	// @brief フレームが連続で落ちた回数
+	uint32_t droppedFrameCount_ = 0;
 };

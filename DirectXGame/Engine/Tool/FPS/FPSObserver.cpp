@@ -66,7 +66,10 @@ void FPSObserver::TimeAdjustment(FPSType type) {
     frameCount_++;
 
     if (deltatime_[int(type)] > 20.0 / targetFPS_[int(type)]) {
-		logger_->warn("FPS Drop Detected: frameCount = {}  nowFPS = {:.2f}  TargetFPS = {:.2f}", frameCount_, 1.0f / deltatime_[int(type)], float(targetFPS_[int(type)]));
+		droppedFrameCount_++;
+        if (droppedFrameCount_ >= 5) {
+            logger_->warn("FPS Drop Detected: frameCount = {}  nowFPS = {:.2f}  TargetFPS = {:.2f}", frameCount_, 1.0f / deltatime_[int(type)], float(targetFPS_[int(type)]));
+        }
     }
 
     if (deltatime_[int(type)] > 0.1f) {

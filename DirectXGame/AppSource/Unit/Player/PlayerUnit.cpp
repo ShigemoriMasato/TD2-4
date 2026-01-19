@@ -46,11 +46,13 @@ void PlayerUnit::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	// 描画
 	object_->Draw(window, vpMatrix);
 
+#ifdef USE_IMGUI
 	ImGui::Begin("Player");
 
 	ImGui::DragFloat3("PlayerPos", &object_->transform_.position.x);
 
 	ImGui::End();
+#endif
 }
 
 void PlayerUnit::ProcessMoveInput() {

@@ -95,11 +95,13 @@ bool SHEngine::PreDraw() {
 		//FPS描画
 		FPSDraw();
 
+#ifdef USE_IMGUI
 		ImGui::Begin("DrawDebug");
 		ImGui::Text("DrawCount: %d", drawCount_);
 		ImGui::Text("DrawSkipCount: %d", drawSkipCount_);
 		ImGui::Text("CurrentFenceValue: %llu", fenceManager_->GetCurrentFenceValue());
 		ImGui::End();
+#endif
 	}
 
 	fpsObserver_->TimeAdjustment(FPSType::GPU);

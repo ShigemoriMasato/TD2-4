@@ -49,13 +49,14 @@ void CameraController::Update() {
 void CameraController::DebugDraw() {
 	// デバック描画
 	camera_->DrawImGui();
-
+#ifdef USE_IMGUI
 	ImGui::Begin("DebugMouse");
 	ImGui::Text("GameMousePos x : %.2f, y : %.2f", DebugMousePos::gameMousePos.x, DebugMousePos::gameMousePos.y);
 	ImGui::Text("WindowMousePos x : %.2f, y : %.2f", DebugMousePos::windowPos.x, DebugMousePos::windowPos.y);
 	ImGui::Text("ScreenMousePos x : %.2f, y : %.2f", DebugMousePos::screenMousePos.x, DebugMousePos::screenMousePos.y);
 	ImGui::Text("WorldMousePos x : %.2f, y : %.2f, z : %.2f", worldPos_.x, worldPos_.y, worldPos_.z);
 	ImGui::End();
+#endif
 }
 
 Vector3 CameraController::ScreenToWorld(const Vector2& screenPos, float screenWidth, float screenHeight) const {
