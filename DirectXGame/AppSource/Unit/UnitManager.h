@@ -45,6 +45,9 @@ private:
 	// おれの出現位置
 	std::vector<Vector3> homePosList_;
 
+	// 削除リスト
+	std::vector<std::pair<std::unique_ptr<OreUnit>, int>> graveyard_;
+
 private:
 
 	// 一番近い出現位置を求める

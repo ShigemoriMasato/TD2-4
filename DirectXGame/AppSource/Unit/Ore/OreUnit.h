@@ -22,7 +22,7 @@ public:
 	/// <param name="drawData">描画データ</param>
 	/// <param name="apearPos">出現位置</param>
 	/// <param name="targetPos">目標位置</param>
-	void Initialize(MapChipField* mapChipField, DrawData drawData,const Vector3& apearPos,const Vector3& targetPos);
+	void Initialize(MapChipField* mapChipField, DrawData drawData,const Vector3& apearPos,const Vector3& targetPos,Vector3* playerPos);
 
 	void Update();
 
@@ -37,6 +37,9 @@ public:
 	// 死亡フラグを取得
 	bool IsDead()const { return isDead_; }
 
+	// 有効フラグ
+	bool IsActive() const { return isActive_; }
+
 private:
 	// マップデータ
 	MapChipField* mapChipField_ = nullptr;
@@ -46,7 +49,10 @@ private:
 
 	int32_t hp_ = 0;
 
+	// 死亡フラグ
 	bool isDead_ = false;
+
+	bool isActive_ = true;
 
 	// 移動ルート
 	std::vector<Vector3> path_;
@@ -55,10 +61,12 @@ private:
 	Vector3 homePos_;
 
 	// 移動速度
-	float speed_ = 1.0f;
+	float speed_ = 5.0f;
 
 	// 状態
 	State state_ = State::GoTo;
+
+	Vector3* playerPos_ = nullptr;
 
 private:
 

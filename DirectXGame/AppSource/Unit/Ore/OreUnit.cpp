@@ -1,9 +1,12 @@
 #include"OreUnit.h"
 #include"FpsCount.h"
 
-void OreUnit::Initialize(MapChipField* mapChipField, DrawData drawData, const Vector3& apearPos, const Vector3& targetPos) {
+void OreUnit::Initialize(MapChipField* mapChipField, DrawData drawData, const Vector3& apearPos, const Vector3& targetPos,Vector3* playerPos) {
 	// マップデータ
 	mapChipField_ = mapChipField;
+
+	// プレイヤー座標を取得
+	playerPos_ = playerPos;
 
 	// オブジェクトを初期化
 	object_ = std::make_unique<OreUnitObject>();
@@ -17,6 +20,7 @@ void OreUnit::Initialize(MapChipField* mapChipField, DrawData drawData, const Ve
 }
 
 void OreUnit::Update() {
+	if (isDead_) { return; }
 
     // 移動処理
     Move();
@@ -26,6 +30,8 @@ void OreUnit::Update() {
 }
 
 void OreUnit::Draw(Window* window, const Matrix4x4& vpMatrix) {
+	if (isDead_) { return; }
+
 	// 描画
 	object_->Draw(window, vpMatrix);
 }
@@ -49,15 +55,41 @@ void OreUnit::CalculatePath(const Vector3& goal) {
 }
 
 void OreUnit::Move() {
-	// 1. 経路がない（目的地に到着した）場合の処理
+
+	if (state_ == State::Return && playerPos_) {
+		// プレイヤーが現在いるマップチップのインデックスと座標を取得
+		MapChipField::IndexSet pIdx = mapChipField_->GetMapChipIndexSetByPosition(*playerPos_);
+		Vector3 playerGridPos = mapChipField_->GetMapChipPositionByIndex(pIdx.xIndex, pIdx.zIndex);
+
+		// 「現在の目的地（パスの終点）」と「プレイヤーのいるマスの中心」が違うかチェック
+		bool needRecalc = false;
+		if (!path_.empty()) {
+			Vector3 currentDest = path_.back(); // 現在のパスの最終地点
+
+			// 距離の二乗で比較
+			float dx = currentDest.x - playerGridPos.x;
+			float dz = currentDest.z - playerGridPos.z;
+			if ((dx * dx + dz * dz) > 0.01f) {
+				// 目的地が変わっているので再計算フラグを立てる
+				needRecalc = true;
+			}
+		}
+
+		// 再計算が必要なら実行
+		if (needRecalc) {
+			CalculatePath(*playerPos_);
+		}
+	}
+
+	// 経路がない場合の処理
 	if (path_.empty()) {
 		if (state_ == State::GoTo) {
-			// 目的地に着いたので、家に帰るモードに切り替え
+			// 目的地に着いたら、プレイヤーの位置に戻る
 			state_ = State::Return;
-			//CalculatePath(homePos_);
+
+			// プレイヤーの位置までの経路を取得
+			CalculatePath(*playerPos_);
 		} else if (state_ == State::Return) {
-			// 家に着いたので死亡（削除）
-			//state_ = State::Finished;
 			isDead_ = true;
 		}
 		return;
