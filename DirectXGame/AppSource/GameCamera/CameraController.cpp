@@ -141,5 +141,7 @@ Vector3 CameraController::ScreenToWorld(const Vector2& screenPos, float screenWi
 
 void CameraController::MakeMatrix() {
 	Vector3 offset = backDir_.Normalize() * backDist_;
+	transformMatrix_ = Matrix::MakeTranslationMatrix(-position_ - offset) * Matrix::MakeRotationMatrix(rotation_);
+	//vpMatrix_ = transformMatrix_ * projectionMatrix_;
 	vpMatrix_ = Matrix::MakeTranslationMatrix(-position_ - offset) * Matrix::MakeRotationMatrix(rotation_) * projectionMatrix_;
 }
