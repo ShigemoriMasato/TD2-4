@@ -1,7 +1,7 @@
-#include"PlayerUnitObject.h"
+#include"OreObject.h"
 #include"Utility/MatrixFactory.h"
 
-void PlayerUnitObject::Initialize(DrawData drawData) {
+void OreObject::Initialize(DrawData drawData) {
 
 	// psoを設定
 	renderObject_ = std::make_unique<RenderObject>();
@@ -20,11 +20,11 @@ void PlayerUnitObject::Initialize(DrawData drawData) {
 	psDataIndex_ = renderObject_->CreateCBV(sizeof(Material), ShaderType::PIXEL_SHADER, "TestScene::psData");
 
 	// 色を設定
-	material_.color = { 1.0f,1.0f,1.0f,1.0f };
+	material_.color = { 0.0f,1.0f,1.0f,1.0f };
 	renderObject_->CopyBufferData(psDataIndex_, &material_, sizeof(Material));
 }
 
-void PlayerUnitObject::Update() {
+void OreObject::Update() {
 	// worldTransformを更新
 	worldMatrix_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 	vsData_.World = worldMatrix_;
@@ -32,9 +32,9 @@ void PlayerUnitObject::Update() {
 	renderObject_->CopyBufferData(vsDataIndex_, &vsData_, sizeof(TransformationMatrix));
 }
 
-void PlayerUnitObject::Draw(Window* window, const Matrix4x4& vpMatrix) {
+void OreObject::Draw(Window* window, const Matrix4x4& vpMatrix) {
 
-	// カメラを設定
+	// カメラによる位置を設定
 	vsData_.WVP = worldMatrix_ * vpMatrix;
 
 	// 描画

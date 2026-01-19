@@ -3,11 +3,11 @@
 #include"Render/DrawDataManager.h"
 #include"Utility/DataStructures.h"
 
-class OreUnitObject {
+class OreObject {
 public:
 
 	struct TransformationMatrix {
-		Matrix4x4 WVP =  Matrix4x4::Identity();
+		Matrix4x4 WVP = Matrix4x4::Identity();
 		Matrix4x4 World = Matrix4x4::Identity();
 		Matrix4x4 worldInverseTranspose = Matrix4x4::Identity();
 	};
