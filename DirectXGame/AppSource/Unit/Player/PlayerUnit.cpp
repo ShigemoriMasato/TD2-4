@@ -5,7 +5,7 @@
 #include <imgui/imgui.h>
 #endif
 
-void PlayerUnit::Initialize(MapChipField* mapChipField, DrawData drawData, const Vector3& pos, KeyManager* keyManager) {
+void PlayerUnit::Init(MapChipField* mapChipField, DrawData drawData, const Vector3& pos, KeyManager* keyManager) {
 	// マップデータ
 	mapChipField_ = mapChipField;
 
@@ -18,6 +18,21 @@ void PlayerUnit::Initialize(MapChipField* mapChipField, DrawData drawData, const
 
 	// 初期位置を設定
 	object_->transform_.position = pos;
+
+	// 当たり判定の設定
+	circleCollider_.center = object_->transform_.position;
+	circleCollider_.radius = 1.0f;
+
+	// 当たり判定の要素を設定
+	CollConfig config;
+	config.colliderInfo = &circleCollider_;
+	config.isActive = true;
+	config.ownTag = CollTag::Unit;
+	config.targetTag = static_cast<uint32_t>(CollTag::Unit);
+	SetColliderConfig(config);
+
+	// 当たり判定の初期化
+	Initialize();
 }
 
 void PlayerUnit::Update() {
@@ -40,6 +55,9 @@ void PlayerUnit::Update() {
 
 	// 更新処理
 	object_->Update();
+
+	// 当たり判定の位置を更新
+	circleCollider_.center = object_->transform_.position;
 }
 
 void PlayerUnit::Draw(Window* window, const Matrix4x4& vpMatrix) {
@@ -53,6 +71,12 @@ void PlayerUnit::Draw(Window* window, const Matrix4x4& vpMatrix) {
 
 	ImGui::End();
 #endif
+}
+
+void PlayerUnit::OnCollision(Collider* other) {
+	bool isUnit = CollTag::Unit == other->GetOwnTag();
+
+	if (!isUnit) { return; }
 }
 
 void PlayerUnit::ProcessMoveInput() {

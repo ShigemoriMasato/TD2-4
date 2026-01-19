@@ -13,7 +13,7 @@ void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData,
 
 	// プレイヤーユニットを初期化
 	playerUnit_ = std::make_unique<PlayerUnit>();
-	playerUnit_->Initialize(mapChipField_, playerDrawData,{3.0f,0.0f,3.0f}, keyManager);
+	playerUnit_->Init(mapChipField_, playerDrawData,{3.0f,0.0f,3.0f}, keyManager);
 
 	// おれのモデルデータを取得
 	oreDrawData_ = oreDrawData;
@@ -103,11 +103,11 @@ void UnitManager::AddOreUnit(const Vector3& targetPos) {
 			assert(false && "Not found Unit");
 		}
 		// 初期化
-		unit->second->Initialize(homePos, targetPos);
+		unit->second->Init(homePos, targetPos);
 	} else {
 		// 新しく登録
 		std::unique_ptr<OreUnit> oreUnit = std::make_unique<OreUnit>(mapChipField_, oreDrawData_, playerUnit_->GetPos());
-		oreUnit->Initialize(homePos, targetPos);
+		oreUnit->Init(homePos, targetPos);
 
 		oreUnits_[index] = std::move(oreUnit);
 	}

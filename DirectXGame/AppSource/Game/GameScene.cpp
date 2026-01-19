@@ -19,6 +19,11 @@ void GameScene::Initialize() {
 	//パラメーター管理の初期化
 	paramManager_ = std::make_unique<ParamManager>();
 
+	//　当たり判定管理クラスを初期化
+	colliderManager_ = std::make_unique<ColliderManager>();
+	// 当たり判定管理クラスを登録
+	Collider::SetColliderManager(colliderManager_.get());
+
 	auto inst = GameParamEditor::GetInstance();
 	inst->SetActiveScene("GameScene");
 	inst->CreateGroup("Test", "GameScene");
@@ -147,6 +152,13 @@ std::unique_ptr<IScene> GameScene::Update() {
 
 	// ユニットの更新処理
 	unitManager_->Update();
+
+	//============================================
+	// 当たり判定
+	//============================================
+
+	// 全ての当たり判定を判定
+	colliderManager_->CollisionCheckAll();
 
 	return nullptr;
 }

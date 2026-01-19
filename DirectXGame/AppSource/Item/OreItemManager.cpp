@@ -38,7 +38,7 @@ void OreItemManager::AddOreItem(OreType type, const Vector3& pos) {
 	case OreType::Gold:
 		// 金鉱石を追加
 		std::unique_ptr<GoldOre> ore = std::make_unique<GoldOre>();
-		ore->Initialize(goldOreDrawData_, pos);
+		ore->Init(goldOreDrawData_, pos);
 
 		oreItems_.push_back(std::move(ore));
 		break;
