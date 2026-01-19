@@ -96,6 +96,10 @@ std::unique_ptr<IScene> GameScene::Update() {
 	// Δタイムを取得する
 	FpsCount::deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 
+	// 入力処理の更新
+	input_->Update();
+	commonData_->keyManager->Update();
+
 	debugCamera_->Update();
 	camera_ = *static_cast<Camera*>(debugCamera_.get());
 
@@ -173,6 +177,9 @@ void GameScene::Draw() {
 
 	gameWindow_->DrawDisplayWithImGui();
 	paramManager_->Draw();
+
+	// カメラのデバック情報
+	cameraController_->DebugDraw();
 
 	engine_->ImGuiDraw();
 }
