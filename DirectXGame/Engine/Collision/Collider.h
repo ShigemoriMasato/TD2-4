@@ -17,7 +17,8 @@ enum class CollTag : uint32_t {
 	Player = 1 << 0,   ///< プレイヤー
 	Enemy = 1 << 1,    ///< 敵
 	Item = 1 << 2,     ///< アイテム
-	Stage = 1 << 3     ///< ステージ
+	Stage = 1 << 3,    ///< ステージ
+	Unit = 1 << 4      ///< ユニット
 };
 
 /**
@@ -81,6 +82,9 @@ public:
 	 * @param other 衝突相手のCollider
 	 */
 	virtual void OnCollision(Collider* other) = 0;
+
+	// 自分のタグ
+	CollTag GetOwnTag() { return ownTag_; }
 
 protected:
 

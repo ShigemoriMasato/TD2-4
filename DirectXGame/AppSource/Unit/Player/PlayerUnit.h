@@ -3,14 +3,19 @@
 #include"PlayerUnitObject.h"
 #include"Common/KeyConfig/KeyManager.h"
 
-class PlayerUnit {
+#include"Collision/Collider.h"
+
+class PlayerUnit : public Collider {
 public:
 
-	void Initialize(MapChipField* mapChipField, DrawData drawData,const Vector3& pos, KeyManager* keyManager);
+	void Init(MapChipField* mapChipField, DrawData drawData,const Vector3& pos, KeyManager* keyManager);
 
 	void Update();
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
+
+	// 当たり判定
+	void OnCollision(Collider* other) override;
 
 public:
 
@@ -38,6 +43,9 @@ private:
 
 	// 速さ
 	float speed_ = 10.0f;
+
+	// 円の当たり判定
+	Circle circleCollider_;
 
 private:
 

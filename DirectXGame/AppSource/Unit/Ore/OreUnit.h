@@ -31,15 +31,14 @@ public:
 	/// <param name="drawData">描画データ</param>
 	/// <param name="apearPos">出現位置</param>
 	/// <param name="targetPos">目標位置</param>
-	void Initialize(const Vector3& apearPos,const Vector3& targetPos);
+	void Init(const Vector3& apearPos,const Vector3& targetPos);
 
 	void Update();
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
-	void OnCollision(Collider* other) override {
-		other;
-	}
+	// 当たり判定
+	void OnCollision(Collider* other) override;
 
 public:
 
@@ -83,6 +82,9 @@ private:
 	Vector3* playerPos_ = nullptr;
 
 	float timer_ = 0.0f;
+
+	// 円の当たり判定
+	Circle circleCollider_;
 
 private: // 調整項目
 

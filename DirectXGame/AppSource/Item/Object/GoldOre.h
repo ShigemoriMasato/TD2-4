@@ -7,15 +7,13 @@
 class GoldOre : public OreItem,public Collider {
 public:
 
-	void Initialize(DrawData drawData, const Vector3& pos);
+	void Init(DrawData drawData, const Vector3& pos);
 
 	void Update() override;
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix) override;
 
-	void OnCollision(Collider* other) override {
-		other;
-	}
+	void OnCollision(Collider* other) override;
 
 public:
 
@@ -35,4 +33,7 @@ private:
 	int32_t hp_ = 0;
 
 	Vector3 size_ = {3.0f,3.0f,3.0f};
+
+	// 円の当たり判定
+	Quad quadCollider_;
 };

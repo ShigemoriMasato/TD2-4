@@ -1,6 +1,8 @@
 #include"OreUnit.h"
 #include"FpsCount.h"
 
+#include"Item/Object/GoldOre.h"
+
 OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerPos) {
 	// マップデータ
 	mapChipField_ = mapChipField;
@@ -28,9 +30,24 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerP
 			CalculatePath(*playerPos_); 
 		}
 	};
+
+	// 当たり判定の設定
+	circleCollider_.center = object_->transform_.position;
+	circleCollider_.radius = 1.0f;
+
+	// 当たり判定の要素を設定
+	CollConfig config;
+	config.colliderInfo = &circleCollider_;
+	config.isActive = true;
+	config.ownTag = CollTag::Unit;
+	config.targetTag = static_cast<uint32_t>(CollTag::Player) | static_cast<uint32_t>(CollTag::Enemy);
+	SetColliderConfig(config);
+
+	// 当たり判定の初期化
+	Initialize();
 }
 
-void OreUnit::Initialize(const Vector3& apearPos, const Vector3& targetPos) {
+void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos) {
 
 	// 初期位置を設定
 	object_->transform_.position = apearPos;
@@ -76,6 +93,9 @@ void OreUnit::Update() {
 	// 更新処理
 	object_->Update();
 
+	// 当たり判定の位置を更新
+	circleCollider_.center = object_->transform_.position;
+
 	// 生存時間
 	timer_ += FpsCount::deltaTime / damageTime_;
 
@@ -95,6 +115,18 @@ void OreUnit::Draw(Window* window, const Matrix4x4& vpMatrix) {
 
 	// 描画
 	object_->Draw(window, vpMatrix);
+}
+
+void OreUnit::OnCollision(Collider* other) {
+	bool isStage = CollTag::Stage == other->GetOwnTag();
+
+	if (!isStage) { return; }
+
+	GoldOre* goldOre = dynamic_cast<GoldOre*>(other);
+
+	if (goldOre) {
+
+	}
 }
 
 void OreUnit::GoToUpdate() {

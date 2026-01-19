@@ -3,6 +3,7 @@
 #include <Camera/DebugCamera.h>
 #include <Common/DebugParam/ParamManager.h>
 #include <Render/PostEffect.h>
+#include <Collision/ColliderManager.h>
 
 #include"Unit/UnitManager.h"
 #include"Unit/MapChipField.h"
@@ -26,6 +27,9 @@ private:
 
 	std::unique_ptr<DebugCamera> debugCamera_ = nullptr;
 	Camera camera_;
+
+	// 当たり判定管理クラス
+	std::unique_ptr<ColliderManager> colliderManager_;
 
 	int param1;
 	float param2;
