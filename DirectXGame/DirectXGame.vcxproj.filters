@@ -1,202 +1,11 @@
 ﻿<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="AppSource">
-      <UniqueIdentifier>{ae7da71f-e718-4d01-b2de-73a824d31627}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\Common">
-      <UniqueIdentifier>{0f78ad80-0bd7-49db-992c-d5bb33ae5853}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\Common\Camera">
-      <UniqueIdentifier>{0e324285-2e44-4845-ab89-15f491b2e4fe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\Common\DebugParam">
-      <UniqueIdentifier>{fa09c61f-b9e4-49c1-ba7c-ceeaf5285bae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\Common\KeyConfig">
-      <UniqueIdentifier>{7aec0146-ce88-48d7-b4d9-0b01cb6b9cf6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\Core">
-      <UniqueIdentifier>{8e8f6448-4987-4f69-a64a-0b9af3cfa6d3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\Game">
-      <UniqueIdentifier>{2f6a70c0-ed0b-4135-9a53-0241e0bedc1d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\Game\MapData">
-      <UniqueIdentifier>{a14f1ca5-b156-4748-b5e6-a37b88fbbe11}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\Game\MapData\Data">
-      <UniqueIdentifier>{df2302b8-299a-4b08-b20e-1064f236f24a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\GameCamera">
-      <UniqueIdentifier>{fa22a5fc-0ab2-4b0f-834e-71b8f66dba57}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\Item">
-      <UniqueIdentifier>{c3777016-eeb8-4bbd-a339-501ce8366a33}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\Item\Object">
-      <UniqueIdentifier>{ae2fc63c-e747-494c-8cc7-ef2ab3fa42e4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\MapEditor">
-      <UniqueIdentifier>{c50d15a2-42c0-470b-ab49-3527b2358b11}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\MapEditor\Editor">
-      <UniqueIdentifier>{3183baf8-efeb-4a54-b3c1-aaf9d545fce3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\MapEditor\Editor\Data">
-      <UniqueIdentifier>{9409aadd-79ae-4855-8f6a-653434bc9cc5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\Scene">
-      <UniqueIdentifier>{2f603436-c403-40a6-9c9b-7c099cffa9f3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\Scene\src">
-      <UniqueIdentifier>{0be671d6-c8ad-4303-92a1-ca94f20719fa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\Test">
-      <UniqueIdentifier>{92221095-47e4-4996-8c17-f141eda83935}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\Unit">
-      <UniqueIdentifier>{14fa87f4-1c6e-4d77-ac6f-a08f5334acaf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\Unit\Ore">
-      <UniqueIdentifier>{0bb3cfd1-ba81-4bbe-b081-0517b8eb9a63}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AppSource\Unit\Player">
-      <UniqueIdentifier>{c6cca3c4-1adc-46f6-a987-23ef68b1eeda}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine">
-      <UniqueIdentifier>{e251a3af-6d20-431e-a39f-38a49238a534}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Assets">
-      <UniqueIdentifier>{60dbfc5e-de45-444f-a420-29a444088bb1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Assets\Audio">
-      <UniqueIdentifier>{d4af8020-b604-4642-816b-813b04090fcf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Assets\Audio\Data">
-      <UniqueIdentifier>{df55d985-a37a-400a-bee6-ed550a1b8655}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Assets\Model">
-      <UniqueIdentifier>{fa3bd735-4234-4c77-968f-39e36ef194c7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Assets\Texture">
-      <UniqueIdentifier>{fb0641e4-a344-4f58-aeac-35f95cb53b8d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Camera">
-      <UniqueIdentifier>{9175c701-0996-48e4-83ec-eb2286e38c88}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Collision">
-      <UniqueIdentifier>{405401e0-3163-4332-b952-c986dfcda2e8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Collision\Data">
-      <UniqueIdentifier>{a21726c9-7553-41db-a901-48c663667583}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Core">
-      <UniqueIdentifier>{46fab538-d039-4367-bb02-3757d09feb4a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Core\Data">
-      <UniqueIdentifier>{01903adf-bda4-4da9-88a5-ac7fb1b1757e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Core\src">
-      <UniqueIdentifier>{d6a7d0d7-0a94-4fc2-a6ee-a4f1d8720279}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Core\View">
-      <UniqueIdentifier>{c1c2b3df-d46d-481a-9b5b-96ac854db506}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Input">
-      <UniqueIdentifier>{73f38e00-43fc-4f6b-88f5-fde5d3b6e65e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\PSO">
-      <UniqueIdentifier>{d4c02d0a-1e9c-4363-8bd0-433f7d4f4252}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\PSO\Shelf">
-      <UniqueIdentifier>{34ea1b1e-1965-4f59-ae0e-0e2bf5d93e01}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Render">
-      <UniqueIdentifier>{71e57942-573e-483c-81ac-9551d3ffcf92}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Screen">
-      <UniqueIdentifier>{b6942ffd-0303-4947-a6f2-630d0bae5779}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Screen\Display">
-      <UniqueIdentifier>{5a4aee5d-6937-4461-b533-1eace8dcc479}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Screen\Display\src">
-      <UniqueIdentifier>{081744b1-7a55-4204-8d2d-bdae145c6555}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Tool">
-      <UniqueIdentifier>{e46a600a-8cbb-4ca2-a1a1-556e706cc0ac}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Tool\Binary">
-      <UniqueIdentifier>{8d70bb58-bf89-4090-aabe-f48394d78712}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Tool\Binary\Data">
-      <UniqueIdentifier>{3faa0a50-0546-425b-8ba6-6f0de9566c0b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Tool\Dump">
-      <UniqueIdentifier>{f279a886-a846-4ff9-bce2-62b12d545842}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Tool\FPS">
-      <UniqueIdentifier>{195f0c43-163d-4eba-8296-1d24533d7a3c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Tool\Logger">
-      <UniqueIdentifier>{c5ce5279-0f78-47fa-9a5d-1637f4e2194a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Utility">
-      <UniqueIdentifier>{72f3fcc3-0c64-4eaf-bc48-87ed3c704f99}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Utility\src">
-      <UniqueIdentifier>{a39bfab8-75bd-4866-a025-69c1ca27541a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="externals">
-      <UniqueIdentifier>{8536cb2a-7a64-4aa7-8090-76178c042678}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="externals\assimp">
-      <UniqueIdentifier>{fc2ea1dd-7c32-43f5-a015-1f1ba5b8ee67}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="externals\assimp\include">
-      <UniqueIdentifier>{1f7b3fb2-b8ea-4e1c-a884-47dbf759cabb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="externals\assimp\include\assimp">
-      <UniqueIdentifier>{6cdf7b28-8fdf-4203-9992-1b4f27f26a87}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="externals\assimp\include\assimp\Compiler">
-      <UniqueIdentifier>{e5372a78-959d-42f6-b8d2-a342b711c138}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="externals\assimp\include\assimp\port">
-      <UniqueIdentifier>{5e8a99b0-5203-4afe-acfe-a17d8bdd5665}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="externals\assimp\include\assimp\port\AndroidJNI">
-      <UniqueIdentifier>{3d43451e-5ee1-4f82-8100-ddd2549aaf61}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="externals\DirectXTex">
-      <UniqueIdentifier>{8fad80da-a609-4bcc-abe4-36ea2f050058}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="externals\imgui">
-      <UniqueIdentifier>{a6d9a3ec-1ee5-47fc-b7dc-c25b0a934268}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="externals\spdlog">
-      <UniqueIdentifier>{1cfa8e22-9ff4-47a9-b775-38e3ee43e596}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="externals\spdlog\cfg">
-      <UniqueIdentifier>{58533223-e89b-48ce-bba8-44e2b3abf7be}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="externals\spdlog\details">
-      <UniqueIdentifier>{a60bd00f-8e7a-4a80-bfba-2956ef00b33b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="externals\spdlog\fmt">
-      <UniqueIdentifier>{ea9437fb-1b6e-46f5-a89d-a4bcd13b24ed}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="externals\spdlog\fmt\bundled">
-      <UniqueIdentifier>{d6be5684-e1d5-4357-a257-d7d01505a09e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="externals\spdlog\sinks">
-      <UniqueIdentifier>{9232f257-4b70-4f25-8119-59fbf1668d19}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\Common\GameWindow.cpp"><Filter>AppSource\Common</Filter></ClCompile>
-    <ClCompile Include="AppSource\Common\Camera\GameCamera.cpp"><Filter>AppSource\Common\Camera</Filter></ClCompile>
     <ClCompile Include="AppSource\Common\DebugParam\GameParamEditor.cpp"><Filter>AppSource\Common\DebugParam</Filter></ClCompile>
     <ClCompile Include="AppSource\Common\DebugParam\HierarchyWindow.cpp"><Filter>AppSource\Common\DebugParam</Filter></ClCompile>
     <ClCompile Include="AppSource\Common\DebugParam\InspectorWindow.cpp"><Filter>AppSource\Common\DebugParam</Filter></ClCompile>
@@ -288,7 +97,6 @@
   <ItemGroup>
     <ClInclude Include="AppSource\FpsCount.h"><Filter>AppSource</Filter></ClInclude>
     <ClInclude Include="AppSource\Common\GameWindow.h"><Filter>AppSource\Common</Filter></ClInclude>
-    <ClInclude Include="AppSource\Common\Camera\GameCamera.h"><Filter>AppSource\Common\Camera</Filter></ClInclude>
     <ClInclude Include="AppSource\Common\DebugParam\GameParamEditor.h"><Filter>AppSource\Common\DebugParam</Filter></ClInclude>
     <ClInclude Include="AppSource\Common\DebugParam\HierarchyWindow.h"><Filter>AppSource\Common\DebugParam</Filter></ClInclude>
     <ClInclude Include="AppSource\Common\DebugParam\InspectorWindow.h"><Filter>AppSource\Common\DebugParam</Filter></ClInclude>
@@ -480,6 +288,106 @@
     <ClInclude Include="externals\DirectXTex\DirectXTexP.h"><Filter>externals\DirectXTex</Filter></ClInclude>
     <ClInclude Include="externals\DirectXTex\filters.h"><Filter>externals\DirectXTex</Filter></ClInclude>
     <ClInclude Include="externals\DirectXTex\scoped.h"><Filter>externals\DirectXTex</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\ft2build.h"><Filter>externals\FreeType</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\freetype.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftadvanc.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftbbox.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftbdf.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftbitmap.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftbzip2.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftcache.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftchapters.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftcid.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftcolor.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftdriver.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\fterrdef.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\fterrors.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftfntfmt.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftgasp.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftglyph.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftgxval.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftgzip.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftimage.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftincrem.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftlcdfil.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftlist.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftlogging.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftlzw.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftmac.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftmm.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftmodapi.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftmoderr.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftotval.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftoutln.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftparams.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftpfr.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftrender.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftsizes.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftsnames.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftstroke.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftsynth.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftsystem.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\fttrigon.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\fttypes.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ftwinfnt.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\otsvg.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\t1tables.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\ttnameid.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\tttables.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\tttags.h"><Filter>externals\FreeType\freetype</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\config\ftconfig.h"><Filter>externals\FreeType\freetype\config</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\config\ftheader.h"><Filter>externals\FreeType\freetype\config</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\config\ftmodule.h"><Filter>externals\FreeType\freetype\config</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\config\ftoption.h"><Filter>externals\FreeType\freetype\config</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\config\ftstdlib.h"><Filter>externals\FreeType\freetype\config</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\config\integer-types.h"><Filter>externals\FreeType\freetype\config</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\config\mac-support.h"><Filter>externals\FreeType\freetype\config</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\config\public-macros.h"><Filter>externals\FreeType\freetype\config</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\autohint.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\cffotypes.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\cfftypes.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\compiler-macros.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\ftcalc.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\ftdebug.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\ftdrv.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\ftgloadr.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\fthash.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\ftmemory.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\ftmmtypes.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\ftobjs.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\ftpsprop.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\ftrfork.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\ftserv.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\ftstream.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\fttrace.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\ftvalid.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\psaux.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\pshints.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\sfnt.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\svginterface.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\t1types.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\tttypes.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\wofftypes.h"><Filter>externals\FreeType\freetype\internal</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svbdf.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svcfftl.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svcid.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svfntfmt.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svgldict.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svgxval.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svkern.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svmetric.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svmm.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svotval.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svpfr.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svpostnm.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svprop.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svpscmap.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svpsinfo.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svsfnt.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svttcmap.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svtteng.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svttglyf.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
+    <ClInclude Include="externals\FreeType\freetype\internal\services\svwinfnt.h"><Filter>externals\FreeType\freetype\internal\services</Filter></ClInclude>
     <ClInclude Include="externals\imgui\imconfig.h"><Filter>externals\imgui</Filter></ClInclude>
     <ClInclude Include="externals\imgui\imgui.h"><Filter>externals\imgui</Filter></ClInclude>
     <ClInclude Include="externals\imgui\ImGuizmo.h"><Filter>externals\imgui</Filter></ClInclude>
