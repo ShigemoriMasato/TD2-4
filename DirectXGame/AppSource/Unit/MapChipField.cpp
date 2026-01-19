@@ -161,14 +161,14 @@ bool MapChipField::IsBlockHit(MoveDir dir, const CollisionMapInfo& info) {
 	indexSet = GetMapChipIndexSetByPosition(positionsNew[corner1]);
 	blockType = GetBlockTypeByIndex(indexSet.xIndex, indexSet.zIndex);
 	blockTypeNext = GetBlockTypeByIndex(indexSet.xIndex + moveX, indexSet.zIndex + moveZ);
-	if ((blockType != TileType::Air) && (blockTypeNext == TileType::Air)) {
+	if ((blockType != TileType::Air && blockType != TileType::Road) && (blockTypeNext == TileType::Air || blockTypeNext == TileType::Road)) {
 		hit = true;
 	}
 	// 角2の点の判定
 	indexSet = GetMapChipIndexSetByPosition(positionsNew[corner2]);
 	blockType = GetBlockTypeByIndex(indexSet.xIndex, indexSet.zIndex);
 	blockTypeNext = GetBlockTypeByIndex(indexSet.xIndex + moveX, indexSet.zIndex + moveZ);
-	if ((blockType != TileType::Air) && (blockTypeNext == TileType::Air)) {
+	if ((blockType != TileType::Air && blockType != TileType::Road) && (blockTypeNext == TileType::Air || blockTypeNext == TileType::Road)) {
 		hit = true;
 	}
 

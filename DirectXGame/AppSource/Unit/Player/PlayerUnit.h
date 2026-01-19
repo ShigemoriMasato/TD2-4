@@ -12,6 +12,10 @@ public:
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
+public:
+
+	Vector3* GetPos() { return &object_->transform_.position; }
+
 private:
 
 	// マップデータ
@@ -27,7 +31,7 @@ private:
 	int32_t hp_ = 0;
 
 	// サイズ
-	Vector3 size_ = { 1.0f,1.0f,1.0f };
+	Vector3 size_ = { 0.8f,0.8f,0.8f };
 	
 	// 速度 
 	Vector3 velocity_ = {};

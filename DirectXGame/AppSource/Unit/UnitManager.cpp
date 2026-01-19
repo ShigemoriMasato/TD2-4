@@ -24,9 +24,37 @@ void UnitManager::Update() {
 	// プレイヤーの更新処理
 	playerUnit_->Update();
 
+	// おれユニットを削除
+	for (auto it = graveyard_.begin(); it != graveyard_.end(); ) {
+		// カウントダウン
+		it->second--;
+
+		// 待機時間が終わったら削除
+		if (it->second <= 0) {
+			it = graveyard_.erase(it);
+		} else {
+			++it;
+		}
+	}
+
 	// おれユニットの更新処理
-	for (const auto& [id, unit] : oreUnits_) {
-		unit->Update();
+	for (auto it = oreUnits_.begin(); it != oreUnits_.end(); ) {
+		auto& unit = it->second;
+
+		if (unit->IsDead()) {
+			// 10フレーム後に削除するようにリストに追加
+			graveyard_.push_back({ std::move(unit), 10 });
+
+			// 再利用リストに追加
+			freeIndices_.push_back(it->first);
+
+			// マップからは要素を削除
+			it = oreUnits_.erase(it);
+		} else {
+			// 生きている場合は更新
+			unit->Update();
+			++it;
+		}
 	}
 }
 
@@ -59,7 +87,7 @@ void UnitManager::AddOreUnit(const Vector3& targetPos) {
 
 	// 登録
 	std::unique_ptr<OreUnit> oreUnit = std::make_unique<OreUnit>();
-	oreUnit->Initialize(mapChipField_, oreDrawData_, homePos,targetPos);
+	oreUnit->Initialize(mapChipField_, oreDrawData_, homePos,targetPos,playerUnit_->GetPos());
 
 	oreUnits_[index] = std::move(oreUnit);
 }

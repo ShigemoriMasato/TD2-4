@@ -14,10 +14,10 @@ void OreUnitObject::Initialize(DrawData drawData) {
 	renderObject_->SetDrawData(drawData);
 
 	// worldTransformを登録
-	vsDataIndex_ = renderObject_->CreateCBV(sizeof(TransformationMatrix), ShaderType::VERTEX_SHADER, "TestScene::VSData");
+	vsDataIndex_ = renderObject_->CreateCBV(sizeof(TransformationMatrix), ShaderType::VERTEX_SHADER, "OreUnit::VSData");
 
 	// Materialを登録
-	psDataIndex_ = renderObject_->CreateCBV(sizeof(Material), ShaderType::PIXEL_SHADER, "TestScene::psData");
+	psDataIndex_ = renderObject_->CreateCBV(sizeof(Material), ShaderType::PIXEL_SHADER, "OreUnit::psData");
 
 	// 色を設定
 	material_.color = { 1.0f,1.0f,1.0f,1.0f };
