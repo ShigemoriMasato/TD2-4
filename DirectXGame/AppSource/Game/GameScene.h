@@ -6,6 +6,8 @@
 
 #include"Unit/UnitManager.h"
 #include"Unit/MapChipField.h"
+#include"Unit/MapChipRender.h"
+#include"Item/OreItemManager.h"
 #include"GameCamera/CameraController.h"
 
 class GameScene : public IScene {
@@ -33,16 +35,22 @@ private:
 
 	std::unique_ptr<ParamManager> paramManager_ = nullptr;
 
-	// ユニット管理
-	std::unique_ptr<UnitManager> unitManager_;
-
-	// マップデータの中間管理職
-	std::unique_ptr<MapChipField> mapChipField_;
+	std::unique_ptr<PostEffect> postEffect_ = nullptr;
+	PostEffectConfig postEffectConfig_{};
+	Blur blur_{};
 
 	// ゲームカメラの管理
 	std::unique_ptr<CameraController> cameraController_;
 
-	std::unique_ptr<PostEffect> postEffect_ = nullptr;
-	PostEffectConfig postEffectConfig_{};
-	Blur blur_{};
+	// マップデータの中間管理職
+	std::unique_ptr<MapChipField> mapChipField_;
+
+	// マップの描画
+	std::unique_ptr<MapChipRender> mapChipRenderer_;
+
+	// 鉱石の管理
+	std::unique_ptr<OreItemManager> oreItemManager_;
+
+	// ユニット管理
+	std::unique_ptr<UnitManager> unitManager_;
 };

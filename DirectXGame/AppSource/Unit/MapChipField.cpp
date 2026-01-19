@@ -1,49 +1,89 @@
 #include"MapChipField.h"
+#include <queue>
+#include <cmath>
 
-void MapChipField::SetMapChipData(std::vector<std::vector<BlockType>> data) {
+void MapChipField::SetMapChipData(std::vector<std::vector<TileType>> data) {
 	// データを取得
 	data_ = data;
 
 	// ブロックの縦と横幅を取得
 	kNumBlockVirtical = static_cast<int32_t>(data_.size());
 	kNumBlockHorizontal = static_cast<int32_t>(data_[0].size());
+
+	// ユニットの出現位置を求める
+	SetHomePosList();
 }
 
 void MapChipField::SetDebugMapData() {
 
-	kNumBlockVirtical = 40;
-	kNumBlockHorizontal = 60;
-	data_.resize(kNumBlockVirtical, std::vector<BlockType>(kNumBlockHorizontal, BlockType::Air));
+	//kNumBlockVirtical = 40;
+	//kNumBlockHorizontal = 60;
+	//
+	//data_.resize(kNumBlockVirtical);
+	//for (auto& row : data_) {
+	//	row.resize(kNumBlockHorizontal);
+	//}
+	//
+	//// デバックのマップデータを取得
+	//for (int32_t z = 0; z < kNumBlockVirtical; ++z) {
+	//	for (int32_t x = 0; x < kNumBlockHorizontal; ++x) {
+	//		
+	//		// 外周をブロックで囲む
+	//		if (z == 0 || z == kNumBlockVirtical-1 || x == 0 || x == kNumBlockHorizontal-1) {
+	//			data_[z][x] = TileType::Wall;
+	//		} else {
+	//			data_[z][x] = TileType::Air;
+	//		}
+	//	}
+	//}
 
-	// デバックのマップデータを取得
-	for (int32_t z = 0; z < kNumBlockVirtical; ++z) {
-		for (int32_t x = 0; x < kNumBlockHorizontal; ++x) {
-			
-			// 外周をブロックで囲む
-			if (z == 0 || z == kNumBlockVirtical-1 || x == 0 || x == kNumBlockHorizontal-1) {
-				data_[z][x] = BlockType::Wall;
-			} else {
-				data_[z][x] = BlockType::Air;
-			}
-		}
+	kNumBlockVirtical = 12;
+	kNumBlockHorizontal = 24;
+
+	data_.resize(kNumBlockVirtical);
+	for (auto& row : data_) {
+		row.resize(kNumBlockHorizontal);
 	}
+
+	data_ = {
+    {TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall},
+    {TileType::Wall, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Wall},
+    {TileType::Wall, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Wall, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Wall},
+    {TileType::Wall, TileType::Air, TileType::Air, TileType::Air, TileType::Road, TileType::Road, TileType::Road, TileType::Road, TileType::Air, TileType::Wall, TileType::Road, TileType::Road, TileType::Road, TileType::Road, TileType::Road, TileType::Road, TileType::Road, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Wall},
+    {TileType::Wall, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Wall, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Road, TileType::Road, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Wall},
+    {TileType::Wall, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Road, TileType::Road, TileType::Home, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Wall},
+    {TileType::Wall, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Road, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Road, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Wall},
+    {TileType::Wall, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Road, TileType::Wall, TileType::Road, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Road, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Wall},
+    {TileType::Wall, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Road, TileType::Wall, TileType::Road, TileType::Air, TileType::Air, TileType::Road, TileType::Air, TileType::Road, TileType::Road, TileType::Air, TileType::Road, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Wall},
+    {TileType::Wall, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Road, TileType::Road, TileType::Road, TileType::Road, TileType::Wall, TileType::Road, TileType::Road, TileType::Road, TileType::Road, TileType::Road, TileType::Road, TileType::Air, TileType::Road, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Wall},
+    {TileType::Wall, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Road, TileType::Air, TileType::Air, TileType::Road, TileType::Air, TileType::Air, TileType::Road, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Air, TileType::Wall},
+    {TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall, TileType::Wall}
+	};
+
+	// ユニットの出現位置を求める
+	SetHomePosList();
+
+	//data_[5][4] = TileType::Wall;
+	//data_[6][4] = TileType::Wall;
+	//data_[5][5] = TileType::Wall;
+	//data_[6][5] = TileType::Wall;
 }
 
-MapChipField::BlockType MapChipField::GetBlockTypeByIndex(int32_t xIndex, int32_t zIndex) const {
+TileType MapChipField::GetBlockTypeByIndex(int32_t xIndex, int32_t zIndex) const {
 
 	// 範囲外を指定されたら空白を返す
 	if (xIndex < 0 || kNumBlockHorizontal - 1 < xIndex) {
-		return BlockType::Air;
+		return TileType::Air;
 	}
 	if (zIndex < 0 || kNumBlockVirtical - 1 < zIndex) {
-		return BlockType::Air;
+		return TileType::Air;
 	}
 
 	return data_[zIndex][xIndex];
 }
 
 Vector3 MapChipField::GetMapChipPositionByIndex(int32_t xIndex, int32_t zIndex) const {
-	return Vector3(kBlockWidth * static_cast<float>(xIndex), 0, static_cast<float>(kNumBlockVirtical * zIndex));
+	return Vector3(kBlockWidth * static_cast<float>(xIndex), 0, static_cast<float>(kBlockHeight * zIndex));
 }
 
 MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Vector3& position) {
@@ -90,30 +130,30 @@ bool MapChipField::IsBlockHit(MoveDir dir, const CollisionMapInfo& info) {
 	case MapChipField::MoveDir::Above:
 		corner1 = static_cast<uint32_t>(Corner::kLeftTop);
 		corner2 = static_cast<uint32_t>(Corner::kRightTop);
-		moveZ = 1;
+		moveZ = -1;
 		break;
 
 	case MapChipField::MoveDir::Below:
 		corner1 = static_cast<uint32_t>(Corner::kLeftBottom);
 		corner2 = static_cast<uint32_t>(Corner::kRightBottom);
-		moveZ = -1;
+		moveZ = 1;
 		break;
 
 	case MapChipField::MoveDir::Right:
 		corner1 = static_cast<uint32_t>(Corner::kRightTop);
 		corner2 = static_cast<uint32_t>(Corner::kRightBottom);
-		moveX = 1;
+		moveX = -1;
 		break;
 
 	case MapChipField::MoveDir::Left:
 		corner1 = static_cast<uint32_t>(Corner::kLeftTop);
 		corner2 = static_cast<uint32_t>(Corner::kLeftBottom);
-		moveX = -1;
+		moveX = 1;
 		break;
 	}
 
-	BlockType blockType;
-	BlockType blockTypeNext;
+	TileType blockType;
+	TileType blockTypeNext;
 	// 角1、角2の当たり判定を行う
 	bool hit = false;
 	// 角1の点の判定
@@ -121,29 +161,158 @@ bool MapChipField::IsBlockHit(MoveDir dir, const CollisionMapInfo& info) {
 	indexSet = GetMapChipIndexSetByPosition(positionsNew[corner1]);
 	blockType = GetBlockTypeByIndex(indexSet.xIndex, indexSet.zIndex);
 	blockTypeNext = GetBlockTypeByIndex(indexSet.xIndex + moveX, indexSet.zIndex + moveZ);
-	if ((blockType != BlockType::Air) && (blockTypeNext == BlockType::Air)) {
+	if ((blockType != TileType::Air) && (blockTypeNext == TileType::Air)) {
 		hit = true;
 	}
 	// 角2の点の判定
 	indexSet = GetMapChipIndexSetByPosition(positionsNew[corner2]);
 	blockType = GetBlockTypeByIndex(indexSet.xIndex, indexSet.zIndex);
 	blockTypeNext = GetBlockTypeByIndex(indexSet.xIndex + moveX, indexSet.zIndex + moveZ);
-	if ((blockType != BlockType::Air) && (blockTypeNext == BlockType::Air)) {
+	if ((blockType != TileType::Air) && (blockTypeNext == TileType::Air)) {
 		hit = true;
 	}
 
 	return hit;
 }
 
+std::vector<Vector3> MapChipField::CalculatePath(const Vector3& start, const Vector3& end) {
+	std::vector<Vector3> path;
+
+	IndexSet startIndex = GetMapChipIndexSetByPosition(start);
+	IndexSet endIndex = GetMapChipIndexSetByPosition(end);
+
+	// 範囲外チェック
+	if (startIndex.xIndex < 0 || startIndex.xIndex >= kNumBlockHorizontal ||
+		startIndex.zIndex < 0 || startIndex.zIndex >= kNumBlockVirtical ||
+		endIndex.xIndex < 0 || endIndex.xIndex >= kNumBlockHorizontal ||
+		endIndex.zIndex < 0 || endIndex.zIndex >= kNumBlockVirtical) {
+		return path; // 空のパスを返す
+	}
+
+	// ゴールが壁なら、近くの空いている場所を探すか、計算を諦める
+	// ここでは単純にゴールが壁なら空のパスを返すことにします
+	if (GetBlockTypeByIndex(endIndex.xIndex, endIndex.zIndex) == TileType::Wall) {
+		return path;
+	}
+
+	// 探索用データの準備
+	// 各マスのノード情報を管理する2次元配列 (探索済みかどうかやコストを保持)
+	std::vector<std::vector<Node>> nodes(kNumBlockVirtical, std::vector<Node>(kNumBlockHorizontal));
+
+	// 初期化
+	for (int z = 0; z < kNumBlockVirtical; ++z) {
+		for (int x = 0; x < kNumBlockHorizontal; ++x) {
+			nodes[z][x] = { x, z, FLT_MAX, 0.0f, nullptr };
+		}
+	}
+
+	// スタート地点の設定
+	Node* startNode = &nodes[startIndex.zIndex][startIndex.xIndex];
+	startNode->gCost = 0.0f;
+	startNode->hCost = static_cast<float>(std::abs(endIndex.xIndex - startIndex.xIndex) + std::abs(endIndex.zIndex - startIndex.zIndex)); // マンハッタン距離
+
+	// オープンリスト
+	// ポインタを格納し、比較関数を定義
+	auto comp = [](Node* a, Node* b) { return a->fCost() > b->fCost(); };
+	std::priority_queue<Node*, std::vector<Node*>, decltype(comp)> openList(comp);
+
+	openList.push(startNode);
+
+	// 探索ループ
+	// 上下左右の移動方向
+	const int dx[] = { 0, 0, -1, 1 };
+	const int dz[] = { -1, 1, 0, 0 };
+
+	Node* currentNode = nullptr;
+
+	while (!openList.empty()) {
+		// 最もコストが低いノードを取り出す
+		currentNode = openList.top();
+		openList.pop();
+
+		// ゴールに到達したらループ終了
+		if (currentNode->x == endIndex.xIndex && currentNode->z == endIndex.zIndex) {
+			break;
+		}
+
+		// 周囲4方向をチェック
+		for (int i = 0; i < 4; ++i) {
+			int nx = currentNode->x + dx[i];
+			int nz = currentNode->z + dz[i];
+
+			// マップ範囲外チェック
+			if (nx < 0 || nx >= kNumBlockHorizontal || nz < 0 || nz >= kNumBlockVirtical) {
+				continue;
+			}
+
+			// タイルの種類を取得
+			TileType nextTileType = GetBlockTypeByIndex(nx, nz);
+
+			// 壁チェック (Wallなら絶対に通れない)
+			if (nextTileType == TileType::Wall) {
+				continue;
+			}
+
+			float moveCost = 0.0f;
+			if (nextTileType == TileType::Road) {
+				// 道の移動コスト
+				moveCost = 1.0f;
+			} else {
+				// 何もない場所の移動コスト
+				moveCost = 5.0f;
+			}
+
+			// 新しいGコスト（今のコスト + 計算した移動コスト）
+			float newGCost = currentNode->gCost + moveCost;
+
+			// 既により良い経路が見つかっている場合はスキップ
+			if (newGCost < nodes[nz][nx].gCost) {
+				Node* neighbor = &nodes[nz][nx];
+				neighbor->gCost = newGCost;
+				neighbor->hCost = static_cast<float>(std::abs(endIndex.xIndex - nx) + std::abs(endIndex.zIndex - nz));
+				neighbor->parent = currentNode;
+
+				openList.push(neighbor);
+			}
+		}
+	}
+
+	// 経路が見つかった場合、ゴールから親を辿ってリストを作成
+	if (currentNode && currentNode->x == endIndex.xIndex && currentNode->z == endIndex.zIndex) {
+		Node* node = currentNode;
+		while (node != nullptr) {
+			// インデックスをワールド座標に変換して追加
+			path.push_back(GetMapChipPositionByIndex(node->x, node->z));
+			node = node->parent;
+		}
+		// ゴール -> スタートの順になっているので反転させる
+		std::reverse(path.begin(), path.end());
+	}
+
+	return path;
+}
+
 Vector3 MapChipField::CornerPosition(const Vector3& center, Corner corner, const CollisionMapInfo& info) {
 
 	// 各角の座標
 	Vector3 offsetTable[static_cast<size_t>(Corner::MaxCount)] = {
-		Vector3(info.size.x / 2.0f, -info.size.z / 2.0f, 0.0f),
-		Vector3(-info.size.x / 2.0f, -info.size.z / 2.0f, 0.0f),
-		Vector3(info.size.x / 2.0f, info.size.z / 2.0f, 0.0f),
-		Vector3(-info.size.x / 2.0f, info.size.z / 2.0f, 0.0f)
+		Vector3(info.size.x / 2.0f,0.0f, -info.size.z / 2.0f),
+		Vector3(-info.size.x / 2.0f,0.0f, -info.size.z / 2.0f),
+		Vector3(info.size.x / 2.0f,0.0f, info.size.z / 2.0f),
+		Vector3(-info.size.x / 2.0f,0.0f, info.size.z / 2.0f)
 	};
 
 	return center + offsetTable[static_cast<int32_t>(corner)];
+}
+
+void MapChipField::SetHomePosList() {
+
+	for (size_t z = 0; z < data_.size(); ++z) {
+		for (size_t x = 0; x < data_[0].size(); ++x) {
+			if (data_[z][x] == TileType::Home) {
+				Vector3 pos = { x * kBlockWidth,0.0f,z * kBlockHeight };
+				homePosList_.push_back(pos);
+			}
+		}
+	}
 }

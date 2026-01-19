@@ -2,17 +2,10 @@
 #include<vector>
 #include<array>
 #include"Utility/Vector.h"
+#include"Game/MapData/Data/MapData.h"
 
 class MapChipField {
 public:
-
-	enum class BlockType {
-		Air,  // 空気
-		road, // 道
-		Wall, // 壁
-
-		Count,			//ブロックの種類の総数
-	};
 
 	struct IndexSet {
 		int32_t xIndex;
@@ -62,9 +55,15 @@ public: // マップの情報
 	/// マップデータを設定する
 	/// </summary>
 	/// <param name="data"></param>
-	void SetMapChipData(std::vector<std::vector<BlockType>> data);
+	void SetMapChipData(std::vector<std::vector<TileType>> data);
 
 	void SetDebugMapData();
+
+	// マップデータを取得
+	std::vector<std::vector<TileType>> GetMapData() { return data_; }
+
+	// ユニットの出現位置を取得
+	std::vector<Vector3> GetHomePosList() { return homePosList_; }
 
 	/// <summary>
 	/// 指定されたマップチップデータの種類を返す
@@ -72,7 +71,7 @@ public: // マップの情報
 	/// <param name="xIndex"></param>
 	/// <param name="yIndex"></param>
 	/// <returns></returns>
-	BlockType GetBlockTypeByIndex(int32_t xIndex, int32_t zIndex) const;
+	TileType GetBlockTypeByIndex(int32_t xIndex, int32_t zIndex) const;
 
 	/// <summary>
 	/// 指定されたマップチップデータの座標を返す
@@ -108,6 +107,29 @@ public: // マップの当たり判定
 	/// <returns></returns>
 	bool IsBlockHit(MoveDir dir, const CollisionMapInfo& info);
 
+public: // 探索アルゴリズム
+
+	/// <summary>
+	/// スタート地点からゴール地点までの経路を計算
+	/// </summary>
+	/// <param name="start"></param>
+	/// <param name="end"></param>
+	/// <returns></returns>
+	std::vector<Vector3> CalculatePath(const Vector3& start, const Vector3& end);
+
+	// 経路探索用
+	struct Node {
+		int x, z; // インデックス
+		float gCost; // スタートからのコスト
+		float hCost; // ゴールまでの推定コスト
+		float fCost() const { return gCost + hCost; } // 合計コスト
+		Node* parent = nullptr;
+
+		bool operator>(const Node& other)const {
+			return fCost() > other.fCost();
+		}
+	};
+
 private:
 	// 1ブロックのサイズ
 	static inline const float kBlockWidth = 1.0f;
@@ -117,7 +139,10 @@ private:
 	static inline int32_t kNumBlockHorizontal = 10;
 
 	// マップデータ
-	std::vector<std::vector<BlockType>> data_;
+	std::vector<std::vector<TileType>> data_;
+
+	// ユニットの出現位置
+	std::vector<Vector3> homePosList_;
 
 private:
 
@@ -128,4 +153,7 @@ private:
 	/// <param name="corner"></param>
 	/// <returns></returns>
 	Vector3 CornerPosition(const Vector3& center, Corner corner, const CollisionMapInfo& info);
+
+	// 家の位置を取得する
+	void SetHomePosList();
 };
