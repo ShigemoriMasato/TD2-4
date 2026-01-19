@@ -1,4 +1,8 @@
 #pragma once
+#include <optional>
+#include<array>
+#include<functional>
+
 #include"Collision/Collider.h"
 
 #include"OreUnitObject.h"
@@ -10,10 +14,15 @@ public:
 	// 状態
 	enum class State {
 		GoTo,   // 目的地に行く
+		Mining, // 採掘
 		Return, // 帰宅
+
+		MaxCount // 数
 	};
 
 public:
+
+	OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerPos);
 
 	/// <summary>
 	/// 初期化
@@ -22,7 +31,7 @@ public:
 	/// <param name="drawData">描画データ</param>
 	/// <param name="apearPos">出現位置</param>
 	/// <param name="targetPos">目標位置</param>
-	void Initialize(MapChipField* mapChipField, DrawData drawData,const Vector3& apearPos,const Vector3& targetPos,Vector3* playerPos);
+	void Initialize(const Vector3& apearPos,const Vector3& targetPos);
 
 	void Update();
 
@@ -47,12 +56,22 @@ private:
 	// オブジェクトデータ
 	std::unique_ptr<OreUnitObject> object_;
 
-	int32_t hp_ = 0;
+	// 状態
+	State state_ = State::GoTo;
+	// 状態の変更を管理
+	std::optional<State> stateRequest_ = std::nullopt;
+	// 状態テーブル
+	std::array<std::function<void()>, static_cast<size_t>(State::MaxCount)> statesTable_;
+	// 指定した状態をおこなうためのリセット処理
+	std::array<std::function<void()>, static_cast<size_t>(State::MaxCount)> resetStatesTable_;
 
 	// 死亡フラグ
 	bool isDead_ = false;
+	// 有効フラグ
+	bool isActive_ = false;
 
-	bool isActive_ = true;
+	// 体力
+	int32_t hp_ = 0;
 
 	// 移動ルート
 	std::vector<Vector3> path_;
@@ -60,13 +79,21 @@ private:
 	// 家の場所
 	Vector3 homePos_;
 
+	// プレイヤーの位置
+	Vector3* playerPos_ = nullptr;
+
+	float timer_ = 0.0f;
+
+private: // 調整項目
+
+	// ダメージを食らう間隔
+	float damageTime_ = 1.0f;
+
+	// 最大体力
+	int32_t maxHp_ = 10;
+
 	// 移動速度
 	float speed_ = 5.0f;
-
-	// 状態
-	State state_ = State::GoTo;
-
-	Vector3* playerPos_ = nullptr;
 
 private:
 
@@ -76,4 +103,12 @@ private:
 	// 移動
 	void Move();
 
+	// 行きの更新処理
+	void GoToUpdate();
+
+	// 採掘の更新処理
+	void MiningUpdate();
+
+	// 返りの更新処理
+	void ReturnUpdate();
 };

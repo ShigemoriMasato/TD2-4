@@ -1,7 +1,7 @@
 #include"OreUnit.h"
 #include"FpsCount.h"
 
-void OreUnit::Initialize(MapChipField* mapChipField, DrawData drawData, const Vector3& apearPos, const Vector3& targetPos,Vector3* playerPos) {
+OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerPos) {
 	// マップデータ
 	mapChipField_ = mapChipField;
 
@@ -12,8 +12,43 @@ void OreUnit::Initialize(MapChipField* mapChipField, DrawData drawData, const Ve
 	object_ = std::make_unique<OreUnitObject>();
 	object_->Initialize(drawData);
 
+	// 更新状態を設定する
+	statesTable_ = {
+		[this]() { GoToUpdate(); },
+		[this]() { MiningUpdate(); },
+		[this]() { ReturnUpdate(); }
+	};
+
+	// 各状態のリセット処理を設定する
+	resetStatesTable_ = {
+		[this]() {},
+		[this]() {},
+		[this]() {
+			// プレイヤーの位置までの経路を取得
+			CalculatePath(*playerPos_); 
+		}
+	};
+}
+
+void OreUnit::Initialize(const Vector3& apearPos, const Vector3& targetPos) {
+
 	// 初期位置を設定
 	object_->transform_.position = apearPos;
+
+	// フラグをリセット
+	isActive_ = true;
+	isDead_ = false;
+
+	// hpを設定
+	hp_ = maxHp_;
+
+	// 時間をリセット
+	timer_ = 0.0f;
+
+	// 状態を設定
+	state_ = State::GoTo;
+	// 状態のリセット
+	resetStatesTable_[static_cast<size_t>(state_)]();
 
     // 移動する経路を求める
     CalculatePath(targetPos);
@@ -22,11 +57,37 @@ void OreUnit::Initialize(MapChipField* mapChipField, DrawData drawData, const Ve
 void OreUnit::Update() {
 	if (isDead_) { return; }
 
+	// 切り替え処理
+	if (stateRequest_) {
+		// 状態を変更
+		state_ = stateRequest_.value();
+		// 状態によるリセットを呼び出す
+		resetStatesTable_[static_cast<size_t>(state_)]();
+		// リクエストをクリア
+		stateRequest_ = std::nullopt;
+	}
+
+	// プレイヤーの状態による更新処理をおこなう
+	statesTable_[static_cast<size_t>(state_)]();
+
     // 移動処理
     Move();
 
 	// 更新処理
 	object_->Update();
+
+	// 生存時間
+	timer_ += FpsCount::deltaTime / damageTime_;
+
+	if (timer_ >= 1.0f) {
+		hp_ -= 1;
+		timer_ = 0.0f;
+	}
+
+	// 体力が0の時、死亡する
+	if (hp_ <= 0) {
+		isDead_ = true;
+	}
 }
 
 void OreUnit::Draw(Window* window, const Matrix4x4& vpMatrix) {
@@ -34,6 +95,59 @@ void OreUnit::Draw(Window* window, const Matrix4x4& vpMatrix) {
 
 	// 描画
 	object_->Draw(window, vpMatrix);
+}
+
+void OreUnit::GoToUpdate() {
+
+	// 目的地付けば次の状態に切り替える
+	if (path_.empty()) {
+		stateRequest_ = State::Mining;
+	}
+
+	// 鉱石まで移動する
+	Move();
+}
+
+void OreUnit::MiningUpdate() {
+
+	// 鉱石を採掘
+
+
+	stateRequest_ = State::Return;
+}
+
+void OreUnit::ReturnUpdate() {
+
+	// プレイヤーまで移動すれば終了
+	if (path_.empty()) {
+		isActive_ = false;
+	}
+
+	// プレイヤーが現在いるマップチップのインデックスと座標を取得
+	MapChipField::IndexSet pIdx = mapChipField_->GetMapChipIndexSetByPosition(*playerPos_);
+	Vector3 playerGridPos = mapChipField_->GetMapChipPositionByIndex(pIdx.xIndex, pIdx.zIndex);
+
+	// 「現在の目的地（パスの終点）」と「プレイヤーのいるマスの中心」が違うかチェック
+	bool needRecalc = false;
+	if (!path_.empty()) {
+		Vector3 currentDest = path_.back(); // 現在のパスの最終地点
+
+		// 距離の二乗で比較
+		float dx = currentDest.x - playerGridPos.x;
+		float dz = currentDest.z - playerGridPos.z;
+		if ((dx * dx + dz * dz) > 0.1f) {
+			// 目的地が変わっているので再計算フラグを立てる
+			needRecalc = true;
+		}
+	}
+
+	// 再計算が必要なら実行
+	if (needRecalc) {
+		CalculatePath(*playerPos_);
+	}
+
+	// 移動する
+	Move();
 }
 
 void OreUnit::CalculatePath(const Vector3& goal) {
@@ -56,44 +170,8 @@ void OreUnit::CalculatePath(const Vector3& goal) {
 
 void OreUnit::Move() {
 
-	if (state_ == State::Return && playerPos_) {
-		// プレイヤーが現在いるマップチップのインデックスと座標を取得
-		MapChipField::IndexSet pIdx = mapChipField_->GetMapChipIndexSetByPosition(*playerPos_);
-		Vector3 playerGridPos = mapChipField_->GetMapChipPositionByIndex(pIdx.xIndex, pIdx.zIndex);
-
-		// 「現在の目的地（パスの終点）」と「プレイヤーのいるマスの中心」が違うかチェック
-		bool needRecalc = false;
-		if (!path_.empty()) {
-			Vector3 currentDest = path_.back(); // 現在のパスの最終地点
-
-			// 距離の二乗で比較
-			float dx = currentDest.x - playerGridPos.x;
-			float dz = currentDest.z - playerGridPos.z;
-			if ((dx * dx + dz * dz) > 0.01f) {
-				// 目的地が変わっているので再計算フラグを立てる
-				needRecalc = true;
-			}
-		}
-
-		// 再計算が必要なら実行
-		if (needRecalc) {
-			CalculatePath(*playerPos_);
-		}
-	}
-
-	// 経路がない場合の処理
-	if (path_.empty()) {
-		if (state_ == State::GoTo) {
-			// 目的地に着いたら、プレイヤーの位置に戻る
-			state_ = State::Return;
-
-			// プレイヤーの位置までの経路を取得
-			CalculatePath(*playerPos_);
-		} else if (state_ == State::Return) {
-			isDead_ = true;
-		}
-		return;
-	}
+	// パスに何も存在しなければ早期リターン
+	if (path_.empty()) { return; }
 
 	// 次に進むべき座標を取得
 	Vector3 nextTarget = path_.front();

@@ -37,6 +37,8 @@ private:
 	std::unordered_map<int32_t, std::unique_ptr<OreUnit>> oreUnits_;
 	// 最大のおれの数
 	int32_t maxOreCount_ = 100;
+	// 現在出せる最大のおれの数
+	int32_t maxCurrentOreCount_ = 10;
 	// 現在のid
 	int32_t currentId_ = 0;
 	// 再利用可能id
@@ -45,8 +47,7 @@ private:
 	// おれの出現位置
 	std::vector<Vector3> homePosList_;
 
-	// 削除リスト
-	std::vector<std::pair<std::unique_ptr<OreUnit>, int>> graveyard_;
+	int32_t activeCount_ = 0;
 
 private:
 

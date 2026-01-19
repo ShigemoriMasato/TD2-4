@@ -1,5 +1,9 @@
 #include"UnitManager.h"
 
+#ifdef USE_IMGUI
+#include <imgui/imgui.h>
+#endif
+
 void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData, DrawData oreDrawData, KeyManager* keyManager) {
 	// マップデータを取得
 	mapChipField_ = mapChipField;
@@ -24,36 +28,25 @@ void UnitManager::Update() {
 	// プレイヤーの更新処理
 	playerUnit_->Update();
 
-	// おれユニットを削除
-	for (auto it = graveyard_.begin(); it != graveyard_.end(); ) {
-		// カウントダウン
-		it->second--;
-
-		// 待機時間が終わったら削除
-		if (it->second <= 0) {
-			it = graveyard_.erase(it);
-		} else {
-			++it;
-		}
-	}
-
 	// おれユニットの更新処理
-	for (auto it = oreUnits_.begin(); it != oreUnits_.end(); ) {
-		auto& unit = it->second;
-
-		if (unit->IsDead()) {
-			// 10フレーム後に削除するようにリストに追加
-			graveyard_.push_back({ std::move(unit), 10 });
-
-			// 再利用リストに追加
-			freeIndices_.push_back(it->first);
-
-			// マップからは要素を削除
-			it = oreUnits_.erase(it);
-		} else {
-			// 生きている場合は更新
+	for (auto& [id, unit] : oreUnits_) {
+		// 生きている場合は更新
+		if (unit->IsActive() && !unit->IsDead()) {
+			// ユニットの更新処理
 			unit->Update();
-			++it;
+
+			// 更新して有効フラグがfalseだったら、再利用リストに追加する
+			if (!unit->IsActive()) {
+				// 再利用リストに追加
+				freeIndices_.push_back(id);
+				activeCount_--;
+			} else if (unit->IsDead()) {
+				// 再利用リストに追加
+				freeIndices_.push_back(id);
+				activeCount_--;
+				// 死亡していた場合、利用出来る最大数を減らす
+				maxCurrentOreCount_--;
+			}
 		}
 	}
 }
@@ -65,31 +58,61 @@ void UnitManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 
 	// おれを描画
 	for (const auto& [id, unit] : oreUnits_) {
+		if (!unit->IsActive()) { continue; }
 		unit->Draw(window, vpMatrix);
 	}
+
+#ifdef USE_IMGUI
+
+	ImGui::Begin("OreUnitsInfo");
+	ImGui::Text("MaxNumInstace : %d", maxOreCount_);
+	ImGui::Text("MaxCurrentNum : %d", maxCurrentOreCount_);
+	ImGui::Text("OreUnitInstace : %d", static_cast<int>(oreUnits_.size()));
+	ImGui::Text("ActiveNum : %d", activeCount_);
+	ImGui::End();
+#endif
 }
 
 void UnitManager::AddOreUnit(const Vector3& targetPos) {
 
+	// 生成出来る最大の数を超えていれば、早期リターン
+	if (activeCount_ >= maxCurrentOreCount_) {
+		return;
+	}
+
 	// 出現位置を求める
 	Vector3 homePos = GetNearHomePos(targetPos);
 
+	bool isReuse = false;
 	int32_t index;
 	if (!freeIndices_.empty()) {
 		index = freeIndices_.front();
 		freeIndices_.pop_front();
+		isReuse = true;
 	} else {
-		if (currentId_ >= maxOreCount_) {
+		if (currentId_ >= maxOreCount_ || oreUnits_.size() >= maxCurrentOreCount_) {
 			return;
 		}
 		index = currentId_++;
 	}
 
-	// 登録
-	std::unique_ptr<OreUnit> oreUnit = std::make_unique<OreUnit>();
-	oreUnit->Initialize(mapChipField_, oreDrawData_, homePos,targetPos,playerUnit_->GetPos());
+	if (isReuse) {
+		// 既存のユニットを再利用
+		auto unit = oreUnits_.find(index);
+		if (unit == oreUnits_.end()) {
+			assert(false && "Not found Unit");
+		}
+		// 初期化
+		unit->second->Initialize(homePos, targetPos);
+	} else {
+		// 新しく登録
+		std::unique_ptr<OreUnit> oreUnit = std::make_unique<OreUnit>(mapChipField_, oreDrawData_, playerUnit_->GetPos());
+		oreUnit->Initialize(homePos, targetPos);
 
-	oreUnits_[index] = std::move(oreUnit);
+		oreUnits_[index] = std::move(oreUnit);
+	}
+
+	activeCount_++;
 }
 
 Vector3 UnitManager::GetNearHomePos(const Vector3& targetPos) {
