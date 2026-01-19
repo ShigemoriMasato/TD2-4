@@ -55,7 +55,7 @@ public:
 	void SetProjectionMatrix(OrthographicDesc desc);
 
 	//TransformとProjectionMatrixをかけて、VPMatrixを作成する
-	void MakeMatrix();
+	virtual void MakeMatrix();
 	void DrawImGui();
 
 	void SetTransform(Matrix4x4 mat);
@@ -63,19 +63,19 @@ public:
 	//VPMatrixを取得
 	Matrix4x4 GetVPMatrix() const;
 
+	Matrix4x4 GetTranformMatrix() const { return transformMatrix_; }
+	Matrix4x4 GetProjectionMatrix() const { return projectionMatrix_; }
+
+protected:
+
 	Vector3 position_ = { 0.0f, 0.0f, 0.0f };
 	Vector3 rotation_ = { 0.0f, 0.0f, 0.0f };
 	Vector3 scale_ = { 1.0f, 1.0f, 1.0f };
 
-	Matrix4x4 GetTranformMatrix() const { return transformMatrix_; }
-	Matrix4x4 GetProjectionMatrix() const { return projectionMatrix; }
-
-protected:
-
 	/// @brief 投影行列（ワールド行列にかけると投影変換される）
-	Matrix4x4 projectionMatrix = Matrix4x4::Identity();
+	Matrix4x4 projectionMatrix_ = Matrix4x4::Identity();
 	/// @brief View-Projection行列（Viewport変換抜き）
-	Matrix4x4 vpMatrix = Matrix4x4::Identity();
+	Matrix4x4 vpMatrix_ = Matrix4x4::Identity();
 
 	/// @brief カメラ座標変換行列
 	Matrix4x4 transformMatrix_ = Matrix4x4::Identity();

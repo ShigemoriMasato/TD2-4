@@ -2,7 +2,7 @@
 #include"Camera/Camera.h"
 #include"Input/Input.h"
 
-class CameraController {
+class CameraController : public Camera {
 public:
 
 	void Initialize(Input* input);
@@ -22,17 +22,23 @@ public:
 
 public:
 
-	Matrix4x4 GetVpMatrix() const { return camera_->GetVPMatrix(); }
-	Camera* GetCamera() const { return camera_.get(); }
+	Matrix4x4 GetVpMatrix() const { return vpMatrix_; }
 
 	Vector3 GetWorldPos() { return worldPos_; }
 
 private:
 
-	Input* input_ = nullptr;
+	void MakeMatrix() override;
 
-	// カメラ
-	std::unique_ptr<Camera> camera_;
+	Vector3 backDir_ = { 0.0f,-0.4f,0.7f };
+	float backDist_ = 10.0f;
+
+	Input* input_ = nullptr;
+	//クリックした瞬間のマウス座標
+	Vector3 clickedCameraPos_ = {};
+	Vector2 mousePos_ = {};
+	bool preClicked_ = false;
+	float deadZone_ = 10.0f;
 
 	// 移動速度
 	float moveSpeed_ = 30.0f;

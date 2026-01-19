@@ -21,7 +21,6 @@ void OreUnitObject::Initialize(DrawData drawData) {
 
 	// 色を設定
 	material_.color = { 1.0f,1.0f,1.0f,1.0f };
-	renderObject_->CopyBufferData(psDataIndex_, &material_, sizeof(Material));
 }
 
 void OreUnitObject::Update() {
@@ -29,14 +28,14 @@ void OreUnitObject::Update() {
 	worldMatrix_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 	vsData_.World = worldMatrix_;
 	vsData_.worldInverseTranspose = Matrix::InverseMatrix(worldMatrix_);
-	renderObject_->CopyBufferData(vsDataIndex_, &vsData_, sizeof(TransformationMatrix));
 }
 
 void OreUnitObject::Draw(Window* window, const Matrix4x4& vpMatrix) {
 
 	// カメラによる位置を設定
 	vsData_.WVP = worldMatrix_ * vpMatrix;
-
+	renderObject_->CopyBufferData(vsDataIndex_, &vsData_, sizeof(TransformationMatrix));
+	renderObject_->CopyBufferData(psDataIndex_, &material_, sizeof(Material));
 	// 描画
 	renderObject_->Draw(window);
 }

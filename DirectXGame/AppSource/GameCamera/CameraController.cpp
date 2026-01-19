@@ -14,11 +14,10 @@ void CameraController::Initialize(Input* input) {
 	input_ = input;
 
 	// カメラを初期化
-	camera_ = std::make_unique<Camera>();
-	camera_->SetProjectionMatrix(PerspectiveFovDesc{});
-	camera_->position_ = { 0.0f,8.0f,0.0f };
-	camera_->rotation_ = { -0.7f,0.0f,0.0f };
-	camera_->MakeMatrix();
+	this->SetProjectionMatrix(PerspectiveFovDesc{});
+	position_ = { 0.0f,8.0f,0.0f };
+	rotation_ = { -0.7f,0.0f,0.0f };
+	MakeMatrix();
 }
 
 void CameraController::Update() {
@@ -28,15 +27,26 @@ void CameraController::Update() {
 
 	// 左クリックを押している状態
 	if (mouseKey && (mouseKey[0] & 0x80)) {
-		// 差分を取得
-		Vector2 mouseDelta = input_->GetMouseMove();
-		// 移動
-		camera_->position_.x += mouseDelta.x * moveSpeed_ * FpsCount::deltaTime;
-		camera_->position_.z -= mouseDelta.y * moveSpeed_ * FpsCount::deltaTime;
+		if (!preClicked_) {
+			mousePos_ = {};
+			clickedCameraPos_ = position_;
+			preClicked_ = true;
+		}
+		// マウスの移動量を座標に追加
+		mousePos_ += input_->GetMouseMove();
+		float length = mousePos_.Length();
+		if (length > deadZone_) {
+			Vector2 move = (length - deadZone_) * mousePos_.Normalize() * 0.05f;
+			position_ = clickedCameraPos_ + Vector3(-move.x, 0, move.y);
+		}
+	} else {
+		preClicked_ = false;
 	}
 
+	backDist_ += input_->GetMouseWheel() * 0.02f;
+
 	// カメラの更新処理
-	camera_->MakeMatrix();
+	MakeMatrix();
 
 	// ワールド座標の位置を取得する
 #ifdef USE_IMGUI
@@ -48,13 +58,16 @@ void CameraController::Update() {
 
 void CameraController::DebugDraw() {
 	// デバック描画
-	camera_->DrawImGui();
+	DrawImGui();
 #ifdef USE_IMGUI
 	ImGui::Begin("DebugMouse");
 	ImGui::Text("GameMousePos x : %.2f, y : %.2f", DebugMousePos::gameMousePos.x, DebugMousePos::gameMousePos.y);
 	ImGui::Text("WindowMousePos x : %.2f, y : %.2f", DebugMousePos::windowPos.x, DebugMousePos::windowPos.y);
 	ImGui::Text("ScreenMousePos x : %.2f, y : %.2f", DebugMousePos::screenMousePos.x, DebugMousePos::screenMousePos.y);
 	ImGui::Text("WorldMousePos x : %.2f, y : %.2f, z : %.2f", worldPos_.x, worldPos_.y, worldPos_.z);
+	ImGui::Text("BackDist : %.2f", backDist_);
+	ImGui::DragFloat3("BackDir", &backDir_.x, 0.01f);
+	backDir_ = backDir_.Normalize();
 	ImGui::End();
 #endif
 }
@@ -67,11 +80,10 @@ Vector3 CameraController::ScreenToWorld(const Vector2& screenPos, float screenWi
 	ndc.y = -((screenPos.y / screenHeight) * 2.0f - 1.0f); // Y軸を反転
 
 	// 2. ビュー行列とプロジェクション行列の逆行列を取得
-	Matrix4x4 viewMatrix = camera_->GetTranformMatrix();
-	Matrix4x4 projectionMatrix = camera_->GetProjectionMatrix();
+	Matrix4x4 viewMatrix = transformMatrix_;
 	
 	Matrix4x4 invView = Matrix::InverseMatrix(viewMatrix);
-	Matrix4x4 invProjection = Matrix::InverseMatrix(projectionMatrix);
+	Matrix4x4 invProjection = Matrix::InverseMatrix(projectionMatrix_);
 
 	// 3. NDCからビュー空間への変換（Near平面とFar平面）
 	Vector4 nearPoint = Vector4(ndc.x, ndc.y, 0.0f, 1.0f); // Near平面
@@ -125,4 +137,9 @@ Vector3 CameraController::ScreenToWorld(const Vector2& screenPos, float screenWi
 	Vector3 intersectionPoint = nearWorld + rayDirection * t;
 
 	return intersectionPoint;
+}
+
+void CameraController::MakeMatrix() {
+	Vector3 offset = backDir_.Normalize() * backDist_;
+	vpMatrix_ = Matrix::MakeTranslationMatrix(-position_ - offset) * Matrix::MakeRotationMatrix(rotation_) * projectionMatrix_;
 }

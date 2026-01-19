@@ -38,18 +38,18 @@ namespace {
 }
 
 void Camera::SetProjectionMatrix(PerspectiveFovDesc desc) {
-	projectionMatrix = MakePerspectiveFovMatrix(desc.fovY, desc.aspectRatio, desc.nearClip, desc.farClip);
+	projectionMatrix_ = MakePerspectiveFovMatrix(desc.fovY, desc.aspectRatio, desc.nearClip, desc.farClip);
 }
 
 void Camera::SetProjectionMatrix(OrthographicDesc desc) {
-	projectionMatrix = MakeOrthographicMatrix(desc.left, desc.top, desc.right, desc.bottom, desc.nearClip, desc.farClip);
+	projectionMatrix_ = MakeOrthographicMatrix(desc.left, desc.top, desc.right, desc.bottom, desc.nearClip, desc.farClip);
 }
 
 void Camera::MakeMatrix() {
 	if (!isSetMatrix) {
 		transformMatrix_ = MakeTranslationMatrix(-position_) * MakeRotationMatrix(rotation_) * MakeScaleMatrix(scale_);
 	}
-	vpMatrix = transformMatrix_ * projectionMatrix;
+	vpMatrix_ = transformMatrix_ * projectionMatrix_;
 }
 
 void Camera::DrawImGui() {
@@ -68,5 +68,5 @@ void Camera::SetTransform(Matrix4x4 mat) {
 }
 
 Matrix4x4 Camera::GetVPMatrix() const {
-	return vpMatrix;
+	return vpMatrix_;
 }

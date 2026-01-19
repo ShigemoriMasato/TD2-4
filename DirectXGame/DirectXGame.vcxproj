@@ -232,7 +232,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClCompile Include="Engine\Core\src\ImGuiforEngine.cpp" />
     <ClCompile Include="Engine\Utility\src\SearchFile.cpp" />
     <ClCompile Include="Engine\Screen\Display\src\IDisplay.cpp" />
-    <ClCompile Include="AppSource\Common\Camera\GameCamera.cpp" />
     <ClCompile Include="AppSource\Game\GameScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\SHEngine.cpp" />
@@ -354,7 +353,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClInclude Include="Engine\Assets\Model\ModelLoader.h" />
     <ClInclude Include="Engine\Render\PostEffect.h" />
     <ClInclude Include="Engine\Screen\Display\IDisplay.h" />
-    <ClInclude Include="AppSource\Common\Camera\GameCamera.h" />
     <ClInclude Include="AppSource\Game\GameScene.h" />
     <ClInclude Include="AppSource\MapEditor\MapEditScene.h" />
     <ClInclude Include="AppSource\Game\MapData\MapDataManager.h" />
