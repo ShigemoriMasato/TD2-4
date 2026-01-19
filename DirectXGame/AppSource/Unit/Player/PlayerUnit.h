@@ -37,7 +37,7 @@ private:
 	Vector3 velocity_ = {};
 
 	// 速さ
-	float speed_ = 20.0f;
+	float speed_ = 10.0f;
 
 private:
 
