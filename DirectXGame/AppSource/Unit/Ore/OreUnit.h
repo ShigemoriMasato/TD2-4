@@ -74,17 +74,20 @@ private:
 
 	// 移動ルート
 	std::vector<Vector3> path_;
-
 	// 家の場所
 	Vector3 homePos_;
-
 	// プレイヤーの位置
 	Vector3* playerPos_ = nullptr;
+
+	// 体力の計算に使用
+	float lifeTimer_ = 0.0f;
 
 	float timer_ = 0.0f;
 
 	// 円の当たり判定
 	Circle circleCollider_;
+
+	bool isHit = false;
 
 private: // 調整項目
 
@@ -96,6 +99,9 @@ private: // 調整項目
 
 	// 移動速度
 	float speed_ = 5.0f;
+
+	// 採掘時間
+	float miningTime_ = 1.0f;
 
 private:
 

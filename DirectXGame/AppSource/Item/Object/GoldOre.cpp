@@ -27,6 +27,8 @@ void GoldOre::Init(DrawData drawData, const Vector3& pos) {
 
 void GoldOre::Update() {
 
+	contactNum_ = 0;
+
 	// 更新処理
 	object_->Update();
 
@@ -44,4 +46,7 @@ void GoldOre::OnCollision(Collider* other) {
 	bool isUnit = CollTag::Unit == other->GetOwnTag();
 
 	if (!isUnit) { return; }
+
+	// ユニットとの接触回数を記録
+	contactNum_++;
 }

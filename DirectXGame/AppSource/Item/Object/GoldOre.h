@@ -26,6 +26,9 @@ public:
 	// サイズ
 	Vector3 GetSize() override { return size_; }
 
+	// ユニットとの接触回数
+	int32_t GetContactNum() const { return contactNum_; }
+
 private:
 	// オブジェクトデータ
 	std::unique_ptr<OreObject> object_;
@@ -36,4 +39,7 @@ private:
 
 	// 円の当たり判定
 	Quad quadCollider_;
+
+	// ユニットとの接触回数
+	int32_t contactNum_ = 0;
 };

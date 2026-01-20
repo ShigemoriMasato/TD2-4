@@ -1,6 +1,7 @@
 #include"OreUnit.h"
 #include"FpsCount.h"
 
+#include"Item/OreItemStorageNum.h"
 #include"Item/Object/GoldOre.h"
 
 OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerPos) {
@@ -60,7 +61,7 @@ void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos) {
 	hp_ = maxHp_;
 
 	// 時間をリセット
-	timer_ = 0.0f;
+	lifeTimer_ = 0.0f;
 
 	// 状態を設定
 	state_ = State::GoTo;
@@ -73,6 +74,8 @@ void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos) {
 
 void OreUnit::Update() {
 	if (isDead_) { return; }
+
+	isHit = false;
 
 	// 切り替え処理
 	if (stateRequest_) {
@@ -97,11 +100,11 @@ void OreUnit::Update() {
 	circleCollider_.center = object_->transform_.position;
 
 	// 生存時間
-	timer_ += FpsCount::deltaTime / damageTime_;
+	lifeTimer_ += FpsCount::deltaTime / damageTime_;
 
-	if (timer_ >= 1.0f) {
+	if (lifeTimer_ >= 1.0f) {
 		hp_ -= 1;
-		timer_ = 0.0f;
+		lifeTimer_ = 0.0f;
 	}
 
 	// 体力が0の時、死亡する
@@ -118,14 +121,39 @@ void OreUnit::Draw(Window* window, const Matrix4x4& vpMatrix) {
 }
 
 void OreUnit::OnCollision(Collider* other) {
+	isHit = true;
+
 	bool isStage = CollTag::Stage == other->GetOwnTag();
+	bool isPlayer = CollTag::Player == other->GetOwnTag();
 
-	if (!isStage) { return; }
+	// プレイヤーとの当たり判定
+	if (isPlayer) {
+		if (state_ != State::Return) { return; }
+		// プレイヤーに触れれば帰宅する
 
-	GoldOre* goldOre = dynamic_cast<GoldOre*>(other);
+		if (isActive_) {
+			// 鉱石を収納する
+			OreItemStorageNum::currentOreItemNum_ += 1;
+			// 有効を解除
+			isActive_ = false;
+		}
+	}
 
-	if (goldOre) {
+	// 鉱石との当たり判定
+	if (isStage) {
+		// 指定した鉱石に近ければ採掘に移る
+		if (path_.size() > 3) { return; }
+		if (state_ != State::GoTo) { return; }
 
+		GoldOre* goldOre = dynamic_cast<GoldOre*>(other);
+		if (goldOre) {
+
+			// 採掘状態に切り替える
+			stateRequest_ = State::Mining;
+
+			//goldOre->GetContactNum();
+			timer_ = 0.0f;
+		}
 	}
 }
 
@@ -133,7 +161,8 @@ void OreUnit::GoToUpdate() {
 
 	// 目的地付けば次の状態に切り替える
 	if (path_.empty()) {
-		stateRequest_ = State::Mining;
+		// 目的地に到着して鉱石が存在していなかった場合、帰宅する
+		stateRequest_ = State::Return;
 	}
 
 	// 鉱石まで移動する
@@ -142,10 +171,12 @@ void OreUnit::GoToUpdate() {
 
 void OreUnit::MiningUpdate() {
 
-	// 鉱石を採掘
+	timer_ += FpsCount::deltaTime / miningTime_;
 
-
-	stateRequest_ = State::Return;
+	if (timer_ >= 1.0f) {
+		timer_ = 0.0f;
+		stateRequest_ = State::Return;
+	}
 }
 
 void OreUnit::ReturnUpdate() {
