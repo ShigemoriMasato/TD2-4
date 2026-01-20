@@ -33,7 +33,7 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerP
 	};
 
 	// 当たり判定の設定
-	circleCollider_.center = object_->transform_.position;
+	circleCollider_.center = Vector2(object_->transform_.position.x, object_->transform_.position.z);
 	circleCollider_.radius = 1.0f;
 
 	// 当たり判定の要素を設定
@@ -41,7 +41,7 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerP
 	config.colliderInfo = &circleCollider_;
 	config.isActive = true;
 	config.ownTag = CollTag::Unit;
-	config.targetTag = static_cast<uint32_t>(CollTag::Player) | static_cast<uint32_t>(CollTag::Enemy);
+	config.targetTag = static_cast<uint32_t>(CollTag::Player) | static_cast<uint32_t>(CollTag::Stage);
 	SetColliderConfig(config);
 
 	// 当たり判定の初期化
@@ -97,7 +97,7 @@ void OreUnit::Update() {
 	object_->Update();
 
 	// 当たり判定の位置を更新
-	circleCollider_.center = object_->transform_.position;
+	circleCollider_.center = Vector2(object_->transform_.position.x, object_->transform_.position.z);
 
 	// 生存時間
 	lifeTimer_ += FpsCount::deltaTime / damageTime_;
@@ -121,6 +121,9 @@ void OreUnit::Draw(Window* window, const Matrix4x4& vpMatrix) {
 }
 
 void OreUnit::OnCollision(Collider* other) {
+
+	if (isDead_) { return; }
+	if (!isActive_) { return; }
 	isHit = true;
 
 	bool isStage = CollTag::Stage == other->GetOwnTag();

@@ -84,7 +84,7 @@ public:
 	virtual void OnCollision(Collider* other) = 0;
 
 	// 自分のタグ
-	CollTag GetOwnTag() { return ownTag_; }
+	virtual CollTag GetOwnTag() { return ownTag_; }
 
 protected:
 
