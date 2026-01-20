@@ -94,6 +94,16 @@ int TextureManager::CreateSwapChainTexture(ID3D12Resource* resource) {
 	return offset;
 }
 
+int TextureManager::CreateBitmapTexture(uint32_t width, uint32_t height, std::vector<uint32_t> colorMap) {
+	auto textureData = std::make_unique<TextureData>();
+	auto data = textureData->Create(width, height, colorMap, device_->GetDevice(), srvManager_);
+	mipUploadData_.push_back(data);
+	textureData->textureManager_ = this;
+	int offset = textureData->GetOffset();
+	textureDatas_[offset] = std::move(textureData);
+	return offset;
+}
+
 void TextureManager::DeleteTexture(int handle) {
 	auto it = textureDatas_.find(handle);
 	if (it != textureDatas_.end()) {
@@ -121,6 +131,36 @@ void TextureManager::UploadTextures(ID3D12GraphicsCommandList* cmdList) {
 		intermediateResources_.back().Attach(UploadTextureData(resource, mipImage, device_->GetDevice(), cmdList));
 	}
 	uploadResources_.clear();
+
+	mipUploadingData_.clear();
+	for (const auto& mipData : mipUploadData_) {
+		mipUploadingData_.push_back(mipData);
+
+		D3D12_TEXTURE_COPY_LOCATION dst{};
+		dst.pResource = mipData.textureResource;
+		dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+		dst.SubresourceIndex = 0;
+
+		D3D12_TEXTURE_COPY_LOCATION src{};
+		src.pResource = mipData.intermediateResource.Get();
+		src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+
+		device_->GetDevice()->GetCopyableFootprints(
+			&mipData.desc, 0, 1, 0,
+			&src.PlacedFootprint,
+			nullptr, nullptr, nullptr
+		);
+
+		cmdList->CopyTextureRegion(
+			&dst, 0, 0, 0,
+			&src, nullptr
+		);
+
+		D3D12_RESOURCE_STATES beforeState = D3D12_RESOURCE_STATE_COPY_DEST;
+		InsertBarrier(cmdList, D3D12_RESOURCE_STATE_GENERIC_READ, beforeState, mipData.textureResource);
+	}
+
+	mipUploadData_.clear();
 }
 
 void TextureManager::ClearUploadedResources() {

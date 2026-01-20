@@ -3,15 +3,20 @@
 #include <algorithm>
 #include <cassert>
 #include <filesystem>
+#include <fstream>
 #include <Utility/Vector.h>
+#include <Utility/ConvertString.h>
 
-void FontLoader::Initialize() {
-	Logger logger = getLogger("Engine");
-	logger->info("FontLoader Initialize");
+void FontLoader::Initialize(TextureManager* textureManager) {
+	logger_ = getLogger("Engine");
+	logger_->info("FontLoader Initialize");
 
+	LoadResponseText();
+
+	textureManager_ = textureManager;
 	FT_Error err = FT_Init_FreeType(&ft_);
 	if (err) {
-		logger->error("Failed to initialize FreeType Library");
+		logger_->error("Failed to initialize FreeType Library");
 		assert(false);
 		return;
 	}
@@ -19,57 +24,67 @@ void FontLoader::Initialize() {
 
 int FontLoader::Load(const std::string& filePath, int fontSize) {
 	//stringの整合性チェック
-	std::string factPath = FilePathChecker(filePath);
-	std::string cacheFileName = filePath + "_" + std::to_string(fontSize);
+	std::filesystem::path factPath = FilePathChecker(filePath);
+	std::string cacheFileName = factPath.filename().string() + "_" + std::to_string(fontSize);
 
 	if (fontIndex_.find(cacheFileName) != fontIndex_.end()) {
-		return fontIndex_[cacheFileName];
+		return fontIndex_[cacheFileName].textureIndex;
 	}
 
-	logger_->info("FontLoader Load: {}", factPath);
+	logger_->info("FontLoader Load: {}", factPath.string());
 
 	auto values = binaryManager_.Read(cachePath_ + cacheFileName);
-	IntermediateFontData fontBuffer;
+	FontData fontBuffer;
 
+	//キャッシュデータを何らかの方法で作成する
 	if (values.empty()) {
+		//キャッシュが存在しない場合
 		//フォントデータを新規作成
-		fontBuffer = CreateFontBuffer(factPath, fontSize);
-
-		//キャッシュを作成
+		fontBuffer = CreateFontBuffer(factPath.string(), fontSize);
+		//キャッシュを作成仕様と思ったが現状げろクソ重くなるのでやりません
 	} else {
+		//キャッシュが存在する場合
 		int index = 0;
-
-		//AtlasData
-		int size = BinaryManager::Reverse<int>(values[index++].get());
-		fontBuffer.atlasData.resize(atlas_width_ * atlas_height_, 0);
-		for (int i = 0; i < size; ++i) {
-			fontBuffer.atlasData[i] = BinaryManager::Reverse<uint8_t>(values[index++].get());
-		}
-
-		//CharPositions
-		int charPosSize = BinaryManager::Reverse<int>(values[index++].get());
-		for (int i = 0; i < charPosSize; ++i) {
-			CharPosition charPos;
-			wchar_t key = static_cast<wchar_t>(BinaryManager::Reverse<int>(values[index++].get()));
-			charPos.uvStart = BinaryManager::Reverse<Vector2>(values[index++].get());
-			charPos.uvEnd = BinaryManager::Reverse<Vector2>(values[index++].get());
-			fontBuffer.charPositions[key] = charPos;
-		}
+		LoadCache(values, fontBuffer);
 	}
 
+	int textureID = textureManager_->CreateBitmapTexture(atlas_width_, atlas_height_, fontBuffer.atlasData);
+	fontBuffer.textureIndex = textureID;
+	fontIndex_[cacheFileName] = fontBuffer;
 
-
-	return 0;
+	return textureID;
 }
 
-FontLoader::IntermediateFontData FontLoader::CreateFontBuffer(const std::string& filePath, int fontSize) {
-	IntermediateFontData data{};
+CharPosition FontLoader::GetCharPosition(const std::string& filePath, wchar_t character, int fontSize) {
+	std::filesystem::path factPath(FilePathChecker(filePath));
+	std::string cacheFileName = factPath.filename().string() + "_" + std::to_string(fontSize);
+
+	if (fontIndex_.find(cacheFileName) == fontIndex_.end()) {
+		logger_->error("FontLoader GetCharPosition Font Not Loaded: {}", factPath.string());
+		assert(false);
+		return {};
+	}
+
+	auto& fontData = fontIndex_[cacheFileName];
+	if (fontData.charPositions.find(character) != fontData.charPositions.end()) {
+		return fontData.charPositions[character];
+	}
+
+	logger_->error("FontLoader GetCharPosition Character Not Found: {} in {}", ConvertString(std::wstring(&character)), factPath.string());
+	assert(false);
+	return {};
+}
+
+FontLoader::FontData FontLoader::CreateFontBuffer(const std::string& filePath, int fontSize) {
+	FontData data{};
 	data.atlasData.resize(atlas_width_ * atlas_height_, 0);
 
 	FT_Face face = nullptr;
 
-	FT_New_Face(ft_, filePath.c_str(), 0, &face);
-	FT_Set_Pixel_Sizes(face, 0, fontSize);
+	FT_Error err = FT_New_Face(ft_, filePath.c_str(), 0, &face);
+	assert(!err);
+	err = FT_Set_Pixel_Sizes(face, 0, fontSize);
+	assert(!err);
 
 	//文字の最大の高さを取得
 	int maxTop = 0;
@@ -98,7 +113,7 @@ FontLoader::IntermediateFontData FontLoader::CreateFontBuffer(const std::string&
 		//改行処理
 		if (dest_x + (int)bitmap.width >= atlas_width_) {
 			dest_x = 0;
-			dest_y += height;
+			dest_y += height + 2;
 
 			//Atlasの高さを超えたら終了
 			if (dest_y + height >= atlas_height_) {
@@ -115,22 +130,24 @@ FontLoader::IntermediateFontData FontLoader::CreateFontBuffer(const std::string&
 				int offsetY = maxTop - face->glyph->bitmap_top;
 				int targetIndex = (dest_y + offsetY + y) * atlas_width_ + (dest_x + x);
 
-				data.atlasData[targetIndex] = alpha;
+				data.atlasData[targetIndex] = 0xffffff00 | alpha;
 				data.lastUsedIndex = std::max(data.lastUsedIndex, targetIndex);
 
-				//UV座標を登録
-				CharPosition charPos;
-				charPos.uvStart = Vector2(
-					static_cast<float>(dest_x) / static_cast<float>(atlas_width_),
-					static_cast<float>(dest_y + offsetY) / static_cast<float>(atlas_height_)
-				);
-				charPos.uvEnd = Vector2(
-					static_cast<float>(dest_x + bitmap.width) / static_cast<float>(atlas_width_),
-					static_cast<float>(dest_y + offsetY + bitmap.rows) / static_cast<float>(atlas_height_)
-				);
-				data.charPositions[c] = charPos;
 			}
 		}
+
+		CharPosition& uv = data.charPositions[c];
+		int offsetY = maxTop - face->glyph->bitmap_top;
+
+		int glyphTop = dest_y + offsetY;
+		int glyphBottom = glyphTop + bitmap.rows;
+		int glyphLeft = dest_x;
+		int glyphRight = dest_x + bitmap.width;
+
+		uv.uvStart = { float(glyphLeft) / float(atlas_width_), float(glyphTop) / float(atlas_height_) };
+		uv.uvEnd = { float(glyphRight) / float(atlas_width_), float(glyphBottom) / float(atlas_height_) };
+		uv.advanceX = static_cast<float>(face->glyph->advance.x) / float(fontSize);
+		uv.bearingY = float(face->glyph->bitmap_top);
 
 		//次の文字の位置を更新
 		dest_x += bitmap.width + 2;
@@ -139,22 +156,22 @@ FontLoader::IntermediateFontData FontLoader::CreateFontBuffer(const std::string&
 	return data;
 }
 
-void FontLoader::CreateCache(const IntermediateFontData& data, const std::string& cacheFileName) {
-	if (!std::filesystem::exists(cachePath_)) {
-		std::filesystem::create_directories(cachePath_);
+void FontLoader::LoadResponseText() {
+	std::ifstream file(responseTextFile_);
+
+	if (!file.is_open()) {
+		logger_->error("FontLoader LoadResponseText Failed: {}", responseTextFile_);
+		assert(false);
+		return;
 	}
 
-	int size = static_cast<int>(data.atlasData.size());
-	binaryManager_.RegisterOutput(size);
-	for (int i = 0; i < size; ++i) {
-		binaryManager_.RegisterOutput(data.atlasData[i]);
-	}
-	binaryManager_.RegisterOutput(static_cast<int>(data.charPositions.size()));
-	for (const auto& [key, value] : data.charPositions) {
-		binaryManager_.RegisterOutput(static_cast<int>(key));
-		binaryManager_.RegisterOutput(value.uvStart);
-		binaryManager_.RegisterOutput(value.uvEnd);
-	}
+	std::string line;
+	std::getline(file, line);
+
+	file.close();
+
+	std::wstring wLine = ConvertString(line);
+	text_ = std::vector<wchar_t>(wLine.begin(), wLine.end());
 }
 
 std::string FontLoader::FilePathChecker(const std::string& filePath) {
@@ -173,7 +190,7 @@ std::string FontLoader::FilePathChecker(const std::string& filePath) {
 	}
 
 	if (notAssets) {
-		return "Assets/Font/" + filePath;
+		return basePath_ + filePath;
 	} else {
 		return filePath;
 	}
@@ -181,12 +198,12 @@ std::string FontLoader::FilePathChecker(const std::string& filePath) {
 	return {};
 }
 
-void FontLoader::CreateCache(const std::string& cacheFileName, const IntermediateFontData& data) {
+void FontLoader::CreateCache(const FontData& data, const std::string& cacheFileName) {
 
 	//AtlasData
 	binaryManager_.RegisterOutput(static_cast<int>(data.lastUsedIndex));
 	for (int i = 0; i < data.lastUsedIndex; ++i) {
-		binaryManager_.RegisterOutput(data.atlasData[i]);
+		binaryManager_.RegisterOutput(uint8_t(data.atlasData[i]) | 0xff);
 	}
 
 	//CharPositions
@@ -197,12 +214,14 @@ void FontLoader::CreateCache(const std::string& cacheFileName, const Intermediat
 		binaryManager_.RegisterOutput(value.uvEnd);
 	}
 
-	binaryManager_.Write(cachePath_ + cacheFileName);
+	if (std::filesystem::exists(cachePath_) == false) {
+		std::filesystem::create_directories(cachePath_);
+	}
+
+	binaryManager_.Write("cache/" + cacheFileName);
 }
 
-void FontLoader::LoadCache(const std::string& cacheFileName, IntermediateFontData& data) {
-	auto values = binaryManager_.Read(cachePath_ + cacheFileName);
-
+void FontLoader::LoadCache(const std::vector<std::shared_ptr<ValueBase>>& values, FontData& data) {
 	if (values.empty()) {
 		return;
 	}
@@ -212,7 +231,7 @@ void FontLoader::LoadCache(const std::string& cacheFileName, IntermediateFontDat
 	data.lastUsedIndex = BinaryManager::Reverse<int>(values[index++].get());
 	data.atlasData.resize(atlas_width_ * atlas_height_, 0);
 	for (int i = 0; i < data.lastUsedIndex; ++i) {
-		data.atlasData[i] = BinaryManager::Reverse<uint8_t>(values[index++].get());
+		data.atlasData[i] = 0xffffff00 | BinaryManager::Reverse<uint8_t>(values[index++].get());
 	}
 	//CharPositions
 	int charPosSize = BinaryManager::Reverse<int>(values[index++].get());

@@ -9,6 +9,7 @@
 #include <Input/Input.h>
 #include <Tool/FPS/FPSObserver.h>
 #include <Assets/Model/ModelManager.h>
+#include <Assets/Fonts/FontLoader.h>
 #include <memory>
 
 /**
@@ -88,6 +89,9 @@ public:
 	/// @return FPSObserverへのポインタ
 	FPSObserver* GetFPSObserver() { return fpsObserver_.get(); }
 
+	/// @brief フォントローダーを取得
+	/// @return FontLoaderへのポインタ
+	FontLoader* GetFontLoader() { return fontLoader_.get(); }
 
 private:
 
@@ -132,6 +136,8 @@ private:
 	std::unique_ptr<Input> input_ = nullptr;
 	/// @brief FPS監視
 	std::unique_ptr<FPSObserver> fpsObserver_ = nullptr;
+	/// @brief フォントローダー
+	std::unique_ptr<FontLoader> fontLoader_ = nullptr;
 
 private:
 
