@@ -224,6 +224,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClInclude Include="AppSource\Item\Object\OreItem.h" />
     <ClInclude Include="AppSource\Item\Object\OreObject.h" />
     <ClInclude Include="AppSource\Item\OreItemManager.h" />
+    <ClInclude Include="AppSource\Item\OreItemStorageNum.h" />
     <ClInclude Include="AppSource\Unit\MapChipRender.h" />
     <ClInclude Include="Engine\Utility\Quaternion.h" />
     <ClCompile Include="AppSource\Scene\src\IScene.cpp" />
