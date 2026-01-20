@@ -5,6 +5,8 @@
 #include <string>
 
 #include <Tool/Binary/BinaryManager.h>
+#include <Tool/Logger/Logger.h>
+#include <Utility/Vector.h>
 
 class FontLoader {
 public:
@@ -35,6 +37,7 @@ private:
 private:
 
 	IntermediateFontData CreateFontBuffer(const std::string& filePath, int fontSize);
+	void CreateCache(const IntermediateFontData& data, const std::string& cacheFileName);
 
 	std::string FilePathChecker(const std::string& filePath);
 

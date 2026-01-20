@@ -7,8 +7,6 @@
 #include <ostream>
 #include <memory>
 #include <type_traits>
-#include <Utility/Vector.h>
-#include <PSO/PSOConfig.h>
 #include <imgui/imgui.h>
 
 enum class TypeID : uint8_t {
@@ -33,9 +31,12 @@ enum class TypeID : uint8_t {
 
 	//構造体とか
 	Custom = 0x80,
-	PSOConfig,
 
 };
+
+struct Vector2;
+struct Vector3;
+struct Vector4;
 
 template<typename T>
 struct TypeIDResolver {
@@ -54,7 +55,6 @@ template<> struct TypeIDResolver<uint32_t> { static constexpr TypeID id = TypeID
 template<> struct TypeIDResolver<Vector2> { static constexpr TypeID id = TypeID::Vector2; };
 template<> struct TypeIDResolver<Vector3> { static constexpr TypeID id = TypeID::Vector3; };
 template<> struct TypeIDResolver<Vector4> { static constexpr TypeID id = TypeID::Vector4; };
-template<> struct TypeIDResolver<PSOConfig> { static constexpr TypeID id = TypeID::PSOConfig; };
 
 class ValueBase {
 public:

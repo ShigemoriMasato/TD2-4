@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <cassert>
+#include <filesystem>
+#include <Utility/Vector.h>
 
 void FontLoader::Initialize() {
 	Logger logger = getLogger("Engine");
@@ -30,9 +32,10 @@ int FontLoader::Load(const std::string& filePath, int fontSize) {
 	IntermediateFontData fontBuffer;
 
 	if (values.empty()) {
+		//フォントデータを新規作成
 		fontBuffer = CreateFontBuffer(factPath, fontSize);
 
-
+		//キャッシュを作成
 	} else {
 		int index = 0;
 
@@ -44,6 +47,14 @@ int FontLoader::Load(const std::string& filePath, int fontSize) {
 		}
 
 		//CharPositions
+		int charPosSize = BinaryManager::Reverse<int>(values[index++].get());
+		for (int i = 0; i < charPosSize; ++i) {
+			CharPosition charPos;
+			wchar_t key = static_cast<wchar_t>(BinaryManager::Reverse<int>(values[index++].get()));
+			charPos.uvStart = BinaryManager::Reverse<Vector2>(values[index++].get());
+			charPos.uvEnd = BinaryManager::Reverse<Vector2>(values[index++].get());
+			fontBuffer.charPositions[key] = charPos;
+		}
 	}
 
 
@@ -126,6 +137,24 @@ FontLoader::IntermediateFontData FontLoader::CreateFontBuffer(const std::string&
 	}
 
 	return data;
+}
+
+void FontLoader::CreateCache(const IntermediateFontData& data, const std::string& cacheFileName) {
+	if (!std::filesystem::exists(cachePath_)) {
+		std::filesystem::create_directories(cachePath_);
+	}
+
+	int size = static_cast<int>(data.atlasData.size());
+	binaryManager_.RegisterOutput(size);
+	for (int i = 0; i < size; ++i) {
+		binaryManager_.RegisterOutput(data.atlasData[i]);
+	}
+	binaryManager_.RegisterOutput(static_cast<int>(data.charPositions.size()));
+	for (const auto& [key, value] : data.charPositions) {
+		binaryManager_.RegisterOutput(static_cast<int>(key));
+		binaryManager_.RegisterOutput(value.uvStart);
+		binaryManager_.RegisterOutput(value.uvEnd);
+	}
 }
 
 std::string FontLoader::FilePathChecker(const std::string& filePath) {

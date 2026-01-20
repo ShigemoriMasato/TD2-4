@@ -233,7 +233,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClCompile Include="Engine\Utility\src\SearchFile.cpp" />
     <ClCompile Include="Engine\Screen\Display\src\IDisplay.cpp" />
     <ClCompile Include="AppSource\Game\GameScene.cpp" />
-    <ClCompile Include="Engine\Assets\Font\FontLoader.cpp" />
+    <ClCompile Include="Engine\Assets\Fonts\FontLoader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\SHEngine.cpp" />
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
@@ -256,7 +256,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClCompile Include="AppSource\MapEditor\Editor\MapEditWithImGui.cpp" />
     <ClCompile Include="AppSource\MapEditor\Editor\Data\Pencil.cpp" />
     <ClInclude Include="AppSource\MapEditor\Editor\Data\StageEditor.h" />
-    <ClInclude Include="Engine\Assets\Font\FontLoader.h" />
+    <ClInclude Include="Engine\Assets\Fonts\FontLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSource\Common\DebugParam\GameParamEditor.h" />

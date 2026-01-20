@@ -1,5 +1,6 @@
 #pragma once
 #include "Pencil.h"
+#include <map>
 
 namespace MapEditor {
 
