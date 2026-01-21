@@ -28,8 +28,17 @@ void EditConfig::DrawImGui(MapDataForBin& mapData) {
 		mapData.modelFilePath = modelFilePathBuffer_;
 	}
 	
-	if (ImGui::DragInt2("Width/Height", &mapData.width, 1.0f, 0, 1024)) {
-		mapData.tileData.resize(mapData.width * mapData.height);
+	int prevWidth = mapData.width;
+	if (ImGui::DragInt("MapSize", &mapData.width, 1.0f, 0, 1024)) {
+		for (int i = prevWidth - 1; i < prevWidth * mapData.height; i += prevWidth) {
+			mapData.tileData.insert(mapData.tileData.begin() + i + (mapData.width - prevWidth) * (i / prevWidth),TileType::Air);
+		}
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::DragInt("/", &mapData.height, 1.0f, 0, 1024)) {
+		mapData.tileData.resize(mapData.width * mapData.height, TileType::Air);
 	}
 
 	ImGui::End();

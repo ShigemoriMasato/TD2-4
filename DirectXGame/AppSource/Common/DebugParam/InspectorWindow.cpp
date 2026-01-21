@@ -1,5 +1,6 @@
 #include "InspectorWindow.h"
 #include <Windows.h>
+#include <algorithm>
 
 InspectorWindow::InspectorWindow() {   
 }

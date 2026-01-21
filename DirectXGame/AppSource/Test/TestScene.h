@@ -19,6 +19,7 @@ public:
 private:
 
 	std::unique_ptr<DebugCamera> debugCamera_;
+	std::unique_ptr<Camera> orthoCamera_;
 
 	struct VSData {
 		Matrix4x4 worldMatrix = Matrix4x4::Identity();
@@ -26,10 +27,19 @@ private:
 	};
 	std::vector<WellForGPU> skinningMatrices_;
 	std::unique_ptr<RenderObject> renderObject_;
-	std::unique_ptr<DebugLine> debugLine_;
 	VSData vsData_{};
 	int vsDataIndex_ = -1;
+	std::unique_ptr<DebugLine> debugLine_;
 
+	std::unique_ptr<RenderObject> fontTest_;
+	Matrix4x4 wvpMat_{};
+	std::vector<CharPosition> charPositions_;
+	Vector4 fontColor_ = {1.0f, 1.0f, 1.0f, 1.0f};
+	char imguiBuffer_[256] = "ABC";
+	std::wstring text_ = L"ABC";
+	Transform transform_{};
+
+	std::string fontName = "ZenOldMincho-Medium.ttf";
 
 	// パラメーター管理
 	std::unique_ptr<ParamManager> paramManager_;

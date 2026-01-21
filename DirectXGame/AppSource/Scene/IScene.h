@@ -24,5 +24,6 @@ protected:
 	WindowMaker* windowMaker_ = nullptr;
 	DrawDataManager* drawDataManager_ = nullptr;
 	Input* input_ = nullptr;
+	FontLoader* fontLoader_ = nullptr;
 
 };

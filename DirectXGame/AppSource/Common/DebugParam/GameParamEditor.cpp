@@ -3,6 +3,7 @@
 #include<algorithm>
 #include <fstream>
 #include<Windows.h>
+#include <filesystem>
 
 GameParamEditor* GameParamEditor::GetInstance() {
 	static GameParamEditor instance;
