@@ -97,6 +97,9 @@ private:
 
 	bool isHit = false;
 
+	// 鉱石からの離脱を取得
+	bool isRemoveOre_ = false;
+
 	// 拠点に戻るとのフェーズ
 	ReturnPhase returnPhase_ = ReturnPhase::Fall;
 	Vector3 startMovePos;

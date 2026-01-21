@@ -41,8 +41,6 @@ void GoldOre::Update() {
 	ApplyDebugParam();
 #endif
 
-	contactNum_ = 0;
-
 	// 更新処理
 	object_->Update();
 
@@ -67,8 +65,6 @@ void GoldOre::OnCollision(Collider* other) {
 
 	if (!isUnit) { return; }
 
-	// ユニットとの接触回数を記録
-	contactNum_++;
 }
 
 void GoldOre::RegisterDebugParam() {

@@ -88,7 +88,7 @@ void UnitManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 #endif
 }
 
-void UnitManager::RegisterUnit(const Vector3& targetPos) {
+void UnitManager::RegisterUnit(const Vector3& targetPos, const int32_t& excessNum) {
 
 	// 生成出来る最大の数を超えていれば、早期リターン
 	if (activeCount_ >= maxCurrentOreCount_) {
@@ -97,7 +97,7 @@ void UnitManager::RegisterUnit(const Vector3& targetPos) {
 
 	SpawnData data;
 	data.currentNum = 0;
-	data.spawnNum = unitSpawnNum_;
+	data.spawnNum = unitSpawnNum_ + excessNum;
 	data.pos = targetPos;
 
 	// 登録

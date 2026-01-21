@@ -66,12 +66,14 @@ void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos) {
 
 	// 初期位置を設定
 	object_->transform_.position = apearPos;
+	object_->transform_.scale = { 0.5f,0.5f,0.5f };
 	// 拠点位置を設定
 	homePos_ = apearPos;
 
 	// フラグをリセット
 	isActive_ = true;
 	isDead_ = false;
+	isRemoveOre_ = false;
 
 	// hpを設定
 	hp_ = maxHp_;
@@ -168,18 +170,30 @@ void OreUnit::OnCollision(Collider* other) {
 
 	// 鉱石との当たり判定
 	if (isStage) {
-		// 指定した鉱石に近ければ採掘に移る
-		if (path_.size() > 3) { return; }
-		if (state_ != State::GoTo) { return; }
+
+		if (state_ != State::GoTo && state_ != State::Mining) { return; }
 
 		GoldOre* goldOre = dynamic_cast<GoldOre*>(other);
 		if (goldOre) {
 
-			// 採掘状態に切り替える
-			stateRequest_ = State::Mining;
+			if (state_ == State::GoTo) {
+				// 指定した鉱石に近ければ採掘に移る
+				if (path_.size() > 3) { return; }
 
-			//goldOre->GetContactNum();
-			timer_ = 0.0f;
+				// 採掘状態に切り替える
+				stateRequest_ = State::Mining;
+				//goldOre->GetContactNum();
+				timer_ = 0.0f;
+			} else if (state_ == State::Mining) {
+
+				if (timer_ >= 0.8f) {
+
+					if (!isRemoveOre_) {
+						isRemoveOre_ = true;
+						goldOre->RemoveWorker();
+					}
+				}
+			} 
 		}
 	}
 }
