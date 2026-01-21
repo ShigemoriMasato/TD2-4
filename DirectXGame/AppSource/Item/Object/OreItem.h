@@ -27,4 +27,6 @@ public:
 
 	// サイズ
 	virtual Vector3 GetSize() = 0;
+
+	virtual bool IsDead() = 0;
 };
