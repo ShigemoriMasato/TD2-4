@@ -30,11 +30,18 @@ echo.
 echo ===== Build started =====
 
 rem ============================================================
-rem ========== assimp =========================================
+rem ========== assimp (OBJ / GLTF / FBX のみ) ===============
 rem ============================================================
-set CMAKE_EXTRA_OPTS=-DASSIMP_BUILD_TESTS=OFF -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DASSIMP_BUILD_SAMPLES=OFF
+set CMAKE_EXTRA_OPTS=-DASSIMP_BUILD_TESTS=OFF ^
+                     -DASSIMP_BUILD_ASSIMP_TOOLS=OFF ^
+                     -DASSIMP_BUILD_SAMPLES=OFF ^
+                     -DASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT=OFF ^
+                     -DASSIMP_BUILD_OBJ_IMPORTER=ON ^
+                     -DASSIMP_BUILD_GLTF_IMPORTER=ON ^
+                     -DASSIMP_BUILD_FBX_IMPORTER=ON
 call :build_lib assimp
 set CMAKE_EXTRA_OPTS=
+
 
 rem ============================================================
 rem ========== DirectXTex ====================================
