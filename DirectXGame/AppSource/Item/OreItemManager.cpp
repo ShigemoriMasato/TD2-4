@@ -31,12 +31,20 @@ void OreItemManager::Update() {
 	}
 
 	// 鉱石の更新処理
-	for (auto& [id, ore] : oreItems_) {
+	for (auto it = oreItems_.begin(); it != oreItems_.end(); ) {
+		auto& ore = it->second;
+
+		// 更新処理
 		ore->Update();
 
 		if (ore->IsDead()) {
 			// 5フレーム後に削除するようにリストに追加
 			graveyard_.push_back({ std::move(ore), 5 });
+
+			// マップからは要素を削除
+			it = oreItems_.erase(it);
+		} else {
+			it++;
 		}
 	}
 }

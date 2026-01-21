@@ -64,7 +64,6 @@ void GoldOre::OnCollision(Collider* other) {
 	bool isUnit = CollTag::Unit == other->GetOwnTag();
 
 	if (!isUnit) { return; }
-
 }
 
 void GoldOre::RegisterDebugParam() {
