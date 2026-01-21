@@ -1,5 +1,6 @@
 #include "BinaryManager.h"
 #include <fstream>
+#include <filesystem>
 
 std::unique_ptr<BinaryInput> BinaryManager::input_ = std::make_unique<BinaryInput>();
 std::unique_ptr<BinaryOutput> BinaryManager::output_ = std::make_unique<BinaryOutput>();

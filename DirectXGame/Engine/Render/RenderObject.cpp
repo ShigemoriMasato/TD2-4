@@ -150,6 +150,10 @@ void RenderObject::Draw(Window* window) {
 		return;
 	}
 
+	if (instanceNum_ == 0) {
+		return;
+	}
+
 	auto cmdList = window->GetCommandObject()->GetCommandList();
 
 	//パイプラインステートの設定

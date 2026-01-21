@@ -149,7 +149,7 @@ ID3D12RootSignature* RootSignatureShelf::CreateRootSignature(const RootSignature
 	//DescriptorTableでまとめる
 	D3D12_DESCRIPTOR_RANGE pixelSrvDescriptor[1] = {};
 	pixelSrvDescriptor[0].BaseShaderRegister = 0;
-	pixelSrvDescriptor[0].NumDescriptors = config.srvNums.first;
+	pixelSrvDescriptor[0].NumDescriptors = config.srvNums.second;
 	pixelSrvDescriptor[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pixelSrvDescriptor[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 

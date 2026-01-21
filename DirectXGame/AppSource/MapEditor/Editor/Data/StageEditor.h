@@ -2,6 +2,7 @@
 #include <Game/MapData/Data/StageData.h>
 #include <Game/MapData/Data/MapData.h>
 #include <Tool/Binary/BinaryManager.h>
+#include <map>
 
 namespace MapEditor {
 

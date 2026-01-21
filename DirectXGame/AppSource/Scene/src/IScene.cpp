@@ -9,4 +9,5 @@ void IScene::SwapScene(CommonData* commonData, SHEngine* engine) {
 	windowMaker_ = engine_->GetWindowMaker();
 	drawDataManager_ = engine_->GetDrawDataManager();
 	input_ = engine_->GetInput();
+	fontLoader_ = engine_->GetFontLoader();
 }

@@ -52,6 +52,9 @@ SHEngine::SHEngine() {
 	fpsObserver_->SetTargetFPS(60.0, FPSType::GPU);
 
 	modelManager_ = std::make_unique<ModelManager>();
+
+	fontLoader_ = std::make_unique<FontLoader>();
+	fontLoader_->Initialize(textureManager_.get());
 }
 
 SHEngine::~SHEngine() {

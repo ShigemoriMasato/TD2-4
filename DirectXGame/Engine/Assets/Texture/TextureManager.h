@@ -55,6 +55,15 @@ public:
 	 * @return テクスチャハンドル
 	 */
 	int CreateSwapChainTexture(ID3D12Resource* resource);
+
+	/**
+	 * @brief ビットマップテクスチャを作成
+	 * @param width 幅
+	 * @param height 高さ
+	 * @param colorMap カラーマップ（RGBA形式の32ビットカラーの配列）
+	 * @return テクスチャハンドル
+	 */
+	int CreateBitmapTexture(uint32_t width, uint32_t height, std::vector<uint32_t> colorMap);
 	
 	/**
 	 * @brief テクスチャを削除
@@ -120,6 +129,10 @@ private:
 	std::vector< std::pair<ID3D12Resource*, DirectX::ScratchImage>> uploadResources_;
 	/// @brief 中間リソース
 	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> intermediateResources_;
+	/// @brief ミップマップアップロードデータ
+	std::vector<TextureData::MipMapUploadData> mipUploadData_;
+	/// @brief ミップマップアップロードデータ（アップロード中）
+	std::vector<TextureData::MipMapUploadData> mipUploadingData_;
 
 	/// @brief ロガー
 	Logger logger_ = nullptr;
