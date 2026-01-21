@@ -43,6 +43,7 @@ void MapChipRender::Initialize(DrawData wallDrawData, std::vector<std::vector<Ti
 				// 道
 				uint32_t i = n++;
 				transformDatas_[i].transform.position = { 1.0f * x,-1.0f,1.0f * z };
+				transformDatas_[i].transform.scale = { 0.8f,0.2f,0.8f };
 				transformDatas_[i].worldMatrix = Matrix::MakeAffineMatrix(transformDatas_[i].transform.scale, transformDatas_[i].transform.rotate, transformDatas_[i].transform.position);
 				transformDatas_[i].color = { 1.0f,0.0f,0.0f,1.0f };
 			} else if (map[z][x] == TileType::Home) {

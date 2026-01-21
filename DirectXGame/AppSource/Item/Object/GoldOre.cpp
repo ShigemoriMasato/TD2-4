@@ -1,5 +1,5 @@
 #include"GoldOre.h"
-
+#include <Common/DebugParam/GameParamEditor.h>
 void GoldOre::Init(DrawData drawData, const Vector3& pos) {
 	
 	// オブジェクトを初期化
@@ -23,9 +23,20 @@ void GoldOre::Init(DrawData drawData, const Vector3& pos) {
 
 	// 当たり判定の初期化
 	Initialize();
+
+#ifdef USE_IMGUI
+	// 値の登録
+	RegisterDebugParam();
+#endif
+	// 値の適応
+	ApplyDebugParam();
 }
 
 void GoldOre::Update() {
+#ifdef USE_IMGUI
+	// 値の適応
+	ApplyDebugParam();
+#endif
 
 	contactNum_ = 0;
 
@@ -50,4 +61,12 @@ void GoldOre::OnCollision(Collider* other) {
 
 	// ユニットとの接触回数を記録
 	contactNum_++;
+}
+
+void GoldOre::RegisterDebugParam() {
+
+}
+
+void GoldOre::ApplyDebugParam() {
+
 }

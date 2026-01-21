@@ -16,7 +16,7 @@ void CameraController::Initialize(Input* input) {
 	// カメラを初期化
 	this->SetProjectionMatrix(PerspectiveFovDesc{});
 	position_ = { 0.0f,8.0f,0.0f };
-	rotation_ = { -0.7f,0.0f,0.0f };
+	rotation_ = { -0.9f,0.0f,0.0f };
 	MakeMatrix();
 }
 

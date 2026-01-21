@@ -9,17 +9,23 @@
 class UnitManager {
 public:
 
+	// 出現させるためのデータ
+	struct SpawnData {
+		uint32_t spawnNum = 1;  // 出現させる数
+		uint32_t currentNum = 0; // 現在の出現数
+		Vector3 pos = {}; // 出現位置
+	};
+
+public:
+
 	void Initalize(MapChipField* mapChipField, DrawData playerDrawData, DrawData oreDrawData, KeyManager* keyManager);
 
 	void Update();
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
-	/// <summary>
-	/// ユニットを追加
-	/// </summary>
-	/// <param name="targetPos">移動する位置</param>
-	void AddOreUnit(const Vector3& targetPos);
+	// 出現
+	void RegisterUnit(const Vector3& targetPos);
 
 private:
 
@@ -49,10 +55,50 @@ private:
 
 	int32_t activeCount_ = 0;
 
+	// 出現するユニットをを登録
+	std::deque<SpawnData> spawnList_;
+	bool isSpawn_ = false;
+	SpawnData spawnData_;
+	float spawnTimer_ = 0.0f;
+
+	// デバック用
+	std::string kGroupName_ = "UnitManager";
+
+private: // 調整項目
+
+	// 出現させるユニットの数
+	uint32_t unitSpawnNum_ = 1;
+
+	// 出現させる時間間隔
+	float spawnTime_ = 0.2f;
+
 private:
+
+	/// <summary>
+	/// 登録されたユニットを出現させる
+	/// </summary>
+	void UnitSpawn();
+
+	/// <summary>
+	/// ユニットを追加
+	/// </summary>
+	/// <param name="targetPos">移動する位置</param>
+	void AddOreUnit(const Vector3& targetPos);
 
 	// 一番近い出現位置を求める
 	Vector3 GetNearHomePos(const Vector3& targetPos);
+
+private:
+
+	/// <summary>
+	/// 値を登録する
+	/// </summary>
+	void RegisterDebugParam();
+
+	/// <summary>
+	/// 値を適応する
+	/// </summary>
+	void ApplyDebugParam();
 };
 
 // ヘルプ関数

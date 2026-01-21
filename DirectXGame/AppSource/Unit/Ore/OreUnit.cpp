@@ -1,5 +1,6 @@
 #include"OreUnit.h"
 #include"FpsCount.h"
+#include <Common/DebugParam/GameParamEditor.h>
 
 #include"Item/OreItemStorageNum.h"
 #include"Item/Object/GoldOre.h"
@@ -46,6 +47,13 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerP
 
 	// 当たり判定の初期化
 	Initialize();
+
+#ifdef USE_IMGUI
+	// 値の登録
+	RegisterDebugParam();
+#endif
+	// 値の適応
+	ApplyDebugParam();
 }
 
 void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos) {
@@ -73,6 +81,11 @@ void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos) {
 }
 
 void OreUnit::Update() {
+#ifdef USE_IMGUI
+	// 値の適応
+	ApplyDebugParam();
+#endif
+
 	if (isDead_) { return; }
 
 	isHit = false;
@@ -266,4 +279,12 @@ void OreUnit::Move() {
 			object_->transform_.rotate.y = std::atan2(velocity.x, velocity.z);
 		}
 	}
+}
+
+void OreUnit::RegisterDebugParam() {
+
+}
+
+void OreUnit::ApplyDebugParam() {
+
 }
