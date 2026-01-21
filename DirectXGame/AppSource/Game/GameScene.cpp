@@ -138,23 +138,23 @@ std::unique_ptr<IScene> GameScene::Update() {
 			OreItem* selectedOreItem = oreItemManager_->GetOreItemForId();
 
 			// 追加出来るかを確認
-			int32_t spawnNum = selectedOreItem->IsFullWorker(unitManager_->GetUnitSpawnNum());
-			if (spawnNum >= 0) {
+			int32_t deletaNum = selectedOreItem->IsFullWorker(unitManager_->GetUnitSpawnNum());
+			if (deletaNum >= 0) {
 
 				// おれを追加
-				unitManager_->RegisterUnit(selectedOreItem->GetPos(),0);
+				unitManager_->RegisterUnit(selectedOreItem->GetPos(), 0);
 
 				// 鉱石側の労働者カウントを増やす
 				for (int i = 0; i < unitManager_->GetUnitSpawnNum(); ++i) {
 					selectedOreItem->AddWorker();
 				}
 			} else {
-				if (unitManager_->GetUnitSpawnNum() >= spawnNum * -1.0f) {
+				if (unitManager_->GetUnitSpawnNum() >= deletaNum * -1.0f) {
 					// おれを追加
-					unitManager_->RegisterUnit(selectedOreItem->GetPos(), spawnNum);
+					unitManager_->RegisterUnit(selectedOreItem->GetPos(), deletaNum);
 
 					// 鉱石側の労働者カウントを増やす
-					int32_t actualSpawnCount = unitManager_->GetUnitSpawnNum() + spawnNum;
+					int32_t actualSpawnCount = unitManager_->GetUnitSpawnNum() + deletaNum;
 					for (int i = 0; i < actualSpawnCount; ++i) {
 						selectedOreItem->AddWorker();
 					}

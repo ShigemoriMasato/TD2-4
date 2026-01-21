@@ -31,7 +31,9 @@ public:
 
 	// 満員かどうか
 	int32_t IsFullWorker(const int32_t& num) override {
-		return maxWorkerNum_ - (num + currentWorkerNum_);
+		// 上限を設定
+		int32_t effectiveLimit = std::min(maxWorkerNum_, hp_);
+		return effectiveLimit - (num + currentWorkerNum_);
 	}
 
 	// 労働者を増やす
@@ -43,6 +45,13 @@ public:
 	void RemoveWorker() override {
 		if (currentWorkerNum_ > 0) {
 			currentWorkerNum_--;
+		}
+	}
+
+	// hpを減らす
+	void RemoveHp() {
+		if (hp_ > 0) {
+			hp_--;
 		}
 	}
 

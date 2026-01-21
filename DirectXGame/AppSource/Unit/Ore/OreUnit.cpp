@@ -157,14 +157,14 @@ void OreUnit::OnCollision(Collider* other) {
 
 	// プレイヤーとの当たり判定
 	if (isPlayer) {
-		if (state_ != State::Return) { return; }
+		if (state_ != State::ToDeliver) { return; }
 		// プレイヤーに触れれば帰宅する
 
 		if (isActive_) {
 			// 鉱石を収納する
 			OreItemStorageNum::currentOreItemNum_ += 1;
-			// 有効を解除
-			isActive_ = false;
+			// 納品したら帰宅する
+			stateRequest_ = State::Return;
 		}
 	}
 
@@ -191,6 +191,7 @@ void OreUnit::OnCollision(Collider* other) {
 					if (!isRemoveOre_) {
 						isRemoveOre_ = true;
 						goldOre->RemoveWorker();
+						goldOre->RemoveHp();
 					}
 				}
 			} 
