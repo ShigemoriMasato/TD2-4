@@ -24,8 +24,15 @@ public:
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
-	// 出現
-	void RegisterUnit(const Vector3& targetPos);
+	/// <summary>
+	/// ユニットを出動させる
+	/// </summary>
+	/// <param name="targetPos">移動する目標位置</param>
+	/// <param name="excessNum">余剰の数</param>
+	void RegisterUnit(const Vector3& targetPos,const int32_t& excessNum);
+
+	// 出撃させるユニットの数
+	int32_t GetUnitSpawnNum() const { return unitSpawnNum_; }
 
 private:
 

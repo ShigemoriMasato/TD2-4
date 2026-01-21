@@ -35,8 +35,8 @@ void OreItemManager::Update() {
 		ore->Update();
 
 		if (ore->IsDead()) {
-			// 10フレーム後に削除するようにリストに追加
-			graveyard_.push_back({ std::move(ore), 10 });
+			// 5フレーム後に削除するようにリストに追加
+			graveyard_.push_back({ std::move(ore), 5 });
 		}
 	}
 }
@@ -47,6 +47,41 @@ void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	for (auto& [id, ore] : oreItems_) {
 		ore->Draw(window, vpMatrix);
 	}
+
+	ImGui::Begin("OreItemInfo");
+	// リストの情報を表示
+	ImGui::Text("Total OreItems: %d", static_cast<int>(oreItems_.size()));
+	ImGui::Separator();
+
+	for (auto& [id, ore] : oreItems_) {
+		ImGui::PushID(id);
+
+		if (ImGui::TreeNode("OreNode", "Ore ID: %d", id)) {
+			// HP
+			int hp = ore->GetHp();
+			int maxHp = ore->GetMaxHp();
+			ImGui::Text("Hp: %d / %d", hp, maxHp);
+
+			// 労働者数
+			int currentWorker = ore->GetCurrentWorkerNum();
+			int maxWorker = ore->GetMaxWorkerNum();
+			ImGui::Text("Workers: %d / %d", currentWorker, maxWorker);
+
+			// 座標
+			Vector3 pos = ore->GetPos();
+			float p[3] = { pos.x, pos.y, pos.z };
+			ImGui::InputFloat3("Position", p, "%.2f", ImGuiInputTextFlags_ReadOnly);
+
+			// サイズ
+			Vector3 size = ore->GetSize();
+			float s[3] = { size.x, size.y, size.z };
+			ImGui::InputFloat3("Size", s, "%.2f", ImGuiInputTextFlags_ReadOnly);
+
+			ImGui::TreePop();
+		}
+		ImGui::PopID();
+	}
+	ImGui::End();
 }
 
 void OreItemManager::AddOreItem(OreType type, const Vector3& pos) {
@@ -77,9 +112,15 @@ bool OreItemManager::IsSelectOre(const Vector3 selectpos, Vector3& worldPos) {
 			if (selectpos.z >= orePos.z - oreSize.z * 0.5f && selectpos.z <= orePos.z + oreSize.z * 0.5f) {
 				// 移動する位置を設定
 				worldPos = orePos;
+				selectId_ = id;
 				return true;
 			}
 		}
 	}
 	return false;
+}
+
+OreItem* OreItemManager::GetOreItemForId() {
+	// 選択した
+	return oreItems_[selectId_].get();
 }

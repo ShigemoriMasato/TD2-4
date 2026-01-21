@@ -25,6 +25,9 @@ public:
 	/// <returns></returns>
 	bool IsSelectOre(const Vector3 selectpos,Vector3& worldPos);
 
+	// 選択されたIdから鉱石を取得する
+	OreItem* GetOreItemForId();
+
 private:
 
 	// 鉱石の描画データ
@@ -37,4 +40,7 @@ private:
 
 	// 鉱石の削除リスト
 	std::vector<std::pair<std::unique_ptr<OreItem>, int>> graveyard_;
+
+	// 選択されているidを保持
+	int32_t selectId_ = 0;
 };

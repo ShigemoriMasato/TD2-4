@@ -134,8 +134,32 @@ std::unique_ptr<IScene> GameScene::Update() {
 		// 左クリックを取得
 		if ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80)) {
 
-			// おれを追加
-			unitManager_->RegisterUnit(oreWorldPos);
+			// 選択された鉱石を取得
+			OreItem* selectedOreItem = oreItemManager_->GetOreItemForId();
+
+			// 追加出来るかを確認
+			int32_t spawnNum = selectedOreItem->IsFullWorker(unitManager_->GetUnitSpawnNum());
+			if (spawnNum >= 0) {
+
+				// おれを追加
+				unitManager_->RegisterUnit(selectedOreItem->GetPos(),0);
+
+				// 鉱石側の労働者カウントを増やす
+				for (int i = 0; i < unitManager_->GetUnitSpawnNum(); ++i) {
+					selectedOreItem->AddWorker();
+				}
+			} else {
+				if (unitManager_->GetUnitSpawnNum() >= spawnNum * -1.0f) {
+					// おれを追加
+					unitManager_->RegisterUnit(selectedOreItem->GetPos(), spawnNum);
+
+					// 鉱石側の労働者カウントを増やす
+					int32_t actualSpawnCount = unitManager_->GetUnitSpawnNum() + spawnNum;
+					for (int i = 0; i < actualSpawnCount; ++i) {
+						selectedOreItem->AddWorker();
+					}
+				}	
+			}
 		}
 	}
 
