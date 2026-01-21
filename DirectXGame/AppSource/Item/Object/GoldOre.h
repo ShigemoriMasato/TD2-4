@@ -29,9 +29,15 @@ public:
 	// ユニットとの接触回数
 	int32_t GetContactNum() const { return contactNum_; }
 
+	// 死亡フラグ
+	bool IsDead() override { return isDead_; }
+
 private:
 	// オブジェクトデータ
 	std::unique_ptr<OreObject> object_;
+
+	// 死亡フラグ
+	bool isDead_ = false;
 
 	// 体力
 	int32_t hp_ = 0;
@@ -43,6 +49,13 @@ private:
 
 	// ユニットとの接触回数
 	int32_t contactNum_ = 0;
+
+	// デバック用
+	std::string kGroupName_ = "GoldOreItem";
+
+private: // 調整項目
+
+	int32_t maxHp_ = 10;
 
 private:
 

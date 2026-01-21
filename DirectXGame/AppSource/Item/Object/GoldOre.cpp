@@ -9,6 +9,9 @@ void GoldOre::Init(DrawData drawData, const Vector3& pos) {
 	// 初期位置を設定
 	object_->transform_.position = pos;
 
+	// 体力を設定
+	hp_ = maxHp_;
+
 	// 設定
 	quadCollider_.topLeft = { -size_.x * 0.5f + object_->transform_.position.x, -size_.z * 0.5f + object_->transform_.position.z};
 	quadCollider_.bottomRight = { size_.x * 0.5f + object_->transform_.position.x, size_.z * 0.5f + object_->transform_.position.z };
@@ -46,6 +49,11 @@ void GoldOre::Update() {
 	// 当たり判定の位置を更新
 	quadCollider_.topLeft = { -size_.x * 0.5f + object_->transform_.position.x, -size_.z * 0.5f + object_->transform_.position.z };
 	quadCollider_.bottomRight = { size_.x * 0.5f + object_->transform_.position.x, size_.z * 0.5f + object_->transform_.position.z };
+
+	// 体力がないと死亡
+	if (hp_ <= 0) {
+		isDead_ = true;
+	}
 }
 
 void GoldOre::Draw(Window* window, const Matrix4x4& vpMatrix) {
@@ -64,9 +72,11 @@ void GoldOre::OnCollision(Collider* other) {
 }
 
 void GoldOre::RegisterDebugParam() {
-
+	// 登録
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MaxHp", maxHp_);
 }
 
 void GoldOre::ApplyDebugParam() {
-
+	// 適応
+	maxHp_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MaxHp");
 }
