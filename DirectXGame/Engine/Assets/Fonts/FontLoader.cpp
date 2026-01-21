@@ -146,8 +146,9 @@ FontLoader::FontData FontLoader::CreateFontBuffer(const std::string& filePath, i
 
 		uv.uvStart = { float(glyphLeft) / float(atlas_width_), float(glyphTop) / float(atlas_height_) };
 		uv.uvEnd = { float(glyphRight) / float(atlas_width_), float(glyphBottom) / float(atlas_height_) };
-		uv.advanceX = static_cast<float>(face->glyph->advance.x) / float(fontSize);
+		uv.advanceX = static_cast<float>(face->glyph->advance.x) / 64.f;
 		uv.bearingY = float(face->glyph->bitmap_top);
+		uv.bearingX = float(face->glyph->bitmap_left);
 
 		//次の文字の位置を更新
 		dest_x += bitmap.width + 2;

@@ -58,6 +58,10 @@ void TestScene::Initialize() {
 	fontTest_->psoConfig_.vs = "Font/FontBasic.VS.hlsl";
 	fontTest_->psoConfig_.ps = "Font/FontBasic.PS.hlsl";
 	charPositions_.reserve(256);
+
+	orthoCamera_ = std::make_unique<Camera>();
+	orthoCamera_->SetProjectionMatrix(OrthographicDesc());
+	orthoCamera_->MakeMatrix();
 }
 
 std::unique_ptr<IScene> TestScene::Update() {
@@ -109,10 +113,10 @@ void TestScene::Draw() {
 
 	display->PreDraw(window->GetCommandObject(), true);
 	//renderObject_->Draw(window->GetWindow());
-	//debugLine_->Draw(window->GetWindow());
+	debugLine_->Draw(window->GetWindow());
 
 	int textureIndex = fontLoader_->Load(fontName);
-	wvpMat_ = Matrix::MakeScaleMatrix({0.3f, 0.3f, 0.f}) * debugCamera_->GetVPMatrix();
+	wvpMat_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position) * orthoCamera_->GetVPMatrix();
 	fontTest_->CopyBufferData(0, &wvpMat_, sizeof(Matrix4x4));
 	fontTest_->CopyBufferData(1, charPositions_.data(), sizeof(CharPosition) * charPositions_.size());
 	fontTest_->CopyBufferData(2, &textureIndex, sizeof(int));
@@ -132,7 +136,9 @@ void TestScene::Draw() {
 	ImGui::ColorEdit4("FontColor", &fontColor_.x);
 	ImGui::InputText("InputText", imguiBuffer_, 256);
 	text_ = ConvertString(std::string(imguiBuffer_));
-	ImGui::TextWrapped("%s", text_.c_str());
+	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.1f);
+	ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
+	ImGui::DragFloat3("Position", &transform_.position.x, 0.1f);
 	ImGui::End();
 
 #endif

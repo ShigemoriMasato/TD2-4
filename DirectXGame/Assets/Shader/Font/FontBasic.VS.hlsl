@@ -22,46 +22,26 @@ struct StringUV
     float2 uv0;
     float2 uv1;
     float advanceX;
+    float bearingX;
     float bearingY;
-    float2 pad;
+    float penX;
 };
 StructuredBuffer<StringUV> gUVs : register(t0);
 
 VSOutput main(VSInput input, uint instanceId : SV_InstanceID, uint vertexID : SV_VertexID)
 {
     VSOutput output;
-    const int gAtlasSize = 2048; // アトラスサイズ
-
-    // 今描いている文字の Glyph
-    StringUV g = gUVs[instanceId];
-
-    // ===== サイズ復元 =====
-    float2 glyphSizePx = (g.uv1 - g.uv0) * gAtlasSize;
-
-    // ===== Xオフセット計算（簡易）=====
-    float penX = 0.0;
-    [loop]
-    for (uint i = 0; i < instanceId; ++i)
-    {
-        penX += g.advanceX;
-    }
-
-    // ===== Plane をスケール =====
-    float2 pos;
-    pos.x = input.position.x * glyphSizePx.x;
-    pos.y = input.position.y * glyphSizePx.y;
-
-    // ===== 位置補正 =====
-    pos.y += g.bearingY;
-    float baseX = round(penX);
-    pos.x += baseX;
-    pos.y = round(pos.y);
 
     // ===== 座標変換 =====
-    output.position = mul(float4(pos, 0.0, 1.0), wvp);
+    output.position = mul(input.position, wvp);
+    output.position.x += instanceId * wvp[3][0];
 
     // ===== UV変換 =====
-    output.texcoord = float2((vertexID == 0 || vertexID == 1 ? g.uv0.x : g.uv1.x), (vertexID == 0 || vertexID == 3 ? g.uv0.y : g.uv1.y));
+    output.texcoord = 
+    float2(
+    (vertexID == 0 || vertexID == 1 ? gUVs[instanceId].uv0.x : gUVs[instanceId].uv1.x),
+    (vertexID == 0 || vertexID == 3 ? gUVs[instanceId].uv0.y : gUVs[instanceId].uv1.y)
+    );
 
     return output;
 }

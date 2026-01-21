@@ -13,8 +13,9 @@ struct CharPosition {
 	Vector2 uvStart;
 	Vector2 uvEnd;
 	float advanceX;
+	float bearingX;
 	float bearingY;
-	Vector2 pad;
+	float penX;
 };
 
 class FontLoader {

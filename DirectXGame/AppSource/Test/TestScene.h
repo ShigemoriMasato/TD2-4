@@ -19,6 +19,7 @@ public:
 private:
 
 	std::unique_ptr<DebugCamera> debugCamera_;
+	std::unique_ptr<Camera> orthoCamera_;
 
 	struct VSData {
 		Matrix4x4 worldMatrix = Matrix4x4::Identity();
@@ -36,6 +37,7 @@ private:
 	Vector4 fontColor_ = {1.0f, 1.0f, 1.0f, 1.0f};
 	char imguiBuffer_[256] = "ABC";
 	std::wstring text_ = L"ABC";
+	Transform transform_{};
 
 	std::string fontName = "ZenOldMincho-Medium.ttf";
 
