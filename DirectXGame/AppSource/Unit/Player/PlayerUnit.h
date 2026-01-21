@@ -47,6 +47,9 @@ private:
 	// 円の当たり判定
 	Circle circleCollider_;
 
+	// デバック用
+	std::string kGroupName_ = "Player";
+
 private:
 
 	// 入力処理
@@ -82,4 +85,15 @@ private:
 	/// <param name="info"></param>
 	void CheckCollisionLeft(MapChipField::CollisionMapInfo& info);
 
+private:
+
+	/// <summary>
+	/// 値を登録する
+	/// </summary>
+	void RegisterDebugParam();
+
+	/// <summary>
+	/// 値を適応する
+	/// </summary>
+	void ApplyDebugParam();
 };

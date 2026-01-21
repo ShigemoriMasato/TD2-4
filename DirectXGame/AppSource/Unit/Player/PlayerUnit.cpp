@@ -1,6 +1,8 @@
 #include"PlayerUnit.h"
 #include"FpsCount.h"
 
+#include <Common/DebugParam/GameParamEditor.h>
+
 #ifdef USE_IMGUI
 #include <imgui/imgui.h>
 #endif
@@ -33,9 +35,20 @@ void PlayerUnit::Init(MapChipField* mapChipField, DrawData drawData, const Vecto
 
 	// 当たり判定の初期化
 	Initialize();
+
+#ifdef USE_IMGUI
+	// 値の登録
+	RegisterDebugParam();
+#endif
+	// 値の適応
+	ApplyDebugParam();
 }
 
 void PlayerUnit::Update() {
+#ifdef USE_IMGUI
+	// 値の適応
+	ApplyDebugParam();
+#endif
 
 	// 入力処理
 	ProcessMoveInput();
@@ -193,4 +206,16 @@ void PlayerUnit::CheckCollisionLeft(MapChipField::CollisionMapInfo& info) {
 		// 壁に当たったことを記録する
 		info.isWallHit = true;
 	}
+}
+
+void PlayerUnit::RegisterDebugParam() {
+	// 登録
+	GameParamEditor::GetInstance()->AddItem(kGroupName_,"Speed", speed_);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "ColliderRadius", circleCollider_.radius);
+}
+
+void PlayerUnit::ApplyDebugParam() {
+	// 適応
+	speed_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "Speed");
+	circleCollider_.radius = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "ColliderRadius");
 }

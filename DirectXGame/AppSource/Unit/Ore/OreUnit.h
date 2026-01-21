@@ -119,4 +119,15 @@ private:
 
 	// 返りの更新処理
 	void ReturnUpdate();
+
+private:
+	/// <summary>
+	/// 値を登録する
+	/// </summary>
+	void RegisterDebugParam();
+
+	/// <summary>
+	/// 値を適応する
+	/// </summary>
+	void ApplyDebugParam();
 };

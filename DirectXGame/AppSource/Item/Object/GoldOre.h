@@ -33,6 +33,7 @@ private:
 	// オブジェクトデータ
 	std::unique_ptr<OreObject> object_;
 
+	// 体力
 	int32_t hp_ = 0;
 
 	Vector3 size_ = {3.0f,3.0f,3.0f};
@@ -42,4 +43,16 @@ private:
 
 	// ユニットとの接触回数
 	int32_t contactNum_ = 0;
+
+private:
+
+	/// <summary>
+	/// 値を登録する
+	/// </summary>
+	void RegisterDebugParam();
+
+	/// <summary>
+	/// 値を適応する
+	/// </summary>
+	void ApplyDebugParam();
 };
