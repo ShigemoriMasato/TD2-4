@@ -35,7 +35,9 @@ void MapEditor::Campus::DrawImGui(MapDataForBin& data) {
 		float(data.height * tileSize_)
 	);
 
-	ImGui::InvisibleButton("MapCanvas", mapSize);
+	if (mapSize.x > 0.0f || mapSize.y > 0.0f) {
+		ImGui::InvisibleButton("MapCanvas", mapSize);
+	}
 
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
 	ImVec2 origin = ImGui::GetItemRectMin();

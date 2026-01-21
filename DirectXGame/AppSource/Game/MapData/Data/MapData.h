@@ -14,7 +14,6 @@ enum class TileType : int {
 };
 
 struct MapDataForBin {
-	std::string modelFilePath;
 	int width = 1;
 	int height = 1;
 	int mapID = -1;
@@ -30,7 +29,6 @@ struct MapData {
 	int width = 1;
 	int height = 1;
 	int mapID = -1;
-	std::string modelFilePath;
 
 	bool Verify() const;
 };

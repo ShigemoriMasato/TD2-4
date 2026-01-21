@@ -12,9 +12,9 @@ public:
 	void Initialize();
 
 	//ゲームで使う形に成形したMapDataを取得
-	MapData GetMapData(int stageID);
+	StageData GetStageData(int stageID);
+	MapData GetMapData(int mapID, Direction direction = Direction::Front);
 
-	MapDataForBin* GetRawMapData(const std::string& modelFilePath);
 	MapDataForBin* GetRawMapData(int mapID);
 	const std::vector<MapDataForBin>& GetAllRawMapData() const { return mapData_; }
 

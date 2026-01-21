@@ -52,9 +52,6 @@ bool MapDataForBin::Verify() const {
 	if (width <= 0 || height <= 0) {
 		valid = false;
 	}
-	if (modelFilePath.empty()) {
-		valid = false;
-	}
 	if (tileData.size() != static_cast<size_t>(width * height)) {
 		assert(false && "MapDataForBin::Verify() failed: mapID is negative");
 		valid = false;
@@ -69,9 +66,6 @@ bool MapDataForBin::Verify() const {
 bool MapData::Verify() const {
 	bool valid = true;
 	if (width <= 0 || height <= 0) {
-		valid = false;
-	}
-	if (modelFilePath.empty()) {
 		valid = false;
 	}
 	if (tileGrid.size() != static_cast<size_t>(height)) {

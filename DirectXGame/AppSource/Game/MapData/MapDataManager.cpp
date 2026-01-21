@@ -10,31 +10,37 @@ MapDataManager::~MapDataManager() {
 	Save();
 }
 
-MapData MapDataManager::GetMapData(int stageID) {
-	int i;
-	for (i = 0; i < stageData_.size(); ++i) {
+StageData MapDataManager::GetStageData(int stageID) {
+	for (int i = 0; i < stageData_.size(); ++i) {
 		if (stageData_[i].stageID == stageID) {
-			break;
+			return stageData_[i];
 		}
 	}
 
-	if (i == stageData_.size()) {
-		logger_->error("MapDataManager::GetMapData() failed: Stage ID {} not found", stageID);
-		return {};
-	}
-
-	MapDataForBin* rawData = GetRawMapData(stageData_[i].mapID);
-	MapData mapData{};
-	return mapData;
+	logger_->error("MapDataManager::GetStageData() failed: Stage ID {} not found", stageID);
+	return StageData{};
 }
 
-MapDataForBin* MapDataManager::GetRawMapData(const std::string& modelFilePath) {
-	for (auto& map : mapData_) {
-		if (map.modelFilePath == modelFilePath) {
-			return &map;
-		}
+MapData MapDataManager::GetMapData(int mapID, Direction direction) {
+	MapDataForBin* rawData = GetRawMapData(mapID);
+	MapData mapData;
+	mapData.mapID = rawData->mapID;
+
+	//方向に応じた幅・高さ・タイル配置を取得
+	if (direction == Direction::Front || direction == Direction::Back) {
+		mapData.width = rawData->width;
+		mapData.height = rawData->height;
+	} else {
+		mapData.width = rawData->height;
+		mapData.height = rawData->width;
 	}
-	return nullptr;
+	//向きを考慮した二次元配列のtileGridに変換
+	mapData.tileGrid = rawData->GetDirectionGrid(direction);
+
+	//整合性チェック
+	mapData.Verify();
+
+	return mapData;
 }
 
 MapDataForBin* MapDataManager::GetRawMapData(int mapID) {
@@ -65,7 +71,6 @@ void MapDataManager::Save() {
 	binaryManager_->RegisterOutput(int(mapData_.size()));
 
 	for (const auto& map : mapData_) {
-		binaryManager_->RegisterOutput(map.modelFilePath);
 		binaryManager_->RegisterOutput(map.width);
 		binaryManager_->RegisterOutput(map.height);
 		binaryManager_->RegisterOutput(map.mapID);
@@ -92,7 +97,6 @@ void MapDataManager::Load() {
 	mapCount = BinaryManager::Reverse<int>(values[index++].get());
 	mapData_.resize(mapCount);
 	for (int i = 0; i < mapCount; ++i) {
-		mapData_[i].modelFilePath = BinaryManager::Reverse<std::string>(values[index++].get());
 		mapData_[i].width = BinaryManager::Reverse<int>(values[index++].get());
 		mapData_[i].height = BinaryManager::Reverse<int>(values[index++].get());
 		mapData_[i].mapID = BinaryManager::Reverse<int>(values[index++].get());
