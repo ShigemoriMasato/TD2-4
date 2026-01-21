@@ -1,5 +1,5 @@
 #include "../DirectUtilFuncs.h"
-#include <DirectXTex/d3dx12.h>
+#include <d3dx12.h>
 #include <dxgidebug.h>
 #include <dxgi1_3.h>
 

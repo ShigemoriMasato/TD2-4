@@ -80,21 +80,21 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalOptions>/utf-8 /wd5260 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)externals\assimp\include\;$(ProjectDir)AppSource\;$(ProjectDir)Engine\;$(ProjectDir)externals\;$(ProjectDir)externals\FreeType\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)externals\assimp\include\;$(ProjectDir)AppSource\;$(ProjectDir)Engine\;$(ProjectDir)externals\include\;$(ProjectDir)externals\generated\include\freetype2\;$(ProjectDir)externals\generated\include\assimp;$(ProjectDir)externals\generated\include\imgui;$(ProjectDir)externals\generated\include\spdlog;$(ProjectDir)externals\generated\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)externals\assimp\lib\$(Configuration)\;$(ProjectDir)externals\FreeType\lib\$(Configuration)\;$(ProjectDir)externals\DirectXTex\lib\$(Configuration)\;$(ProjectDir)externals\imgui\lib\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>DirectXTex.lib;freetyped.lib;imgui.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)externals\generated\lib\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mtd.lib;DirectXTex.lib;freetyped.lib;imgui.lib;spdlogd.lib;zlibstaticd.lib</AdditionalDependencies>
       <AdditionalOptions>/ignore:4049 /ignore:4048 %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"
-powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/FilterAdjust.ps1"</Command>
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -109,21 +109,21 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalOptions>/utf-8 /wd5260 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)externals\assimp\include\;$(ProjectDir)AppSource\;$(ProjectDir)Engine\;$(ProjectDir)externals\;$(ProjectDir)externals\FreeType\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)externals\assimp\include\;$(ProjectDir)AppSource\;$(ProjectDir)Engine\;$(ProjectDir)externals\include\;$(ProjectDir)externals\generated\include\freetype2\;$(ProjectDir)externals\generated\include\assimp;$(ProjectDir)externals\generated\include\imgui;$(ProjectDir)externals\generated\include\spdlog;$(ProjectDir)externals\generated\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)externals\assimp\lib\$(Configuration)\;$(ProjectDir)externals\FreeType\lib\$(Configuration)\;$(ProjectDir)externals\DirectXTex\lib\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>DirectXTex.lib;freetype.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)externals\generated\lib\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mtd.lib;DirectXTex.lib;freetyped.lib;imgui.lib;spdlogd.lib;zlibstaticd.lib</AdditionalDependencies>
       <AdditionalOptions>/ignore:4049 /ignore:4048 %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"
-powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/FilterAdjust.ps1"</Command>
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
@@ -138,22 +138,22 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalOptions>/utf-8 /wd5260 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)externals\assimp\include\;$(ProjectDir)AppSource\;$(ProjectDir)Engine\;$(ProjectDir)externals\;$(ProjectDir)externals\FreeType\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)externals\assimp\include\;$(ProjectDir)AppSource\;$(ProjectDir)Engine\;$(ProjectDir)externals\include\;$(ProjectDir)externals\generated\include\freetype2\;$(ProjectDir)externals\generated\include\assimp;$(ProjectDir)externals\generated\include\imgui;$(ProjectDir)externals\generated\include\spdlog;$(ProjectDir)externals\generated\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)externals\assimp\lib\$(Configuration)\;$(ProjectDir)externals\FreeType\lib\$(Configuration)\;$(ProjectDir)externals\DirectXTex\lib\$(Configuration)\;$(ProjectDir)externals\imgui\lib\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>DirectXTex.lib;freetype.lib;imgui.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)externals\generated\lib\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mtd.lib;DirectXTex.lib;freetyped.lib;imgui.lib;spdlogd.lib;zlibstaticd.lib</AdditionalDependencies>
       <AdditionalOptions>/ignore:4049 /ignore:4048 %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"
-powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/FilterAdjust.ps1"</Command>
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -341,15 +341,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClInclude Include="AppSource\Core\Terminal.h" />
     <ClInclude Include="AppSource\Test\TestScene.h" />
     <ClInclude Include="AppSource\Scene\InitializeScene.h" />
-    <ClInclude Include="externals\imgui\imconfig.h" />
-    <ClInclude Include="externals\imgui\imgui.h" />
-    <ClInclude Include="externals\imgui\ImGuizmo.h" />
-    <ClInclude Include="externals\imgui\imgui_impl_dx12.h" />
-    <ClInclude Include="externals\imgui\imgui_impl_win32.h" />
-    <ClInclude Include="externals\imgui\imgui_internal.h" />
-    <ClInclude Include="externals\imgui\imstb_rectpack.h" />
-    <ClInclude Include="externals\imgui\imstb_textedit.h" />
-    <ClInclude Include="externals\imgui\imstb_truetype.h" />
     <ClInclude Include="Engine\Screen\WindowMaker.h" />
     <ClInclude Include="AppSource\Common\GameWindow.h" />
     <ClInclude Include="Engine\Core\ImGuiforEngine.h" />

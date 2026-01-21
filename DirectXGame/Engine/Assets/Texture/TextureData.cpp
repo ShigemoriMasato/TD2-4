@@ -1,5 +1,5 @@
 #include "TextureData.h"
-#include <DirectXTex/d3dx12.h>
+#include <d3dx12.h>
 #include <Utility/ConvertString.h>
 #include <Assets/Texture/TextureManager.h>
 

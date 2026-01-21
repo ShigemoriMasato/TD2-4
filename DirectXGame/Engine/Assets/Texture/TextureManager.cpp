@@ -1,7 +1,7 @@
 #include "TextureManager.h"
 #include <Utility/Color.h>
 #include <Utility/DirectUtilFuncs.h>
-#include <DirectXTex/d3dx12.h>
+#include <d3dx12.h>
 
 namespace {
 	[[nodiscard]]

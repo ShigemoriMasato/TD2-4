@@ -4,7 +4,7 @@
 #include <Core/View/SRVManager.h>
 #include <utility>
 #include <Utility/Vector.h>
-#include <DirectXTex/DirectXTex.h>
+#include <DirectXTex.h>
 
 class TextureData {
 public:

@@ -1,3 +1,5 @@
+# Cloneしたら最初にsetup.batを起動してください
+
 ## Build State
 
 | 状態       | Debug                                                                 | Development                                                                 | Release                                                                 |
