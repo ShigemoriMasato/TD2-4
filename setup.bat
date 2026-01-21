@@ -2,12 +2,12 @@
 setlocal EnableExtensions EnableDelayedExpansion
 
 rem ============================================================
-rem ========== 作業ディレクトリ ================================
+rem ========== Directory ======================================
 rem ============================================================
 cd /d DirectXGame\externals || exit /b 1
 
 rem ============================================================
-rem ========== 共通ルート =====================================
+rem ========== Common Root =====================================
 rem ============================================================
 set SRC_ROOT=src
 set BUILD_ROOT=build
@@ -17,7 +17,7 @@ set LIB_ROOT=lib
 set GENERATED=generated
 
 rem ============================================================
-rem ========== ルートディレクトリ作成 =========================
+rem ========== Create RootDirectory =========================
 rem ============================================================
 if not exist "%GENERATED%\%BUILD_ROOT%"   mkdir "%GENERATED%\%BUILD_ROOT%"
 if not exist "%GENERATED%\%INSTALL_ROOT%" mkdir "%GENERATED%\%INSTALL_ROOT%"
@@ -58,6 +58,9 @@ rem ========== freetype ======================================
 rem ============================================================
 call :build_lib freetype
 
+rem ============================================================
+rem ========== FinalProcess ===================================
+rem ============================================================
 xcopy /E /I /Y "%GENERATED%\%LIB_ROOT%\Release" "%GENERATED%\%LIB_ROOT%\Development"
 cd ..
 powershell.exe -NoProfile -ExecutionPolicy Bypass ^
@@ -69,7 +72,7 @@ exit /b 0
 
 
 rem ============================================================
-rem ========== ライブラリ単位処理 =============================
+rem ========== Process a Library =============================
 rem ============================================================
 :build_lib
 set LIBNAME=%1
@@ -91,7 +94,7 @@ if errorlevel 1 exit /b 1
 exit /b 0
 
 rem ============================================================
-rem ========== Debug / Release 個別ビルド =====================
+rem ========== Debug / Release Private Build ==================
 rem ============================================================
 :build_one
 set LIBNAME=%1
@@ -136,7 +139,7 @@ if errorlevel 1 exit /b 1
 :file_copy
 set LIBNAME=%1
 rem ------------------------------------------------------------
-rem include コピー（Release 側から 1 回）
+rem include Copy (from Release)
 rem ------------------------------------------------------------
 if not exist "%GENERATED%\%INCLUDE_ROOT%\%LIBNAME%" mkdir "%GENERATED%\%INCLUDE_ROOT%\%LIBNAME%"
 echo testText
@@ -145,7 +148,7 @@ if exist "%GENERATED%\%INSTALL_ROOT%\%LIBNAME%\Release\include" (
 )
 
 rem ------------------------------------------------------------
-rem lib コピー（Debug / Release 分離）
+rem lib Copy (from Debug and Release)
 rem ------------------------------------------------------------
 if exist "%GENERATED%\%INSTALL_ROOT%\%LIBNAME%\Release\lib" (
     echo [LIB] %LIBNAME% Release
