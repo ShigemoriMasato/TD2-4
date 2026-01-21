@@ -1,6 +1,7 @@
 #include"OreUnit.h"
 #include"FpsCount.h"
 #include <Common/DebugParam/GameParamEditor.h>
+#include"Utility/Easing.h"
 
 #include"Item/OreItemStorageNum.h"
 #include"Item/Object/GoldOre.h"
@@ -20,6 +21,7 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerP
 	statesTable_ = {
 		[this]() { GoToUpdate(); },
 		[this]() { MiningUpdate(); },
+		[this]() {ToDeliverUpdate(); },
 		[this]() { ReturnUpdate(); }
 	};
 
@@ -29,7 +31,11 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerP
 		[this]() {},
 		[this]() {
 			// プレイヤーの位置までの経路を取得
-			CalculatePath(*playerPos_); 
+			CalculatePath(*playerPos_);
+		},
+		[this]() {
+			returnPhase_ = ReturnPhase::Rise;
+			timer_ = 0.0f;
 		}
 	};
 
@@ -60,6 +66,8 @@ void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos) {
 
 	// 初期位置を設定
 	object_->transform_.position = apearPos;
+	// 拠点位置を設定
+	homePos_ = apearPos;
 
 	// フラグをリセット
 	isActive_ = true;
@@ -76,8 +84,8 @@ void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos) {
 	// 状態のリセット
 	resetStatesTable_[static_cast<size_t>(state_)]();
 
-    // 移動する経路を求める
-    CalculatePath(targetPos);
+	// 移動する経路を求める
+	CalculatePath(targetPos);
 }
 
 void OreUnit::Update() {
@@ -103,14 +111,17 @@ void OreUnit::Update() {
 	// プレイヤーの状態による更新処理をおこなう
 	statesTable_[static_cast<size_t>(state_)]();
 
-    // 移動処理
-    Move();
+	// 移動処理
+	Move();
 
 	// 更新処理
 	object_->Update();
 
 	// 当たり判定の位置を更新
 	circleCollider_.center = Vector2(object_->transform_.position.x, object_->transform_.position.z);
+
+	// 帰宅していれば体力処理を飛ばす
+	if (state_ == State::Return) { return; }
 
 	// 生存時間
 	lifeTimer_ += FpsCount::deltaTime / damageTime_;
@@ -178,7 +189,7 @@ void OreUnit::GoToUpdate() {
 	// 目的地付けば次の状態に切り替える
 	if (path_.empty()) {
 		// 目的地に到着して鉱石が存在していなかった場合、帰宅する
-		stateRequest_ = State::Return;
+		stateRequest_ = State::ToDeliver;
 	}
 
 	// 鉱石まで移動する
@@ -191,15 +202,14 @@ void OreUnit::MiningUpdate() {
 
 	if (timer_ >= 1.0f) {
 		timer_ = 0.0f;
-		stateRequest_ = State::Return;
+		stateRequest_ = State::ToDeliver;
 	}
 }
 
-void OreUnit::ReturnUpdate() {
-
-	// プレイヤーまで移動すれば終了
+void OreUnit::ToDeliverUpdate() {
+	// 回収が終われば帰宅する
 	if (path_.empty()) {
-		isActive_ = false;
+		stateRequest_ = State::Return;
 	}
 
 	// プレイヤーが現在いるマップチップのインデックスと座標を取得
@@ -229,22 +239,83 @@ void OreUnit::ReturnUpdate() {
 	Move();
 }
 
+void OreUnit::ReturnUpdate() {
+
+	switch (returnPhase_)
+	{
+	case ReturnPhase::Rise:
+
+		timer_ += FpsCount::deltaTime / riseTime_;
+
+		// 移動
+		object_->transform_.position.y = lerp(0.0f, risePosY_, timer_, EaseType::EaseInOutQuad);
+
+		// 終了
+		if (timer_ >= 1.0f) {
+			object_->transform_.position.y = risePosY_;
+			timer_ = 0.0f;
+
+			// 拠点までのベクトルを求める
+			Vector3 toHome = homePos_ - object_->transform_.position;
+			toHome.y = 0.0f;
+			toHome.Normalize();
+
+			// 移動する位置を設定
+			startMovePos = object_->transform_.position;
+			endMovePos = Vector3(homePos_.x, risePosY_, homePos_.z);
+
+			returnPhase_ = ReturnPhase::Move;
+		}
+		break;
+
+	case ReturnPhase::Move:
+
+		timer_ += FpsCount::deltaTime / moveTime_;
+
+		// 移動
+		object_->transform_.position = lerp(startMovePos, endMovePos, timer_, EaseType::EaseInOutQuad);
+
+		// 終了
+		if (timer_ >= 1.0f) {
+			object_->transform_.position = endMovePos;
+			timer_ = 0.0f;
+
+			returnPhase_ = ReturnPhase::Fall;
+		}
+		break;
+
+	case ReturnPhase::Fall:
+
+		timer_ += FpsCount::deltaTime / FallTime_;
+
+		// 移動
+		object_->transform_.position.y = lerp(risePosY_, 0.0f, timer_, EaseType::EaseInOutQuad);
+
+		// 終了
+		if (timer_ >= 1.0f) {
+			timer_ = 0.0f;
+			isActive_ = false;
+		}
+		break;
+	}
+}
+
 void OreUnit::CalculatePath(const Vector3& goal) {
-    // メンバ変数のパスをクリア
-    path_.clear();
+	// メンバ変数のパスをクリア
+	path_.clear();
 
-    if (mapChipField_) {
-        // マップクラスに経路計算を依頼
-        // startPos は現在の自分の位置
-        std::vector<Vector3> calculatedPath = mapChipField_->CalculatePath(object_->transform_.position, goal);
-        path_ = calculatedPath;
-    }
+	if (mapChipField_) {
+		// マップクラスに経路計算を依頼
+		// startPos は現在の自分の位置
+		std::vector<Vector3> calculatedPath = mapChipField_->CalculatePath(object_->transform_.position, goal);
+		path_ = calculatedPath;
+	}
 
-    // もし経路が見つからなかった場合
-    if (path_.empty()) {
-        // とりあえずゴール地点だけ入れておく
-        path_.push_back(goal);
-    }
+	// もし経路が見つからなかった場合
+	if (path_.empty()) {
+		// とりあえずゴール地点だけ入れておく
+		path_.push_back(goal);
+	}
 }
 
 void OreUnit::Move() {

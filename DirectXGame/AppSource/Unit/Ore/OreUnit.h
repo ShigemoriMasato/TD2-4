@@ -15,9 +15,17 @@ public:
 	enum class State {
 		GoTo,   // 目的地に行く
 		Mining, // 採掘
+		ToDeliver, // 納品
 		Return, // 帰宅
 
 		MaxCount // 数
+	};
+
+	// 帰宅する時の動き
+	enum class ReturnPhase {
+		Rise,     // 上昇
+		Move,     // 移動
+		Fall,     // 落下
 	};
 
 public:
@@ -75,7 +83,7 @@ private:
 	// 移動ルート
 	std::vector<Vector3> path_;
 	// 家の場所
-	Vector3 homePos_;
+	Vector3 homePos_ = {};
 	// プレイヤーの位置
 	Vector3* playerPos_ = nullptr;
 
@@ -88,6 +96,11 @@ private:
 	Circle circleCollider_;
 
 	bool isHit = false;
+
+	// 拠点に戻るとのフェーズ
+	ReturnPhase returnPhase_ = ReturnPhase::Fall;
+	Vector3 startMovePos;
+	Vector3 endMovePos;
 
 private: // 調整項目
 
@@ -103,6 +116,14 @@ private: // 調整項目
 	// 採掘時間
 	float miningTime_ = 1.0f;
 
+	// 高さ
+	float risePosY_ = 5.0f;
+
+	// 帰宅の時間
+	float riseTime_ = 1.0f;
+	float moveTime_ = 1.0f;
+	float FallTime_ = 1.0f;
+
 private:
 
 	// 移動経路を求める
@@ -116,6 +137,9 @@ private:
 
 	// 採掘の更新処理
 	void MiningUpdate();
+
+	// 納品の更新処理
+	void ToDeliverUpdate();
 
 	// 返りの更新処理
 	void ReturnUpdate();
