@@ -1,4 +1,8 @@
 #pragma once
+#include <optional>
+#include<array>
+#include<functional>
+
 #include"Collision/Collider.h"
 
 #include"OreUnitObject.h"
@@ -10,10 +14,23 @@ public:
 	// 状態
 	enum class State {
 		GoTo,   // 目的地に行く
+		Mining, // 採掘
+		ToDeliver, // 納品
 		Return, // 帰宅
+
+		MaxCount // 数
+	};
+
+	// 帰宅する時の動き
+	enum class ReturnPhase {
+		Rise,     // 上昇
+		Move,     // 移動
+		Fall,     // 落下
 	};
 
 public:
+
+	OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerPos);
 
 	/// <summary>
 	/// 初期化
@@ -22,15 +39,14 @@ public:
 	/// <param name="drawData">描画データ</param>
 	/// <param name="apearPos">出現位置</param>
 	/// <param name="targetPos">目標位置</param>
-	void Initialize(MapChipField* mapChipField, DrawData drawData,const Vector3& apearPos,const Vector3& targetPos,Vector3* playerPos);
+	void Init(const Vector3& apearPos,const Vector3& targetPos);
 
 	void Update();
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
-	void OnCollision(Collider* other) override {
-		other;
-	}
+	// 当たり判定
+	void OnCollision(Collider* other) override;
 
 public:
 
@@ -47,26 +63,69 @@ private:
 	// オブジェクトデータ
 	std::unique_ptr<OreUnitObject> object_;
 
-	int32_t hp_ = 0;
+	// 状態
+	State state_ = State::GoTo;
+	// 状態の変更を管理
+	std::optional<State> stateRequest_ = std::nullopt;
+	// 状態テーブル
+	std::array<std::function<void()>, static_cast<size_t>(State::MaxCount)> statesTable_;
+	// 指定した状態をおこなうためのリセット処理
+	std::array<std::function<void()>, static_cast<size_t>(State::MaxCount)> resetStatesTable_;
 
 	// 死亡フラグ
 	bool isDead_ = false;
+	// 有効フラグ
+	bool isActive_ = false;
 
-	bool isActive_ = true;
+	// 体力
+	int32_t hp_ = 0;
 
 	// 移動ルート
 	std::vector<Vector3> path_;
-
 	// 家の場所
-	Vector3 homePos_;
+	Vector3 homePos_ = {};
+	// プレイヤーの位置
+	Vector3* playerPos_ = nullptr;
+
+	// 体力の計算に使用
+	float lifeTimer_ = 0.0f;
+
+	float timer_ = 0.0f;
+
+	// 円の当たり判定
+	Circle circleCollider_;
+
+	bool isHit = false;
+
+	// 鉱石からの離脱を取得
+	bool isRemoveOre_ = false;
+
+	// 拠点に戻るとのフェーズ
+	ReturnPhase returnPhase_ = ReturnPhase::Fall;
+	Vector3 startMovePos;
+	Vector3 endMovePos;
+
+private: // 調整項目
+
+	// ダメージを食らう間隔
+	float damageTime_ = 1.0f;
+
+	// 最大体力
+	int32_t maxHp_ = 10;
 
 	// 移動速度
 	float speed_ = 5.0f;
 
-	// 状態
-	State state_ = State::GoTo;
+	// 採掘時間
+	float miningTime_ = 1.0f;
 
-	Vector3* playerPos_ = nullptr;
+	// 高さ
+	float risePosY_ = 5.0f;
+
+	// 帰宅の時間
+	float riseTime_ = 1.0f;
+	float moveTime_ = 1.0f;
+	float FallTime_ = 1.0f;
 
 private:
 
@@ -76,4 +135,26 @@ private:
 	// 移動
 	void Move();
 
+	// 行きの更新処理
+	void GoToUpdate();
+
+	// 採掘の更新処理
+	void MiningUpdate();
+
+	// 納品の更新処理
+	void ToDeliverUpdate();
+
+	// 返りの更新処理
+	void ReturnUpdate();
+
+private:
+	/// <summary>
+	/// 値を登録する
+	/// </summary>
+	void RegisterDebugParam();
+
+	/// <summary>
+	/// 値を適応する
+	/// </summary>
+	void ApplyDebugParam();
 };

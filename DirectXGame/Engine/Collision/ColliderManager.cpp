@@ -10,7 +10,7 @@ void ColliderManager::CollisionCheckAll() {
 void ColliderManager::CollisionCheck(Collider* collider) {
 	for (const auto& other : colliders_) {
 		//互いに当たってしかるべきタグか確認
-		if (!(collider->targetTag_ & other->ownTag_ && other->targetTag_ & other->ownTag_)) {
+		if (!(collider->targetTag_ & other->ownTag_ && other->targetTag_ & collider->ownTag_)) {
 			continue;
 		}
 
@@ -18,7 +18,7 @@ void ColliderManager::CollisionCheck(Collider* collider) {
 		if (other == collider) {
 			continue;
 		}
-
+		 
 		//当たり判定処理
 		bool isHit = std::visit(CollisionVisitor(), collider->colliderInfo_, other->colliderInfo_);
 		if (isHit) {

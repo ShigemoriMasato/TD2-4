@@ -5,19 +5,19 @@ ColliderManager* Collider::colliderManager_ = nullptr;
 Logger Collider::logger_ = getLogger("Collider");
 
 uint32_t operator|(CollTag a, CollTag b) {
-    return 0;
+    return static_cast<uint32_t>(a) | static_cast<uint32_t>(b);
 }
 
 uint32_t operator|(uint32_t a, CollTag b) {
-    return 0;
+    return a | static_cast<uint32_t>(b);
 }
 
 uint32_t operator&(uint32_t a, CollTag b) {
-    return 0;
+    return a & static_cast<uint32_t>(b);
 }
 
 uint32_t operator~(CollTag a) {
-    return 0;
+    return ~static_cast<uint32_t>(a);
 }
 
 Collider::~Collider() {

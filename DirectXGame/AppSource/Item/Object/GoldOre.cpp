@@ -1,6 +1,6 @@
 #include"GoldOre.h"
-
-void GoldOre::Initialize(DrawData drawData, const Vector3& pos) {
+#include <Common/DebugParam/GameParamEditor.h>
+void GoldOre::Init(DrawData drawData, const Vector3& pos) {
 	
 	// オブジェクトを初期化
 	object_ = std::make_unique<OreObject>();
@@ -8,17 +8,71 @@ void GoldOre::Initialize(DrawData drawData, const Vector3& pos) {
 
 	// 初期位置を設定
 	object_->transform_.position = pos;
+
+	// 体力を設定
+	hp_ = maxHp_;
+
+	// 設定
+	quadCollider_.topLeft = { -size_.x * 0.5f + object_->transform_.position.x, -size_.z * 0.5f + object_->transform_.position.z};
+	quadCollider_.bottomRight = { size_.x * 0.5f + object_->transform_.position.x, size_.z * 0.5f + object_->transform_.position.z };
+
+	// 当たり判定の要素を設定
+	CollConfig config;
+	config.colliderInfo = &quadCollider_;
+	config.isActive = true;
+	config.ownTag = CollTag::Stage;
+	config.targetTag = static_cast<uint32_t>(CollTag::Unit);
+	SetColliderConfig(config);
+
+	// 当たり判定の初期化
+	Initialize();
+
+#ifdef USE_IMGUI
+	// 値の登録
+	RegisterDebugParam();
+#endif
+	// 値の適応
+	ApplyDebugParam();
 }
 
 void GoldOre::Update() {
-
-
+#ifdef USE_IMGUI
+	// 値の適応
+	ApplyDebugParam();
+#endif
 
 	// 更新処理
 	object_->Update();
+
+	// 当たり判定の位置を更新
+	quadCollider_.topLeft = { -size_.x * 0.5f + object_->transform_.position.x, -size_.z * 0.5f + object_->transform_.position.z };
+	quadCollider_.bottomRight = { size_.x * 0.5f + object_->transform_.position.x, size_.z * 0.5f + object_->transform_.position.z };
+
+	// 体力がないと死亡
+	if (hp_ <= 0) {
+		isDead_ = true;
+	}
 }
 
 void GoldOre::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	// 描画
 	object_->Draw(window, vpMatrix);
+}
+
+void GoldOre::OnCollision(Collider* other) {
+
+	bool isUnit = CollTag::Unit == other->GetOwnTag();
+
+	if (!isUnit) { return; }
+
+}
+
+void GoldOre::RegisterDebugParam() {
+	// 登録
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MaxHp", maxHp_);
+}
+
+void GoldOre::ApplyDebugParam() {
+	// 適応
+	maxHp_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MaxHp");
 }

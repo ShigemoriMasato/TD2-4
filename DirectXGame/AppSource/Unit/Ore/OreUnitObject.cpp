@@ -20,7 +20,7 @@ void OreUnitObject::Initialize(DrawData drawData) {
 	psDataIndex_ = renderObject_->CreateCBV(sizeof(Material), ShaderType::PIXEL_SHADER, "OreUnit::psData");
 
 	// 色を設定
-	material_.color = { 1.0f,1.0f,1.0f,1.0f };
+	material_.color = { 0.0f,1.0f,0.0f,1.0f };
 }
 
 void OreUnitObject::Update() {

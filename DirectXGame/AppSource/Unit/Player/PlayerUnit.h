@@ -3,14 +3,19 @@
 #include"PlayerUnitObject.h"
 #include"Common/KeyConfig/KeyManager.h"
 
-class PlayerUnit {
+#include"Collision/Collider.h"
+
+class PlayerUnit : public Collider {
 public:
 
-	void Initialize(MapChipField* mapChipField, DrawData drawData,const Vector3& pos, KeyManager* keyManager);
+	void Init(MapChipField* mapChipField, DrawData drawData,const Vector3& pos, KeyManager* keyManager);
 
 	void Update();
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
+
+	// 当たり判定
+	void OnCollision(Collider* other) override;
 
 public:
 
@@ -37,7 +42,13 @@ private:
 	Vector3 velocity_ = {};
 
 	// 速さ
-	float speed_ = 20.0f;
+	float speed_ = 10.0f;
+
+	// 円の当たり判定
+	Circle circleCollider_;
+
+	// デバック用
+	std::string kGroupName_ = "Player";
 
 private:
 
@@ -74,4 +85,15 @@ private:
 	/// <param name="info"></param>
 	void CheckCollisionLeft(MapChipField::CollisionMapInfo& info);
 
+private:
+
+	/// <summary>
+	/// 値を登録する
+	/// </summary>
+	void RegisterDebugParam();
+
+	/// <summary>
+	/// 値を適応する
+	/// </summary>
+	void ApplyDebugParam();
 };

@@ -27,4 +27,21 @@ public:
 
 	// サイズ
 	virtual Vector3 GetSize() = 0;
+
+	// 破壊されたか
+	virtual bool IsDead() = 0;
+
+	// 労働者を追加できるか確認
+	virtual int32_t IsFullWorker(const int32_t& num) = 0;
+	// 労働者を増やす
+	virtual void AddWorker() = 0;
+	// 労働者を減らす
+	virtual void RemoveWorker() = 0;
+
+	// 現在の数
+	virtual int32_t GetCurrentWorkerNum() = 0;
+	// 最大の数
+	virtual int32_t GetMaxWorkerNum() = 0;
+	virtual int32_t GetMaxHp() = 0;
+	virtual int32_t GetHp() = 0;
 };

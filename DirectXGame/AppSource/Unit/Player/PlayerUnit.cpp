@@ -1,11 +1,13 @@
 #include"PlayerUnit.h"
 #include"FpsCount.h"
 
+#include <Common/DebugParam/GameParamEditor.h>
+
 #ifdef USE_IMGUI
 #include <imgui/imgui.h>
 #endif
 
-void PlayerUnit::Initialize(MapChipField* mapChipField, DrawData drawData, const Vector3& pos, KeyManager* keyManager) {
+void PlayerUnit::Init(MapChipField* mapChipField, DrawData drawData, const Vector3& pos, KeyManager* keyManager) {
 	// マップデータ
 	mapChipField_ = mapChipField;
 
@@ -18,9 +20,35 @@ void PlayerUnit::Initialize(MapChipField* mapChipField, DrawData drawData, const
 
 	// 初期位置を設定
 	object_->transform_.position = pos;
+
+	// 当たり判定の設定
+	circleCollider_.center = object_->transform_.position;
+	circleCollider_.radius = 1.0f;
+
+	// 当たり判定の要素を設定
+	CollConfig config;
+	config.colliderInfo = &circleCollider_;
+	config.isActive = true;
+	config.ownTag = CollTag::Unit;
+	config.targetTag = static_cast<uint32_t>(CollTag::Unit);
+	SetColliderConfig(config);
+
+	// 当たり判定の初期化
+	Initialize();
+
+#ifdef USE_IMGUI
+	// 値の登録
+	RegisterDebugParam();
+#endif
+	// 値の適応
+	ApplyDebugParam();
 }
 
 void PlayerUnit::Update() {
+#ifdef USE_IMGUI
+	// 値の適応
+	ApplyDebugParam();
+#endif
 
 	// 入力処理
 	ProcessMoveInput();
@@ -40,6 +68,9 @@ void PlayerUnit::Update() {
 
 	// 更新処理
 	object_->Update();
+
+	// 当たり判定の位置を更新
+	circleCollider_.center = object_->transform_.position;
 }
 
 void PlayerUnit::Draw(Window* window, const Matrix4x4& vpMatrix) {
@@ -53,6 +84,12 @@ void PlayerUnit::Draw(Window* window, const Matrix4x4& vpMatrix) {
 
 	ImGui::End();
 #endif
+}
+
+void PlayerUnit::OnCollision(Collider* other) {
+	bool isUnit = CollTag::Unit == other->GetOwnTag();
+
+	if (!isUnit) { return; }
 }
 
 void PlayerUnit::ProcessMoveInput() {
@@ -169,4 +206,16 @@ void PlayerUnit::CheckCollisionLeft(MapChipField::CollisionMapInfo& info) {
 		// 壁に当たったことを記録する
 		info.isWallHit = true;
 	}
+}
+
+void PlayerUnit::RegisterDebugParam() {
+	// 登録
+	GameParamEditor::GetInstance()->AddItem(kGroupName_,"Speed", speed_);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "ColliderRadius", circleCollider_.radius);
+}
+
+void PlayerUnit::ApplyDebugParam() {
+	// 適応
+	speed_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "Speed");
+	circleCollider_.radius = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "ColliderRadius");
 }

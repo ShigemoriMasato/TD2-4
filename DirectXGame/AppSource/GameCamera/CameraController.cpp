@@ -16,7 +16,7 @@ void CameraController::Initialize(Input* input) {
 	// カメラを初期化
 	this->SetProjectionMatrix(PerspectiveFovDesc{});
 	position_ = { 0.0f,8.0f,0.0f };
-	rotation_ = { -0.7f,0.0f,0.0f };
+	rotation_ = { -1.0f,0.0f,0.0f };
 	MakeMatrix();
 }
 
@@ -141,5 +141,7 @@ Vector3 CameraController::ScreenToWorld(const Vector2& screenPos, float screenWi
 
 void CameraController::MakeMatrix() {
 	Vector3 offset = backDir_.Normalize() * backDist_;
+	transformMatrix_ = Matrix::MakeTranslationMatrix(-position_ - offset) * Matrix::MakeRotationMatrix(rotation_);
+	//vpMatrix_ = transformMatrix_ * projectionMatrix_;
 	vpMatrix_ = Matrix::MakeTranslationMatrix(-position_ - offset) * Matrix::MakeRotationMatrix(rotation_) * projectionMatrix_;
 }
