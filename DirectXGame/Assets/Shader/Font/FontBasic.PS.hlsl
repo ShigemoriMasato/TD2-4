@@ -24,7 +24,12 @@ SamplerState gSampler : register(s0);
 
 PSOutput main(PSInput input)
 {
+    float4 reverseColor = float4(float3(1.0, 1.0, 1.0) - fontColor.rgb, 1.0f);
     PSOutput output;
     output.color = gTexture[textureIndex].Sample(gSampler, input.texcoord) * fontColor;
+    if(output.color.a < 0.1)
+    {
+        output.color = reverseColor;
+    }
     return output;
 }
