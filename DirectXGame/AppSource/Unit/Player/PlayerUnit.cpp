@@ -38,7 +38,7 @@ void PlayerUnit::Init(MapChipField* mapChipField, DrawData drawData, const Vecto
 
 #ifdef USE_IMGUI
 	// 値の登録
-	RegisterDebugParam();
+	//RegisterDebugParam();
 #endif
 	// 値の適応
 	ApplyDebugParam();

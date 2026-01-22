@@ -4,6 +4,7 @@
 #include <fstream>
 #include<Windows.h>
 #include <filesystem>
+#include <Utility/SearchFile.h>
 
 GameParamEditor* GameParamEditor::GetInstance() {
 	static GameParamEditor instance;
@@ -32,7 +33,7 @@ void GameParamEditor::SaveFile(const std::string& groupName) {
 
 	// ディレクトリがなければ作成する
 	if (!std::filesystem::exists("Assets/Binary/" + kDirectoryPath)) {
-		std::filesystem::create_directories(kDirectoryPath);
+		std::filesystem::create_directories("Assets/Binary/" + kDirectoryPath);
 	}
 
 	binaryManager_.Write(kDirectoryPath + groupName);
@@ -41,15 +42,16 @@ void GameParamEditor::SaveFile(const std::string& groupName) {
 void GameParamEditor::LoadFiles() {
 
 	// ディレクトリがなければスキップする
-	std::filesystem::path dir(kDirectoryPath);
+	std::filesystem::path dir("Assets/Binary/" + kDirectoryPath);
 	if (!std::filesystem::exists(kDirectoryPath)) {
 		return;
 	}
 
-	std::filesystem::directory_iterator dir_it(kDirectoryPath);
-	for (const std::filesystem::directory_entry& entry : dir_it) {
+	auto files = SerchFilePathsAddChild("Assets/Binary/" + kDirectoryPath, ".sg");
+	for (auto& entry : files) {
+		entry.erase(entry.end() - 3, entry.end()); // 拡張子削除
 		// ファイル読み込み
-		LoadFile(entry.path().stem().string());
+		LoadFile(entry);
 	}
 }
 

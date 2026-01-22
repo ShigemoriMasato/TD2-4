@@ -45,5 +45,4 @@ void CommandObject::Reset() {
 }
 
 void CommandObject::Swap() {
-	index_ = (index_ + 1) % int(cmdLists_.size());
 }

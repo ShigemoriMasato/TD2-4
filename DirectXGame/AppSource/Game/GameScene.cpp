@@ -93,7 +93,8 @@ void GameScene::Initialize() {
 
 	postEffectConfig_.window = gameWindow_->GetWindow();
 	postEffectConfig_.origin = display_;
-	postEffectConfig_.jobs_ = (uint32_t) PostEffectJob::Blur | PostEffectJob::Fade | PostEffectJob::Glitch;
+	postEffectConfig_.output = gameWindow_->GetDualDisplay();
+	postEffectConfig_.jobs_ = (uint32_t) PostEffectJob::Blur;
 }
 
 std::unique_ptr<IScene> GameScene::Update() {
@@ -208,6 +209,7 @@ void GameScene::Draw() {
 	postEffect_->Draw(postEffectConfig_);
 
 	gameWindow_->PreDraw();
+
 	
 	//ImGui
 

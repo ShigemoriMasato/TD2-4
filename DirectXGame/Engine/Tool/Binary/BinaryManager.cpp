@@ -34,7 +34,12 @@ void BinaryManager::Write(std::string fileName) {
 
 std::vector<std::shared_ptr<ValueBase>> BinaryManager::Read(std::string fileName) {
 
-	std::ifstream file(basePath_ + fileName + ".sg", std::ios::binary);
+	std::filesystem::path factPath = basePath_ + fileName;
+	if (factPath.extension().empty()) {
+		factPath += ".sg";
+	}
+	
+	std::ifstream file(factPath, std::ios::binary);
 	if (!file.is_open()) {
 		return {};
 	}

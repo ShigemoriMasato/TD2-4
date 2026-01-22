@@ -4,6 +4,7 @@
 #include <MapEditor/MapEditScene.h>
 #include <imgui/imgui.h>
 #include <Utility/DataStructures.h>
+#include<Common/DebugParam/GameParamEditor.h>
 
 #ifdef USE_IMGUI
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -26,10 +27,13 @@ void InitializeScene::Initialize() {
 
 	commonData_->mapDataManager = std::make_unique<MapDataManager>();
 	commonData_->mapDataManager->Initialize();
+
+	// 保存されているパラメーターを取得する
+	GameParamEditor::GetInstance()->LoadFiles();
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
-	return std::make_unique<MapEditScene>();
+	return std::make_unique<GameScene>();
 }
 
 void InitializeScene::Draw() {
