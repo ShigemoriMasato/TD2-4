@@ -401,9 +401,23 @@ void OreUnit::Rotate() {
 }
 
 void OreUnit::RegisterDebugParam() {
-
+	// 登録
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MoveSpeed", moveSpeed_);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RotateSpeed", rotateSpeed_);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MaxHp", maxHp_);	
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RiseHeight", risePosY_);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RiseTime", riseTime_);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MoveTime", moveTime_);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "FallTime", FallTime_);
 }
 
 void OreUnit::ApplyDebugParam() {
-
+	// 適応
+	moveSpeed_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "MoveSpeed");
+	rotateSpeed_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "RotateSpeed");
+	maxHp_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MaxHp");
+	risePosY_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "RiseHeight");
+	riseTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "RiseTime");
+	moveTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "MoveTime");
+	FallTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "FallTime");
 }
