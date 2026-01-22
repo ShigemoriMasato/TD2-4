@@ -108,6 +108,9 @@ private:
 	Vector3 startMovePos;
 	Vector3 endMovePos;
 
+	// デバック用
+	std::string kGroupName_ = "OreUnit";
+
 private: // 調整項目
 
 	// ダメージを食らう間隔
