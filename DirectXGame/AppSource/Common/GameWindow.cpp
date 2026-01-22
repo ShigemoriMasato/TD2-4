@@ -9,7 +9,7 @@ void GameWindow::Initialize(SHEngine* engine, const WindowConfig& config, uint32
 }
 
 void GameWindow::PreDraw() {
-	window_->PreDraw(true);
+	window_->PreDraw(false);
 }
 
 void GameWindow::DrawDisplayWithImGui() {

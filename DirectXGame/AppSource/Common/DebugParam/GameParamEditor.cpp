@@ -43,7 +43,7 @@ void GameParamEditor::LoadFiles() {
 
 	// ディレクトリがなければスキップする
 	std::filesystem::path dir("Assets/Binary/" + kDirectoryPath);
-	if (!std::filesystem::exists(kDirectoryPath)) {
+	if (!std::filesystem::exists(dir)) {
 		return;
 	}
 
