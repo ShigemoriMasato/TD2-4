@@ -55,6 +55,7 @@ void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	for (auto& [id, ore] : oreItems_) {
 		ore->Draw(window, vpMatrix);
 	}
+#ifdef USE_IMGUI
 
 	ImGui::Begin("OreItemInfo");
 	// リストの情報を表示
@@ -90,6 +91,7 @@ void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 		ImGui::PopID();
 	}
 	ImGui::End();
+#endif
 }
 
 void OreItemManager::AddOreItem(OreType type, const Vector3& pos) {

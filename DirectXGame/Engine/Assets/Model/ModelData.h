@@ -11,6 +11,11 @@
 
 struct Material {
 	int textureIndex;
+	int normalMapIndex;
+	Vector4 color;
+	Vector4 emissiveColor;
+	Vector4 specularColor;
+	float shininess;
 };
 
 struct Node {

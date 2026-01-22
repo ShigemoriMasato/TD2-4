@@ -126,6 +126,8 @@ std::vector<Material> ModelLoader::LoadMaterials(const aiScene* scene, std::stri
 			material.textureIndex = 0; //テクスチャが無い場合はデフォルトテクスチャを使う
 		}
 
+		
+
 		materials.push_back(material);
 	}
 
