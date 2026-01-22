@@ -70,7 +70,7 @@ void StageEditor::DrawImGui(const std::vector<MapDataForBin>& mapData, std::map<
 	ImVec2 windowSize = ImGui::GetWindowSize();
 	const MapDataForBin& map = mapData[editStage.mapID];
 
-	auto stage = map.GetDirectionGrid(editStage.direction);
+	auto stage = map.GetDirectionGrid(editStage.direction, editStage.goldFrequency);
 	auto drawList = ImGui::GetWindowDrawList();
 	ImVec2 origin = ImGui::GetCursorScreenPos();
 
