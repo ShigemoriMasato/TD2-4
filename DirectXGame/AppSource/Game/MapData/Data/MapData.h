@@ -9,6 +9,7 @@ enum class TileType : int {
 	Road,
 	Wall,
 	Home,
+	Gold,
 
 	Count
 };
