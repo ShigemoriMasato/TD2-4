@@ -134,8 +134,8 @@ void TestScene::Draw() {
 
 	ImGui::Begin("FontTest");
 	ImGui::ColorEdit4("FontColor", &fontColor_.x);
-	ImGui::InputText("InputText", imguiBuffer_, 256);
-	text_ = ConvertString(std::string(imguiBuffer_));
+	ImGui::InputText("InputText", willLoadPath_, 256);
+	text_ = ConvertString(std::string(willLoadPath_));
 	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.1f);
 	ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("Position", &transform_.position.x, 0.1f);

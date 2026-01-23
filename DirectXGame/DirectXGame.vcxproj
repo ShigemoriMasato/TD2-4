@@ -224,6 +224,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClCompile Include="Engine\Utility\src\Easing.cpp" />
     <ClCompile Include="Engine\Utility\src\MyMath.cpp" />
     <ClCompile Include="AppSource\MapEditor\Editor\Data\StageEditor.cpp" />
+    <ClCompile Include="AppSource\MapEditor\MapModelEdit\MapModelEditor.cpp" />
     <ClInclude Include="AppSource\GameCamera\DebugMousePos.h" />
     <ClInclude Include="AppSource\Game\MapData\Data\StageData.h" />
     <ClInclude Include="AppSource\Item\Object\GoldOre.h" />
@@ -264,6 +265,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClCompile Include="AppSource\MapEditor\Editor\Data\Pencil.cpp" />
     <ClInclude Include="AppSource\MapEditor\Editor\Data\StageEditor.h" />
     <ClInclude Include="Engine\Assets\Fonts\FontLoader.h" />
+    <ClInclude Include="AppSource\MapEditor\MapModelEdit\MapModelEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSource\Common\DebugParam\GameParamEditor.h" />

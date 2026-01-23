@@ -1,8 +1,19 @@
 #include "MapEditScene.h"
+#include <imgui/imgui.h>
+
+MapEditScene::~MapEditScene() {
+	//imguiの設定を戻す
+	auto io = ImGui::GetIO();
+	io.IniFilename = "Assets/.EngineResource/imgui.ini";
+}
 
 void MapEditScene::Initialize() {
-	editor_ = std::make_unique<MapEditor::Editor>();
-	editor_->Initialize(commonData_->mapDataManager.get());
+	//いろいろと特殊なのでimguiの設定を分ける
+	auto io = ImGui::GetIO();
+	io.IniFilename = "Assets/.EngineResource/forMapEditor.ini";
+
+	mapEditor_ = std::make_unique<MapEditor::Editor>();
+	mapEditor_->Initialize(commonData_->mapDataManager.get());
 }
 
 std::unique_ptr<IScene> MapEditScene::Update() {
@@ -22,7 +33,8 @@ void MapEditScene::Draw() {
 	window.PreDraw();
 
 #ifdef USE_IMGUI
-	editor_->DrawImGui();
+
+	mapEditor_->DrawImGui();
 
 	window.DrawDisplayWithImGui();
 	engine_->ImGuiDraw();

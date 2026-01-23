@@ -1,5 +1,6 @@
 #pragma once
 #include <Render/RenderObject.h>
+#include <Assets/Model/ModelManager.h>
 #include"Utility/DataStructures.h"
 #include"Game/MapData/Data/MapData.h"
 #include<vector>

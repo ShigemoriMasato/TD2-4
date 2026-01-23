@@ -64,7 +64,10 @@ int ModelManager::LoadModel(std::string filePath) {
 	std::string path = (filePath + "/" + fileName);
 	const aiScene* scene = nullptr;
 	scene = importer.ReadFile(path.c_str(), aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder | aiProcess_FlipUVs | aiProcess_Triangulate);
-	assert(scene && "ModelManager::LoadModel: Failed to load model");
+	if (scene) {
+		logger_->error("Failed to load model: {}", filePath);
+		return 1;
+	}
 
 	//読み込み
 	
