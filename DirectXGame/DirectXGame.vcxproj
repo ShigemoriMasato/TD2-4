@@ -94,9 +94,7 @@
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 
-xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"
-
-powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/FilterAdjust.ps1"</Command>
+xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -125,9 +123,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 
-xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"
-
-powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/FilterAdjust.ps1"</Command>
+xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
@@ -157,9 +153,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 
-xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"
-
-powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/FilterAdjust.ps1"</Command>
+xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
