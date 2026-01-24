@@ -2,6 +2,7 @@
 #include"FpsCount.h"
 #include <Common/DebugParam/GameParamEditor.h>
 #include"Utility/Easing.h"
+#include"Utility/MyMath.h"
 
 #include"Item/OreItemStorageNum.h"
 #include"Item/Object/GoldOre.h"
@@ -49,7 +50,7 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerP
 	config.colliderInfo = &circleCollider_;
 	config.isActive = true;
 	config.ownTag = CollTag::Unit;
-	config.targetTag = static_cast<uint32_t>(CollTag::Player) | static_cast<uint32_t>(CollTag::Stage);
+	config.targetTag = static_cast<uint32_t>(CollTag::Player) | static_cast<uint32_t>(CollTag::Stage) | static_cast<uint32_t>(CollTag::Unit);
 	SetColliderConfig(config);
 
 	// 当たり判定の初期化
@@ -87,6 +88,9 @@ void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos) {
 	// 状態のリセット
 	resetStatesTable_[static_cast<size_t>(state_)]();
 
+	// 目的位置を取得
+	targetPos_ = targetPos;
+
 	// 移動する経路を求める
 	CalculatePath(targetPos);
 }
@@ -111,11 +115,10 @@ void OreUnit::Update() {
 		stateRequest_ = std::nullopt;
 	}
 
-	// プレイヤーの状態による更新処理をおこなう
-	statesTable_[static_cast<size_t>(state_)]();
-
-	// 移動処理
-	Move();
+	if (!isConflict_) {
+		// プレイヤーの状態による更新処理をおこなう
+		statesTable_[static_cast<size_t>(state_)]();
+	}
 
 	// 更新処理
 	object_->Update();
@@ -155,12 +158,19 @@ void OreUnit::OnCollision(Collider* other) {
 
 	bool isStage = CollTag::Stage == other->GetOwnTag();
 	bool isPlayer = CollTag::Player == other->GetOwnTag();
+	bool isUnit = CollTag::Unit == other->GetOwnTag();
 
 	// プレイヤーとの当たり判定
 	if (isPlayer) {
+
+		if (state_ != State::Return) {
+			if (isConflict_) {
+				isConflict_ = false;
+			}
+		}
+
 		if (state_ != State::ToDeliver) { return; }
 		// プレイヤーに触れれば帰宅する
-
 		if (isActive_) {
 			// 鉱石を収納する
 			OreItemStorageNum::currentOreItemNum_ += 1;
@@ -198,6 +208,25 @@ void OreUnit::OnCollision(Collider* other) {
 			} 
 		}
 	}
+
+	// ユニット
+	if (isUnit) {
+		if (state_ != State::GoTo && state_ != State::ToDeliver) { return; }
+
+		OreUnit* oreUnit = dynamic_cast<OreUnit*>(other);
+
+		if (oreUnit) {
+
+			// 内積を取得する
+			float dot = MyMath::dot(oreUnit->GetDir(),dir_);
+
+			// 衝突
+			if (dot < -0.8f) {
+				// 衝突処理
+				isConflict_ = true;
+			}
+		}
+	}
 }
 
 void OreUnit::GoToUpdate() {
@@ -206,6 +235,14 @@ void OreUnit::GoToUpdate() {
 	if (path_.empty()) {
 		// 目的地に到着して鉱石が存在していなかった場合、帰宅する
 		stateRequest_ = State::ToDeliver;
+
+		Vector3 nextTarget = toRotPos_;
+		Vector3 toTarget = nextTarget - object_->transform_.position;
+		toTarget.y = 0.0f;
+		toTarget.Normalize();
+
+
+
 	}
 
 	// 鉱石まで移動する
@@ -366,14 +403,8 @@ void OreUnit::Move() {
 		path_.erase(path_.begin());
 	} else {
 		// 目的地に向かって移動
-		// 正規化（長さを1にする）して速度を掛ける
 		Vector3 velocity = (toTarget / distance) * moveSpeed_;
 		object_->transform_.position += velocity * FpsCount::deltaTime;
-
-		// 進行方向を向かせる（Y軸回転）
-		//if (distance > 0.001f) {
-		//	object_->transform_.rotate.y = std::atan2(velocity.x, velocity.z);
-		//}
 	}
 }
 
