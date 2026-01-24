@@ -208,7 +208,7 @@ void GameScene::Draw() {
 	postEffectConfig_.output = gameWindow_->GetDualDisplay();
 	postEffect_->Draw(postEffectConfig_);
 
-	gameWindow_->PreDraw();
+	gameWindow_->PreDraw(false);
 
 	
 	//ImGui

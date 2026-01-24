@@ -8,8 +8,8 @@ void GameWindow::Initialize(SHEngine* engine, const WindowConfig& config, uint32
 	textureManager_ = engine->GetTextureManager();
 }
 
-void GameWindow::PreDraw() {
-	window_->PreDraw(false);
+void GameWindow::PreDraw(bool isClear) {
+	window_->PreDraw(isClear);
 }
 
 void GameWindow::DrawDisplayWithImGui() {

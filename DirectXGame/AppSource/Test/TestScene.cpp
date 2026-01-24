@@ -126,7 +126,7 @@ void TestScene::Draw() {
 
 	display->PostDraw(window->GetCommandObject());
 
-	window->PreDraw();
+	window->PreDraw(true);
 	window->DrawDisplayWithImGui();
 	//ImGui
 
