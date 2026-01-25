@@ -163,10 +163,14 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Common\DebugParam\InspectorWindow.cpp" />
     <ClCompile Include="AppSource\Common\DebugParam\ParamManager.cpp" />
     <ClCompile Include="AppSource\GameCamera\CameraController.cpp" />
+    <ClCompile Include="AppSource\GameCamera\SelectCamera.cpp" />
+    <ClCompile Include="AppSource\GameCommon\DefaultObject.cpp" />
     <ClCompile Include="AppSource\Game\SelectScene.cpp" />
     <ClCompile Include="AppSource\Item\Object\GoldOre.cpp" />
     <ClCompile Include="AppSource\Item\Object\OreObject.cpp" />
     <ClCompile Include="AppSource\Item\OreItemManager.cpp" />
+    <ClCompile Include="AppSource\UI\Object\SpriteObject.cpp" />
+    <ClCompile Include="AppSource\UI\SelectStageUI.cpp" />
     <ClCompile Include="AppSource\Unit\MapChipField.cpp" />
     <ClCompile Include="AppSource\Unit\MapChipRender.cpp" />
     <ClCompile Include="AppSource\Unit\Ore\OreUnit.cpp" />
@@ -220,6 +224,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Utility\src\MyMath.cpp" />
     <ClCompile Include="AppSource\MapEditor\Editor\Data\StageEditor.cpp" />
     <ClInclude Include="AppSource\GameCamera\DebugMousePos.h" />
+    <ClInclude Include="AppSource\GameCamera\SelectCamera.h" />
+    <ClInclude Include="AppSource\GameCommon\DefaultObject.h" />
     <ClInclude Include="AppSource\Game\MapData\Data\StageData.h" />
     <ClInclude Include="AppSource\Game\SelectScene.h" />
     <ClInclude Include="AppSource\Item\Object\GoldOre.h" />
@@ -227,6 +233,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Item\Object\OreObject.h" />
     <ClInclude Include="AppSource\Item\OreItemManager.h" />
     <ClInclude Include="AppSource\Item\OreItemStorageNum.h" />
+    <ClInclude Include="AppSource\UI\Object\SpriteObject.h" />
+    <ClInclude Include="AppSource\UI\SelectStageUI.h" />
     <ClInclude Include="AppSource\Unit\MapChipRender.h" />
     <ClInclude Include="Engine\Utility\Quaternion.h" />
     <ClCompile Include="AppSource\Scene\src\IScene.cpp" />
@@ -364,6 +372,27 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\MapEditor\Editor\MapEditor.h" />
     <ClInclude Include="AppSource\MapEditor\Editor\MapEditWithImGui.h" />
     <ClInclude Include="AppSource\MapEditor\Editor\Data\Pencil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Assets\Shader\Sprite.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Development|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Assets\Shader\Sprite.VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Development|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shader\Sprite.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
