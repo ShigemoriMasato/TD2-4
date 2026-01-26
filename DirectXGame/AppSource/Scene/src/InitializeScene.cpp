@@ -1,6 +1,7 @@
 #include "../InitializeScene.h"
 #include <Test/TestScene.h>
 #include <Game/GameScene.h>
+#include <ModelEditScene/ModelEditScene.h>
 #include <MapEditor/MapEditScene.h>
 #include <imgui/imgui.h>
 #include <Utility/DataStructures.h>
@@ -33,7 +34,7 @@ void InitializeScene::Initialize() {
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
-	return std::make_unique<MapEditScene>();
+	return std::make_unique<ModelEditScene>();
 }
 
 void InitializeScene::Draw() {

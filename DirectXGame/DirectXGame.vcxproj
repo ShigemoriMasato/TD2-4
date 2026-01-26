@@ -181,6 +181,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClCompile Include="AppSource\Unit\UnitManager.cpp" />
     <ClCompile Include="AppSource\Game\MapData\Data\MapData.cpp" />
     <ClCompile Include="AppSource\MapEditor\Editor\Data\Campus.cpp" />
+    <ClCompile Include="AppSource\ModelEditScene\Render\DebugMCRender.cpp" />
     <ClCompile Include="Engine\Assets\Audio\AudioManager.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\AudioData.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\MP3Data.cpp" />
@@ -225,6 +226,11 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClCompile Include="Engine\Utility\src\MyMath.cpp" />
     <ClCompile Include="AppSource\MapEditor\Editor\Data\StageEditor.cpp" />
     <ClCompile Include="AppSource\MapEditor\MapModelEdit\MapModelEditor.cpp" />
+    <ClCompile Include="AppSource\ModelEditScene\ModelEditScene.cpp" />
+    <ClCompile Include="AppSource\ModelEditScene\Editor\Decoration\MapDecorationEditor.cpp" />
+    <ClCompile Include="AppSource\ModelEditScene\Editor\Texture\MapTextureEditor.cpp" />
+    <ClCompile Include="AppSource\ModelEditScene\Editor\Type\MapTypeEditor.cpp" />
+    <ClCompile Include="AppSource\ModelEditScene\Render\MapRender.cpp" />
     <ClInclude Include="AppSource\GameCamera\DebugMousePos.h" />
     <ClInclude Include="AppSource\Game\MapData\Data\StageData.h" />
     <ClInclude Include="AppSource\Item\Object\GoldOre.h" />
@@ -233,6 +239,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClInclude Include="AppSource\Item\OreItemManager.h" />
     <ClInclude Include="AppSource\Item\OreItemStorageNum.h" />
     <ClInclude Include="AppSource\Unit\MapChipRender.h" />
+    <ClInclude Include="AppSource\ModelEditScene\Render\DebugMCRender.h" />
     <ClInclude Include="Engine\Utility\Quaternion.h" />
     <ClCompile Include="AppSource\Scene\src\IScene.cpp" />
     <ClCompile Include="AppSource\Scene\src\InitializeScene.cpp" />
@@ -266,6 +273,11 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClInclude Include="AppSource\MapEditor\Editor\Data\StageEditor.h" />
     <ClInclude Include="Engine\Assets\Fonts\FontLoader.h" />
     <ClInclude Include="AppSource\MapEditor\MapModelEdit\MapModelEditor.h" />
+    <ClInclude Include="AppSource\ModelEditScene\ModelEditScene.h" />
+    <ClInclude Include="AppSource\ModelEditScene\Editor\Decoration\MapDecorationEditor.h" />
+    <ClInclude Include="AppSource\ModelEditScene\Editor\Texture\MapTextureEditor.h" />
+    <ClInclude Include="AppSource\ModelEditScene\Editor\Type\MapTypeEditor.h" />
+    <ClInclude Include="AppSource\ModelEditScene\Render\MapRender.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSource\Common\DebugParam\GameParamEditor.h" />

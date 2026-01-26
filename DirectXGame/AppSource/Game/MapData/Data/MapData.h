@@ -14,6 +14,8 @@ enum class TileType : int {
 	Count
 };
 
+using MapChipData = std::vector<std::vector<TileType>>;
+
 struct MapDataForBin {
 	std::string modelFilePath;
 	int width = 1;
@@ -21,13 +23,13 @@ struct MapDataForBin {
 	int mapID = -1;
 	std::vector<TileType> tileData;
 
-	std::vector<std::vector<TileType>> GetDirectionGrid(const Direction& direction, float goldFrequency) const;
+	MapChipData GetDirectionGrid(const Direction& direction, float goldFrequency) const;
 
 	bool Verify() const;
 };
 
 struct MapData {
-	std::vector<std::vector<TileType>> tileGrid;
+	MapChipData tileGrid;
 	int width = 1;
 	int height = 1;
 	int mapID = -1;

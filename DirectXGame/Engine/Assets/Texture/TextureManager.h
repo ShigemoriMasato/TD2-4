@@ -34,11 +34,22 @@ public:
 	void Clear();
 
 	/**
+	 * @brief すべてのテクスチャを読み込む
+	 */
+	void LoadAllTextures();
+
+	/**
 	 * @brief ファイルからテクスチャを読み込む
 	 * @param filePath テクスチャファイルのパス
 	 * @return テクスチャハンドル
 	 */
 	int LoadTexture(const std::string& filePath);
+
+	/**
+	 * @brief エラーテクスチャのハンドルを取得
+	 * @return エラーテクスチャハンドル
+	 */
+	int GetErrorTextureHandle() const { return 2; }
 	
 	/**
 	 * @brief ウィンドウ用テクスチャを作成

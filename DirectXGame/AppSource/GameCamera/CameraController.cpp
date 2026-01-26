@@ -26,7 +26,7 @@ void CameraController::Update() {
 	BYTE* mouseKey = input_->GetMouseButtonState();
 
 	// 左クリックを押している状態
-	if (mouseKey && (mouseKey[0] & 0x80)) {
+	if (mouseKey && (mouseKey[1]) && DebugMousePos::isGrabbed) {
 		if (!preClicked_) {
 			mousePos_ = {};
 			clickedCameraPos_ = position_;
@@ -43,7 +43,9 @@ void CameraController::Update() {
 		preClicked_ = false;
 	}
 
-	backDist_ += input_->GetMouseWheel() * 0.02f;
+	if (DebugMousePos::isHovered) {
+		backDist_ += input_->GetMouseWheel() * 0.02f;
+	}
 
 	// カメラの更新処理
 	MakeMatrix();
