@@ -128,7 +128,7 @@ private: // 調整項目
 	float damageTime_ = 1.0f;
 
 	// 最大体力
-	int32_t maxHp_ = 10;
+	int32_t maxHp_ = 30;
 
 	// 移動速度
 	float moveSpeed_ = 2.0f;
