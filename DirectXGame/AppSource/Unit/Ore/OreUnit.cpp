@@ -189,7 +189,7 @@ void OreUnit::OnCollision(Collider* other) {
 
 			if (state_ == State::GoTo) {
 				// 指定した鉱石に近ければ採掘に移る
-				if (path_.size() > 3) { return; }
+				if (path_.size() > 2) { return; }
 
 				// 採掘状態に切り替える
 				stateRequest_ = State::Mining;
@@ -233,20 +233,23 @@ void OreUnit::GoToUpdate() {
 
 	// 目的地付けば次の状態に切り替える
 	if (path_.empty()) {
-		// 目的地に到着して鉱石が存在していなかった場合、帰宅する
-		stateRequest_ = State::ToDeliver;
 
-		Vector3 nextTarget = toRotPos_;
-		Vector3 toTarget = nextTarget - object_->transform_.position;
+		Vector3 toTarget = targetPos_ - object_->transform_.position;
 		toTarget.y = 0.0f;
-		toTarget.Normalize();
+		// XZ平面での距離を計算
+		float distance = std::sqrt(toTarget.x * toTarget.x + toTarget.z * toTarget.z);
 
+		object_->transform_.position += (toTarget / distance) * moveSpeed_ * FpsCount::deltaTime;
 
+		// 目的地に到着して鉱石が存在していなかった場合、帰宅する
+		if (distance < 0.1f) {
+			stateRequest_ = State::ToDeliver;
+		}
 
+	} else {
+		// 鉱石まで移動する
+		Move();
 	}
-
-	// 鉱石まで移動する
-	Move();
 
 	// 進行方向に回転
 	Rotate();
