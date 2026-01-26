@@ -57,4 +57,9 @@ private:
 
 	// ユニット管理
 	std::unique_ptr<UnitManager> unitManager_;
+
+private:
+
+	// ゲームの実行処理
+	void InGameScene();
 };

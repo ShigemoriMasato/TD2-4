@@ -97,10 +97,12 @@ private:
 	// 方向
 	Vector3 dir_ = {};
 
-	// 体力の計算に使用
-	float lifeTimer_ = 0.0f;
+	Vector3 startFixScale_ = {};
 
+	// タイマー
 	float timer_ = 0.0f;
+	float lifeTimer_ = 0.0f;
+	float animationTimer_ = 0.0f;
 
 	// 円の当たり判定
 	Circle circleCollider_;
@@ -147,6 +149,9 @@ private: // 調整項目
 	float moveTime_ = 1.0f;
 	float FallTime_ = 1.0f;
 
+	// 移動アニメーション
+	float moveAnimationTime_ = 0.6f;
+
 private:
 
 	// 移動経路を求める
@@ -169,6 +174,9 @@ private:
 
 	// 返りの更新処理
 	void ReturnUpdate();
+
+	// 移動アニメーション処理
+	void MoveAnimationUpdate();
 
 private:
 	/// <summary>
