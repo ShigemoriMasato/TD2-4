@@ -108,6 +108,14 @@ std::unique_ptr<IScene> GameScene::Update() {
 	debugCamera_->Update();
 	camera_ = *static_cast<Camera*>(debugCamera_.get());
 
+	// ゲームの更新処理
+	InGameScene();
+
+	return nullptr;
+}
+
+void GameScene::InGameScene() {
+
 	//====================================================
 	// カメラの更新庶路
 	//====================================================
@@ -158,7 +166,7 @@ std::unique_ptr<IScene> GameScene::Update() {
 					for (int i = 0; i < actualSpawnCount; ++i) {
 						selectedOreItem->AddWorker();
 					}
-				}	
+				}
 			}
 		}
 	}
@@ -183,8 +191,6 @@ std::unique_ptr<IScene> GameScene::Update() {
 
 	// 全ての当たり判定を判定
 	colliderManager_->CollisionCheckAll();
-
-	return nullptr;
 }
 
 void GameScene::Draw() {
