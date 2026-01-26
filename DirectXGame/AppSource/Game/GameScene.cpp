@@ -8,6 +8,8 @@ namespace {
 	bool poseMode = false;
 
 	std::string playerModelName = "Player";
+
+	std::string spriteModelName = "Sprite";
 }
 
 void GameScene::Initialize() {
@@ -32,6 +34,11 @@ void GameScene::Initialize() {
 	inst->AddItem("Test", "param3", param3, 2);
 	inst->AddItem("Test", "param4", param4, 3);
 	inst->AddItem("Test", "param5", param5, 4);
+
+	// UIカメラを設定
+	uiCamera_ = std::make_unique<Camera>();
+	uiCamera_->SetProjectionMatrix(OrthographicDesc{});
+	uiCamera_->MakeMatrix();
 
 	//==================================================
 	// カメラシステム
@@ -88,12 +95,32 @@ void GameScene::Initialize() {
 		drawDataManager_->GetDrawData(playerModel.drawDataIndex), drawDataManager_->GetDrawData(oreModel.drawDataIndex),
 		commonData_->keyManager.get());
 
+	//==========================================================================================
+	// ポストエフェクト
+	//==========================================================================================
+
 	postEffect_ = std::make_unique<PostEffect>();
 	postEffect_->Initialize(textureManager_, drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex));
 
 	postEffectConfig_.window = gameWindow_->GetWindow();
 	postEffectConfig_.origin = display_;
 	postEffectConfig_.jobs_ = 0;
+
+	//=======================================================
+	// ゲームオーバーシーンの初期化
+	//=======================================================
+	InitializeGameOver();
+}
+
+void GameScene::InitializeGameOver() {
+
+	// spriteモデルを取得
+	int spriteModelID = modelManager_->LoadModel(spriteModelName);
+	auto spriteModel = modelManager_->GetNodeModelData(spriteModelID);
+
+	// ゲームオーバーUIの初期化
+	gameOverUI_ = std::make_unique<GameOverUI>();
+	gameOverUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex));
 }
 
 std::unique_ptr<IScene> GameScene::Update() {
@@ -108,8 +135,15 @@ std::unique_ptr<IScene> GameScene::Update() {
 	debugCamera_->Update();
 	camera_ = *static_cast<Camera*>(debugCamera_.get());
 
-	// ゲームの更新処理
-	InGameScene();
+	if (isGameOverScene_) {
+		
+		// UIの更新処理
+		gameOverUI_->Update();
+
+	} else {
+		// ゲームの更新処理
+		InGameScene();
+	}
 
 	return nullptr;
 }
@@ -207,6 +241,16 @@ void GameScene::Draw() {
 
 	// ユニットを描画
 	unitManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+	/// UIの描画処理
+	vpMatrix = uiCamera_->GetVPMatrix();
+
+	// ゲームオーバーシーンの描画処理
+	if (isGameOverScene_) {
+
+		// UIの更新処理
+		gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+	}
 
 	display_->PostDraw(gameWindow_->GetCommandObject());
 

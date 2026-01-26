@@ -11,6 +11,9 @@
 #include"Item/OreItemManager.h"
 #include"GameCamera/CameraController.h"
 
+// ゲームオーバーシーン
+#include"UI/GameOverUI.h"
+
 class GameScene : public IScene {
 public:
 
@@ -28,6 +31,9 @@ private:
 	std::unique_ptr<DebugCamera> debugCamera_ = nullptr;
 	Camera camera_;
 
+	// ui描画用のカメラ
+	std::unique_ptr<Camera> uiCamera_;
+
 	// 当たり判定管理クラス
 	std::unique_ptr<ColliderManager> colliderManager_;
 
@@ -42,6 +48,13 @@ private:
 	std::unique_ptr<PostEffect> postEffect_ = nullptr;
 	PostEffectConfig postEffectConfig_{};
 	Blur blur_{};
+
+	// ゲームオーバーシーン
+	bool isGameOverScene_ = false;
+
+	//=====================================================
+	// インゲーム
+	//=====================================================
 
 	// ゲームカメラの管理
 	std::unique_ptr<CameraController> cameraController_;
@@ -58,8 +71,18 @@ private:
 	// ユニット管理
 	std::unique_ptr<UnitManager> unitManager_;
 
+	//================================================
+	// ゲームオーバーシーン
+	//================================================
+
+	// ゲームオーバーUI
+	std::unique_ptr<GameOverUI> gameOverUI_;
+
 private:
 
 	// ゲームの実行処理
 	void InGameScene();
+
+	// ゲームオーバーシーンの初期化
+	void InitializeGameOver();
 };
