@@ -186,13 +186,5 @@ private:
 namespace {
 
 	// 最短角度を求める
-	float GetShortAngleY(float diffY) {
-		while (diffY > std::numbers::pi_v<float>) {
-			diffY -= std::numbers::pi_v<float> *2.0f;
-		}
-		while (diffY < -std::numbers::pi_v<float>) {
-			diffY += std::numbers::pi_v<float> *2.0f;
-		}
-		return diffY;
-	}
+	float GetShortAngleY(float diffY);
 }

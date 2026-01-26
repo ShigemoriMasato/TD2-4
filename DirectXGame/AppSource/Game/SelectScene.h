@@ -11,6 +11,7 @@
 #include"Unit/Player/PlayerUnitObject.h"
 #include"UI/SelectStageUI.h"
 #include"GameCommon/DefaultObject.h"
+#include"GameCamera/SelectCamera.h"
 
 class SelectScene : public IScene {
 public:
@@ -42,6 +43,9 @@ private:
 	// ui描画用のカメラ
 	std::unique_ptr<Camera> uiCamera_;
 
+	// プレイヤーに追従するカメラ
+	std::unique_ptr<SelectCamera> selectCamera_;
+
 	//==============================================
 	// プレイヤー
 	//==============================================
@@ -56,6 +60,12 @@ private:
 
 	float timer_ = 0.0f;
 	float moveTime_ = 1.0f;
+
+	float currentDir_ = 1.0f;
+	float selectDir_ = 1.0f;
+
+	float startRotY_ = 0.0f;
+	float endRotY_ = 0.0f;
 
 	//====================================================
 	// ステージ
