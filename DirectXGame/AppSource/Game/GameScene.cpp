@@ -200,8 +200,6 @@ void GameScene::InGameScene() {
 		// 左クリックを取得
 		if ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80)) {
 
-			fadeTransition_->SetFade(FadeTransition::Phase::Out);
-
 			// 選択された鉱石を取得
 			OreItem* selectedOreItem = oreItemManager_->GetOreItemForId();
 
