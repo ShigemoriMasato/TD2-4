@@ -12,7 +12,11 @@ void OreItemManager::Initialize(const DrawData& goldOreDrawData) {
 	oreItems_.reserve(10);
 
 	// テストで鉱石を設定
-	AddOreItem(OreType::Gold, {4.0f,0.0f,7.0f});
+	AddOreItem(OreType::Large, {4.0f,0.0f,7.0f});
+
+	// アウトライン描画用
+	oreOutLineObject_ = std::make_unique<OreOutLineObject>();
+	oreOutLineObject_->Initialize(goldOreDrawData);
 }
 
 void OreItemManager::Update() {
@@ -47,6 +51,15 @@ void OreItemManager::Update() {
 			it++;
 		}
 	}
+
+	// 選択されていればアウトラインを更新
+	if (selectId_ != -1) {
+
+		// 選択した鉱石の位置を取得
+		OreItem* ore = GetOreItemForId();
+		oreOutLineObject_->transform_.position = ore->GetPos();
+		oreOutLineObject_->Update();
+	}
 }
 
 void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
@@ -55,6 +68,12 @@ void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	for (auto& [id, ore] : oreItems_) {
 		ore->Draw(window, vpMatrix);
 	}
+
+	// アウトラインを描画
+	if (selectId_ != -1) {
+		oreOutLineObject_->Draw(window, vpMatrix);
+	}
+
 #ifdef USE_IMGUI
 
 	ImGui::Begin("OreItemInfo");
@@ -100,13 +119,32 @@ void OreItemManager::AddOreItem(OreType type, const Vector3& pos) {
 
 	switch (type)
 	{
-	case OreType::Gold:
+	case OreType::Large: {
 		// 金鉱石を追加
 		std::unique_ptr<GoldOre> ore = std::make_unique<GoldOre>();
-		ore->Init(goldOreDrawData_, pos);
+		ore->Init(goldOreDrawData_, pos, type);
 
 		oreItems_[index] = std::move(ore);
 		break;
+	}
+
+	case OreType::Medium: {
+		// 金鉱石を追加
+		std::unique_ptr<GoldOre> ore = std::make_unique<GoldOre>();
+		ore->Init(goldOreDrawData_, pos, type);
+
+		oreItems_[index] = std::move(ore);
+		break;
+	}
+
+	case OreType::Small: {
+		// 金鉱石を追加
+		std::unique_ptr<GoldOre> ore = std::make_unique<GoldOre>();
+		ore->Init(goldOreDrawData_, pos, type);
+
+		oreItems_[index] = std::move(ore);
+		break;
+	}
 	}
 }
 
@@ -127,6 +165,9 @@ bool OreItemManager::IsSelectOre(const Vector3 selectpos, Vector3& worldPos) {
 			}
 		}
 	}
+
+	// 何もない場合
+	selectId_ = -1;
 	return false;
 }
 

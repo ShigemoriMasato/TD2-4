@@ -4,7 +4,9 @@
 #include <Render/RenderObject.h>
 
 enum class OreType {
-	Gold,  // 金鉱石
+	Large,  // 大
+	Medium, // 中
+	Small,  // 小
 
 	MaxCount // 数
 };

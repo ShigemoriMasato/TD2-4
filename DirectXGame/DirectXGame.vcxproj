@@ -168,6 +168,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Game\SelectScene.cpp" />
     <ClCompile Include="AppSource\Item\Object\GoldOre.cpp" />
     <ClCompile Include="AppSource\Item\Object\OreObject.cpp" />
+    <ClCompile Include="AppSource\Item\Object\OreOutLineObject.cpp" />
     <ClCompile Include="AppSource\Item\OreItemManager.cpp" />
     <ClCompile Include="AppSource\UI\FadeTransition.cpp" />
     <ClCompile Include="AppSource\UI\GameOverUI.cpp" />
@@ -233,6 +234,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Item\Object\GoldOre.h" />
     <ClInclude Include="AppSource\Item\Object\OreItem.h" />
     <ClInclude Include="AppSource\Item\Object\OreObject.h" />
+    <ClInclude Include="AppSource\Item\Object\OreOutLineObject.h" />
     <ClInclude Include="AppSource\Item\OreItemManager.h" />
     <ClInclude Include="AppSource\Item\OreItemStorageNum.h" />
     <ClInclude Include="AppSource\UI\FadeTransition.h" />

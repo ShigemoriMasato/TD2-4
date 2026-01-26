@@ -7,7 +7,7 @@
 class GoldOre : public OreItem,public Collider {
 public:
 
-	void Init(DrawData drawData, const Vector3& pos);
+	void Init(DrawData drawData, const Vector3& pos, OreType type);
 
 	void Update() override;
 
@@ -18,7 +18,7 @@ public:
 public:
 
 	// タイプ
-	OreType GetType() override { return OreType::Gold; }
+	OreType GetType() override { return OreType::Large; }
 
 	// 位置
 	Vector3 GetPos() override { return object_->transform_.position; }
@@ -83,6 +83,9 @@ private:
 	int32_t currentWorkerNum_ = 0;
 	// 最大の数
 	int32_t maxWorkerNum_ = 5;
+
+	// タイプ
+	OreType type_;
 
 private: // 調整項目
 
