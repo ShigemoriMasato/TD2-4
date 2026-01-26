@@ -10,6 +10,7 @@
 #include"Unit/MapChipRender.h"
 #include"Item/OreItemManager.h"
 #include"GameCamera/CameraController.h"
+#include"UI/FadeTransition.h"
 
 // ゲームオーバーシーン
 #include"UI/GameOverUI.h"
@@ -51,6 +52,9 @@ private:
 
 	// ゲームオーバーシーン
 	bool isGameOverScene_ = false;
+
+	// 遷移の処理
+	std::unique_ptr<FadeTransition> fadeTransition_;
 
 	//=====================================================
 	// インゲーム

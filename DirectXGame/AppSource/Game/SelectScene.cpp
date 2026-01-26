@@ -71,6 +71,13 @@ void SelectScene::Initialize() {
 		stagePointObjects_[i]->material_.color = { 1.0f,0.0f,0.0f,1.0f };
 		stagePointObjects_[i]->Update();
 	}
+
+	/// シーン遷移の処理
+	fadeTransition_ = std::make_unique<FadeTransition>();
+	fadeTransition_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex));
+
+	// インゲームの処理
+	InGameScene();
 }
 
 std::unique_ptr<IScene> SelectScene::Update() {
@@ -84,8 +91,25 @@ std::unique_ptr<IScene> SelectScene::Update() {
 
 	debugCamera_->Update();
 	camera_ = *static_cast<Camera*>(debugCamera_.get());
-	selectCamera_->Update();
 
+	// 演出が終わったので次のシーンに切り替える
+	if (fadeTransition_->IsFinished()) {
+
+	}
+
+	if (fadeTransition_->IsAnimation()) {
+
+		// シーン遷移
+		fadeTransition_->Update();
+	} else {
+		// インゲームの処理
+		InGameScene();
+	}
+	
+	return nullptr;
+}
+
+void SelectScene::InGameScene() {
 	//==================================================
 	// ステージの選択処理
 	//==================================================
@@ -124,7 +148,7 @@ std::unique_ptr<IScene> SelectScene::Update() {
 				startRotY_ = playerObject_->transform_.rotate.y;
 				endRotY_ = std::numbers::pi_v<float> / 2;
 			}
-		}	
+		}
 	}
 
 	//==============================================
@@ -162,11 +186,16 @@ std::unique_ptr<IScene> SelectScene::Update() {
 		}
 	}
 
-	// カメラの追跡位置を更新
-	selectCamera_->SetTargetPos(playerObject_->transform_.position, velocity);
-
 	// プレイヤーの更新処理
 	playerObject_->Update();
+
+	//=====================================================
+	// カメラの更新処理
+	//=====================================================
+
+	// カメラの追跡位置を更新
+	selectCamera_->SetTargetPos(playerObject_->transform_.position, velocity);
+	selectCamera_->Update();
 
 	//==================================================
 	// UIの更新処理
@@ -175,7 +204,6 @@ std::unique_ptr<IScene> SelectScene::Update() {
 	// ステージ選択の更新処理
 	selectStageUI_->Update();
 
-	return nullptr;
 }
 
 void SelectScene::Draw() {
@@ -198,6 +226,9 @@ void SelectScene::Draw() {
 
 	// ステージの選択
 	selectStageUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+	// シーン遷移の描画
+	fadeTransition_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
 	display_->PostDraw(gameWindow_->GetCommandObject());
 
