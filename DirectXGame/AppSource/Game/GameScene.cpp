@@ -110,6 +110,15 @@ void GameScene::Initialize() {
 	// ゲームオーバーシーンの初期化
 	//=======================================================
 	InitializeGameOver();
+
+
+	// spriteモデルを取得
+	int spriteModelID = modelManager_->LoadModel(spriteModelName);
+	auto spriteModel = modelManager_->GetNodeModelData(spriteModelID);
+
+	/// シーン遷移の処理
+	fadeTransition_ = std::make_unique<FadeTransition>();
+	fadeTransition_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex));
 }
 
 void GameScene::InitializeGameOver() {
@@ -135,14 +144,29 @@ std::unique_ptr<IScene> GameScene::Update() {
 	debugCamera_->Update();
 	camera_ = *static_cast<Camera*>(debugCamera_.get());
 
-	if (isGameOverScene_) {
-		
-		// UIの更新処理
-		gameOverUI_->Update();
+	//=============================================================
+	// シーン遷移の管理
+	//=============================================================
 
+	// 演出が終わったので次のシーンに切り替える
+	if (fadeTransition_->IsFinished()) {
+
+	}
+
+	if (fadeTransition_->IsAnimation()) {
+
+		// シーン遷移
+		fadeTransition_->Update();
 	} else {
-		// ゲームの更新処理
-		InGameScene();
+		if (isGameOverScene_) {
+
+			// UIの更新処理
+			gameOverUI_->Update();
+
+		} else {
+			// ゲームの更新処理
+			InGameScene();
+		}
 	}
 
 	return nullptr;
@@ -175,6 +199,8 @@ void GameScene::InGameScene() {
 
 		// 左クリックを取得
 		if ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80)) {
+
+			fadeTransition_->SetFade(FadeTransition::Phase::Out);
 
 			// 選択された鉱石を取得
 			OreItem* selectedOreItem = oreItemManager_->GetOreItemForId();
@@ -247,10 +273,12 @@ void GameScene::Draw() {
 
 	// ゲームオーバーシーンの描画処理
 	if (isGameOverScene_) {
-
 		// UIの更新処理
 		gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
 	}
+
+	// シーン遷移の描画
+	fadeTransition_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
 	display_->PostDraw(gameWindow_->GetCommandObject());
 

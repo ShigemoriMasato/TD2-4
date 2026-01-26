@@ -21,6 +21,8 @@ private:
 	float startBgPosY_ = 1080.0f;
 	float endBgPosY_ = 360.0f;
 
+	bool inAnimation_ = true;
+
 private: // 調整項目
 
 	float maxTime_ = 1.0f;

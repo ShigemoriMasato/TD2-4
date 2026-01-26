@@ -15,13 +15,18 @@ void GameOverUI::Initialize(DrawData drawData) {
 
 void GameOverUI::Update() {
 
-	timer_ += FpsCount::deltaTime / maxTime_;
+	if (inAnimation_) {
+		timer_ += FpsCount::deltaTime / maxTime_;
 
-	bgSpriteObject_->transform_.position.y = lerp(startBgPosY_, endBgPosY_, timer_, EaseType::EaseOutBounce);
+		bgSpriteObject_->transform_.position.y = lerp(startBgPosY_, endBgPosY_, timer_, EaseType::EaseOutBounce);
 
-	if (timer_ >= 1.0f) {
-		bgSpriteObject_->transform_.position.y = endBgPosY_;
+		if (timer_ >= 1.0f) {
+			bgSpriteObject_->transform_.position.y = endBgPosY_;
+			inAnimation_ = false;
+		}
 	}
+
+	
 
 	// 背景画像の更新処理
 	bgSpriteObject_->Update();

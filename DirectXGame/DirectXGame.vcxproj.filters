@@ -483,6 +483,7 @@
     <ClCompile Include="AppSource\GameCamera\SelectCamera.cpp" />
     <ClCompile Include="AppSource\GameCommon\DefaultObject.cpp" />
     <ClCompile Include="AppSource\UI\GameOverUI.cpp" />
+    <ClCompile Include="AppSource\UI\FadeTransition.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSource\FpsCount.h">
@@ -830,6 +831,7 @@
     <ClInclude Include="AppSource\GameCamera\SelectCamera.h" />
     <ClInclude Include="AppSource\GameCommon\DefaultObject.h" />
     <ClInclude Include="AppSource\UI\GameOverUI.h" />
+    <ClInclude Include="AppSource\UI\FadeTransition.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\Shader\Sprite.VS.hlsl" />

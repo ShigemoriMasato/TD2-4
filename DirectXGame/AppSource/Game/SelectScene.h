@@ -12,6 +12,7 @@
 #include"UI/SelectStageUI.h"
 #include"GameCommon/DefaultObject.h"
 #include"GameCamera/SelectCamera.h"
+#include"UI/FadeTransition.h"
 
 class SelectScene : public IScene {
 public:
@@ -32,6 +33,9 @@ private:
 	std::unique_ptr<PostEffect> postEffect_ = nullptr;
 	PostEffectConfig postEffectConfig_{};
 	Blur blur_{};
+
+	// 遷移の処理
+	std::unique_ptr<FadeTransition> fadeTransition_;
 
 	//=================================
 	// カメラ
@@ -83,4 +87,10 @@ private:
 
 	// ステージ選択のロゴ
 	std::unique_ptr<SelectStageUI> selectStageUI_;
+
+private:
+
+	// ゲームの実行処理
+	void InGameScene();
+
 };
