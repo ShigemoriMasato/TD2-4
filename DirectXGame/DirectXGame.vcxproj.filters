@@ -482,6 +482,7 @@
     <ClCompile Include="AppSource\UI\Object\SpriteObject.cpp" />
     <ClCompile Include="AppSource\GameCamera\SelectCamera.cpp" />
     <ClCompile Include="AppSource\GameCommon\DefaultObject.cpp" />
+    <ClCompile Include="AppSource\UI\GameOverUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSource\FpsCount.h">
@@ -828,6 +829,7 @@
     <ClInclude Include="AppSource\UI\Object\SpriteObject.h" />
     <ClInclude Include="AppSource\GameCamera\SelectCamera.h" />
     <ClInclude Include="AppSource\GameCommon\DefaultObject.h" />
+    <ClInclude Include="AppSource\UI\GameOverUI.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\Shader\Sprite.VS.hlsl" />
