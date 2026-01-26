@@ -15,10 +15,16 @@ public:
 
 private:
 
+	void TextureLoad();
+	void TextureSave();
+	void MapLoad();
+	void MapSave();
+
+	//テクスチャインデックスインデックス配列(ステージ)
 	std::vector<std::vector<int>> textureIndices_{};
+	//現在選択中のテクスチャインデックスインデックス
 	int currentTextureIndex_ = 0;
 	Direction currentDirection_{ Direction::Front };
-	std::vector<int> textureIndexList_{};
 
 	int width_ = 0;
 	int height_ = 0;
@@ -31,5 +37,6 @@ private:
 
 	Input* input_;
 	TextureManager* textureManager_;
-	std::map<int, std::string> textureFilePaths_{};
+	//テクスチャインデックスを確定的なIDとして保持するリスト(保存対象)
+	std::vector<std::pair<int, std::string>> textureIndexList_;
 };

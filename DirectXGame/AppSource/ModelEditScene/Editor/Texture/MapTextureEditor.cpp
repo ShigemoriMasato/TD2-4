@@ -4,9 +4,27 @@
 void MapTextureEditor::Initialize(TextureManager* textureManager, Input* input) {
 	textureManager_ = textureManager;
 	input_ = input;
+
+	TextureLoad();
+	//更新処理中のテクスチャロードができないためすぐセーブ
+	TextureSave();
+
+	MapLoad();
 }
 
 void MapTextureEditor::Update() {
+	//回転処理
+	if (input_->GetKeyState(DIK_Q) && !input_->GetPreKeyState(DIK_Q)) {
+		int nextDir = (static_cast<int>(currentDirection_) + 3) % 4;
+		currentDirection_ = static_cast<Direction>(nextDir);
+	}
+
+	if(input_->GetKeyState(DIK_E) && !input_->GetPreKeyState(DIK_E)) {
+		int nextDir = (static_cast<int>(currentDirection_) + 1) % 4;
+		currentDirection_ = static_cast<Direction>(nextDir);
+	}
+
+	//テクスチャの割り当て
 	if (input_->GetMouseButtonState()[0] && DebugMousePos::isHovered) {
 		std::pair<int, int> gridded = {
 			static_cast<int>(cursorPos_.x),
@@ -29,7 +47,7 @@ void MapTextureEditor::DrawImGui() {
 	ImGui::BeginChild("TextureList", ImVec2(600, 0));
 	for (int i = 0; i < static_cast<int>(textureIndexList_.size()); ++i) {
 		ImGui::PushID(i);
-		int textureIndex = textureIndexList_[i];
+		int textureIndex = textureIndexList_[i].first;
 		TextureData* textureData = textureManager_->GetTextureData(textureIndex);
 
 		ImVec2 size = ImVec2(50, 50);
@@ -43,7 +61,7 @@ void MapTextureEditor::DrawImGui() {
 
 		ImGui::PopID();
 
-		if (i % 6 != 5 && i < int(textureIndexList_.size() - 1)) {
+		if (i % 8 != 5 && i < int(textureIndexList_.size() - 1)) {
 			ImGui::SameLine();
 		}
 	}
@@ -70,10 +88,10 @@ void MapTextureEditor::DrawImGui() {
 
 	ImGui::SameLine();
 
-	ImGui::BeginChild("Preview", ImVec2(64, 0));
+	ImGui::BeginChild("Preview", ImVec2(0, 0));
 	{
 		if(textureIndexList_.empty()){
-			ImGui::Text("No Texture");
+			ImGui::Text("No Texture\0");
 			ImGui::EndChild();
 			ImGui::End();
 			return;
