@@ -3,7 +3,7 @@
 #include"FpsCount.h"
 #include"GameCamera/DebugMousePos.h"
 #include"Utility/Easing.h"
-
+#include<numbers>
 
 namespace {
 	//Minimap確認用
@@ -35,6 +35,10 @@ void SelectScene::Initialize() {
 	uiCamera_->SetProjectionMatrix(OrthographicDesc{});
 	uiCamera_->MakeMatrix();
 
+	// 追従カメラ
+	selectCamera_ = std::make_unique<SelectCamera>();
+	selectCamera_->Initialize();
+
 	// プレイヤーモデルを取得
 	int playerModelID = modelManager_->LoadModel(playerModelName);
 	auto playerModel = modelManager_->GetNodeModelData(playerModelID);
@@ -43,6 +47,8 @@ void SelectScene::Initialize() {
 	playerObject_ = std::make_unique<PlayerUnitObject>();
 	playerObject_->Initialize(drawDataManager_->GetDrawData(playerModel.drawDataIndex));
 	playerObject_->transform_.position = { 0.0f,0.0f,0.0f };
+	playerObject_->transform_.rotate.y = std::numbers::pi_v<float> / 2;
+	currentDir_ = 1.0f;
 
 	// spriteモデルを取得
 	int spriteModelID = modelManager_->LoadModel(spriteModelName);
@@ -78,6 +84,7 @@ std::unique_ptr<IScene> SelectScene::Update() {
 
 	debugCamera_->Update();
 	camera_ = *static_cast<Camera*>(debugCamera_.get());
+	selectCamera_->Update();
 
 	//==================================================
 	// ステージの選択処理
@@ -96,6 +103,9 @@ std::unique_ptr<IScene> SelectScene::Update() {
 				startPos_ = playerObject_->transform_.position;
 				endPos_ = stagePointObjects_[selectStageNum_ - 1]->transform_.position;
 				endPos_.y = 0.0f;
+				selectDir_ = -1.0f;
+				startRotY_ = playerObject_->transform_.rotate.y;
+				endRotY_ = -std::numbers::pi_v<float> / 2;
 			}
 		}
 	}
@@ -110,6 +120,9 @@ std::unique_ptr<IScene> SelectScene::Update() {
 				startPos_ = playerObject_->transform_.position;
 				endPos_ = stagePointObjects_[selectStageNum_ - 1]->transform_.position;
 				endPos_.y = 0.0f;
+				selectDir_ = 1.0f;
+				startRotY_ = playerObject_->transform_.rotate.y;
+				endRotY_ = std::numbers::pi_v<float> / 2;
 			}
 		}	
 	}
@@ -118,17 +131,39 @@ std::unique_ptr<IScene> SelectScene::Update() {
 	// プレイヤーの更新処理
 	//==============================================
 
+	// 移動速度
+	Vector3 velocity = { 0.0f,0.0f,0.0f };
+
 	if (isPlayerAnimation_) {
 		timer_ += FpsCount::deltaTime / moveTime_;
 
+		Vector3 prePos = playerObject_->transform_.position;
+
+		// 回転
+		if (currentDir_ != selectDir_) {
+			if (timer_ <= 0.3f) {
+				float localT = timer_ / 0.3f;
+				playerObject_->transform_.rotate.y = lerp(startRotY_, endRotY_, localT, EaseType::EaseInOutCubic);
+			} else {
+				playerObject_->transform_.rotate.y = endRotY_;
+			}
+		}
+
+		// 移動
 		playerObject_->transform_.position = lerp(startPos_, endPos_, timer_, EaseType::EaseInOutCubic);
 
+		velocity = playerObject_->transform_.position - prePos;
+
 		if (timer_ >= 1.0f) {
+			currentDir_ = selectDir_;
 			timer_ = 0.0f;
 			isPlayerAnimation_ = false;
 			playerObject_->transform_.position = endPos_;
 		}
 	}
+
+	// カメラの追跡位置を更新
+	selectCamera_->SetTargetPos(playerObject_->transform_.position, velocity);
 
 	// プレイヤーの更新処理
 	playerObject_->Update();
@@ -147,7 +182,7 @@ void SelectScene::Draw() {
 	display_->PreDraw(gameWindow_->GetCommandObject(), true);
 
 
-	Matrix4x4 vpMatrix = debugCamera_->GetVPMatrix();
+	Matrix4x4 vpMatrix = selectCamera_->GetVpMatrix();
 
 	// ステージを描画
 	for (auto& point : stagePointObjects_) {
@@ -176,6 +211,8 @@ void SelectScene::Draw() {
 	//ImGui
 	gameWindow_->DrawDisplayWithImGui();
 	paramManager_->Draw();
+
+	selectCamera_->DrawImGui();
 
 	engine_->ImGuiDraw();
 }
