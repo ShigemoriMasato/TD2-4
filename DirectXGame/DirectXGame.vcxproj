@@ -172,6 +172,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\Item\OreItemManager.cpp" />
     <ClCompile Include="AppSource\UI\FadeTransition.cpp" />
     <ClCompile Include="AppSource\UI\GameOverUI.cpp" />
+    <ClCompile Include="AppSource\UI\Object\FontObject.cpp" />
     <ClCompile Include="AppSource\UI\Object\SpriteObject.cpp" />
     <ClCompile Include="AppSource\UI\SelectStageUI.cpp" />
     <ClCompile Include="AppSource\Unit\MapChipField.cpp" />
@@ -246,6 +247,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\Item\OreItemStorageNum.h" />
     <ClInclude Include="AppSource\UI\FadeTransition.h" />
     <ClInclude Include="AppSource\UI\GameOverUI.h" />
+    <ClInclude Include="AppSource\UI\Object\FontObject.h" />
     <ClInclude Include="AppSource\UI\Object\SpriteObject.h" />
     <ClInclude Include="AppSource\UI\SelectStageUI.h" />
     <ClInclude Include="AppSource\Unit\MapChipRender.h" />
