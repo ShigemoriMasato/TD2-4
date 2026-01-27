@@ -18,7 +18,7 @@ public:
 public:
 
 	// タイプ
-	OreType GetType() override { return OreType::Large; }
+	OreType GetType() override { return type_; }
 
 	// 位置
 	Vector3 GetPos() override { return object_->transform_.position; }
