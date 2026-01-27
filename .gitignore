@@ -434,4 +434,4 @@ FodyWeavers.xsd
 # ImGuiの生成ファイル
 *.ini
 # 自分のプロジェクトのフィルター(ビルド時に成型するため)
-DirectXGame.vcxproj.filter
+DirectXGame.vcxproj.filters
