@@ -15,6 +15,8 @@
 // ゲームオーバーシーン
 #include"UI/GameOverUI.h"
 
+#include"UI/Object/FontObject.h"
+
 class GameScene : public IScene {
 public:
 
@@ -55,6 +57,8 @@ private:
 
 	// 遷移の処理
 	std::unique_ptr<FadeTransition> fadeTransition_;
+
+	std::unique_ptr<FontObject> fontObject_;
 
 	//=====================================================
 	// インゲーム

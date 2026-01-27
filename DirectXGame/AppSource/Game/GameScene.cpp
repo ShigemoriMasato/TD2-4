@@ -7,6 +7,8 @@ namespace {
 	//Minimap確認用
 	bool poseMode = false;
 
+	std::string fontName = "ZenOldMincho-Medium.ttf";
+
 	std::string playerModelName = "Player";
 
 	std::string spriteModelName = "Sprite";
@@ -119,6 +121,11 @@ void GameScene::Initialize() {
 	/// シーン遷移の処理
 	fadeTransition_ = std::make_unique<FadeTransition>();
 	fadeTransition_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex));
+
+	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
+
+	fontObject_ = std::make_unique<FontObject>();
+	fontObject_->Initialize(fontName,L"kokoroodoru", drawData, fontLoader_);
 }
 
 void GameScene::InitializeGameOver() {
@@ -274,6 +281,9 @@ void GameScene::Draw() {
 		// UIの更新処理
 		gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
 	}
+
+	// フォントの描画
+	fontObject_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
 	// シーン遷移の描画
 	fadeTransition_->Draw(gameWindow_->GetWindow(), vpMatrix);
