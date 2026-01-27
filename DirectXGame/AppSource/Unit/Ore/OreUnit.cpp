@@ -2,6 +2,7 @@
 #include"FpsCount.h"
 #include <Common/DebugParam/GameParamEditor.h>
 #include"Utility/Easing.h"
+#include"Utility/MyMath.h"
 
 #include"Item/OreItemStorageNum.h"
 #include"Item/Object/GoldOre.h"
@@ -37,6 +38,7 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerP
 			returnPhase_ = ReturnPhase::Rise;
 			timer_ = 0.0f;
 			toRotPos_ = homePos_;
+			startFixScale_ = object_->transform_.scale;
 		}
 	};
 
@@ -49,7 +51,7 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerP
 	config.colliderInfo = &circleCollider_;
 	config.isActive = true;
 	config.ownTag = CollTag::Unit;
-	config.targetTag = static_cast<uint32_t>(CollTag::Player) | static_cast<uint32_t>(CollTag::Stage);
+	config.targetTag = static_cast<uint32_t>(CollTag::Player) | static_cast<uint32_t>(CollTag::Stage) | static_cast<uint32_t>(CollTag::Unit);
 	SetColliderConfig(config);
 
 	// 当たり判定の初期化
@@ -87,6 +89,9 @@ void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos) {
 	// 状態のリセット
 	resetStatesTable_[static_cast<size_t>(state_)]();
 
+	// 目的位置を取得
+	targetPos_ = targetPos;
+
 	// 移動する経路を求める
 	CalculatePath(targetPos);
 }
@@ -111,11 +116,15 @@ void OreUnit::Update() {
 		stateRequest_ = std::nullopt;
 	}
 
-	// プレイヤーの状態による更新処理をおこなう
-	statesTable_[static_cast<size_t>(state_)]();
+	if (!isConflict_) {
+		// プレイヤーの状態による更新処理をおこなう
+		statesTable_[static_cast<size_t>(state_)]();
+	}
 
-	// 移動処理
-	Move();
+	if (state_ != State::Return) {
+		// アニメーション処理
+		MoveAnimationUpdate();
+	}
 
 	// 更新処理
 	object_->Update();
@@ -155,12 +164,19 @@ void OreUnit::OnCollision(Collider* other) {
 
 	bool isStage = CollTag::Stage == other->GetOwnTag();
 	bool isPlayer = CollTag::Player == other->GetOwnTag();
+	bool isUnit = CollTag::Unit == other->GetOwnTag();
 
 	// プレイヤーとの当たり判定
 	if (isPlayer) {
+
+		if (state_ != State::Return) {
+			if (isConflict_) {
+				isConflict_ = false;
+			}
+		}
+
 		if (state_ != State::ToDeliver) { return; }
 		// プレイヤーに触れれば帰宅する
-
 		if (isActive_) {
 			// 鉱石を収納する
 			OreItemStorageNum::currentOreItemNum_ += 1;
@@ -179,7 +195,7 @@ void OreUnit::OnCollision(Collider* other) {
 
 			if (state_ == State::GoTo) {
 				// 指定した鉱石に近ければ採掘に移る
-				if (path_.size() > 3) { return; }
+				if (path_.size() > 2) { return; }
 
 				// 採掘状態に切り替える
 				stateRequest_ = State::Mining;
@@ -198,18 +214,48 @@ void OreUnit::OnCollision(Collider* other) {
 			} 
 		}
 	}
+
+	// ユニット
+	if (isUnit) {
+		if (state_ != State::GoTo && state_ != State::ToDeliver) { return; }
+
+		OreUnit* oreUnit = dynamic_cast<OreUnit*>(other);
+
+		if (oreUnit) {
+
+			// 内積を取得する
+			float dot = MyMath::dot(oreUnit->GetDir(),dir_);
+
+			// 衝突
+			if (dot < -0.8f) {
+				// 衝突処理
+				isConflict_ = true;
+			}
+		}
+	}
 }
 
 void OreUnit::GoToUpdate() {
 
 	// 目的地付けば次の状態に切り替える
 	if (path_.empty()) {
-		// 目的地に到着して鉱石が存在していなかった場合、帰宅する
-		stateRequest_ = State::ToDeliver;
-	}
 
-	// 鉱石まで移動する
-	Move();
+		Vector3 toTarget = targetPos_ - object_->transform_.position;
+		toTarget.y = 0.0f;
+		// XZ平面での距離を計算
+		float distance = std::sqrt(toTarget.x * toTarget.x + toTarget.z * toTarget.z);
+
+		object_->transform_.position += (toTarget / distance) * moveSpeed_ * FpsCount::deltaTime;
+
+		// 目的地に到着して鉱石が存在していなかった場合、帰宅する
+		if (distance < 0.1f) {
+			stateRequest_ = State::ToDeliver;
+		}
+
+	} else {
+		// 鉱石まで移動する
+		Move();
+	}
 
 	// 進行方向に回転
 	Rotate();
@@ -275,6 +321,11 @@ void OreUnit::ReturnUpdate() {
 		// 回転移動
 		Rotate();
 
+		// スケールが正常で無ければ元に戻す
+		if (startFixScale_ != Vector3(0.4f,0.4f,0.4f)) {
+			object_->transform_.scale = lerp(startFixScale_, { 0.4f,0.4f,0.4f }, timer_, EaseType::EaseInOutCubic);
+		}
+		
 		// 終了
 		if (timer_ >= 1.0f) {
 			object_->transform_.position.y = risePosY_;
@@ -366,14 +417,8 @@ void OreUnit::Move() {
 		path_.erase(path_.begin());
 	} else {
 		// 目的地に向かって移動
-		// 正規化（長さを1にする）して速度を掛ける
 		Vector3 velocity = (toTarget / distance) * moveSpeed_;
 		object_->transform_.position += velocity * FpsCount::deltaTime;
-
-		// 進行方向を向かせる（Y軸回転）
-		//if (distance > 0.001f) {
-		//	object_->transform_.rotate.y = std::atan2(velocity.x, velocity.z);
-		//}
 	}
 }
 
@@ -400,6 +445,34 @@ void OreUnit::Rotate() {
 	object_->transform_.rotate = currentRot;
 }
 
+void OreUnit::MoveAnimationUpdate() {
+
+	animationTimer_ += FpsCount::deltaTime / moveAnimationTime_;
+
+	if (animationTimer_ <= 0.5f) {
+		float localT = animationTimer_ / 0.5f;
+		object_->transform_.position.y = lerp(0.0f, 1.0f, localT, EaseType::EaseInOutCubic);
+
+		// スケール
+		float width = lerp(1.2f, 0.5f, localT, EaseType::EaseInOutCubic);
+		object_->transform_.scale.x = width;
+		object_->transform_.scale.z = width;
+		object_->transform_.scale.y = lerp(0.5f, 1.2f, localT, EaseType::EaseInOutCubic);
+	} else {
+		float localT = (animationTimer_ - 0.5f) / 0.5f;
+		object_->transform_.position.y = lerp(1.0f, 0.0f, localT, EaseType::EaseInCubic);
+		// スケール
+		float width = lerp(0.5f, 1.2f, localT, EaseType::EaseInOutCubic);
+		object_->transform_.scale.x = width;
+		object_->transform_.scale.z = width;
+		object_->transform_.scale.y = lerp(1.2f, 0.5f, localT, EaseType::EaseInOutCubic);
+	}
+
+	if (animationTimer_ >= 1.0f) {
+		animationTimer_ = 0.0f;
+	}
+}
+
 void OreUnit::RegisterDebugParam() {
 	// 登録
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MoveSpeed", moveSpeed_);
@@ -420,4 +493,19 @@ void OreUnit::ApplyDebugParam() {
 	riseTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "RiseTime");
 	moveTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "MoveTime");
 	FallTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "FallTime");
+}
+
+// ヘルプ関数
+namespace {
+
+	// 最短角度を求める
+	float GetShortAngleY(float diffY) {
+		while (diffY > std::numbers::pi_v<float>) {
+			diffY -= std::numbers::pi_v<float> *2.0f;
+		}
+		while (diffY < -std::numbers::pi_v<float>) {
+			diffY += std::numbers::pi_v<float> *2.0f;
+		}
+		return diffY;
+	}
 }

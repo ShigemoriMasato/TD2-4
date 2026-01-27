@@ -1,4 +1,6 @@
 #pragma once
+#include<numbers>
+
 #include"Unit/MapChipField.h"
 #include"PlayerUnitObject.h"
 #include"Common/KeyConfig/KeyManager.h"
@@ -40,15 +42,22 @@ private:
 	
 	// 速度 
 	Vector3 velocity_ = {};
-
-	// 速さ
-	float speed_ = 10.0f;
+	// 方向
+	Vector3 dir_ = {};
 
 	// 円の当たり判定
 	Circle circleCollider_;
 
 	// デバック用
 	std::string kGroupName_ = "Player";
+
+private: // 調整項目
+
+	// 速さ
+	float speed_ = 10.0f;
+
+	// 角度補間
+	float rotateSpeed_ = 7.0f;
 
 private:
 
@@ -85,6 +94,9 @@ private:
 	/// <param name="info"></param>
 	void CheckCollisionLeft(MapChipField::CollisionMapInfo& info);
 
+	// 回転処理
+	void Rotate();
+
 private:
 
 	/// <summary>
@@ -97,3 +109,18 @@ private:
 	/// </summary>
 	void ApplyDebugParam();
 };
+
+// ヘルプ関数
+namespace {
+
+	// 最短角度を求める
+	float GetShortAngleY(float diffY) {
+		while (diffY > std::numbers::pi_v<float>) {
+			diffY -= std::numbers::pi_v<float> *2.0f;
+		}
+		while (diffY < -std::numbers::pi_v<float>) {
+			diffY += std::numbers::pi_v<float> *2.0f;
+		}
+		return diffY;
+	}
+}

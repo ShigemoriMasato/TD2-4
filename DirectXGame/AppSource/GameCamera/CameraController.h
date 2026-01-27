@@ -30,6 +30,7 @@ private:
 
 	void MakeMatrix() override;
 
+
 	Vector3 backDir_ = { 0.0f,-0.9f,0.4f };
 	float backDist_ = 10.0f;
 

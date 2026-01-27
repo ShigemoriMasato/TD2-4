@@ -66,6 +66,9 @@ void PlayerUnit::Update() {
 	// 移動
 	object_->transform_.position += collisionMapInfo.move;
 
+	// 回転処理
+	Rotate();
+
 	// 更新処理
 	object_->Update();
 
@@ -102,18 +105,22 @@ void PlayerUnit::ProcessMoveInput() {
 
 	if (key[Key::Up]) {
 		velocity_.z = speed_ * FpsCount::deltaTime;
+		dir_ = { 0.0f,0.0f,1.0f };
 	}
 
 	if (key[Key::Down]) {
 		velocity_.z = -speed_ * FpsCount::deltaTime;
+		dir_ = { 0.0f,0.0f,-1.0f };
 	}
 
 	if (key[Key::Left]) {
 		velocity_.x = -speed_ * FpsCount::deltaTime;
+		dir_ = { -1.0f,0.0f,0.0f };
 	}
 
 	if (key[Key::Right]) {
 		velocity_.x = speed_ * FpsCount::deltaTime;
+		dir_ = { 1.0f,0.0f,0.0f };
 	}
 }
 
@@ -206,6 +213,21 @@ void PlayerUnit::CheckCollisionLeft(MapChipField::CollisionMapInfo& info) {
 		// 壁に当たったことを記録する
 		info.isWallHit = true;
 	}
+}
+
+void PlayerUnit::Rotate() {
+
+	Vector3 targetRot = { 0, 0, 0 };
+	// Y軸回転を取得
+	targetRot.y = atan2f(dir_.x, dir_.z);
+	Vector3 currentRot = object_->transform_.rotate;
+
+	// 最短距離の角度を取得
+	float diffY = GetShortAngleY(targetRot.y - currentRot.y);
+
+	// 回転
+	currentRot.y += diffY * rotateSpeed_ * FpsCount::deltaTime;
+	object_->transform_.rotate = currentRot;
 }
 
 void PlayerUnit::RegisterDebugParam() {

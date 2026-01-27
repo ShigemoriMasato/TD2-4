@@ -1,16 +1,16 @@
 #include"GoldOre.h"
 #include <Common/DebugParam/GameParamEditor.h>
-void GoldOre::Init(DrawData drawData, const Vector3& pos) {
+void GoldOre::Init(DrawData drawData, const Vector3& pos, OreType type) {
 	
 	// オブジェクトを初期化
 	object_ = std::make_unique<OreObject>();
 	object_->Initialize(drawData);
 
+	// タイプ
+	type_ = type;
+
 	// 初期位置を設定
 	object_->transform_.position = pos;
-
-	// 体力を設定
-	hp_ = maxHp_;
 
 	// 設定
 	quadCollider_.topLeft = { -size_.x * 0.5f + object_->transform_.position.x, -size_.z * 0.5f + object_->transform_.position.z};
@@ -33,6 +33,9 @@ void GoldOre::Init(DrawData drawData, const Vector3& pos) {
 #endif
 	// 値の適応
 	ApplyDebugParam();
+
+	// 体力を設定
+	hp_ = maxHp_;
 }
 
 void GoldOre::Update() {

@@ -4,6 +4,8 @@
 #include"Object/OreItem.h"
 #include"Object/GoldOre.h"
 
+#include"Object/OreOutLineObject.h"
+
 class OreItemManager {
 public:
 
@@ -43,4 +45,7 @@ private:
 
 	// 選択されているidを保持
 	int32_t selectId_ = 0;
+
+	// 選択中のオブジェクトにアウトラインを描画する
+	std::unique_ptr<OreOutLineObject> oreOutLineObject_;
 };

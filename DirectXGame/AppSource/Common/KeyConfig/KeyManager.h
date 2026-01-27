@@ -10,6 +10,12 @@ enum class Key {
 	Left,
 	Up,
 	Down,
+
+	// トリガー状態の移動
+	RightTri,
+	LeftTri,
+	UpTri,
+	DownTri,
 	
 	// 動作系 -===========
 

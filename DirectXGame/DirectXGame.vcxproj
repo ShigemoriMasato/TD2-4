@@ -94,9 +94,7 @@
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 
-xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"
-
-powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/FilterAdjust.ps1"</Command>
+xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -125,9 +123,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 
-xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"
-
-powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/FilterAdjust.ps1"</Command>
+xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
@@ -157,9 +153,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 
-xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"
-
-powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/FilterAdjust.ps1"</Command>
+xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -169,9 +163,17 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClCompile Include="AppSource\Common\DebugParam\InspectorWindow.cpp" />
     <ClCompile Include="AppSource\Common\DebugParam\ParamManager.cpp" />
     <ClCompile Include="AppSource\GameCamera\CameraController.cpp" />
+    <ClCompile Include="AppSource\GameCamera\SelectCamera.cpp" />
+    <ClCompile Include="AppSource\GameCommon\DefaultObject.cpp" />
+    <ClCompile Include="AppSource\Game\SelectScene.cpp" />
     <ClCompile Include="AppSource\Item\Object\GoldOre.cpp" />
     <ClCompile Include="AppSource\Item\Object\OreObject.cpp" />
+    <ClCompile Include="AppSource\Item\Object\OreOutLineObject.cpp" />
     <ClCompile Include="AppSource\Item\OreItemManager.cpp" />
+    <ClCompile Include="AppSource\UI\FadeTransition.cpp" />
+    <ClCompile Include="AppSource\UI\GameOverUI.cpp" />
+    <ClCompile Include="AppSource\UI\Object\SpriteObject.cpp" />
+    <ClCompile Include="AppSource\UI\SelectStageUI.cpp" />
     <ClCompile Include="AppSource\Unit\MapChipField.cpp" />
     <ClCompile Include="AppSource\Unit\MapChipRender.cpp" />
     <ClCompile Include="AppSource\Unit\Ore\OreUnit.cpp" />
@@ -232,12 +234,20 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClCompile Include="AppSource\ModelEditScene\Editor\Type\MapTypeEditor.cpp" />
     <ClCompile Include="AppSource\ModelEditScene\Render\MapRender.cpp" />
     <ClInclude Include="AppSource\GameCamera\DebugMousePos.h" />
+    <ClInclude Include="AppSource\GameCamera\SelectCamera.h" />
+    <ClInclude Include="AppSource\GameCommon\DefaultObject.h" />
     <ClInclude Include="AppSource\Game\MapData\Data\StageData.h" />
+    <ClInclude Include="AppSource\Game\SelectScene.h" />
     <ClInclude Include="AppSource\Item\Object\GoldOre.h" />
     <ClInclude Include="AppSource\Item\Object\OreItem.h" />
     <ClInclude Include="AppSource\Item\Object\OreObject.h" />
+    <ClInclude Include="AppSource\Item\Object\OreOutLineObject.h" />
     <ClInclude Include="AppSource\Item\OreItemManager.h" />
     <ClInclude Include="AppSource\Item\OreItemStorageNum.h" />
+    <ClInclude Include="AppSource\UI\FadeTransition.h" />
+    <ClInclude Include="AppSource\UI\GameOverUI.h" />
+    <ClInclude Include="AppSource\UI\Object\SpriteObject.h" />
+    <ClInclude Include="AppSource\UI\SelectStageUI.h" />
     <ClInclude Include="AppSource\Unit\MapChipRender.h" />
     <ClInclude Include="AppSource\ModelEditScene\Render\DebugMCRender.h" />
     <ClInclude Include="Engine\Utility\Quaternion.h" />
@@ -382,6 +392,27 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "$(ProjectDir)Scripts/Filter
     <ClInclude Include="AppSource\MapEditor\Editor\MapEditor.h" />
     <ClInclude Include="AppSource\MapEditor\Editor\MapEditWithImGui.h" />
     <ClInclude Include="AppSource\MapEditor\Editor\Data\Pencil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Assets\Shader\Sprite.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Development|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Assets\Shader\Sprite.VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Development|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shader\Sprite.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

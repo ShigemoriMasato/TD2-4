@@ -57,6 +57,9 @@ public:
 	// 有効フラグ
 	bool IsActive() const { return isActive_; }
 
+	// 向いている方向を取得
+	Vector3 GetDir() const { return dir_; }
+
 private:
 	// マップデータ
 	MapChipField* mapChipField_ = nullptr;
@@ -85,20 +88,30 @@ private:
 	std::vector<Vector3> path_;
 	// 家の場所
 	Vector3 homePos_ = {};
+	// 目的の位置
+	Vector3 targetPos_ = {};
 	// プレイヤーの位置
 	Vector3* playerPos_ = nullptr;
 	// 回転する移動先
 	Vector3 toRotPos_ = {};
+	// 方向
+	Vector3 dir_ = {};
 
-	// 体力の計算に使用
-	float lifeTimer_ = 0.0f;
+	Vector3 startFixScale_ = {};
 
+	// タイマー
 	float timer_ = 0.0f;
+	float lifeTimer_ = 0.0f;
+	float animationTimer_ = 0.0f;
 
 	// 円の当たり判定
 	Circle circleCollider_;
 
+	// ヒットフラグ
 	bool isHit = false;
+
+	// 衝突フラグ
+	bool isConflict_ = false;
 
 	// 鉱石からの離脱を取得
 	bool isRemoveOre_ = false;
@@ -117,7 +130,7 @@ private: // 調整項目
 	float damageTime_ = 1.0f;
 
 	// 最大体力
-	int32_t maxHp_ = 10;
+	int32_t maxHp_ = 30;
 
 	// 移動速度
 	float moveSpeed_ = 2.0f;
@@ -135,6 +148,9 @@ private: // 調整項目
 	float riseTime_ = 1.0f;
 	float moveTime_ = 1.0f;
 	float FallTime_ = 1.0f;
+
+	// 移動アニメーション
+	float moveAnimationTime_ = 0.6f;
 
 private:
 
@@ -159,6 +175,9 @@ private:
 	// 返りの更新処理
 	void ReturnUpdate();
 
+	// 移動アニメーション処理
+	void MoveAnimationUpdate();
+
 private:
 	/// <summary>
 	/// 値を登録する
@@ -175,13 +194,5 @@ private:
 namespace {
 
 	// 最短角度を求める
-	float GetShortAngleY(float diffY) {
-		while (diffY > std::numbers::pi_v<float>) {
-			diffY -= std::numbers::pi_v<float> *2.0f;
-		}
-		while (diffY < -std::numbers::pi_v<float>) {
-			diffY += std::numbers::pi_v<float> *2.0f;
-		}
-		return diffY;
-	}
+	float GetShortAngleY(float diffY);
 }

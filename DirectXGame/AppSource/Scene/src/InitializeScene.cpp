@@ -2,6 +2,7 @@
 #include <Test/TestScene.h>
 #include <Game/GameScene.h>
 #include <ModelEditScene/ModelEditScene.h>
+#include<Game/SelectScene.h>
 #include <MapEditor/MapEditScene.h>
 #include <imgui/imgui.h>
 #include <Utility/DataStructures.h>
@@ -131,6 +132,27 @@ void InitializeScene::SetupKeyManager() {
 	keyManager->SetKey(Key::Down, DIK_DOWNARROW, KeyState::Hold);
 	keyManager->SetButton(Key::Down, XBoxController::kDown, KeyState::Hold);
 	keyManager->SetStick(Key::Down, true, true, -0.5f);
+
+	// トリガー
+	keyManager->SetKey(Key::RightTri, DIK_D, KeyState::Trigger);
+	keyManager->SetKey(Key::RightTri, DIK_RIGHTARROW, KeyState::Trigger);
+	keyManager->SetButton(Key::RightTri, XBoxController::kRight, KeyState::Trigger);
+	keyManager->SetStick(Key::RightTri, true, false, 0.5f);
+
+	keyManager->SetKey(Key::LeftTri, DIK_A, KeyState::Trigger);
+	keyManager->SetKey(Key::LeftTri, DIK_LEFTARROW, KeyState::Trigger);
+	keyManager->SetButton(Key::LeftTri, XBoxController::kLeft, KeyState::Trigger);
+	keyManager->SetStick(Key::LeftTri, true, false, -0.5f);
+
+	keyManager->SetKey(Key::UpTri, DIK_W, KeyState::Trigger);
+	keyManager->SetKey(Key::UpTri, DIK_UPARROW, KeyState::Trigger);
+	keyManager->SetButton(Key::UpTri, XBoxController::kUp, KeyState::Trigger);
+	keyManager->SetStick(Key::UpTri, true, true, 0.5f);
+
+	keyManager->SetKey(Key::DownTri, DIK_S, KeyState::Trigger);
+	keyManager->SetKey(Key::DownTri, DIK_DOWNARROW, KeyState::Trigger);
+	keyManager->SetButton(Key::DownTri, XBoxController::kDown, KeyState::Trigger);
+	keyManager->SetStick(Key::DownTri, true, true, -0.5f);
 
 	//================================================================================
 
