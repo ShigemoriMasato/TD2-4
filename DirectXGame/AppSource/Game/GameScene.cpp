@@ -2,6 +2,7 @@
 #include <Common/DebugParam/GameParamEditor.h>
 #include"FpsCount.h"
 #include"GameCamera/DebugMousePos.h"
+#include"Item/OreItemStorageNum.h"
 
 namespace {
 	//Minimap確認用
@@ -113,6 +114,9 @@ void GameScene::Initialize() {
 	//=======================================================
 	InitializeGameOver();
 
+	//==================================================================
+	// UI
+	//==================================================================
 
 	// spriteモデルを取得
 	int spriteModelID = modelManager_->LoadModel(spriteModelName);
@@ -124,8 +128,25 @@ void GameScene::Initialize() {
 
 	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
 
-	fontObject_ = std::make_unique<FontObject>();
-	fontObject_->Initialize(fontName,L"kokoroodoru", drawData, fontLoader_);
+	// ユニットの数UI
+	unitCounterUI_ = std::make_unique<CounterUI>();
+	unitCounterUI_->Initialize(fontName, L"ユニット :", unitManager_->GetMaxOreCount(), unitManager_->GetMaxOreCount(), drawData, fontLoader_);
+	unitCounterUI_->fontObject_->transform_.position.x = 800.0f;
+	unitCounterUI_->fontObject_->transform_.position.y = 128.0f;
+
+	// 鉱石のアイテムUI
+	oreItemUI_ = std::make_unique<CounterUI>();
+	oreItemUI_->Initialize(fontName, L"こうせき :", OreItemStorageNum::currentOreItemNum_, OreItemStorageNum::maxOreItemNum_, drawData, fontLoader_);
+	oreItemUI_->fontObject_->transform_.position.x = 800.0f;
+	oreItemUI_->fontObject_->transform_.position.y = 200.0f;
+
+	// 時間を測る
+	timeTracker_ = std::make_unique<TimeTracker>();
+	timeTracker_->StartMeasureTimes();
+
+	// 時間を表示するUI
+	timerUI_ = std::make_unique<TimerUI>();
+	timerUI_->Initialize(fontName, drawData, fontLoader_);
 }
 
 void GameScene::InitializeGameOver() {
@@ -256,6 +277,22 @@ void GameScene::InGameScene() {
 
 	// 全ての当たり判定を判定
 	colliderManager_->CollisionCheckAll();
+
+	//================================================
+	// UIの更新処理
+	//================================================
+
+	// ユニットの数を更新
+	unitCounterUI_->Update(unitManager_->GetMaxOreCount() - unitManager_->GetOreCount(), unitManager_->GetMaxOreCount());
+
+	// 鉱石の数を更新
+	oreItemUI_->Update(OreItemStorageNum::currentOreItemNum_, OreItemStorageNum::maxOreItemNum_);
+
+	// 時間を更新
+	timeTracker_->Update();
+
+	// 時間表示UIを更新
+	timerUI_->Update();
 }
 
 void GameScene::Draw() {
@@ -276,14 +313,19 @@ void GameScene::Draw() {
 	/// UIの描画処理
 	vpMatrix = uiCamera_->GetVPMatrix();
 
+	// ユニットの数UIを描画
+	unitCounterUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+	// 鉱石の数UIを描画
+	oreItemUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+	// 時間計測表示UI
+	timerUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
 	// ゲームオーバーシーンの描画処理
 	if (isGameOverScene_) {
 		// UIの更新処理
 		gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
 	}
-
-	// フォントの描画
-	fontObject_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
 	// シーン遷移の描画
 	fadeTransition_->Draw(gameWindow_->GetWindow(), vpMatrix);
@@ -306,4 +348,12 @@ void GameScene::Draw() {
 	cameraController_->DebugDraw();
 
 	engine_->ImGuiDraw();
+}
+
+void GameScene::RegisterDebugParam() {
+
+}
+
+void GameScene::ApplyDebugParam() {
+
 }

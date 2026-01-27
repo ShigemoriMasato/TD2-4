@@ -8,7 +8,6 @@
 
 class FontObject {
 public:
-
 	FontObject() = default;
 	~FontObject() = default;
 
@@ -35,6 +34,11 @@ public:
 	/// </summary>
 	/// <param name="text">設定するテキスト</param>
 	void SetText(const std::wstring& text) { text_ = text; isDirty_ = true; }
+
+	/// <summary>
+	/// 文字位置情報を更新
+	/// </summary>
+	void UpdateCharPositions(const std::wstring& text,FontLoader* fontLoader);
 
 public:
 
@@ -63,12 +67,5 @@ private:
 	int textureIndex_ = -1;
 
 	// 更新フラグ
-	bool isDirty_ = true;
-
-private:
-
-	/// <summary>
-	/// 文字位置情報を更新
-	/// </summary>
-	void UpdateCharPositions();
+	bool isDirty_ = true;	
 };
