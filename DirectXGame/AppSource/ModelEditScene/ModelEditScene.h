@@ -17,7 +17,7 @@ public:
 
 private:
 
-	MapChipData mcData_;
+	int currentStage_ = 0;
 
 	std::unique_ptr<CameraController> cameraController_ = nullptr;
 	std::unique_ptr<DebugMCRender> mcRender_ = nullptr;
@@ -25,4 +25,9 @@ private:
 
 	std::unique_ptr<MapTypeEditor> typeEditor_ = nullptr;
 	std::unique_ptr<MapTextureEditor> textureEditor_ = nullptr;
+
+	//マップチップorオブジェクト
+	bool whichEditMode_ = true;
+	//Stageを切り替えた瞬間
+	bool stageChanged_ = false;
 };

@@ -1,7 +1,7 @@
 #include "ModelEditScene.h"
 #include <GameCamera/DebugMousePos.h>
 
-namespace{
+namespace {
 	Vector2 GetPositionWithGrid(const Vector3& worldPos, float gridSize, Vector2 offset) {
 
 		Vector2 snappedPos = {
@@ -24,13 +24,13 @@ void ModelEditScene::Initialize() {
 
 	mcRender_ = std::make_unique<DebugMCRender>();
 	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(0).drawDataIndex);
-	mcRender_->Initialize(&mcData_, drawData);
+	mcRender_->Initialize(drawData);
 
 	mapRender_ = std::make_unique<MapRender>();
 	mapRender_->Initialize(drawData);
 
 	typeEditor_ = std::make_unique<MapTypeEditor>();
-	typeEditor_->Initialize(&mcData_, input_);
+	typeEditor_->Initialize(input_);
 
 	textureEditor_ = std::make_unique<MapTextureEditor>();
 	textureEditor_->Initialize(textureManager_, input_);
@@ -53,12 +53,34 @@ std::unique_ptr<IScene> ModelEditScene::Update() {
 	typeEditor_->SetCursorPos(gridCursor);
 	textureEditor_->SetCursorPos(gridCursor);
 
-	//Alphaの設定
+	//何処を触っているかの設定
 	if (typeEditor_->IsAnySelected()) {
+		whichEditMode_ = true;
+
+		//他のエディタで編集できなくする
+		textureEditor_->NonEdit();
+	} else if (textureEditor_->isSomeSelected()) {
+		whichEditMode_ = false;
+
+		//他のエディタで編集できなくする
+		typeEditor_->NonEdit();
+	} else if (false/*デコレーション予定*/) {
+
+	}
+
+	//ステージナンバーの設定
+	if (stageChanged_) {
+		stageChanged_ = false;
+		typeEditor_->SetCurrentStage(currentStage_);
+		textureEditor_->SetCurrentStage(currentStage_);
+	}
+
+	//Alphaの設定
+	if (whichEditMode_) {
 		mcRender_->SetAlpha(0.8f);
 		mapRender_->SetAlpha(0.2f);
 	} else {
-		mcRender_->SetAlpha(0.2f);
+		mcRender_->SetAlpha(0.4f);
 		mapRender_->SetAlpha(0.8f);
 	}
 
@@ -83,8 +105,8 @@ void ModelEditScene::Draw() {
 	auto& window = *commonData_->mainWindow.get();
 
 	display.PreDraw(window.GetCommandObject(), true);
-	mcRender_->Draw(cameraController_->GetVPMatrix(), window.GetWindow());
 	mapRender_->Draw(cameraController_->GetVPMatrix(), window.GetWindow());
+	mcRender_->Draw(cameraController_->GetVPMatrix(), typeEditor_->GetColorMap(), typeEditor_->GetCurrentMapChipData(), window.GetWindow());
 	display.PostDraw(window.GetCommandObject());
 
 	window.PreDraw(true);
@@ -104,7 +126,27 @@ void ModelEditScene::Draw() {
 	}
 	ImGui::End();
 
-	typeEditor_->DrawImGui(mcRender_->GetColorMap());
+	ImGui::Begin("File");
+	ImGui::Text("CurrentStage: %d", currentStage_);
+	ImGui::SameLine();
+	if (ImGui::Button("-")) {
+		stageChanged_ = true;
+		currentStage_ = std::max(0, currentStage_ - 1);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("+")) {
+		stageChanged_ = true;
+		currentStage_++;
+	}
+
+	if (ImGui::Button("Save")) {
+		typeEditor_->Save();
+		textureEditor_->TextureSave();
+		textureEditor_->MapSave();
+	}
+	ImGui::End();
+
+	typeEditor_->DrawImGui();
 	textureEditor_->DrawImGui();
 	cameraController_->DebugDraw();
 #endif

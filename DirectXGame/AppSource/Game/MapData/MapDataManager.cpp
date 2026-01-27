@@ -7,7 +7,6 @@ void MapDataManager::Initialize() {
 }
 
 MapDataManager::~MapDataManager() {
-	Save();
 }
 
 MapData MapDataManager::GetMapData(int stageID) {
