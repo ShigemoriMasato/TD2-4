@@ -3,6 +3,11 @@
 #include <Input/Input.h>
 #include <Game/MapData/Data/MapData.h>
 
+struct ChipData {
+	int textureIndex;
+	Direction direction;
+};
+
 class MapTextureEditor {
 public:
 
@@ -13,6 +18,8 @@ public:
 	void SetMapSize(int width, int height) { width_ = width; height_ = height; }
 	void SetCursorPos(const Vector2& pos) { cursorPos_ = pos; }
 
+	std::vector<std::vector<ChipData>>& GetTextureIndices() { return textureIndices_; }
+
 private:
 
 	void TextureLoad();
@@ -20,8 +27,11 @@ private:
 	void MapLoad();
 	void MapSave();
 
-	//テクスチャインデックスインデックス配列(ステージ)
-	std::vector<std::vector<int>> textureIndices_{};
+	//テクスチャインデックス配列(ステージ)
+	std::vector<std::vector<ChipData>> textureIndices_{};
+	//保存用テクスチャインデックスインデックス配列
+	std::vector<std::vector<ChipData>> saveTextureIndices_{};
+
 	//現在選択中のテクスチャインデックスインデックス
 	int currentTextureIndex_ = 0;
 	Direction currentDirection_{ Direction::Front };
@@ -39,4 +49,8 @@ private:
 	TextureManager* textureManager_;
 	//テクスチャインデックスを確定的なIDとして保持するリスト(保存対象)
 	std::vector<std::pair<int, std::string>> textureIndexList_;
+
+	BinaryManager binaryManager_;
+	const std::string saveFileNameTexturePath_ = "TexturePaths";
+	const std::string saveFileNameMapTexture_ = "MapTextureData";
 };

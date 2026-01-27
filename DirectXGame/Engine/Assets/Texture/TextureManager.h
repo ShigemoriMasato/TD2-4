@@ -3,6 +3,7 @@
 #include <Core/DXDevice.h>
 #include <Core/CmdListManager.h>
 #include <map>
+#include <unordered_map>
 #include <memory>
 
 /**
@@ -37,6 +38,13 @@ public:
 	 * @brief すべてのテクスチャを読み込む
 	 */
 	void LoadAllTextures();
+
+	/**
+	 * @brief ファイルからテクスチャを取得（未読込のときerrorテクスチャを返す）
+	 * @param filePath テクスチャファイルのパス
+	 * @return テクスチャハンドル
+	 */
+	int GetTexture(std::string filePath) const;
 
 	/**
 	 * @brief ファイルからテクスチャを読み込む
@@ -101,7 +109,7 @@ public:
 	 * @return ID3D12ResourceのComポインタ
 	 */
 	Microsoft::WRL::ComPtr<ID3D12Resource> GetTextureResource(int handle) {
-		return textureDatas_[handle]->textureResource_;
+		return textureDataList_[handle]->textureResource_;
 	}
 
 	/**
@@ -134,7 +142,7 @@ private:
 	const int maxTextureCount = 1024;
 
 	/// @brief テクスチャデータのマップ（ハンドル → TextureData）
-	std::map<int, std::unique_ptr<TextureData>> textureDatas_;
+	std::map<int, std::unique_ptr<TextureData>> textureDataList_;
 
 	/// @brief アップロード待ちリソース
 	std::vector< std::pair<ID3D12Resource*, DirectX::ScratchImage>> uploadResources_;
@@ -144,6 +152,11 @@ private:
 	std::vector<TextureData::MipMapUploadData> mipUploadData_;
 	/// @brief ミップマップアップロードデータ（アップロード中）
 	std::vector<TextureData::MipMapUploadData> mipUploadingData_;
+	/// @brief 読み込んだテクスチャパスのマップ（ファイルパス → ハンドル）
+	std::unordered_map<std::string, int> loadedTexturePaths_;
+
+	/// @brief エラーテクスチャハンドル
+	int errorTextureHandle_ = -1;
 
 	/// @brief ロガー
 	Logger logger_ = nullptr;

@@ -130,11 +130,10 @@ ID3D12RootSignature* RootSignatureShelf::CreateRootSignature(const RootSignature
 
 	// === SRV ===
 	//VertexShader
-	//DescriptorTableでまとめる
 	std::vector< D3D12_DESCRIPTOR_RANGE> vertexSrvRanges;
+	vertexSrvRanges.resize(config.srvNums.first);
 	for (int i = 0; i < config.srvNums.first; ++i) {
-		vertexSrvRanges.emplace_back();
-		auto& range = vertexSrvRanges.back();
+		auto& range = vertexSrvRanges[i];
 		range.BaseShaderRegister = i;
 		range.NumDescriptors = 1;
 		range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
@@ -148,9 +147,10 @@ ID3D12RootSignature* RootSignatureShelf::CreateRootSignature(const RootSignature
 	}
 
 	//PixelShader
-	//DescriptorTableでまとめる
+	std::vector< D3D12_DESCRIPTOR_RANGE> pixelSrvRanges;
+	pixelSrvRanges.resize(config.srvNums.second);
 	for (int i = 0; i < config.srvNums.second; ++i) {
-		D3D12_DESCRIPTOR_RANGE range = {};
+		D3D12_DESCRIPTOR_RANGE& range = pixelSrvRanges[i];
 		range.BaseShaderRegister = i;
 		range.NumDescriptors = 1;
 		range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;

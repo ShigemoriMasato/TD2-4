@@ -97,6 +97,14 @@ int ModelManager::LoadModel(std::string filePath) {
 	return id;
 }
 
+void ModelManager::LoadAllModels() {
+	auto files = SearchFileNames("Assets/Model/");
+
+	for (const auto& filePath : files) {
+		LoadModel(filePath);
+	}
+}
+
 Animation ModelManager::LoadAnimation(std::string filePath, int index) {
 
 	std::string fileName = FilePathChecker(filePath);

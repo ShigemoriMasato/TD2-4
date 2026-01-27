@@ -1,6 +1,8 @@
 #pragma once
 #include <Render/RenderObject.h>
 
+struct ChipData;
+
 class MapRender {
 public:
 
@@ -9,7 +11,7 @@ public:
 	void Draw(const Matrix4x4& vpMatrix, Window* window);
 
 	void SetAlpha(float alpha) { alpha_ = alpha; };
-	void SetConfig(int width, int height, const std::vector<std::vector<int>>& textureIndices);
+	void SetConfig(const std::vector<std::vector<ChipData>>& textureIndices);
 
 private:
 

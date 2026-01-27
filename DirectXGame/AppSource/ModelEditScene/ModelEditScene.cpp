@@ -37,6 +37,8 @@ void ModelEditScene::Initialize() {
 
 	auto& io = ImGui::GetIO();
 	io.IniFilename = "Assets/.EngineResource/modelEdit.ini";
+
+	textureManager_->LoadAllTextures();
 }
 
 std::unique_ptr<IScene> ModelEditScene::Update() {
@@ -54,11 +56,16 @@ std::unique_ptr<IScene> ModelEditScene::Update() {
 	//Alphaの設定
 	if (typeEditor_->IsAnySelected()) {
 		mcRender_->SetAlpha(0.8f);
-		mapRender_->SetAlpha(0.3f);
+		mapRender_->SetAlpha(0.2f);
 	} else {
-		mcRender_->SetAlpha(0.1f);
+		mcRender_->SetAlpha(0.2f);
 		mapRender_->SetAlpha(0.8f);
 	}
+
+	//値のすり合わせ
+	auto mapSize = typeEditor_->GetGridPos();
+	textureEditor_->SetMapSize(mapSize.first, mapSize.second);
+	mapRender_->SetConfig(textureEditor_->GetTextureIndices());
 
 	//更新
 	typeEditor_->Update();

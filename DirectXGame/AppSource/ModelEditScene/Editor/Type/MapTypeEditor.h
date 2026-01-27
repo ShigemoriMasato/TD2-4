@@ -15,6 +15,13 @@ public:
 	bool IsAnySelected() const { return someSelected_; }
 	void OtherSelected() { someSelected_ = false; }
 
+	std::pair<int, int> GetGridPos() const {
+		return {
+			static_cast<int>(width_),
+			static_cast<int>(height_)
+		};
+	}
+
 private:
 
 	MapChipData* mcData_{};

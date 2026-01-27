@@ -1,4 +1,6 @@
 #include "MapRender.h"
+#include "../Editor/Texture/MapTextureEditor.h"
+#include <numbers>
 
 void MapRender::Initialize(const DrawData& box) {
 	render_ = std::make_unique<RenderObject>();
@@ -6,6 +8,7 @@ void MapRender::Initialize(const DrawData& box) {
 	render_->CreateSRV(sizeof(VSData), maxSize_ * maxSize_, ShaderType::VERTEX_SHADER, "WVP");
 	render_->CreateSRV(sizeof(Vector4), maxSize_ * maxSize_, ShaderType::PIXEL_SHADER, "Color");
 	render_->CreateSRV(sizeof(int), maxSize_ * maxSize_, ShaderType::PIXEL_SHADER, "TextureIndex");
+	render_->SetUseTexture(true);
 	render_->SetDrawData(box);
 
 	render_->psoConfig_.vs = "Simples.VS.hlsl";
@@ -19,6 +22,8 @@ void MapRender::Initialize(const DrawData& box) {
 			worldMatrices_[index] = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, {}, { float(j) + 0.5f, yOffset, float(i) + 0.5f });
 		}
 	}
+
+	colors_.resize(maxSize_ * maxSize_, Vector4(1.0f, 1.0f, 1.0f, alpha_));
 }
 
 void MapRender::Update() {
@@ -41,16 +46,17 @@ void MapRender::Draw(const Matrix4x4& vpMatrix, Window* window) {
 	render_->Draw(window);
 }
 
-void MapRender::SetConfig(int width, int height, const std::vector<std::vector<int>>& textureIndices) {
-	if (textureIndices.size() != static_cast<size_t>(width * height)) {
-		return;
-	}
-
-	for (int i = 0; i < height; ++i) {
-		for (int j = 0; j < width; ++j) {
-			int index = i * width + j;
-			vsData_[index].world = worldMatrices_[index];
-			textureIndices_[index] = textureIndices[i][j];
+void MapRender::SetConfig(const std::vector<std::vector<ChipData>>& textureIndices) {
+	vsData_.clear();
+	textureIndices_.clear();
+	for (size_t i = 0; i < textureIndices.size(); ++i) {
+		for (size_t j = 0; j < textureIndices[i].size(); ++j) {
+			VSData data;
+			Matrix4x4 rotateMatrix;
+			rotateMatrix = Matrix::MakeRotationYMatrix(static_cast<float>((static_cast<int>(textureIndices[i][j].direction) + 1) * (std::numbers::pi_v<float> / 2.0f)));
+			data.world = rotateMatrix * worldMatrices_[i * maxSize_ + j];
+			vsData_.push_back(data);
+			textureIndices_.push_back(textureIndices[i][j].textureIndex);
 		}
 	}
 }

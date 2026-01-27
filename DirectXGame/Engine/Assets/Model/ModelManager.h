@@ -40,6 +40,11 @@ public:
 	 * @return モデルID
 	 */
 	int LoadModel(std::string filePath);
+
+	/**
+	 * @brief すべてのモデルを読み込む
+	 */
+	void LoadAllModels();
 	
 	/**
 	 * @brief アニメーションデータを読み込む
