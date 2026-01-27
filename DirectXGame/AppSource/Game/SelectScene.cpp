@@ -237,7 +237,7 @@ void SelectScene::Draw() {
 	postEffectConfig_.output = gameWindow_->GetDualDisplay();
 	postEffect_->Draw(postEffectConfig_);
 
-	gameWindow_->PreDraw();
+	gameWindow_->PreDraw(true);
 
 	//ImGui
 	gameWindow_->DrawDisplayWithImGui();
