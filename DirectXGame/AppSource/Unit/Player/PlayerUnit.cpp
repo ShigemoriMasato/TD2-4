@@ -29,7 +29,7 @@ void PlayerUnit::Init(MapChipField* mapChipField, DrawData drawData, const Vecto
 	CollConfig config;
 	config.colliderInfo = &circleCollider_;
 	config.isActive = true;
-	config.ownTag = CollTag::Unit;
+	config.ownTag = CollTag::Player;
 	config.targetTag = static_cast<uint32_t>(CollTag::Unit);
 	SetColliderConfig(config);
 
@@ -73,7 +73,8 @@ void PlayerUnit::Update() {
 	object_->Update();
 
 	// 当たり判定の位置を更新
-	circleCollider_.center = object_->transform_.position;
+	circleCollider_.center.x = object_->transform_.position.x;
+	circleCollider_.center.y = object_->transform_.position.z;
 }
 
 void PlayerUnit::Draw(Window* window, const Matrix4x4& vpMatrix) {

@@ -80,6 +80,8 @@ private:
 	bool isDead_ = false;
 	// 有効フラグ
 	bool isActive_ = false;
+	// 回収した
+	bool isToDeliver_ = false;
 
 	// 体力
 	int32_t hp_ = 0;

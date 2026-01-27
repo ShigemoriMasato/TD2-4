@@ -34,6 +34,12 @@ public:
 	// 出撃させるユニットの数
 	int32_t GetUnitSpawnNum() const { return unitSpawnNum_; }
 
+	// 最大の数
+	int32_t GetMaxOreCount() const { return maxCurrentOreCount_; }
+
+	// 現在出撃している数
+	int32_t GetOreCount() const { return activeCount_; }
+
 private:
 
 	// マップ

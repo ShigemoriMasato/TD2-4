@@ -77,6 +77,7 @@ void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos) {
 	isActive_ = true;
 	isDead_ = false;
 	isRemoveOre_ = false;
+	isToDeliver_ = false;
 
 	// hpを設定
 	hp_ = maxHp_;
@@ -177,9 +178,10 @@ void OreUnit::OnCollision(Collider* other) {
 
 		if (state_ != State::ToDeliver) { return; }
 		// プレイヤーに触れれば帰宅する
-		if (isActive_) {
+		if (isActive_ && !isToDeliver_) {
 			// 鉱石を収納する
 			OreItemStorageNum::currentOreItemNum_ += 1;
+			isToDeliver_ = true;
 			// 納品したら帰宅する
 			stateRequest_ = State::Return;
 		}
@@ -274,7 +276,7 @@ void OreUnit::MiningUpdate() {
 void OreUnit::ToDeliverUpdate() {
 	// 回収が終われば帰宅する
 	if (path_.empty()) {
-		stateRequest_ = State::Return;
+		//stateRequest_ = State::Return;
 	}
 
 	// プレイヤーが現在いるマップチップのインデックスと座標を取得

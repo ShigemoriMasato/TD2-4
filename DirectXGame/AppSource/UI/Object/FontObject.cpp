@@ -44,11 +44,10 @@ void FontObject::Initialize(const std::string& fontName, const std::wstring& tex
 
 void FontObject::Update() {
 	// テキストが変更された場合のみ更新
-	if (isDirty_) {
-		UpdateCharPositions();
-		isDirty_ = false;
-	}
-
+	//if (isDirty_) {
+	//	UpdateCharPositions();
+	//	isDirty_ = false;
+	//}
 
 }
 
@@ -73,12 +72,15 @@ void FontObject::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	renderObject_->Draw(window);
 }
 
-void FontObject::UpdateCharPositions() {
+void FontObject::UpdateCharPositions(const std::wstring& text,FontLoader* fontLoader) {
 	charPositions_.clear();
 
-	//auto* fontLoader = FontLoader::GetInstance();
-	//for (const wchar_t& c : text_) {
-	//	CharPosition charPos = fontLoader->GetCharPosition(fontName_, c, 64);
-	//	charPositions_.push_back(charPos);
-	//}
+	// テキストを設定
+	text_ = text;
+
+	// テキストを更新
+	for (const wchar_t& c : text_) {
+		CharPosition charPos = fontLoader->GetCharPosition(fontName_, c, 64);
+		charPositions_.push_back(charPos);
+	}
 }

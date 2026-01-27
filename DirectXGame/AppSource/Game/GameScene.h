@@ -11,11 +11,13 @@
 #include"Item/OreItemManager.h"
 #include"GameCamera/CameraController.h"
 #include"UI/FadeTransition.h"
+#include"UI/Object/FontObject.h"
+#include"UI/CounterUI.h"
+#include"UI/TimerUI.h"
+#include"TimeTracker.h"
 
 // ゲームオーバーシーン
 #include"UI/GameOverUI.h"
-
-#include"UI/Object/FontObject.h"
 
 class GameScene : public IScene {
 public:
@@ -58,8 +60,6 @@ private:
 	// 遷移の処理
 	std::unique_ptr<FadeTransition> fadeTransition_;
 
-	std::unique_ptr<FontObject> fontObject_;
-
 	//=====================================================
 	// インゲーム
 	//=====================================================
@@ -79,6 +79,17 @@ private:
 	// ユニット管理
 	std::unique_ptr<UnitManager> unitManager_;
 
+	// ユニットの数UI
+	std::unique_ptr<CounterUI> unitCounterUI_;
+	// 鉱石の数UI
+	std::unique_ptr<CounterUI> oreItemUI_;
+
+	// 時間を測る
+	std::unique_ptr<TimeTracker> timeTracker_;
+
+	// 計測時間をだすUI
+	std::unique_ptr<TimerUI> timerUI_;
+
 	//================================================
 	// ゲームオーバーシーン
 	//================================================
@@ -93,4 +104,14 @@ private:
 
 	// ゲームオーバーシーンの初期化
 	void InitializeGameOver();
+
+	/// <summary>
+	/// 値を登録する
+	/// </summary>
+	void RegisterDebugParam();
+
+	/// <summary>
+	/// 値を適応する
+	/// </summary>
+	void ApplyDebugParam();
 };
