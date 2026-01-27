@@ -15,7 +15,7 @@ void MapRender::Initialize(const DrawData& box) {
 	render_->psoConfig_.ps = "MapRender.PS.hlsl";
 
 	worldMatrices_.resize(maxSize_ * maxSize_, Matrix4x4::Identity());
-	float yOffset = 0.05f;
+	float yOffset = -0.5f;
 	for (int i = 0; i < maxSize_; ++i) {
 		for (int j = 0; j < maxSize_; ++j) {
 			int index = i * maxSize_ + j;
