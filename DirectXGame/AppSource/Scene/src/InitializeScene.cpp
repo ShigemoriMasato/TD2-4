@@ -1,6 +1,7 @@
 #include "../InitializeScene.h"
 #include <Test/TestScene.h>
 #include <Game/GameScene.h>
+#include <ModelEditScene/ModelEditScene.h>
 #include<Game/SelectScene.h>
 #include <MapEditor/MapEditScene.h>
 #include <imgui/imgui.h>
@@ -34,13 +35,13 @@ void InitializeScene::Initialize() {
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
-	return std::make_unique<GameScene>();
+	return std::make_unique<ModelEditScene>();
 }
 
 void InitializeScene::Draw() {
 	commonData_->display->PreDraw(commonData_->mainWindow->GetCommandObject(), true);
 	commonData_->display->PostDraw(commonData_->mainWindow->GetCommandObject());
-	commonData_->mainWindow->PreDraw();
+	commonData_->mainWindow->PreDraw(true);
 	commonData_->mainWindow->DrawDisplayWithImGui();
 }
 

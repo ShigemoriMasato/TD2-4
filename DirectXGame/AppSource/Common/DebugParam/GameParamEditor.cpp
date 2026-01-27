@@ -47,7 +47,7 @@ void GameParamEditor::LoadFiles() {
 		return;
 	}
 
-	auto files = SerchFilePathsAddChild("Assets/Binary/" + kDirectoryPath, ".sg");
+	auto files = SearchFilePathsAddChild("Assets/Binary/" + kDirectoryPath, ".sg");
 	for (auto& entry : files) {
 		entry.erase(entry.end() - 3, entry.end()); // 拡張子削除
 		// ファイル読み込み

@@ -9,7 +9,7 @@ public:
 	~GameWindow() = default;
 	void Initialize(SHEngine* engine, const WindowConfig& config, uint32_t clearColor);
 
-	void PreDraw();
+	void PreDraw(bool isClear);
 	void DrawDisplayWithImGui();
 
 	void AddDisplay(int textureIndex, std::string name, uint32_t width, uint32_t height);

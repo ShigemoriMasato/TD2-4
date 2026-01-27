@@ -8,15 +8,23 @@ void GameWindow::Initialize(SHEngine* engine, const WindowConfig& config, uint32
 	textureManager_ = engine->GetTextureManager();
 }
 
-void GameWindow::PreDraw() {
-	window_->PreDraw(false);
+void GameWindow::PreDraw(bool isClear) {
+	window_->PreDraw(isClear);
 }
 
 void GameWindow::DrawDisplayWithImGui() {
 
 #ifdef USE_IMGUI
 
-	for(const auto& config : displayTextureIndices_) {
+	POINT cursorPos;
+	if (GetCursorPos(&cursorPos)) {
+		// スクリーン座標をクライアント座標に変換
+		ScreenToClient(window_->GetHwnd(), &cursorPos);
+		// カーソル位置をワールド座標に変換
+		DebugMousePos::screenMousePos = { static_cast<float>(cursorPos.x), static_cast<float>(cursorPos.y) };
+	}
+
+	for (const auto& config : displayTextureIndices_) {
 		ImGui::Begin(config.name.c_str());
 		TextureData* textureData = textureManager_->GetTextureData(config.textureIndex);
 		auto textureHandle = textureData->GetGPUHandle();
@@ -37,14 +45,27 @@ void GameWindow::DrawDisplayWithImGui() {
 		// 画像内のマウス位置を取得する
 		if (config.name == "Main Display") {
 			if (ImGui::IsItemHovered()) {
+				DebugMousePos::isHovered = true;
 				DebugMousePos::gameMousePos = DebugMousePos::screenMousePos - DebugMousePos::windowPos;
 				DebugMousePos::gameMousePos *= 2.0f;
+
+				if (ImGui::IsItemClicked(1)) {
+					DebugMousePos::isGrabbed = true;
+				}
+
+				//画面外に出ても最初につかんでいたらtrueのままにする
+				if (!ImGui::IsMouseDown(1)) {
+					DebugMousePos::isGrabbed = false;
+				}
+			} else {
+				DebugMousePos::isHovered = false;
 			}
 		}
+
 		ImGui::End();
 	}
 
-	for(const auto& config : dualDisplayTextureIndices_) {
+	for (const auto& config : dualDisplayTextureIndices_) {
 		ImGui::Begin(config.name.c_str());
 		auto textureHandle = config.display->GetTextureResource();
 		ImGuiIO& io = ImGui::GetIO();

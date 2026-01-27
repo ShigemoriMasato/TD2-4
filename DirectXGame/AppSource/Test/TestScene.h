@@ -35,7 +35,7 @@ private:
 	Matrix4x4 wvpMat_{};
 	std::vector<CharPosition> charPositions_;
 	Vector4 fontColor_ = {1.0f, 1.0f, 1.0f, 1.0f};
-	char imguiBuffer_[256] = "ABC";
+	char willLoadPath_[256] = "ABC";
 	std::wstring text_ = L"ABC";
 	Transform transform_{};
 

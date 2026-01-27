@@ -36,7 +36,7 @@ std::vector<std::string> SearchFileNames(const fs::path& directory) {
 
 }
 
-std::vector<std::string> SerchFilePathsAddChild(const fs::path& directory, const std::string& extension) {
+std::vector<std::string> SearchFilePathsAddChild(const fs::path& directory, const std::string& extension) {
     std::vector<std::string> result;
 
     if (!fs::exists(directory) || !fs::is_directory(directory)) {
