@@ -71,10 +71,32 @@ void GoldOre::OnCollision(Collider* other) {
 
 void GoldOre::RegisterDebugParam() {
 	// 登録
-	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MaxHp", maxHp_);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "LargeMaxHp", int32_t(10));
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MediumMaxHp", int32_t(10));
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "SmallMaxHp", int32_t(10));
+
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "LargeWorkerMaxNum", int32_t(5));
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MediumWorkerMaxNum", int32_t(5));
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "SmallWorkerMaxNum", int32_t(5));
 }
 
 void GoldOre::ApplyDebugParam() {
 	// 適応
-	maxHp_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MaxHp");
+	switch (type_)
+	{
+	case OreType::Large:
+		maxHp_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "LargeMaxHp");
+		maxWorkerNum_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "LargeWorkerMaxNum");
+		break;
+
+	case OreType::Medium:
+		maxHp_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MediumMaxHp");
+		maxWorkerNum_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MediumWorkerMaxNum");
+		break;
+
+	case OreType::Small:
+		maxHp_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "SmallMaxHp");
+		maxWorkerNum_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "SmallWorkerMaxNum");
+		break;
+	}
 }
