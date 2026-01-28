@@ -7,6 +7,13 @@ public:
 
 	TimeTracker();
 
+	/// <summary>
+	/// 計測する時間を設定
+	/// </summary>
+	/// <param name="m">分</param>
+	/// <param name="s">秒</param>
+	void SetCountTime(const float& m, const float& s);
+
 	// 時間の計測を開始
 	void StartMeasureTimes();
 
@@ -18,6 +25,9 @@ public:
 
 	// 更新処理
 	void Update();
+
+	// 終了フラグを取得
+	bool isFinishd() const { return isFinished_;}
 
 private:
 
@@ -32,6 +42,11 @@ private:
 
 	// これまでの蓄積時間を保存
 	std::chrono::duration<float> accumulatedTime_;
+
+	// カウントダウンの初期設定時間
+	std::chrono::duration<float> initialDuration_;
+
+	bool isFinished_ = false;
 
 	// 計測時間の取得
 	bool isRunning_ = false;
