@@ -37,6 +37,9 @@ private:
 	// 遷移の処理
 	std::unique_ptr<FadeTransition> fadeTransition_;
 
+	// シーン切り替え
+	bool isSceneChange_ = false;
+
 	//=================================
 	// カメラ
 	//=================================
