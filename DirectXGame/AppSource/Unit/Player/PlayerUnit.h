@@ -51,6 +51,11 @@ private:
 	// デバック用
 	std::string kGroupName_ = "Player";
 
+	bool isAnimation_ = false;
+	float animationTimer_ = 0.0f;
+	float moveAnimationTime_ = 0.2f;
+	bool isMove_ = false;
+	
 private: // 調整項目
 
 	// 速さ
@@ -96,6 +101,9 @@ private:
 
 	// 回転処理
 	void Rotate();
+
+	// アニメーション
+	void AnimationUpdate();
 
 private:
 
