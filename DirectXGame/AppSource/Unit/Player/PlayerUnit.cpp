@@ -1,6 +1,6 @@
 #include"PlayerUnit.h"
 #include"FpsCount.h"
-
+#include"Utility/Easing.h"
 #include <Common/DebugParam/GameParamEditor.h>
 
 #ifdef USE_IMGUI
@@ -69,6 +69,9 @@ void PlayerUnit::Update() {
 	// 回転処理
 	Rotate();
 
+	// アニメーション処理
+	AnimationUpdate();
+
 	// 更新処理
 	object_->Update();
 
@@ -100,6 +103,7 @@ void PlayerUnit::ProcessMoveInput() {
 
 	// 速度
 	velocity_ = { 0.0f,0.0f,0.0f };
+	isMove_ = false;
 
 	// 操作
 	auto key = keyManager_->GetKeyStates();
@@ -107,21 +111,29 @@ void PlayerUnit::ProcessMoveInput() {
 	if (key[Key::Up]) {
 		velocity_.z = speed_ * FpsCount::deltaTime;
 		dir_ = { 0.0f,0.0f,1.0f };
+		isMove_ = true;
 	}
 
 	if (key[Key::Down]) {
 		velocity_.z = -speed_ * FpsCount::deltaTime;
 		dir_ = { 0.0f,0.0f,-1.0f };
+		isMove_ = true;
 	}
 
 	if (key[Key::Left]) {
 		velocity_.x = -speed_ * FpsCount::deltaTime;
 		dir_ = { -1.0f,0.0f,0.0f };
+		isMove_ = true;
 	}
 
 	if (key[Key::Right]) {
 		velocity_.x = speed_ * FpsCount::deltaTime;
 		dir_ = { 1.0f,0.0f,0.0f };
+		isMove_ = true;
+	}
+
+	if (!isAnimation_ && isMove_) {
+		isAnimation_ = true;
 	}
 }
 
@@ -229,6 +241,50 @@ void PlayerUnit::Rotate() {
 	// 回転
 	currentRot.y += diffY * rotateSpeed_ * FpsCount::deltaTime;
 	object_->transform_.rotate = currentRot;
+}
+
+void PlayerUnit::AnimationUpdate() {
+	if (isAnimation_) {
+		animationTimer_ += FpsCount::deltaTime / moveAnimationTime_;
+
+		if (animationTimer_ <= 0.4f) {
+			float localT = animationTimer_ / 0.4f;
+			object_->transform_.position.y = lerp(0.0f, 1.0f, localT, EaseType::EaseInOutCubic);
+
+			// スケール
+			float width = lerp(1.0f, 0.8f, localT, EaseType::EaseInOutCubic);
+			object_->transform_.scale.x = width;
+			object_->transform_.scale.z = width;
+			object_->transform_.scale.y = lerp(1.0f, 1.2f, localT, EaseType::EaseInOutCubic);
+		} else if(animationTimer_ <= 0.8f) {
+			float localT = (animationTimer_ - 0.4f) / 0.4f;
+			object_->transform_.position.y = lerp(1.0f, 0.0f, localT, EaseType::EaseInCubic);
+
+			// スケール
+			float width = lerp(0.8f, 1.2f, localT, EaseType::EaseInOutCubic);
+			object_->transform_.scale.x = width;
+			object_->transform_.scale.z = width;
+			object_->transform_.scale.y = lerp(1.2f, 0.5f, localT, EaseType::EaseInOutCubic);
+		} else {
+			float localT = (animationTimer_ - 0.8f) / 0.2f;
+			// スケール
+			float width = lerp(1.2f, 1.0f, localT, EaseType::EaseInOutCubic);
+			object_->transform_.scale.x = width;
+			object_->transform_.scale.z = width;
+			object_->transform_.scale.y = lerp(0.5f, 1.0f, localT, EaseType::EaseInOutCubic);
+		}
+
+		if (animationTimer_ >= 1.0f) {
+			animationTimer_ = 0.0f;
+			object_->transform_.scale = { 1.0f,1.0f,1.0f };
+
+			if (isMove_) {
+				isAnimation_ = true;
+			} else {
+				isAnimation_ = false;
+			}
+		}
+	}
 }
 
 void PlayerUnit::RegisterDebugParam() {
