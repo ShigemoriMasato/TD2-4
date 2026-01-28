@@ -30,12 +30,15 @@ void InitializeScene::Initialize() {
 	commonData_->mapDataManager = std::make_unique<MapDataManager>();
 	commonData_->mapDataManager->Initialize();
 
+	commonData_->newMapManager = std::make_unique<NewMapManager>();
+	commonData_->newMapManager->Initialize();
+
 	// 保存されているパラメーターを取得する
 	GameParamEditor::GetInstance()->LoadFiles();
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
-	return std::make_unique<GameScene>();
+	return std::make_unique<TestScene>();
 }
 
 void InitializeScene::Draw() {
