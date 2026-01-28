@@ -160,6 +160,8 @@ void InitializeScene::SetupKeyManager() {
 	keyManager->SetButton(Key::DownTri, XBoxController::kDown, KeyState::Trigger);
 	keyManager->SetStick(Key::DownTri, true, true, -0.5f);
 
+	keyManager->SetKey(Key::Decision, DIK_SPACE, KeyState::Trigger);
+
 	//================================================================================
 
 	keyManager->SetKey(Key::HardDrop, DIK_W, KeyState::Trigger);

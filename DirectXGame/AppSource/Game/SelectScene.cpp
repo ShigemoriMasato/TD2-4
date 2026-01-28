@@ -6,6 +6,7 @@
 #include<numbers>
 #include"LightManager.h"
 #include"SelectStageNum.h"
+#include <Game/GameScene.h>
 
 namespace {
 	//Minimap確認用
@@ -119,6 +120,11 @@ std::unique_ptr<IScene> SelectScene::Update() {
 		// インゲームの処理
 		InGameScene();
 	}
+
+	// シーンを切り替える
+	if (isSceneChange_) {
+		return std::make_unique<GameScene>();
+	}
 	
 	return nullptr;
 }
@@ -165,6 +171,11 @@ void SelectScene::InGameScene() {
 				endRotY_ = std::numbers::pi_v<float> / 2;
 			}
 		}
+	}
+
+	// 決定
+	if (key[Key::Decision]) {
+		isSceneChange_ = true;
 	}
 
 	//==============================================

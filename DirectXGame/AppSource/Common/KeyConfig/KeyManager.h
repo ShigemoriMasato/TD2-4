@@ -22,6 +22,8 @@ enum class Key {
 	HardDrop,
 	Hold,
 
+	Decision,
+
 	// 回転系 -===========
 
 	LRotate,
