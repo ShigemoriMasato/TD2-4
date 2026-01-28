@@ -40,6 +40,9 @@ public:
 	/// </summary>
 	void UpdateCharPositions(const std::wstring& text,FontLoader* fontLoader);
 
+	// テキストの数
+	int32_t GetTextSize() { return static_cast<int32_t>(charPositions_.size()); }
+
 public:
 
 	// トランスフォーム
