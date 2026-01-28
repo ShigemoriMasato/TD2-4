@@ -3,6 +3,7 @@
 #include <Utility/ConvertString.h>
 #include"Common/DebugParam/GameParamEditor.h"
 #include"FpsCount.h"
+#include <Utility/Easing.h>
 
 namespace {
 	bool debug = false;
@@ -62,6 +63,22 @@ void TestScene::Initialize() {
 	orthoCamera_ = std::make_unique<Camera>();
 	orthoCamera_->SetProjectionMatrix(OrthographicDesc());
 	orthoCamera_->MakeMatrix();
+
+	for(int i = 0; i < int(TileType::Count); ++i){
+		Vector4 color = ConvertColor(lerpColor(0xff6600ff, 0x0066ffff, float(i) / (float(TileType::Count) - 1)));
+		colorMap_[static_cast<TileType>(i)] = Vector3(color.x, color.y, color.z);
+	}
+
+	currentMap_ = commonData_->newMapManager->GetMapData(0);
+	currentMap_.Rotate(Direction::Back);
+
+	mapRender_ = std::make_unique<MapRender>();
+	drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(0).drawDataIndex);
+	mapRender_->Initialize(drawData);
+	mapRender_->SetConfig(currentMap_.renderData);
+	debugMCRender_ = std::make_unique<DebugMCRender>();
+	debugMCRender_->Initialize(drawData);
+	debugMCRender_->SetAlpha(0.4f);
 }
 
 std::unique_ptr<IScene> TestScene::Update() {
@@ -123,6 +140,9 @@ void TestScene::Draw() {
 	fontTest_->CopyBufferData(3, &fontColor_, sizeof(Vector4));
 	fontTest_->instanceNum_ = static_cast<uint32_t>(charPositions_.size());
 	fontTest_->Draw(window->GetWindow());
+
+	mapRender_->Draw(debugCamera_->GetVPMatrix(), window->GetWindow());
+	debugMCRender_->Draw(debugCamera_->GetVPMatrix(), colorMap_,  currentMap_.mapChipData, window->GetWindow());
 
 	display->PostDraw(window->GetCommandObject());
 

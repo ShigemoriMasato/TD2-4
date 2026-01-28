@@ -165,6 +165,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\GameCamera\CameraController.cpp" />
     <ClCompile Include="AppSource\GameCamera\SelectCamera.cpp" />
     <ClCompile Include="AppSource\GameCommon\DefaultObject.cpp" />
+    <ClCompile Include="AppSource\Game\NewMap\NewMap.cpp" />
     <ClCompile Include="AppSource\Game\SelectScene.cpp" />
     <ClCompile Include="AppSource\Item\Object\GoldOre.cpp" />
     <ClCompile Include="AppSource\Item\Object\OreObject.cpp" />
@@ -237,10 +238,12 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\ModelEditScene\Editor\Texture\MapTextureEditor.cpp" />
     <ClCompile Include="AppSource\ModelEditScene\Editor\Type\MapTypeEditor.cpp" />
     <ClCompile Include="AppSource\ModelEditScene\Render\MapRender.cpp" />
+    <ClCompile Include="AppSource\Game\NewMap\NewMapManager.cpp" />
     <ClInclude Include="AppSource\GameCamera\DebugMousePos.h" />
     <ClInclude Include="AppSource\GameCamera\SelectCamera.h" />
     <ClInclude Include="AppSource\GameCommon\DefaultObject.h" />
     <ClInclude Include="AppSource\Game\MapData\Data\StageData.h" />
+    <ClInclude Include="AppSource\Game\NewMap\NewMap.h" />
     <ClInclude Include="AppSource\Game\SelectScene.h" />
     <ClInclude Include="AppSource\Item\Object\GoldOre.h" />
     <ClInclude Include="AppSource\Item\Object\OreItem.h" />
@@ -298,6 +301,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\ModelEditScene\Editor\Texture\MapTextureEditor.h" />
     <ClInclude Include="AppSource\ModelEditScene\Editor\Type\MapTypeEditor.h" />
     <ClInclude Include="AppSource\ModelEditScene\Render\MapRender.h" />
+    <ClInclude Include="AppSource\Game\NewMap\NewMapManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSource\Common\DebugParam\GameParamEditor.h" />

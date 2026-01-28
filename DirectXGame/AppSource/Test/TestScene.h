@@ -3,6 +3,8 @@
 #include <Render/RenderObject.h>
 #include <Camera/DebugCamera.h>
 #include <Render/DebugLine.h>
+#include <ModelEditScene/Render/MapRender.h>
+#include <ModelEditScene/Render/DebugMCRender.h>
 
 #include"Common/DebugParam/ParamManager.h"
 
@@ -45,4 +47,11 @@ private:
 	std::unique_ptr<ParamManager> paramManager_;
 	// テストパラメーター
 	float testParam_ = 0.0f;
+
+
+	// MapRender用
+	std::unique_ptr<MapRender> mapRender_ = nullptr;
+	std::unique_ptr<DebugMCRender> debugMCRender_ = nullptr;
+	std::map<TileType, Vector3> colorMap_{};
+	NewMap currentMap_;
 };
