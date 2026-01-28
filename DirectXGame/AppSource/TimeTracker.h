@@ -13,6 +13,9 @@ public:
 	// 時間の計測を終了
 	void EndMeasureTimes();
 
+	// 時間を0にリセット
+	void Reset();
+
 	// 更新処理
 	void Update();
 
@@ -26,6 +29,9 @@ private:
 
 	// 経過時間を保存
 	std::chrono::duration<float> duration_;
+
+	// これまでの蓄積時間を保存
+	std::chrono::duration<float> accumulatedTime_;
 
 	// 計測時間の取得
 	bool isRunning_ = false;
