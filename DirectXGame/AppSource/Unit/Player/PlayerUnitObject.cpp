@@ -1,7 +1,7 @@
 #include"PlayerUnitObject.h"
 #include"Utility/MatrixFactory.h"
 
-void PlayerUnitObject::Initialize(DrawData drawData) {
+void PlayerUnitObject::Initialize(DrawData drawData, int texture) {
 
 	// psoを設定
 	renderObject_ = std::make_unique<RenderObject>();
@@ -12,6 +12,7 @@ void PlayerUnitObject::Initialize(DrawData drawData) {
 
 	// 描画モデルを設定
 	renderObject_->SetDrawData(drawData);
+	renderObject_->SetUseTexture(true);
 
 	// worldTransformを登録
 	vsDataIndex_ = renderObject_->CreateCBV(sizeof(TransformationMatrix), ShaderType::VERTEX_SHADER, "TestScene::VSData");
@@ -21,6 +22,7 @@ void PlayerUnitObject::Initialize(DrawData drawData) {
 
 	// 色を設定
 	material_.color = { 1.0f,1.0f,1.0f,1.0f };
+	material_.textureIndex = texture;
 }
 
 void PlayerUnitObject::Update() {

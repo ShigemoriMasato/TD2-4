@@ -31,7 +31,7 @@ public:
 
 public:
 
-	OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerPos);
+	OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos);
 
 	/// <summary>
 	/// 初期化

@@ -9,7 +9,7 @@
 class OreItemManager {
 public:
 
-	void Initialize(const DrawData& goldOreDrawData);
+	void Initialize(const DrawData& goldOreDrawData,int texture);
 
 	void Update();
 
@@ -34,6 +34,7 @@ private:
 
 	// 鉱石の描画データ
 	DrawData goldOreDrawData_;
+	int oreTexture_ = 0;
 
 	// 鉱石の達
 	std::unordered_map<int32_t, std::unique_ptr<OreItem>> oreItems_;

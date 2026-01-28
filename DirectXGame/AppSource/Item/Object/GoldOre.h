@@ -7,7 +7,7 @@
 class GoldOre : public OreItem,public Collider {
 public:
 
-	void Init(DrawData drawData, const Vector3& pos, OreType type);
+	void Init(DrawData drawData,int texture, const Vector3& pos, OreType type);
 
 	void Update() override;
 

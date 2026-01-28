@@ -10,11 +10,12 @@ struct VertexShaderOutput
 struct Material
 {
     float4 color;
+    int textureIndex;
 };
 ConstantBuffer<Material> gMaterial : register(b0);
 
-//Texture2D<float32_t4> gTexture[] : register(t0);
-//SamplerState gSampler : register(s0);
+Texture2D<float32_t4> gTexture[] : register(t8);
+SamplerState gSampler : register(s0);
 
 struct PSOutput
 {
@@ -24,6 +25,8 @@ struct PSOutput
 PSOutput main(VertexShaderOutput input)
 {
     PSOutput output;
-    output.color = gMaterial.color;
+    float4 textureColor = gTexture[gMaterial.textureIndex].Sample(gSampler, input.texcoord);
+    
+    output.color = gMaterial.color * textureColor;
     return output;
 }

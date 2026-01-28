@@ -13,6 +13,7 @@ void OreOutLineObject::Initialize(DrawData drawData) {
 
 	// 描画モデルを設定
 	renderObject_->SetDrawData(drawData);
+	renderObject_->SetUseTexture(true);
 
 	// worldTransformを登録
 	vsDataIndex_ = renderObject_->CreateCBV(sizeof(TransformationMatrix), ShaderType::VERTEX_SHADER, "TestScene::VSData");

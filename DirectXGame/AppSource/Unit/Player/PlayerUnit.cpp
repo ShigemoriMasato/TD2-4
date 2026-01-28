@@ -7,7 +7,7 @@
 #include <imgui/imgui.h>
 #endif
 
-void PlayerUnit::Init(MapChipField* mapChipField, DrawData drawData, const Vector3& pos, KeyManager* keyManager) {
+void PlayerUnit::Init(MapChipField* mapChipField, DrawData drawData, int pIndex, const Vector3& pos, KeyManager* keyManager) {
 	// マップデータ
 	mapChipField_ = mapChipField;
 
@@ -16,7 +16,7 @@ void PlayerUnit::Init(MapChipField* mapChipField, DrawData drawData, const Vecto
 
 	// オブジェクトを初期化
 	object_ = std::make_unique<PlayerUnitObject>();
-	object_->Initialize(drawData);
+	object_->Initialize(drawData,pIndex);
 
 	// 初期位置を設定
 	object_->transform_.position = pos;

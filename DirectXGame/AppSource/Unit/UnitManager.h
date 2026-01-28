@@ -18,7 +18,7 @@ public:
 
 public:
 
-	void Initalize(MapChipField* mapChipField, DrawData playerDrawData, DrawData oreDrawData, KeyManager* keyManager);
+	void Initalize(MapChipField* mapChipField, DrawData playerDrawData,int pIndex, DrawData oreDrawData,int oIndex, KeyManager* keyManager);
 
 	void Update();
 
@@ -47,6 +47,7 @@ private:
 
 	// おれの描画データ
 	DrawData oreDrawData_;
+	int oreTexIndex_ = 0;
 
 	// プレイヤー
 	std::unique_ptr<PlayerUnit> playerUnit_;

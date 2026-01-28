@@ -6,7 +6,7 @@
 #include <imgui/imgui.h>
 #endif
 
-void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData, DrawData oreDrawData, KeyManager* keyManager) {
+void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData, int pIndex, DrawData oreDrawData, int oIndex, KeyManager* keyManager) {
 	// マップデータを取得
 	mapChipField_ = mapChipField;
 
@@ -15,10 +15,11 @@ void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData,
 
 	// プレイヤーユニットを初期化
 	playerUnit_ = std::make_unique<PlayerUnit>();
-	playerUnit_->Init(mapChipField_, playerDrawData,{3.0f,0.0f,3.0f}, keyManager);
+	playerUnit_->Init(mapChipField_, playerDrawData,pIndex,{3.0f,0.0f,3.0f}, keyManager);
 
 	// おれのモデルデータを取得
 	oreDrawData_ = oreDrawData;
+	oreTexIndex_ = oIndex;
 
 	// おれのメモリを確保
 	oreUnits_.reserve(maxOreCount_);
@@ -137,7 +138,7 @@ void UnitManager::AddOreUnit(const Vector3& targetPos) {
 		unit->second->Init(homePos, targetPos);
 	} else {
 		// 新しく登録
-		std::unique_ptr<OreUnit> oreUnit = std::make_unique<OreUnit>(mapChipField_, oreDrawData_, playerUnit_->GetPos());
+		std::unique_ptr<OreUnit> oreUnit = std::make_unique<OreUnit>(mapChipField_, oreDrawData_, oreTexIndex_, playerUnit_->GetPos());
 		oreUnit->Init(homePos, targetPos);
 
 		oreUnits_[index] = std::move(oreUnit);
