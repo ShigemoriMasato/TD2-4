@@ -72,6 +72,9 @@ void GameScene::Initialize() {
 	mapChipField_ = std::make_unique<MapChipField>();
 	// マップデータの受け取り
 	mapChipField_->SetMapChipData(currentMap_.mapChipData);
+	
+	// マップの最大サイズを取得
+	cameraController_->SetMapMaxSize(mapChipField_->GetMaxMapSize());
 
 
 	// 壁モデルを取得

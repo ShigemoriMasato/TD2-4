@@ -3,6 +3,7 @@
 #include<Windows.h>
 #include"DebugMousePos.h"
 #include"FpsCount.h"
+#include<algorithm>
 
 #ifdef USE_IMGUI
 #include <imgui/imgui.h>
@@ -46,6 +47,10 @@ void CameraController::Update() {
 	if (DebugMousePos::isHovered) {
 		backDist_ += input_->GetMouseWheel() * 0.02f;
 	}
+
+	// カメラの移動範囲を制限する
+	position_.x = std::clamp(position_.x,0.0f, mapMaxSize_.x * 1.5f);
+	position_.z = std::clamp(position_.z, -3.0f, mapMaxSize_.y * 0.5f);
 
 	// カメラの更新処理
 	MakeMatrix();
