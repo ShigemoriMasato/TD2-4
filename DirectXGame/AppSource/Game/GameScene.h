@@ -15,6 +15,8 @@
 #include"UI/CounterUI.h"
 #include"UI/TimerUI.h"
 #include"TimeTracker.h"
+#include"UI/OreUnitHPUI.h"
+#include"Unit/UnitEffectManager.h"
 
 #include <ModelEditScene/Render/MapRender.h>
 #include <ModelEditScene/Render/DebugMCRender.h>
@@ -90,10 +92,16 @@ private:
 	// ユニット管理
 	std::unique_ptr<UnitManager> unitManager_;
 
+	// ユニットの演出管理(仮で作ったため消すかも)
+	std::unique_ptr<UnitEffectManager> unitEffectManager_;
+
 	// ユニットの数UI
 	std::unique_ptr<CounterUI> unitCounterUI_;
 	// 鉱石の数UI
 	std::unique_ptr<CounterUI> oreItemUI_;
+
+	// ユニットのHPUI
+	std::unique_ptr<OreUnitHPUI> oreUnitHpUI_;
 
 	// 時間を測る
 	std::unique_ptr<TimeTracker> timeTracker_;

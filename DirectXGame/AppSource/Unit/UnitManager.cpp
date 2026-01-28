@@ -40,6 +40,12 @@ void UnitManager::Update() {
 	ApplyDebugParam();
 #endif
 
+	// ユニットのUI
+	oreUnitHPUI_->Update();
+
+	// 鉱石位置をリセット
+	unitEffectManager_->Reset();
+
 	// ユニットの出撃処理
 	UnitSpawn();
 
@@ -52,6 +58,16 @@ void UnitManager::Update() {
 		if (unit->IsActive() && !unit->IsDead()) {
 			// ユニットの更新処理
 			unit->Update();
+
+			// HPを追加
+			if (unit->GetState() != OreUnit::State::Return) {
+				oreUnitHPUI_->Add(unit->GetPos() + Vector3(0.0f, 2.0f, 0.0f), unit->GetHp(), unit->GetMaxHp());
+			}
+
+			// 回収中は鉱石を持たせる
+			if (unit->GetState() == OreUnit::State::ToDeliver) {
+				unitEffectManager_->AddOreItem(unit->GetPos() + Vector3(0.0f, 1.0f, 0.0f));
+			}
 
 			// 更新して有効フラグがfalseだったら、再利用リストに追加する
 			if (!unit->IsActive()) {
@@ -67,6 +83,9 @@ void UnitManager::Update() {
 			}
 		}
 	}
+
+	// ユニットの演出を更新
+	unitEffectManager_->Update();
 }
 
 void UnitManager::Draw(Window* window, const Matrix4x4& vpMatrix) {

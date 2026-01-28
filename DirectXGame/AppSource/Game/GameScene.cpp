@@ -20,6 +20,8 @@ namespace {
 	std::string mineralModelName = "Mineral";
 
 	std::string spriteModelName = "Sprite";
+
+	std::string unitHpModelName = "UnitHp";
 }
 
 void GameScene::Initialize() {
@@ -138,6 +140,13 @@ void GameScene::Initialize() {
 		drawDataManager_->GetDrawData(oreModel.drawDataIndex), oreTextureIndex,
 		commonData_->keyManager.get());
 
+	// ユニットの演出管理クラス(仮で作成したため消すかも)
+	unitEffectManager_ = std::make_unique<UnitEffectManager>();
+	unitEffectManager_->Initialize(drawDataManager_->GetDrawData(oreItemModel.drawDataIndex), oreItemTextureIndex);
+
+	// 演出管理クラスを取得
+	unitManager_->SetUnitEffect(unitEffectManager_.get());
+
 	//==========================================================================================
 	// ポストエフェクト
 	//==========================================================================================
@@ -168,6 +177,16 @@ void GameScene::Initialize() {
 	unitCounterUI_->Initialize(fontName, L"ユニット :", unitManager_->GetMaxOreCount(), unitManager_->GetMaxOreCount(), drawData, fontLoader_);
 	unitCounterUI_->fontObject_->transform_.position.x = 800.0f;
 	unitCounterUI_->fontObject_->transform_.position.y = 128.0f;
+
+	// spriteモデルを取得
+	int uModelID = modelManager_->LoadModel(unitHpModelName);
+	auto uModel = modelManager_->GetNodeModelData(uModelID);
+
+	// ユニットのHpUI
+	oreUnitHpUI_ = std::make_unique<OreUnitHPUI>();
+	oreUnitHpUI_->Initialize(drawDataManager_->GetDrawData(uModel.drawDataIndex));
+	// ユニット管理クラスに持たせる
+	unitManager_->SetUnitHp(oreUnitHpUI_.get());
 
 	// 鉱石のアイテムUI
 	oreItemUI_ = std::make_unique<CounterUI>();
@@ -411,6 +430,12 @@ void GameScene::Draw() {
 
 	// ユニットを描画
 	unitManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+	// ユニットの演出を描画(仮で作成したクラスなので消すかも)
+	unitEffectManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+	// ユニットのHp描画
+	oreUnitHpUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
 	/// UIの描画処理
 	vpMatrix = uiCamera_->GetVPMatrix();
