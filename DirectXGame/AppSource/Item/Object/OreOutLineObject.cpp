@@ -1,5 +1,6 @@
 #include"OreOutLineObject.h"
 #include"Utility/MatrixFactory.h"
+#include"LightManager.h"
 
 void OreOutLineObject::Initialize(DrawData drawData) {
 
@@ -20,6 +21,10 @@ void OreOutLineObject::Initialize(DrawData drawData) {
 
 	// Materialを登録
 	psDataIndex_ = renderObject_->CreateCBV(sizeof(Material), ShaderType::PIXEL_SHADER, "TestScene::psData");
+
+	// ライトを登録
+	lightDataIndex_ = renderObject_->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "TestScene::");
+	renderObject_->CopyBufferData(lightDataIndex_, &LightManager::light_, sizeof(DirectionalLight));
 
 	transform_.scale = { 1.2f,1.2f,1.2f };
 

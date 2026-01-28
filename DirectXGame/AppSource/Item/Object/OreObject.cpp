@@ -1,5 +1,6 @@
 #include"OreObject.h"
 #include"Utility/MatrixFactory.h"
+#include"LightManager.h"
 
 void OreObject::Initialize(DrawData drawData, int texture) {
 
@@ -20,9 +21,13 @@ void OreObject::Initialize(DrawData drawData, int texture) {
 	// Materialを登録
 	psDataIndex_ = renderObject_->CreateCBV(sizeof(Material), ShaderType::PIXEL_SHADER, "TestScene::psData");
 
+	// ライトを登録
+	lightDataIndex_ = renderObject_->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "TestScene::psData");
+
 	// 色を設定
 	material_.color = { 1.0f,1.0f,1.0f,1.0f };
 	material_.textureIndex = texture;
+	material_.isActive = true;
 	renderObject_->CopyBufferData(psDataIndex_, &material_, sizeof(Material));
 }
 
@@ -38,6 +43,7 @@ void OreObject::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	// カメラによる位置を設定
 	vsData_.WVP = worldMatrix_ * vpMatrix;
 	renderObject_->CopyBufferData(vsDataIndex_, &vsData_, sizeof(TransformationMatrix));
+	renderObject_->CopyBufferData(lightDataIndex_, &LightManager::light_, sizeof(DirectionalLight));
 
 	// 描画
 	renderObject_->Draw(window);

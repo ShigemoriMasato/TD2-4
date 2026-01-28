@@ -15,7 +15,9 @@ public:
 	struct Material {
 		Vector4 color = { 1.0f,1.0f,1.0f,1.0f };
 		int textureIndex = -1;
-		float padding[3];
+		float shininess = 250.0f;
+		int32_t isActive = false;
+		float padding;
 	};
 
 	// 初期化
@@ -45,4 +47,7 @@ private:
 	// マテリアル関係
 	Material material_{};
 	int psDataIndex_ = -1;
+
+	// ライト
+	int lightDataIndex_ = -1;
 };

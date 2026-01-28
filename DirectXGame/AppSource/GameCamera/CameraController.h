@@ -26,6 +26,17 @@ public:
 
 	Vector3 GetWorldPos() { return worldPos_; }
 
+	// カメラのワールド座標位置を取得
+	Vector3 GetCameraWorldPos() {
+		// ワールド座標を入れる変数
+		Vector3 worldPos;
+		// ワールド行列の平行移動成分を取得
+		worldPos.x = worldMatrix_.m[3][0];
+		worldPos.y = worldMatrix_.m[3][1];
+		worldPos.z = worldMatrix_.m[3][2];
+		return worldPos;
+	}
+
 private:
 
 	void MakeMatrix() override;
@@ -40,6 +51,9 @@ private:
 	Vector2 mousePos_ = {};
 	bool preClicked_ = false;
 	float deadZone_ = 10.0f;
+
+	// なぜかカメラのワールド行列がないので追加
+	Matrix4x4 worldMatrix_;
 
 	// 移動速度
 	float moveSpeed_ = 30.0f;

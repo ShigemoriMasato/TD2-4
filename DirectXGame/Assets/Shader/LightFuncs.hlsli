@@ -47,16 +47,16 @@ float4 LambertReflectance(float3 normal, float4 color, float4 lightColor, float3
 }
 
 
-float4 PhongReflection(float3 cameraPos, float3 objPos, float3 lightDir, float normal, float shininess, float4 objColor, float4 lightedColor, float4 lightColor)
+float4 PhongReflection(float3 cameraPos, float3 objPos, float3 lightDir, float3 normal, float shininess, float4 objColor, float4 lightedColor, float4 lightColor)
 {
-    float4 toEye = normalize(cameraPos - objPos);
+    float3 toEye = normalize(cameraPos - objPos);
     
-    float4 reflectLight = reflect(lightDir, normalize(normal));
+    float3 reflectLight = reflect(lightDir, normalize(normal));
     
     float RdotE = dot(reflectLight, toEye);
     float specular = pow(saturate(RdotE), shininess);
     
-    float3 specularColor = objColor * specular * lightColor;
+    float3 specularColor = objColor.rgb * specular * lightColor.rgb;
     
     return float4(lightedColor.rgb + specularColor, lightedColor.w);
 }

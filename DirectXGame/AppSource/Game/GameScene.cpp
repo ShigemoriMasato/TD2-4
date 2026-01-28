@@ -3,6 +3,7 @@
 #include"FpsCount.h"
 #include"GameCamera/DebugMousePos.h"
 #include"Item/OreItemStorageNum.h"
+#include"LightManager.h"
 
 namespace {
 	//Minimap確認用
@@ -48,6 +49,11 @@ void GameScene::Initialize() {
 	uiCamera_ = std::make_unique<Camera>();
 	uiCamera_->SetProjectionMatrix(OrthographicDesc{});
 	uiCamera_->MakeMatrix();
+
+	// ライトの初期化
+	LightManager::light_.color = { 1.0f,1.0f,1.0f,1.0f };
+	LightManager::light_.direction = { 0.0f,-1.0f,0.0f };
+	LightManager::light_.intensity = 1.0f;
 
 	//==================================================
 	// カメラシステム
@@ -316,6 +322,7 @@ void GameScene::Draw() {
 
 	// カメラ行列
 	Matrix4x4 vpMatrix = cameraController_->GetVpMatrix();
+	LightManager::light_.cameraWorldPos = cameraController_->GetCameraWorldPos();
 
 	// マップを描画
 	mapChipRenderer_->Draw(gameWindow_->GetWindow(), vpMatrix);
