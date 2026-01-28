@@ -1,16 +1,20 @@
 #pragma once
 #include"Object/SpriteObject.h"
+#include"Common/KeyConfig/KeyManager.h"
+#include"Object/FontObject.h"
 
 class GameOverUI {
 public:
 
-	void Initialize(DrawData drawData);
+	void Initialize(DrawData drawData, KeyManager* keyManager, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader);
 
 	void Update();
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
 private:
+	// 入力処理
+	KeyManager* keyManager_ = nullptr;
 
 	// 背景画像
 	std::unique_ptr<SpriteObject> bgSpriteObject_;
@@ -23,8 +27,23 @@ private:
 
 	bool inAnimation_ = true;
 
+	// テキスト
+	std::unique_ptr<FontObject> gameOverFontObject_;
+
+	// リトライ
+	std::unique_ptr<FontObject> retryFontObject_;
+
+	// ステージ選択へ
+	std::unique_ptr<FontObject> selectFontObject_;
+
+	int selectNum_ = 0;
+
 private: // 調整項目
 
 	float maxTime_ = 1.0f;
+
+private:
+
+	void InUpdate();
 
 };
