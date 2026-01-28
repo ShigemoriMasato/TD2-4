@@ -14,8 +14,10 @@ namespace {
 }
 
 ModelEditScene::~ModelEditScene() {
+#ifdef USE_IMGUI
 	auto& io = ImGui::GetIO();
 	io.IniFilename = "Assets/.EngineResource/imgui.ini";
+#endif
 }
 
 void ModelEditScene::Initialize() {
@@ -35,8 +37,10 @@ void ModelEditScene::Initialize() {
 	textureEditor_ = std::make_unique<MapTextureEditor>();
 	textureEditor_->Initialize(textureManager_, input_);
 
+#ifdef USE_IMGUI
 	auto& io = ImGui::GetIO();
 	io.IniFilename = "Assets/.EngineResource/modelEdit.ini";
+#endif
 
 	textureManager_->LoadAllTextures();
 }

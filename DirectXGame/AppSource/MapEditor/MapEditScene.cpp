@@ -3,14 +3,18 @@
 
 MapEditScene::~MapEditScene() {
 	//imguiの設定を戻す
+#ifdef USE_IMGUI
 	auto io = ImGui::GetIO();
 	io.IniFilename = "Assets/.EngineResource/imgui.ini";
+#endif
 }
 
 void MapEditScene::Initialize() {
 	//いろいろと特殊なのでimguiの設定を分ける
+#ifdef USE_IMGUI
 	auto io = ImGui::GetIO();
 	io.IniFilename = "Assets/.EngineResource/forMapEditor.ini";
+#endif
 
 	mapEditor_ = std::make_unique<MapEditor::Editor>();
 	mapEditor_->Initialize(commonData_->mapDataManager.get());
