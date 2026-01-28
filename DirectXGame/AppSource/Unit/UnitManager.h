@@ -6,6 +6,8 @@
 #include"Unit/Player/PlayerUnit.h"
 #include"Unit/Ore/OreUnit.h"
 
+class OreItem;
+
 class UnitManager {
 public:
 
@@ -14,6 +16,7 @@ public:
 		uint32_t spawnNum = 1;  // 出現させる数
 		uint32_t currentNum = 0; // 現在の出現数
 		Vector3 pos = {}; // 出現位置
+		OreItem* oreItem_ = nullptr;
 	};
 
 public:
@@ -29,7 +32,7 @@ public:
 	/// </summary>
 	/// <param name="targetPos">移動する目標位置</param>
 	/// <param name="excessNum">余剰の数</param>
-	void RegisterUnit(const Vector3& targetPos,const int32_t& excessNum);
+	void RegisterUnit(const Vector3& targetPos,const int32_t& excessNum, OreItem* oreItem);
 
 	// 出撃させるユニットの数
 	int32_t GetUnitSpawnNum() const { return unitSpawnNum_; }
@@ -97,7 +100,7 @@ private:
 	/// ユニットを追加
 	/// </summary>
 	/// <param name="targetPos">移動する位置</param>
-	void AddOreUnit(const Vector3& targetPos);
+	void AddOreUnit(const Vector3& targetPos, OreItem* oreItem);
 
 	// 一番近い出現位置を求める
 	Vector3 GetNearHomePos(const Vector3& targetPos);

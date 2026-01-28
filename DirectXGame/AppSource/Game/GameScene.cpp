@@ -196,6 +196,14 @@ void GameScene::InitializeGameOver() {
 	// ゲームオーバーUIの初期化
 	gameOverUI_ = std::make_unique<GameOverUI>();
 	gameOverUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), commonData_->keyManager.get(), fontName, drawData, fontLoader_);
+	// リトライ
+	gameOverUI_->SetOnRetryClicked([this]() {
+		isSceneChange_ = true;
+	});
+	// タイトル
+	gameOverUI_->SetOnSelectClicked([this]() {
+		isSceneChange_ = true;
+	});
 }
 
 std::unique_ptr<IScene> GameScene::Update() {
@@ -235,6 +243,11 @@ std::unique_ptr<IScene> GameScene::Update() {
 		}
 	}
 
+	// 切り替える
+	if (isSceneChange_) {
+		return std::make_unique<GameScene>();
+	}
+
 	return nullptr;
 }
 
@@ -265,7 +278,6 @@ void GameScene::InGameScene() {
 
 		// 左クリックを取得
 		if ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80)) {
-
 			// 選択された鉱石を取得
 			OreItem* selectedOreItem = oreItemManager_->GetOreItemForId();
 
@@ -274,7 +286,7 @@ void GameScene::InGameScene() {
 			if (deletaNum >= 0) {
 
 				// おれを追加
-				unitManager_->RegisterUnit(selectedOreItem->GetPos(), 0);
+				unitManager_->RegisterUnit(selectedOreItem->GetPos(), 0, selectedOreItem);
 
 				// 鉱石側の労働者カウントを増やす
 				for (int i = 0; i < unitManager_->GetUnitSpawnNum(); ++i) {
@@ -283,7 +295,7 @@ void GameScene::InGameScene() {
 			} else {
 				if (unitManager_->GetUnitSpawnNum() >= deletaNum * -1.0f) {
 					// おれを追加
-					unitManager_->RegisterUnit(selectedOreItem->GetPos(), deletaNum);
+					unitManager_->RegisterUnit(selectedOreItem->GetPos(), deletaNum, selectedOreItem);
 
 					// 鉱石側の労働者カウントを増やす
 					int32_t actualSpawnCount = unitManager_->GetUnitSpawnNum() + deletaNum;
@@ -308,6 +320,11 @@ void GameScene::InGameScene() {
 
 	// ユニットの更新処理
 	unitManager_->Update();
+
+	// 出撃出来るユニットがいなくなったらゲームオーバー
+	if (unitManager_->GetMaxOreCount() <= 0) {
+		isGameOverScene_ = true;
+	}
 
 	//============================================
 	// 当たり判定

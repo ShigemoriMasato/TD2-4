@@ -6,6 +6,7 @@
 
 #include"Item/OreItemStorageNum.h"
 #include"Item/Object/GoldOre.h"
+#include"Item/Object/OreItem.h"
 
 OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos) {
 	// マップデータ
@@ -71,7 +72,10 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vec
 	ApplyDebugParam();
 }
 
-void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos) {
+void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos, OreItem* oreItem) {
+
+	// 取得する鉱石
+	oreItem_ = oreItem;
 
 	// 初期位置を設定
 	object_->transform_.position = apearPos;
@@ -152,6 +156,12 @@ void OreUnit::Update() {
 
 	// 体力が0の時、死亡する
 	if (hp_ <= 0) {
+
+		if (!isDead_) {
+			// 登録されている労働者を減らす
+			oreItem_->RemoveWorker();
+		}
+
 		isDead_ = true;
 	}
 }

@@ -9,6 +9,8 @@
 #include"OreUnitObject.h"
 #include"Unit/MapChipField.h"
 
+class OreItem;
+
 class OreUnit : public Collider {
 public:
 
@@ -40,7 +42,7 @@ public:
 	/// <param name="drawData">描画データ</param>
 	/// <param name="apearPos">出現位置</param>
 	/// <param name="targetPos">目標位置</param>
-	void Init(const Vector3& apearPos,const Vector3& targetPos);
+	void Init(const Vector3& apearPos,const Vector3& targetPos, OreItem* oreItem);
 
 	void Update();
 
@@ -63,6 +65,9 @@ public:
 private:
 	// マップデータ
 	MapChipField* mapChipField_ = nullptr;
+
+	// 採取する鉱石のデータを取得
+	OreItem* oreItem_ = nullptr;
 
 	// オブジェクトデータ
 	std::unique_ptr<OreUnitObject> object_;

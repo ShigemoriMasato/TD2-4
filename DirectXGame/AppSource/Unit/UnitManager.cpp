@@ -2,6 +2,8 @@
 #include"FpsCount.h"
 #include <Common/DebugParam/GameParamEditor.h>
 
+#include"Item/Object/OreItem.h"
+
 #ifdef USE_IMGUI
 #include <imgui/imgui.h>
 #endif
@@ -89,7 +91,7 @@ void UnitManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 #endif
 }
 
-void UnitManager::RegisterUnit(const Vector3& targetPos, const int32_t& excessNum) {
+void UnitManager::RegisterUnit(const Vector3& targetPos, const int32_t& excessNum, OreItem* oreItem) {
 
 	// 生成出来る最大の数を超えていれば、早期リターン
 	if (activeCount_ >= maxCurrentOreCount_) {
@@ -100,12 +102,13 @@ void UnitManager::RegisterUnit(const Vector3& targetPos, const int32_t& excessNu
 	data.currentNum = 0;
 	data.spawnNum = unitSpawnNum_ + excessNum;
 	data.pos = targetPos;
+	data.oreItem_ = oreItem;
 
 	// 登録
 	spawnList_.push_back(data);
 }
 
-void UnitManager::AddOreUnit(const Vector3& targetPos) {
+void UnitManager::AddOreUnit(const Vector3& targetPos, OreItem* oreItem) {
 
 	// 生成出来る最大の数を超えていれば、早期リターン
 	if (activeCount_ >= maxCurrentOreCount_) {
@@ -135,11 +138,11 @@ void UnitManager::AddOreUnit(const Vector3& targetPos) {
 			assert(false && "Not found Unit");
 		}
 		// 初期化
-		unit->second->Init(homePos, targetPos);
+		unit->second->Init(homePos, targetPos, oreItem);
 	} else {
 		// 新しく登録
 		std::unique_ptr<OreUnit> oreUnit = std::make_unique<OreUnit>(mapChipField_, oreDrawData_, oreTexIndex_, playerUnit_->GetPos());
-		oreUnit->Init(homePos, targetPos);
+		oreUnit->Init(homePos, targetPos, oreItem);
 
 		oreUnits_[index] = std::move(oreUnit);
 	}
@@ -166,7 +169,7 @@ void UnitManager::UnitSpawn() {
 		spawnTimer_ += FpsCount::deltaTime / spawnTime_;
 
 		if (spawnTimer_ >= 1.0f) {
-			AddOreUnit(spawnData_.pos);
+			AddOreUnit(spawnData_.pos,spawnData_.oreItem_);
 			spawnData_.currentNum++;
 			spawnTimer_ = 0.0f;
 		}

@@ -106,4 +106,16 @@ void GameOverUI::InUpdate() {
 		retryFontObject_->fontColor_ = { 0.5f,0.5f,0.5f,1.0f };
 		selectFontObject_->fontColor_ = { 1.0f,1.0f,1.0f,1.0f };
 	}
+
+	// 決定
+	if (key[Key::Decision]) {
+
+		if (selectNum_ == 0) {
+			// やり直す
+			onRetryClicked_();
+		} else {
+			// ステージ選択へ
+			onSelectClicked_();
+		}
+	}
 }
