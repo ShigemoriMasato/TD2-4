@@ -248,6 +248,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\Item\Object\OreOutLineObject.h" />
     <ClInclude Include="AppSource\Item\OreItemManager.h" />
     <ClInclude Include="AppSource\Item\OreItemStorageNum.h" />
+    <ClInclude Include="AppSource\LightManager.h" />
     <ClInclude Include="AppSource\TimeLimit.h" />
     <ClInclude Include="AppSource\TimeTracker.h" />
     <ClInclude Include="AppSource\UI\CounterUI.h" />
