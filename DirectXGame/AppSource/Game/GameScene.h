@@ -137,4 +137,9 @@ private:
 	/// ColorMapを読み込む
 	/// </summary>
 	void LoadDebugColorMap();
+
+	/// <summary>
+	/// 鉱床の配置
+	/// </summary>
+	void PutGold();
 };

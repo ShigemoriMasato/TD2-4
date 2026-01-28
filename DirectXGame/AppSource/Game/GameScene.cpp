@@ -103,11 +103,14 @@ void GameScene::Initialize() {
 	auto oreItemModel = modelManager_->GetNodeModelData(oreItemModelID);
 
 	// 鉱石のテクスチャを取得
-	int oreItemTextrueIndex = textureManager_->GetTexture("Mineral-0.png");
+	int oreItemTextureIndex = textureManager_->GetTexture("Mineral-0.png");
 
 	// 鉱石の管理システムを初期化
 	oreItemManager_ = std::make_unique<OreItemManager>();
-	oreItemManager_->Initialize(drawDataManager_->GetDrawData(oreItemModel.drawDataIndex), oreItemTextrueIndex);
+	oreItemManager_->Initialize(drawDataManager_->GetDrawData(oreItemModel.drawDataIndex), oreItemTextureIndex);
+
+	//鉱床の配置
+	PutGold();
 
 	//============================================================================
 	// ユニットシステム
@@ -431,5 +434,21 @@ void GameScene::LoadDebugColorMap() {
 		int tile = binaryManager_.Reverse<int>(values[index++].get());
 		Vector3 color = binaryManager_.Reverse<Vector3>(values[index++].get());
 		colorMap_[static_cast<TileType>(tile)] = color;
+	}
+}
+
+void GameScene::PutGold() {
+	for (const auto& row : currentMap_.mapChipData) {
+		for (const auto& tile : row) {
+			if (tile == TileType::Gold) {
+
+				Vector3 pos = { 
+					static_cast<float>(&tile - &row[0]),
+					0.0f,
+					static_cast<float>(&row - &currentMap_.mapChipData[0]) 
+				};
+				oreItemManager_->AddOreItem(OreType::Medium, pos);
+			}
+		}
 	}
 }
