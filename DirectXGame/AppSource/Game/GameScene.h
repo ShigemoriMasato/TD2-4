@@ -61,6 +61,7 @@ private:
 	
 	// シーン切り替え
 	bool isSceneChange_ = false;
+	bool isRetry_ = true;
 
 	// 遷移の処理
 	std::unique_ptr<FadeTransition> fadeTransition_;

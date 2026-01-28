@@ -5,6 +5,7 @@
 #include"Item/OreItemStorageNum.h"
 #include"LightManager.h"
 #include <Utility/Easing.h>
+#include<Game/SelectScene.h>
 
 namespace {
 	//MiniMap確認用
@@ -203,10 +204,12 @@ void GameScene::InitializeOtherScene() {
 	// リトライ
 	gameOverUI_->SetOnRetryClicked([this]() {
 		isSceneChange_ = true;
+		isRetry_ = true;
 	});
-	// タイトル
+	// 選択
 	gameOverUI_->SetOnSelectClicked([this]() {
 		isSceneChange_ = true;
+		isRetry_ = false;
 	});
 
 	// クリアUIの初期化
@@ -215,10 +218,12 @@ void GameScene::InitializeOtherScene() {
 	// リトライ
 	clearUI_->SetOnRetryClicked([this]() {
 		isSceneChange_ = true;
+		isRetry_ = true;
 	});
-	// タイトル
+	// 選択
 	clearUI_->SetOnSelectClicked([this]() {
 		isSceneChange_ = true;
+		isRetry_ = false;
 	});
 }
 
@@ -265,7 +270,11 @@ std::unique_ptr<IScene> GameScene::Update() {
 
 	// 切り替える
 	if (isSceneChange_) {
-		return std::make_unique<GameScene>();
+		if (isRetry_) {
+			return std::make_unique<GameScene>();
+		} else {
+			return std::make_unique<SelectScene>();
+		}
 	}
 
 	return nullptr;
