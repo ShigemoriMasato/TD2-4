@@ -188,9 +188,11 @@ void GameScene::InitializeGameOver() {
 	int spriteModelID = modelManager_->LoadModel(spriteModelName);
 	auto spriteModel = modelManager_->GetNodeModelData(spriteModelID);
 
+	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
+
 	// ゲームオーバーUIの初期化
 	gameOverUI_ = std::make_unique<GameOverUI>();
-	gameOverUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex));
+	gameOverUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), commonData_->keyManager.get(), fontName, drawData, fontLoader_);
 }
 
 std::unique_ptr<IScene> GameScene::Update() {
