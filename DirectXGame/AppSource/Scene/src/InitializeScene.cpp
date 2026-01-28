@@ -3,7 +3,6 @@
 #include <Game/GameScene.h>
 #include <ModelEditScene/ModelEditScene.h>
 #include<Game/SelectScene.h>
-#include <MapEditor/MapEditScene.h>
 #include <imgui/imgui.h>
 #include <Utility/DataStructures.h>
 #include<Common/DebugParam/GameParamEditor.h>
@@ -26,9 +25,6 @@ void InitializeScene::Initialize() {
 	};
 	drawDataManager_->AddVertexBuffer(vertices);
 	commonData_->postEffectDrawDataIndex = drawDataManager_->CreateDrawData();
-
-	commonData_->mapDataManager = std::make_unique<MapDataManager>();
-	commonData_->mapDataManager->Initialize();
 
 	commonData_->newMapManager = std::make_unique<NewMapManager>();
 	commonData_->newMapManager->Initialize();

@@ -3,6 +3,7 @@
 #include <GameCamera/DebugMousePos.h>
 #include <Utility/Color.h>
 #include <Utility/Easing.h>
+#include <imgui/imgui.h>
 
 void MapTypeEditor::Initialize(Input* input) {
 	assert(input);

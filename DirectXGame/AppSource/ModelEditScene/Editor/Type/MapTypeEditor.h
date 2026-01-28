@@ -1,5 +1,5 @@
 #pragma once
-#include <Game/MapData/Data/MapData.h>
+#include <Game/NewMap/NewMap.h>
 #include <Utility/Vector.h>
 #include <Input/Input.h>
 #include <map>

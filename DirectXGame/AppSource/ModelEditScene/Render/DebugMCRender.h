@@ -1,6 +1,6 @@
 #pragma once
 #include <Render/RenderObject.h>
-#include <Game/MapData/Data/MapData.h>
+#include <Game/NewMap/NewMap.h>
 
 //MapChipをDebug表示するクラス
 class DebugMCRender {

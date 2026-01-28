@@ -2,7 +2,7 @@
 #include <Render/RenderObject.h>
 #include <Assets/Model/ModelManager.h>
 #include"Utility/DataStructures.h"
-#include"Game/MapData/Data/MapData.h"
+#include"Game/NewMap/NewMap.h"
 #include<vector>
 
 class MapChipRender {

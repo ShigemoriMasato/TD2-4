@@ -2,7 +2,7 @@
 #include<vector>
 #include<array>
 #include"Utility/Vector.h"
-#include"Game/MapData/Data/MapData.h"
+#include"Game/NewMap/NewMap.h"
 
 class MapChipField {
 public:
