@@ -67,10 +67,16 @@ void GameScene::Initialize() {
 	// マップシステム
 	//============================================
 
+
+	auto data = commonData_->newMapManager->GetMapData(0);
+
 	// マップデータ解釈機能を初期化
 	mapChipField_ = std::make_unique<MapChipField>();
 	// デバックで使用するマップデータを構築
-	mapChipField_->SetDebugMapData();
+	//mapChipField_->SetDebugMapData();
+
+	mapChipField_->SetMapChipData(data.mapChipData);
+
 
 	// 壁モデルを取得
 	int wallModelID = modelManager_->LoadModel(playerModelName);
