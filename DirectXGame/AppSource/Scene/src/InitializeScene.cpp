@@ -37,7 +37,7 @@ void InitializeScene::Initialize() {
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
-	return std::make_unique<SelectScene>();
+	return std::make_unique<ModelEditScene>();
 }
 
 void InitializeScene::Draw() {
@@ -50,7 +50,7 @@ void InitializeScene::Draw() {
 void InitializeScene::CreateDisplay() {
 	{
 		WindowConfig config;
-		config.windowName = L"LE2A_06_シゲモリ_マサト";
+		config.windowName = L"2208_Ore";
 		CommonData* cd = commonData_;
 		config.windowProc = [cd](HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)->LRESULT {
 

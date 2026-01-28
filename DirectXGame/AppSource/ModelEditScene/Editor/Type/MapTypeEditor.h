@@ -13,7 +13,7 @@ public:
 
 	void SetCurrentStage(int currentStage);
 	void SetCursorPos(const Vector2& pos) { cursorPos_ = pos; }
-	bool IsAnySelected() const { return someSelected_; }
+	bool isSomeSelected() const { return someSelected_; }
 	void OtherSelected() { someSelected_ = false; }
 
 	void NonEdit() { editing_ = false; }

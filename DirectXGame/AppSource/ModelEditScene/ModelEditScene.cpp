@@ -37,6 +37,9 @@ void ModelEditScene::Initialize() {
 	textureEditor_ = std::make_unique<MapTextureEditor>();
 	textureEditor_->Initialize(textureManager_, input_);
 
+	decorationEditor_ = std::make_unique<MapDecorationEditor>();
+	decorationEditor_->Initialize(modelManager_);
+
 #ifdef USE_IMGUI
 	auto& io = ImGui::GetIO();
 	io.IniFilename = "Assets/.EngineResource/modelEdit.ini";
@@ -58,18 +61,27 @@ std::unique_ptr<IScene> ModelEditScene::Update() {
 	textureEditor_->SetCursorPos(gridCursor);
 
 	//何処を触っているかの設定
-	if (typeEditor_->IsAnySelected()) {
+	if (typeEditor_->isSomeSelected()) {
 		whichEditMode_ = true;
+
 
 		//他のエディタで編集できなくする
 		textureEditor_->NonEdit();
+		decorationEditor_->NonEdit();
 	} else if (textureEditor_->isSomeSelected()) {
 		whichEditMode_ = false;
 
+
 		//他のエディタで編集できなくする
 		typeEditor_->NonEdit();
+		decorationEditor_->NonEdit();
 	} else if (false/*デコレーション予定*/) {
+		whichEditMode_ = false;
 
+
+		//他のエディタで編集できなくする
+		typeEditor_->NonEdit();
+		textureEditor_->NonEdit();
 	}
 
 	//ステージナンバーの設定
@@ -107,10 +119,11 @@ std::unique_ptr<IScene> ModelEditScene::Update() {
 void ModelEditScene::Draw() {
 	auto& display = *commonData_->display.get();
 	auto& window = *commonData_->mainWindow.get();
+	Matrix4x4 vpMatrix = cameraController_->GetVPMatrix();
 
 	display.PreDraw(window.GetCommandObject(), true);
-	mapRender_->Draw(cameraController_->GetVPMatrix(), window.GetWindow());
-	mcRender_->Draw(cameraController_->GetVPMatrix(), typeEditor_->GetColorMap(), typeEditor_->GetCurrentMapChipData(), window.GetWindow());
+	mapRender_->Draw(vpMatrix, window.GetWindow());
+	mcRender_->Draw(vpMatrix, typeEditor_->GetColorMap(), typeEditor_->GetCurrentMapChipData(), window.GetWindow());
 	display.PostDraw(window.GetCommandObject());
 
 	window.PreDraw(true);
@@ -124,7 +137,7 @@ void ModelEditScene::Draw() {
 	ImGui::Text("Free Cursor x : %.2f, y : %.2f", freeCursor.x, freeCursor.y);
 	ImGui::Text("Grid Cursor x : %.2f, y : %.2f", gridCursor.x, gridCursor.y);
 	if (ImGui::Button("AlphaToggle")) {
-		if (typeEditor_->IsAnySelected()) {
+		if (typeEditor_->isSomeSelected()) {
 			typeEditor_->OtherSelected();
 		}
 	}
