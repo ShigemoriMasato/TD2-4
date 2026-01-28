@@ -62,6 +62,13 @@ public:
 	// 向いている方向を取得
 	Vector3 GetDir() const { return dir_; }
 
+	Vector3 GetPos() const { return object_->transform_.position; }
+
+	int32_t GetHp() const { return hp_; }
+	int32_t GetMaxHp() const { return maxHp_; }
+
+	State GetState() const { return state_; }
+
 private:
 	// マップデータ
 	MapChipField* mapChipField_ = nullptr;

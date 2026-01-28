@@ -182,10 +182,12 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\UI\TimerUI.cpp" />
     <ClCompile Include="AppSource\Unit\MapChipField.cpp" />
     <ClCompile Include="AppSource\Unit\MapChipRender.cpp" />
+    <ClCompile Include="AppSource\UI\OreUnitHPUI.cpp" />
     <ClCompile Include="AppSource\Unit\Ore\OreUnit.cpp" />
     <ClCompile Include="AppSource\Unit\Ore\OreUnitObject.cpp" />
     <ClCompile Include="AppSource\Unit\Player\PlayerUnit.cpp" />
     <ClCompile Include="AppSource\Unit\Player\PlayerUnitObject.cpp" />
+    <ClCompile Include="AppSource\Unit\UnitEffectManager.cpp" />
     <ClCompile Include="AppSource\Unit\UnitManager.cpp" />
     <ClCompile Include="AppSource\Game\MapData\Data\MapData.cpp" />
     <ClCompile Include="AppSource\MapEditor\Editor\Data\Campus.cpp" />
@@ -266,6 +268,8 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\UI\TimerUI.h" />
     <ClInclude Include="AppSource\Unit\MapChipRender.h" />
     <ClInclude Include="AppSource\ModelEditScene\Render\DebugMCRender.h" />
+    <ClInclude Include="AppSource\UI\OreUnitHPUI.h" />
+    <ClInclude Include="AppSource\Unit\UnitEffectManager.h" />
     <ClInclude Include="Engine\Utility\Quaternion.h" />
     <ClCompile Include="AppSource\Scene\src\IScene.cpp" />
     <ClCompile Include="AppSource\Scene\src\InitializeScene.cpp" />

@@ -6,6 +6,9 @@
 #include"Unit/Player/PlayerUnit.h"
 #include"Unit/Ore/OreUnit.h"
 
+#include"UI/OreUnitHPUI.h"
+#include"UnitEffectManager.h"
+
 class OreItem;
 
 class UnitManager {
@@ -43,10 +46,23 @@ public:
 	// 現在出撃している数
 	int32_t GetOreCount() const { return activeCount_; }
 
+	// UIシステムを取得
+	void SetUnitHp(OreUnitHPUI* oreUnitHPUI) {
+		oreUnitHPUI_ = oreUnitHPUI;
+	}
+
+	// 演出システムを取得
+	void SetUnitEffect(UnitEffectManager* unitEffectManager) {
+		unitEffectManager_ = unitEffectManager;
+	}
+
 private:
 
 	// マップ
 	MapChipField* mapChipField_ = nullptr;
+
+	OreUnitHPUI* oreUnitHPUI_ = nullptr;
+	UnitEffectManager* unitEffectManager_ = nullptr;
 
 	// おれの描画データ
 	DrawData oreDrawData_;
