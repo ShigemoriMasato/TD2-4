@@ -43,5 +43,6 @@ void SelectCamera::FollowPos() {
 
 void SelectCamera::MakeMatrix() {
 	transformMatrix_ = Matrix::MakeTranslationMatrix(-position_) * Matrix::MakeRotationMatrix(rotation_);
+	worldMatrix_ = Matrix::MakeAffineMatrix(scale_, rotation_, position_);
 	vpMatrix_ = Matrix::MakeTranslationMatrix(-position_) * Matrix::MakeRotationMatrix(rotation_) * projectionMatrix_;
 }

@@ -18,6 +18,17 @@ public:
 		targetVelocity_ = velocity;
 	}
 
+	// カメラのワールド座標位置を取得
+	Vector3 GetCameraWorldPos() {
+		// ワールド座標を入れる変数
+		Vector3 worldPos;
+		// ワールド行列の平行移動成分を取得
+		worldPos.x = worldMatrix_.m[3][0];
+		worldPos.y = worldMatrix_.m[3][1];
+		worldPos.z = worldMatrix_.m[3][2];
+		return worldPos;
+	}
+
 private:
 
 	Vector3 targetPos_ = {};
@@ -27,6 +38,8 @@ private:
 	float kInterpolationRate = 0.2f;
 	// 速度掛け率
 	float kVelocityBias = -0.5f;
+
+	Matrix4x4 worldMatrix_;
 
 	// カメラの目標座標
 	Vector3 TargetCoordinate_ = {};

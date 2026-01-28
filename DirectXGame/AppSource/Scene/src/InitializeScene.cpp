@@ -35,10 +35,13 @@ void InitializeScene::Initialize() {
 
 	// 保存されているパラメーターを取得する
 	GameParamEditor::GetInstance()->LoadFiles();
+
+	// テクスチャを全てロード
+	textureManager_->LoadAllTextures();
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
-	return std::make_unique<GameScene>();
+	return std::make_unique<SelectScene>();
 }
 
 void InitializeScene::Draw() {

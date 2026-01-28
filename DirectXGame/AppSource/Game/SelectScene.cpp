@@ -4,6 +4,7 @@
 #include"GameCamera/DebugMousePos.h"
 #include"Utility/Easing.h"
 #include<numbers>
+#include"LightManager.h"
 
 namespace {
 	//Minimap確認用
@@ -35,6 +36,11 @@ void SelectScene::Initialize() {
 	uiCamera_->SetProjectionMatrix(OrthographicDesc{});
 	uiCamera_->MakeMatrix();
 
+	// ライトの初期化
+	LightManager::light_.color = { 1.0f,1.0f,1.0f,1.0f };
+	LightManager::light_.direction = { 0.0f,-1.0f,0.0f };
+	LightManager::light_.intensity = 1.0f;
+
 	// 追従カメラ
 	selectCamera_ = std::make_unique<SelectCamera>();
 	selectCamera_->Initialize();
@@ -42,10 +48,13 @@ void SelectScene::Initialize() {
 	// プレイヤーモデルを取得
 	int playerModelID = modelManager_->LoadModel(playerModelName);
 	auto playerModel = modelManager_->GetNodeModelData(playerModelID);
+	
+	// プレイヤーのテクスチャを取得
+	int playerTextureIndex = textureManager_->GetTexture("Player.png");
 
 	// プレイヤーの描画オブジェクト
 	playerObject_ = std::make_unique<PlayerUnitObject>();
-	playerObject_->Initialize(drawDataManager_->GetDrawData(playerModel.drawDataIndex),0);
+	playerObject_->Initialize(drawDataManager_->GetDrawData(playerModel.drawDataIndex), playerTextureIndex);
 	playerObject_->transform_.position = { 0.0f,0.0f,0.0f };
 	playerObject_->transform_.rotate.y = std::numbers::pi_v<float> / 2;
 	currentDir_ = 1.0f;
@@ -65,7 +74,7 @@ void SelectScene::Initialize() {
 	// ステージオブジェクトを描画
 	for (int i = 0; i < stagePointObjects_.size(); ++i) {
 		stagePointObjects_[i] = std::make_unique<DefaultObject>();
-		stagePointObjects_[i]->Initialize(drawDataManager_->GetDrawData(stageModel.drawDataIndex));
+		stagePointObjects_[i]->Initialize(drawDataManager_->GetDrawData(stageModel.drawDataIndex),0);
 		stagePointObjects_[i]->transform_.position = { i * 5.0f,-1.5f,0.0f };
 		stagePointObjects_[i]->transform_.scale = { 1.5f,0.2f,1.5f };
 		stagePointObjects_[i]->material_.color = { 1.0f,0.0f,0.0f,1.0f };
@@ -211,6 +220,7 @@ void SelectScene::Draw() {
 
 
 	Matrix4x4 vpMatrix = selectCamera_->GetVpMatrix();
+	LightManager::light_.cameraWorldPos = selectCamera_->GetCameraWorldPos();
 
 	// ステージを描画
 	for (auto& point : stagePointObjects_) {
