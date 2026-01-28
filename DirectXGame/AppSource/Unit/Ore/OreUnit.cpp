@@ -7,7 +7,7 @@
 #include"Item/OreItemStorageNum.h"
 #include"Item/Object/GoldOre.h"
 
-OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerPos) {
+OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos) {
 	// マップデータ
 	mapChipField_ = mapChipField;
 
@@ -16,7 +16,7 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, Vector3* playerP
 
 	// オブジェクトを初期化
 	object_ = std::make_unique<OreUnitObject>();
-	object_->Initialize(drawData);
+	object_->Initialize(drawData,texture);
 
 	// 更新状態を設定する
 	statesTable_ = {
@@ -324,8 +324,8 @@ void OreUnit::ReturnUpdate() {
 		Rotate();
 
 		// スケールが正常で無ければ元に戻す
-		if (startFixScale_ != Vector3(0.4f,0.4f,0.4f)) {
-			object_->transform_.scale = lerp(startFixScale_, { 0.4f,0.4f,0.4f }, timer_, EaseType::EaseInOutCubic);
+		if (startFixScale_ != Vector3(1.0f,1.0f,1.0f)) {
+			object_->transform_.scale = lerp(startFixScale_, { 1.0f,1.0f,1.0f }, timer_, EaseType::EaseInOutCubic);
 		}
 		
 		// 終了

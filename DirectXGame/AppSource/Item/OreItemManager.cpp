@@ -3,10 +3,11 @@
 // 各鉱石
 #include"Object/GoldOre.h"
 
-void OreItemManager::Initialize(const DrawData& goldOreDrawData) {
+void OreItemManager::Initialize(const DrawData& goldOreDrawData, int texture) {
 
 	// 金鉱石の描画データを取得
 	goldOreDrawData_ = goldOreDrawData;
+	oreTexture_ = texture;
 
 	// メモリを確保
 	oreItems_.reserve(10);
@@ -122,7 +123,7 @@ void OreItemManager::AddOreItem(OreType type, const Vector3& pos) {
 	case OreType::Large: {
 		// 金鉱石を追加
 		std::unique_ptr<GoldOre> ore = std::make_unique<GoldOre>();
-		ore->Init(goldOreDrawData_, pos, type);
+		ore->Init(goldOreDrawData_, oreTexture_, pos, type);
 
 		oreItems_[index] = std::move(ore);
 		break;
@@ -131,7 +132,7 @@ void OreItemManager::AddOreItem(OreType type, const Vector3& pos) {
 	case OreType::Medium: {
 		// 金鉱石を追加
 		std::unique_ptr<GoldOre> ore = std::make_unique<GoldOre>();
-		ore->Init(goldOreDrawData_, pos, type);
+		ore->Init(goldOreDrawData_, oreTexture_, pos, type);
 
 		oreItems_[index] = std::move(ore);
 		break;
@@ -140,7 +141,7 @@ void OreItemManager::AddOreItem(OreType type, const Vector3& pos) {
 	case OreType::Small: {
 		// 金鉱石を追加
 		std::unique_ptr<GoldOre> ore = std::make_unique<GoldOre>();
-		ore->Init(goldOreDrawData_, pos, type);
+		ore->Init(goldOreDrawData_, oreTexture_, pos, type);
 
 		oreItems_[index] = std::move(ore);
 		break;

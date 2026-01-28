@@ -10,7 +10,7 @@
 class PlayerUnit : public Collider {
 public:
 
-	void Init(MapChipField* mapChipField, DrawData drawData,const Vector3& pos, KeyManager* keyManager);
+	void Init(MapChipField* mapChipField, DrawData drawData,int pIndex,const Vector3& pos, KeyManager* keyManager);
 
 	void Update();
 

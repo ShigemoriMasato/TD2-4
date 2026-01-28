@@ -12,6 +12,10 @@ namespace {
 
 	std::string playerModelName = "Player";
 
+	std::string oreModelName = "Ore";
+
+	std::string mineralModelName = "Mineral";
+
 	std::string spriteModelName = "Sprite";
 }
 
@@ -23,6 +27,8 @@ void GameScene::Initialize() {
 	debugCamera_->Initialize();
 	//パラメーター管理の初期化
 	paramManager_ = std::make_unique<ParamManager>();
+
+	textureManager_->LoadAllTextures();
 
 	//　当たり判定管理クラスを初期化
 	colliderManager_ = std::make_unique<ColliderManager>();
@@ -73,12 +79,15 @@ void GameScene::Initialize() {
 	//================================================================
 
 	// 鉱石モデル
-	int oreItemModelID = modelManager_->LoadModel(playerModelName);
+	int oreItemModelID = modelManager_->LoadModel(mineralModelName);
 	auto oreItemModel = modelManager_->GetNodeModelData(oreItemModelID);
+
+	// 鉱石のテクスチャを取得
+	int oreItemTextrueIndex = textureManager_->GetTexture("Mineral-0.png");
 
 	// 鉱石の管理システムを初期化
 	oreItemManager_ = std::make_unique<OreItemManager>();
-	oreItemManager_->Initialize(drawDataManager_->GetDrawData(oreItemModel.drawDataIndex));
+	oreItemManager_->Initialize(drawDataManager_->GetDrawData(oreItemModel.drawDataIndex), oreItemTextrueIndex);
 
 	//============================================================================
 	// ユニットシステム
@@ -88,14 +97,21 @@ void GameScene::Initialize() {
 	int playerModelID = modelManager_->LoadModel(playerModelName);
 	auto playerModel = modelManager_->GetNodeModelData(playerModelID);
 
+	// プレイヤーのテクスチャを取得
+	int playerTextureIndex = textureManager_->GetTexture("Player.png");
+
 	// おれモデルを取得
-	int oreModelID = modelManager_->LoadModel(playerModelName);
+	int oreModelID = modelManager_->LoadModel(oreModelName);
 	auto oreModel = modelManager_->GetNodeModelData(oreModelID);
+
+	// おれのテクスチャを取得
+	int oreTextureIndex = textureManager_->GetTexture("untitled-0.png");
 
 	// ユニットの管理クラス
 	unitManager_ = std::make_unique<UnitManager>();
 	unitManager_->Initalize(mapChipField_.get(),
-		drawDataManager_->GetDrawData(playerModel.drawDataIndex), drawDataManager_->GetDrawData(oreModel.drawDataIndex),
+		drawDataManager_->GetDrawData(playerModel.drawDataIndex), playerTextureIndex,
+		drawDataManager_->GetDrawData(oreModel.drawDataIndex), oreTextureIndex,
 		commonData_->keyManager.get());
 
 	//==========================================================================================

@@ -1,7 +1,7 @@
 #include"OreObject.h"
 #include"Utility/MatrixFactory.h"
 
-void OreObject::Initialize(DrawData drawData) {
+void OreObject::Initialize(DrawData drawData, int texture) {
 
 	// psoを設定
 	renderObject_ = std::make_unique<RenderObject>();
@@ -12,6 +12,7 @@ void OreObject::Initialize(DrawData drawData) {
 
 	// 描画モデルを設定
 	renderObject_->SetDrawData(drawData);
+	renderObject_->SetUseTexture(true);
 
 	// worldTransformを登録
 	vsDataIndex_ = renderObject_->CreateCBV(sizeof(TransformationMatrix), ShaderType::VERTEX_SHADER, "TestScene::VSData");
@@ -20,7 +21,8 @@ void OreObject::Initialize(DrawData drawData) {
 	psDataIndex_ = renderObject_->CreateCBV(sizeof(Material), ShaderType::PIXEL_SHADER, "TestScene::psData");
 
 	// 色を設定
-	material_.color = { 0.0f,1.0f,1.0f,1.0f };
+	material_.color = { 1.0f,1.0f,1.0f,1.0f };
+	material_.textureIndex = texture;
 	renderObject_->CopyBufferData(psDataIndex_, &material_, sizeof(Material));
 }
 

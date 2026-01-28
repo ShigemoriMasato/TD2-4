@@ -1,10 +1,10 @@
 #include"GoldOre.h"
 #include <Common/DebugParam/GameParamEditor.h>
-void GoldOre::Init(DrawData drawData, const Vector3& pos, OreType type) {
+void GoldOre::Init(DrawData drawData, int texture, const Vector3& pos, OreType type) {
 	
 	// オブジェクトを初期化
 	object_ = std::make_unique<OreObject>();
-	object_->Initialize(drawData);
+	object_->Initialize(drawData, texture);
 
 	// タイプ
 	type_ = type;

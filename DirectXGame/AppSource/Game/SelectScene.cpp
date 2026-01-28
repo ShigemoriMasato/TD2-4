@@ -45,7 +45,7 @@ void SelectScene::Initialize() {
 
 	// プレイヤーの描画オブジェクト
 	playerObject_ = std::make_unique<PlayerUnitObject>();
-	playerObject_->Initialize(drawDataManager_->GetDrawData(playerModel.drawDataIndex));
+	playerObject_->Initialize(drawDataManager_->GetDrawData(playerModel.drawDataIndex),0);
 	playerObject_->transform_.position = { 0.0f,0.0f,0.0f };
 	playerObject_->transform_.rotate.y = std::numbers::pi_v<float> / 2;
 	currentDir_ = 1.0f;

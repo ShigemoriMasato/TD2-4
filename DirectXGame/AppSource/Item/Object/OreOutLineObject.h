@@ -14,6 +14,8 @@ public:
 
 	struct Material {
 		Vector4 color = { 1.0f,1.0f,1.0f,1.0f };
+		int textureIndex = 0;
+		float padding[3];
 	};
 
 	// 初期化

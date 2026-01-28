@@ -14,10 +14,12 @@ public:
 
 	struct Material {
 		Vector4 color = {1.0f,1.0f,1.0f,1.0f};
+		int textureIndex = -1;
+		float padding[3];
 	};
 
 	// 初期化
-	void Initialize(DrawData drawData);
+	void Initialize(DrawData drawData,int texture);
 
 	// 更新処理
 	void Update();
