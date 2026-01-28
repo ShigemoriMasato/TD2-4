@@ -48,7 +48,7 @@ private:
 
 
 	Vector3 backDir_ = { 0.0f,-0.9f,0.4f };
-	float backDist_ = 10.0f;
+	float backDist_ = -40.0f;
 
 	Input* input_ = nullptr;
 	//クリックした瞬間のマウス座標

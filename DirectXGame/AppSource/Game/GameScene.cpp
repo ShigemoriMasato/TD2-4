@@ -145,11 +145,6 @@ void GameScene::Initialize() {
 	postEffectConfig_.origin = display_;
 	postEffectConfig_.jobs_ = 0;
 
-	//=======================================================
-	// ゲームオーバーシーンの初期化
-	//=======================================================
-	InitializeGameOver();
-
 	//==================================================================
 	// UI
 	//==================================================================
@@ -179,13 +174,19 @@ void GameScene::Initialize() {
 	// 時間を測る
 	timeTracker_ = std::make_unique<TimeTracker>();
 	timeTracker_->StartMeasureTimes();
+	timeTracker_->SetCountTime(1.0f, 30.0f);
 
 	// 時間を表示するUI
 	timerUI_ = std::make_unique<TimerUI>();
 	timerUI_->Initialize(fontName, drawData, fontLoader_);
+
+	//=======================================================
+	// その他のシーンを初期化
+	//=======================================================
+	InitializeOtherScene();
 }
 
-void GameScene::InitializeGameOver() {
+void GameScene::InitializeOtherScene() {
 
 	// spriteモデルを取得
 	int spriteModelID = modelManager_->LoadModel(spriteModelName);
@@ -202,6 +203,18 @@ void GameScene::InitializeGameOver() {
 	});
 	// タイトル
 	gameOverUI_->SetOnSelectClicked([this]() {
+		isSceneChange_ = true;
+	});
+
+	// クリアUIの初期化
+	clearUI_ = std::make_unique<ClearUI>();
+	clearUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), commonData_->keyManager.get(), fontName, drawData, fontLoader_);
+	// リトライ
+	clearUI_->SetOnRetryClicked([this]() {
+		isSceneChange_ = true;
+	});
+	// タイトル
+	clearUI_->SetOnSelectClicked([this]() {
 		isSceneChange_ = true;
 	});
 }
@@ -232,11 +245,15 @@ std::unique_ptr<IScene> GameScene::Update() {
 		// シーン遷移
 		fadeTransition_->Update();
 	} else {
-		if (isGameOverScene_) {
+		if (isGameOverScene_ || isClearScene_) {
 
-			// UIの更新処理
-			gameOverUI_->Update();
-
+			if (isClearScene_) {
+				// クリアシーンの更新処理
+				clearUI_->Update();
+			} else {
+				// ゲームオーバーの更新処理
+				gameOverUI_->Update();
+			}
 		} else {
 			// ゲームの更新処理
 			InGameScene();
@@ -314,6 +331,13 @@ void GameScene::InGameScene() {
 	// 鉱石管理の更新処理
 	oreItemManager_->Update();
 
+	// 鉱石が目標数納品を達成するか、鉱石がなくなればクリア
+	if (OreItemStorageNum::currentOreItemNum_ >= OreItemStorageNum::maxOreItemNum_ ||
+		oreItemManager_->GetCurrentOreItemNum() <= 0) {
+		// クリアシーンに移動
+		isClearScene_ = true;
+	}
+
 	//====================================================================
 	// ユニットの更新処理
 	//====================================================================
@@ -323,6 +347,7 @@ void GameScene::InGameScene() {
 
 	// 出撃出来るユニットがいなくなったらゲームオーバー
 	if (unitManager_->GetMaxOreCount() <= 0) {
+		// ゲームオーバーシーンに移動
 		isGameOverScene_ = true;
 	}
 
@@ -345,6 +370,12 @@ void GameScene::InGameScene() {
 
 	// 時間を更新
 	timeTracker_->Update();
+
+	// 時間切れになればゲームオーバー
+	if (timeTracker_->isFinishd()) {
+		// ゲームオーバーシーンに移動
+		isGameOverScene_ = true;
+	}
 
 	// 時間表示UIを更新
 	timerUI_->Update();
@@ -384,6 +415,12 @@ void GameScene::Draw() {
 	if (isGameOverScene_) {
 		// UIの更新処理
 		gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+	}
+
+	// クリアシーンの描画処理
+	if (isClearScene_) {
+		// クリアシーンの更新処理
+		clearUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
 	}
 
 	// シーン遷移の描画

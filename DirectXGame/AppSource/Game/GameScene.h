@@ -21,6 +21,8 @@
 
 // ゲームオーバーシーン
 #include"UI/GameOverUI.h"
+// クリアシーン
+#include"UI/ClearUI.h"
 
 class GameScene : public IScene {
 public:
@@ -59,9 +61,6 @@ private:
 	
 	// シーン切り替え
 	bool isSceneChange_ = false;
-
-	// ゲームオーバーシーン
-	bool isGameOverScene_ = false;
 
 	// 遷移の処理
 	std::unique_ptr<FadeTransition> fadeTransition_;
@@ -108,6 +107,18 @@ private:
 	// ゲームオーバーUI
 	std::unique_ptr<GameOverUI> gameOverUI_;
 
+	// ゲームオーバーシーン
+	bool isGameOverScene_ = false;
+
+	//================================================
+	// クリアシーン
+	//================================================
+
+	// クリアUI
+	std::unique_ptr<ClearUI> clearUI_;
+
+	// クリアシーンを判断
+	bool isClearScene_ = false;
 
 	//================================================
 	// Tool系
@@ -120,8 +131,8 @@ private:
 	// ゲームの実行処理
 	void InGameScene();
 
-	// ゲームオーバーシーンの初期化
-	void InitializeGameOver();
+	// 他のシーンの初期化処理
+	void InitializeOtherScene();
 
 	/// <summary>
 	/// 値を登録する

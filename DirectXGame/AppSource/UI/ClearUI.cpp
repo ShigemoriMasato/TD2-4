@@ -1,8 +1,8 @@
-#include"GameOverUI.h"
+#include"ClearUI.h"
 #include"Utility/Easing.h"
 #include"FpsCount.h"
 
-void GameOverUI::Initialize(DrawData drawData, KeyManager* keyManager, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader) {
+void ClearUI::Initialize(DrawData drawData, KeyManager* keyManager, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader) {
 	keyManager_ = keyManager;
 
 	// 描画機能の初期化
@@ -13,17 +13,17 @@ void GameOverUI::Initialize(DrawData drawData, KeyManager* keyManager, const std
 	bgSpriteObject_->Update();
 
 	// テキストの初期化
-	gameOverFontObject_ = std::make_unique<FontObject>();
-	gameOverFontObject_->Initialize(fontName, L"Game Over", fontDrawData, fontLoader);
-	gameOverFontObject_->transform_.position.x = 640.0f - (static_cast<float>(gameOverFontObject_->GetTextSize()) * 48.0f * 0.5f);
-	gameOverFontObject_->transform_.position.y = 220.0f;
-	gameOverFontObject_->transform_.scale.x = 1.5f;
-	gameOverFontObject_->transform_.scale.y = -1.5f;
-	gameOverFontObject_->fontColor_ = { 0.0f,0.0f,0.0f,0.0f };
+	clearFontObject_ = std::make_unique<FontObject>();
+	clearFontObject_->Initialize(fontName, L"Game Clear", fontDrawData, fontLoader);
+	clearFontObject_->transform_.position.x = 640.0f - (static_cast<float>(clearFontObject_->GetTextSize()) * 48.0f * 0.5f);
+	clearFontObject_->transform_.position.y = 220.0f;
+	clearFontObject_->transform_.scale.x = 1.5f;
+	clearFontObject_->transform_.scale.y = -1.5f;
+	clearFontObject_->fontColor_ = { 1.0f,1.0f,0.0f,0.0f };
 
 	retryFontObject_ = std::make_unique<FontObject>();
 	retryFontObject_->Initialize(fontName, L"Retry", fontDrawData, fontLoader);
-	retryFontObject_->transform_.position.x  = 640.0f - (static_cast<float>(retryFontObject_->GetTextSize()) * 32.0f * 0.5f);
+	retryFontObject_->transform_.position.x = 640.0f - (static_cast<float>(retryFontObject_->GetTextSize()) * 32.0f * 0.5f);
 	retryFontObject_->transform_.position.y = 415.0f;
 
 	selectFontObject_ = std::make_unique<FontObject>();
@@ -31,11 +31,11 @@ void GameOverUI::Initialize(DrawData drawData, KeyManager* keyManager, const std
 	selectFontObject_->transform_.position.x = 640.0f - (static_cast<float>(selectFontObject_->GetTextSize()) * 32.0f * 0.5f);
 	selectFontObject_->transform_.position.y = 560.0f;
 
-	retryFontObject_->fontColor_ = {1.0f,1.0f,1.0f,0.0f};
+	retryFontObject_->fontColor_ = { 1.0f,1.0f,1.0f,0.0f };
 	selectFontObject_->fontColor_ = { 0.5f,0.5f,0.5f,0.0f };
 }
 
-void GameOverUI::Update() {
+void ClearUI::Update() {
 	if (inAnimation_) {
 		timer_ += FpsCount::deltaTime / maxTime_;
 
@@ -47,7 +47,7 @@ void GameOverUI::Update() {
 			float alpha = lerp(0.0f, 1.0f, localT, EaseType::EaseOutBounce);
 
 			// 透明度を出す
-			gameOverFontObject_->fontColor_.w = alpha;
+			clearFontObject_->fontColor_.w = alpha;
 			retryFontObject_->fontColor_.w = alpha;
 			selectFontObject_->fontColor_.w = alpha;
 		}
@@ -55,7 +55,7 @@ void GameOverUI::Update() {
 		if (timer_ >= 1.0f) {
 			bgSpriteObject_->transform_.position.y = endBgPosY_;
 			float alpha = 1.0f;
-			gameOverFontObject_->fontColor_.w = alpha;
+			clearFontObject_->fontColor_.w = alpha;
 			retryFontObject_->fontColor_.w = alpha;
 			selectFontObject_->fontColor_.w = alpha;
 			inAnimation_ = false;
@@ -68,27 +68,27 @@ void GameOverUI::Update() {
 	bgSpriteObject_->Update();
 }
 
-void GameOverUI::Draw(Window* window, const Matrix4x4& vpMatrix) {
+void ClearUI::Draw(Window* window, const Matrix4x4& vpMatrix) {
 
 	// 背景の描画
 	bgSpriteObject_->Draw(window, vpMatrix);
 
-	gameOverFontObject_->Draw(window, vpMatrix);
+	clearFontObject_->Draw(window, vpMatrix);
 
 	retryFontObject_->Draw(window, vpMatrix);
 
 	selectFontObject_->Draw(window, vpMatrix);
 }
 
-void GameOverUI::InUpdate() {
+void ClearUI::InUpdate() {
 
 	// 操作
 	auto key = keyManager_->GetKeyStates();
 
 	if (key[Key::UpTri]) {
 		selectNum_ = 0;
-		retryFontObject_->fontColor_ = {1.0f,1.0f,1.0f,1.0f};
-		selectFontObject_->fontColor_ = {0.5f,0.5f,0.5f,1.0f};
+		retryFontObject_->fontColor_ = { 1.0f,1.0f,1.0f,1.0f };
+		selectFontObject_->fontColor_ = { 0.5f,0.5f,0.5f,1.0f };
 	}
 
 	if (key[Key::DownTri]) {

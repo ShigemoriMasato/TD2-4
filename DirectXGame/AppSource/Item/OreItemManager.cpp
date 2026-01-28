@@ -54,7 +54,7 @@ void OreItemManager::Update() {
 	}
 
 	// 選択されていればアウトラインを更新
-	if (selectId_ != -1) {
+	if (selectId_ != -1 && oreItems_.size() > 0) {
 
 		// 選択した鉱石の位置を取得
 		OreItem* ore = GetOreItemForId();
@@ -71,7 +71,7 @@ void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	}
 
 	// アウトラインを描画
-	if (selectId_ != -1) {
+	if (selectId_ != -1 && oreItems_.size() > 0) {
 		oreOutLineObject_->Draw(window, vpMatrix);
 	}
 

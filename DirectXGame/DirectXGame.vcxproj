@@ -172,6 +172,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\Item\Object\OreOutLineObject.cpp" />
     <ClCompile Include="AppSource\Item\OreItemManager.cpp" />
     <ClCompile Include="AppSource\TimeTracker.cpp" />
+    <ClCompile Include="AppSource\UI\ClearUI.cpp" />
     <ClCompile Include="AppSource\UI\CounterUI.cpp" />
     <ClCompile Include="AppSource\UI\FadeTransition.cpp" />
     <ClCompile Include="AppSource\UI\GameOverUI.cpp" />
@@ -255,6 +256,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\SelectStageNum.h" />
     <ClInclude Include="AppSource\TimeLimit.h" />
     <ClInclude Include="AppSource\TimeTracker.h" />
+    <ClInclude Include="AppSource\UI\ClearUI.h" />
     <ClInclude Include="AppSource\UI\CounterUI.h" />
     <ClInclude Include="AppSource\UI\FadeTransition.h" />
     <ClInclude Include="AppSource\UI\GameOverUI.h" />
