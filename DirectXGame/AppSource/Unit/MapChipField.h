@@ -96,6 +96,9 @@ public: // マップの情報
 	/// <returns></returns>
 	Rect GetRectByIndex(int32_t xIndex, int32_t zIndex);
 
+	// マップの最大サイズを取得
+	Vector2 GetMaxMapSize() { return Vector2(static_cast<float>(kNumBlockVirtical), static_cast<float>(kNumBlockHorizontal)); }
+
 public: // マップの当たり判定
 
 	/// <summary>

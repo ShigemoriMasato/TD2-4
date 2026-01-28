@@ -39,6 +39,12 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vec
 			timer_ = 0.0f;
 			toRotPos_ = homePos_;
 			startFixScale_ = object_->transform_.scale;
+
+			// 距離によって帰宅時間を求める
+			Vector3 pos = homePos_ - object_->transform_.position;
+			pos.y = 0.0f;
+			float dis = pos.Length();
+			moveTime_ = dis * 0.3f;
 		}
 	};
 
@@ -482,7 +488,6 @@ void OreUnit::RegisterDebugParam() {
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MaxHp", maxHp_);	
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RiseHeight", risePosY_);
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RiseTime", riseTime_);
-	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MoveTime", moveTime_);
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "FallTime", FallTime_);
 }
 
@@ -493,7 +498,6 @@ void OreUnit::ApplyDebugParam() {
 	maxHp_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MaxHp");
 	risePosY_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "RiseHeight");
 	riseTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "RiseTime");
-	moveTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "MoveTime");
 	FallTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "FallTime");
 }
 

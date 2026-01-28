@@ -37,6 +37,11 @@ public:
 		return worldPos;
 	}
 
+	// マップの最大サイズを取得
+	void SetMapMaxSize(const Vector2& size) {
+		mapMaxSize_ = size;
+	}
+
 private:
 
 	void MakeMatrix() override;
@@ -57,6 +62,9 @@ private:
 
 	// 移動速度
 	float moveSpeed_ = 30.0f;
+
+	// マップの最大サイズ
+	Vector2 mapMaxSize_ = { 100.0f,100.0f };
 
 	// ワールド座標の位置
 	Vector3 worldPos_ = {};
