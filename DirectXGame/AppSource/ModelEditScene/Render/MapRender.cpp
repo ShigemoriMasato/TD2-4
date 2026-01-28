@@ -15,11 +15,11 @@ void MapRender::Initialize(const DrawData& box) {
 	render_->psoConfig_.ps = "MapRender.PS.hlsl";
 
 	worldMatrices_.resize(maxSize_ * maxSize_, Matrix4x4::Identity());
-	float yOffset = -0.5f;
+	float yOffset = -1.0f;
 	for (int i = 0; i < maxSize_; ++i) {
 		for (int j = 0; j < maxSize_; ++j) {
 			int index = i * maxSize_ + j;
-			worldMatrices_[index] = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, {}, { float(j) + 0.5f, yOffset, float(i) + 0.5f });
+			worldMatrices_[index] = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, {}, { float(j), yOffset, float(i) });
 		}
 	}
 

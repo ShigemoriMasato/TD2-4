@@ -18,7 +18,7 @@ void DebugMCRender::Initialize(const DrawData& drawData) {
 	worldMatrices_.resize(maxSize_, std::vector<Matrix4x4>(maxSize_, Matrix4x4::Identity()));
 	for(int i =0; i < maxSize_; i++) {
 		for (int j = 0; j < maxSize_; j++) {
-			worldMatrices_[i][j] = Matrix::MakeScaleMatrix({ 0.9f, 0.3f, 0.9f }) * Matrix::MakeTranslationMatrix({ static_cast<float>(j) + 0.5f, 0.0f, static_cast<float>(i) + 0.5f });
+			worldMatrices_[i][j] = Matrix::MakeScaleMatrix({ 0.9f, 0.3f, 0.9f }) * Matrix::MakeTranslationMatrix({ static_cast<float>(j), 0.0f, static_cast<float>(i) });
 		}
 	}
 }

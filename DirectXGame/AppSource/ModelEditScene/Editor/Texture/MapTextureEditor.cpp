@@ -30,7 +30,7 @@ void MapTextureEditor::Update() {
 	}
 
 	//クリックされたら変更
-	if (Input::GetMouseButtonState()[0]) {
+	if (Input::GetMouseButtonState()[0] && DebugMousePos::isHovered) {
 
 		std::pair<int, int> gridedPos = {
 			static_cast<int>(cursorPos_.x),

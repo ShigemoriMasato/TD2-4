@@ -4,9 +4,10 @@
 #include"GameCamera/DebugMousePos.h"
 #include"Item/OreItemStorageNum.h"
 #include"LightManager.h"
+#include <Utility/Easing.h>
 
 namespace {
-	//Minimap確認用
+	//MiniMap確認用
 	bool poseMode = false;
 
 	std::string fontName = "ZenOldMincho-Medium.ttf";
@@ -65,15 +66,12 @@ void GameScene::Initialize() {
 	// マップシステム
 	//============================================
 
-
-	auto data = commonData_->newMapManager->GetMapData(0);
+	currentMap_ = commonData_->newMapManager->GetMapData(0);
 
 	// マップデータ解釈機能を初期化
 	mapChipField_ = std::make_unique<MapChipField>();
-	// デバックで使用するマップデータを構築
-	//mapChipField_->SetDebugMapData();
-
-	mapChipField_->SetMapChipData(data.mapChipData);
+	// マップデータの受け取り
+	mapChipField_->SetMapChipData(currentMap_.mapChipData);
 
 
 	// 壁モデルを取得
@@ -81,8 +79,17 @@ void GameScene::Initialize() {
 	auto wallModel = modelManager_->GetNodeModelData(wallModelID);
 
 	// マップの描画機能を初期化
-	mapChipRenderer_ = std::make_unique<MapChipRender>();
-	mapChipRenderer_->Initialize(drawDataManager_->GetDrawData(wallModel.drawDataIndex), mapChipField_->GetMapData());
+	mapRender_ = std::make_unique<MapRender>();
+	mapRender_->Initialize(drawDataManager_->GetDrawData(wallModel.drawDataIndex));
+	mapRender_->SetConfig(currentMap_.renderData);
+
+	//Debug用マップ描画の初期化
+	debugMapRender_ = std::make_unique<DebugMCRender>();
+	debugMapRender_->Initialize(drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(0).drawDataIndex));
+	debugMapRender_->SetAlpha(1.0f);
+
+	//ColorMap作成
+	LoadDebugColorMap();
 
 	//================================================================
 	// 鉱石システム
@@ -329,7 +336,10 @@ void GameScene::Draw() {
 	LightManager::light_.cameraWorldPos = cameraController_->GetCameraWorldPos();
 
 	// マップを描画
-	mapChipRenderer_->Draw(gameWindow_->GetWindow(), vpMatrix);
+	mapRender_->Draw(vpMatrix, gameWindow_->GetWindow());
+
+	// デバッグ用マップ描画
+	debugMapRender_->Draw(vpMatrix, colorMap_, currentMap_.mapChipData, gameWindow_->GetWindow());
 
 	// 鉱石の描画
 	oreItemManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
@@ -383,4 +393,21 @@ void GameScene::RegisterDebugParam() {
 
 void GameScene::ApplyDebugParam() {
 
+}
+
+void GameScene::LoadDebugColorMap() {
+	auto values = binaryManager_.Read("MapTypeEditorConfig");
+	
+	//colorMapの初期化
+	for (int i = 0; i < int(TileType::Count); ++i) {
+		Vector4 color = ConvertColor(lerpColor(0xff5500ff, 0x0055ffff, float(i) / (float(TileType::Count) - 1)));
+		colorMap_[static_cast<TileType>(i)] = { color.x, color.y, color.z };
+	}
+
+	int index = 0;
+	while (index < values.size()) {
+		int tile = binaryManager_.Reverse<int>(values[index++].get());
+		Vector3 color = binaryManager_.Reverse<Vector3>(values[index++].get());
+		colorMap_[static_cast<TileType>(tile)] = color;
+	}
 }

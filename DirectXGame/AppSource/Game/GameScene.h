@@ -16,6 +16,9 @@
 #include"UI/TimerUI.h"
 #include"TimeTracker.h"
 
+#include <ModelEditScene/Render/MapRender.h>
+#include <ModelEditScene/Render/DebugMCRender.h>
+
 // ゲームオーバーシーン
 #include"UI/GameOverUI.h"
 
@@ -71,7 +74,12 @@ private:
 	std::unique_ptr<MapChipField> mapChipField_;
 
 	// マップの描画
-	std::unique_ptr<MapChipRender> mapChipRenderer_;
+	std::unique_ptr<MapRender> mapRender_;
+	std::unique_ptr<DebugMCRender> debugMapRender_;//マップチップを単純な色で描画
+	std::map<TileType, Vector3> colorMap_;//DebugMCRenderに使う、マップチップの色
+
+	// 現在のマップ
+	NewMap currentMap_;
 
 	// 鉱石の管理
 	std::unique_ptr<OreItemManager> oreItemManager_;
@@ -97,6 +105,13 @@ private:
 	// ゲームオーバーUI
 	std::unique_ptr<GameOverUI> gameOverUI_;
 
+
+	//================================================
+	// Tool系
+	//================================================
+	//Debug用ColorMapのためのやつ
+	BinaryManager binaryManager_;
+
 private:
 
 	// ゲームの実行処理
@@ -114,4 +129,9 @@ private:
 	/// 値を適応する
 	/// </summary>
 	void ApplyDebugParam();
+
+	/// <summary>
+	/// ColorMapを読み込む
+	/// </summary>
+	void LoadDebugColorMap();
 };

@@ -47,7 +47,7 @@ std::unique_ptr<IScene> ModelEditScene::Update() {
 
 	//カーソル座標
 	Vector3 freeCursor = cameraController_->GetWorldPos();
-	Vector2 gridCursor = GetPositionWithGrid(freeCursor, 1.0f, { 0.5f,0.5f });
+	Vector2 gridCursor = GetPositionWithGrid(freeCursor + Vector3(0.5f, 0.0f, 0.5f), 1.0f, {0.5f,0.5f});
 	Vector4(freeCursor, 1.0f);
 	//カーソル座標の割り当て
 	typeEditor_->SetCursorPos(gridCursor);
