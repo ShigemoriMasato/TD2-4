@@ -7,9 +7,8 @@ void PauseUI::Initialize(DrawData drawData, uint32_t texture, KeyManager* keyMan
 
 	// 描画機能の初期化
 	bgSpriteObject_ = std::make_unique<SpriteObject>();
-	bgSpriteObject_->Initialize(drawData, { 720.0f,1280.0f });
+	bgSpriteObject_->Initialize(drawData, { 1280.0f,720.0f });
 	bgSpriteObject_->transform_.position = { 640.0f,360.0f,0.0f };
-	bgSpriteObject_->transform_.rotate.z = -1.57079f;
 	bgSpriteObject_->color_ = { 1.0f,1.0f,1.0f,0.9f };
 	bgSpriteObject_->SetTexture(texture);
 	bgSpriteObject_->Update();
