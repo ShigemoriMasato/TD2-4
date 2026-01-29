@@ -10,10 +10,24 @@ public:
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
-private:
+	void StartAnimation() {
+		if (!isAnimation_) {
+			isAnimation_ = true;
+		}
+	}
 
 	// 家のオブジェクト
 	std::unique_ptr<DefaultObject> homeObject_;
+
+private:
+
+	
+
+	bool isAnimation_ = false;
+
+	float timer_ = 0.0f;
+
+	float maxTime_ = 0.5f;
 
 private:
 
