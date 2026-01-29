@@ -32,6 +32,8 @@ public:
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
+	void DrawUI();
+
 	/// <summary>
 	/// ユニットを出動させる
 	/// </summary>

@@ -401,29 +401,35 @@ void GameScene::InGameScene() {
 
 		// 左クリックを取得
 		if ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80)) {
-			// 選択された鉱石を取得
-			OreItem* selectedOreItem = oreItemManager_->GetOreItemForId();
 
-			// 追加出来るかを確認
-			int32_t deletaNum = selectedOreItem->IsFullWorker(unitManager_->GetUnitSpawnNum());
-			if (deletaNum >= 0) {
+			int32_t num =  unitManager_->GetMaxOreCount() - unitManager_->GetOreCount();
 
-				// おれを追加
-				unitManager_->RegisterUnit(selectedOreItem->GetPos(), 0, selectedOreItem);
+			if (num > 0) {
 
-				// 鉱石側の労働者カウントを増やす
-				for (int i = 0; i < unitManager_->GetUnitSpawnNum(); ++i) {
-					selectedOreItem->AddWorker();
-				}
-			} else {
-				if (unitManager_->GetUnitSpawnNum() >= deletaNum * -1.0f) {
+				// 選択された鉱石を取得
+				OreItem* selectedOreItem = oreItemManager_->GetOreItemForId();
+
+				// 追加出来るかを確認
+				int32_t deletaNum = selectedOreItem->IsFullWorker(unitManager_->GetUnitSpawnNum());
+				if (deletaNum >= 0) {
+
 					// おれを追加
-					unitManager_->RegisterUnit(selectedOreItem->GetPos(), deletaNum, selectedOreItem);
+					unitManager_->RegisterUnit(selectedOreItem->GetPos(), 0, selectedOreItem);
 
 					// 鉱石側の労働者カウントを増やす
-					int32_t actualSpawnCount = unitManager_->GetUnitSpawnNum() + deletaNum;
-					for (int i = 0; i < actualSpawnCount; ++i) {
+					for (int i = 0; i < unitManager_->GetUnitSpawnNum(); ++i) {
 						selectedOreItem->AddWorker();
+					}
+				} else {
+					if (unitManager_->GetUnitSpawnNum() >= deletaNum * -1.0f) {
+						// おれを追加
+						unitManager_->RegisterUnit(selectedOreItem->GetPos(), deletaNum, selectedOreItem);
+
+						// 鉱石側の労働者カウントを増やす
+						int32_t actualSpawnCount = unitManager_->GetUnitSpawnNum() + deletaNum;
+						for (int i = 0; i < actualSpawnCount; ++i) {
+							selectedOreItem->AddWorker();
+						}
 					}
 				}
 			}
@@ -578,6 +584,12 @@ void GameScene::Draw() {
 
 	// カメラのデバック情報
 	cameraController_->DebugDraw();
+
+	// ユニット
+	unitManager_->DrawUI();
+
+	// 鉱石
+	oreItemManager_->DrawUI();
 
 	engine_->ImGuiDraw();
 }

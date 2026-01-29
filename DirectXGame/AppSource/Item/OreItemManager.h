@@ -15,6 +15,8 @@ public:
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
+	void DrawUI();
+
 public:
 
 	void AddOreItem(OreType type, const Vector3& pos);
