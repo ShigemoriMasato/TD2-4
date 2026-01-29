@@ -172,6 +172,9 @@ void GameScene::Initialize() {
 		drawDataManager_->GetDrawData(oreModel.drawDataIndex), oreTextureIndex,
 		commonData_->keyManager.get());
 
+	// 拠点管理クラスを設定
+	unitManager_->SetHomeManager(homeManager_.get());
+
 	// 鉱石モデル
 	int mItemModelID = modelManager_->LoadModel(mineralItemModelName);
 	auto mItemModel = modelManager_->GetNodeModelData(mItemModelID);

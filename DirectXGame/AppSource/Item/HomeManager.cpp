@@ -39,3 +39,15 @@ void HomeManager::AddHome(const Vector3& pos, const float rotY) {
 	home->Initialize(drawData_, texture_,pos,rotY);
 	homeList_.push_back(std::move(home));
 }
+
+void HomeManager::SetAnimation(const Vector3& pos) {
+
+	// 指定された拠点をアニメーションさせる
+	for (auto& home : homeList_) {
+
+		if (pos.x == home->homeObject_->transform_.position.x &&
+			pos.z == home->homeObject_->transform_.position.z) {
+			home->StartAnimation();
+		}
+	}
+}
