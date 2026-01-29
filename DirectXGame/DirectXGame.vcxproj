@@ -168,7 +168,9 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\Game\MiniMap\MiniMap.cpp" />
     <ClCompile Include="AppSource\Game\NewMap\NewMap.cpp" />
     <ClCompile Include="AppSource\Game\SelectScene.cpp" />
+    <ClCompile Include="AppSource\Item\HomeManager.cpp" />
     <ClCompile Include="AppSource\Item\Object\GoldOre.cpp" />
+    <ClCompile Include="AppSource\Item\Object\OreHome.cpp" />
     <ClCompile Include="AppSource\Item\Object\OreObject.cpp" />
     <ClCompile Include="AppSource\Item\Object\OreOutLineObject.cpp" />
     <ClCompile Include="AppSource\Item\OreItemManager.cpp" />
@@ -251,7 +253,9 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\Game\MiniMap\MiniMap.h" />
     <ClInclude Include="AppSource\Game\NewMap\NewMap.h" />
     <ClInclude Include="AppSource\Game\SelectScene.h" />
+    <ClInclude Include="AppSource\Item\HomeManager.h" />
     <ClInclude Include="AppSource\Item\Object\GoldOre.h" />
+    <ClInclude Include="AppSource\Item\Object\OreHome.h" />
     <ClInclude Include="AppSource\Item\Object\OreItem.h" />
     <ClInclude Include="AppSource\Item\Object\OreObject.h" />
     <ClInclude Include="AppSource\Item\Object\OreOutLineObject.h" />

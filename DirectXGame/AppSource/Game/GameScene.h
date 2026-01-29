@@ -17,6 +17,7 @@
 #include"TimeTracker.h"
 #include"UI/OreUnitHPUI.h"
 #include"Unit/UnitEffectManager.h"
+#include"Item/HomeManager.h"
 
 #include <Game/MiniMap/MiniMap.h>
 #include <ModelEditScene/Render/MapRender.h>
@@ -95,6 +96,9 @@ private:
 
 	// 鉱石の管理
 	std::unique_ptr<OreItemManager> oreItemManager_;
+
+	// ユニットの拠点管理クラス
+	std::unique_ptr<HomeManager> homeManager_;
 
 	// ユニット管理
 	std::unique_ptr<UnitManager> unitManager_;

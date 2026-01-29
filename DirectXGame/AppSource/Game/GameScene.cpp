@@ -11,7 +11,7 @@ namespace {
 	//MiniMap確認用
 	bool poseMode = false;
 
-	std::string fontName = "ZenOldMincho-Medium.ttf";
+	std::string fontName = "YDWbananaslipplus.otf";
 
 	std::string playerModelName = "Player";
 
@@ -23,6 +23,8 @@ namespace {
 	std::string spriteModelName = "Sprite";
 
 	std::string unitHpModelName = "UnitHp";
+
+	std::string oreBaseModelName = "OreBase";
 }
 
 GameScene::~GameScene() {
@@ -130,6 +132,21 @@ void GameScene::Initialize() {
 
 	//鉱床の配置
 	PutGold();
+
+	//=============================================================================
+	// 拠点システム
+	//=============================================================================
+
+	// 鉱石モデル
+	int homeModelID = modelManager_->LoadModel(oreBaseModelName);
+	auto homeModel = modelManager_->GetNodeModelData(homeModelID);
+
+	// 鉱石のテクスチャを取得
+	int homeIndex = textureManager_->GetTexture("OreBase-0.png");
+
+	// 拠点管理クラス
+	homeManager_ = std::make_unique<HomeManager>();
+	homeManager_->Initialize(drawDataManager_->GetDrawData(homeModel.drawDataIndex), homeIndex, mapChipField_->GetHomePos());
 
 	//============================================================================
 	// ユニットシステム
@@ -418,6 +435,13 @@ void GameScene::InGameScene() {
 	// 鉱石管理の更新処理
 	oreItemManager_->Update();
 
+	//===================================================
+	// 拠点の更新処理
+	//===================================================
+
+	// 拠点の更新処理
+	homeManager_->Update();
+
 	//====================================================================
 	// ユニットの更新処理
 	//====================================================================
@@ -492,6 +516,9 @@ void GameScene::Draw() {
 
 		// 鉱石の描画
 		oreItemManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+		// ユニットの拠点を描画
+		homeManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
 		// ユニットを描画
 		unitManager_->Draw(gameWindow_->GetWindow(), vpMatrix);

@@ -12,7 +12,7 @@ namespace {
 	//Minimap確認用
 	bool poseMode = false;
 
-	std::string fontName = "ZenOldMincho-Medium.ttf";
+	std::string fontName = "YDWbananaslipplus.otf";
 
 	std::string playerModelName = "Player";
 
