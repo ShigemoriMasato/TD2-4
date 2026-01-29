@@ -50,12 +50,11 @@ VSOutput main(VSInput input, uint instanceId : SV_InstanceID, uint vertexID : SV
     // ===== Plane をスケール =====
     float2 pos;
     pos.x = (input.position.x + 0.5f) * glyphSizePx.x;
-    pos.y = (input.position.y + 0.5f) * glyphSizePx.y;
+    pos.y = (input.position.y + 0.5f) * glyphSizePx.y + g.descender;
 
     // ===== 位置補正 =====
     float baseX = round(penX);
-    pos.x += baseX + g.bearingX + g.descender;
-    pos.y = round(pos.y);
+    pos.x += baseX + g.bearingX;
 
     // ===== 座標変換 =====
     output.position = mul(float4(pos, 0.0, 1.0), wvp);
