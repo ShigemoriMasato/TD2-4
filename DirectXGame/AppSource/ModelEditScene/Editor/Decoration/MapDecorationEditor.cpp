@@ -87,9 +87,6 @@ void MapDecorationEditor::DrawImGui() {
 		}
 	}
 
-	//Model一覧表示
-	ImGui::BeginChild("ModelList", ImVec2(600, 0), true);
-
 	int buttonNum = 0;
 	for (const auto& [id, modelInfo] : modelList_) {
 		++buttonNum;
@@ -119,16 +116,10 @@ void MapDecorationEditor::DrawImGui() {
 		}
 	}
 
-	ImGui::EndChild();
-
 	ImGui::End();
 
 	ImGui::Begin("Debug");
-	ImGui::Text("currentModelID_: %d", currentModelIndex_);
-	ImGui::Text("editingTransformIndex_: %d", editingTransformIndex_);
-	ImGui::Text("isHovered_: %d, DisplayHovered: %d", isHovered_, DebugMousePos::isHovered);
-
-
+	ImGui::Text("CursorPos: (%.2f, %.2f)", cursorPos_.x, cursorPos_.y);
 	ImGui::End();
 
 

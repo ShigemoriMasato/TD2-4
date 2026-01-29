@@ -7,6 +7,7 @@
 #include "Editor/Type/MapTypeEditor.h"
 #include "Editor/Texture/MapTextureEditor.h"
 #include "Editor/Decoration/MapDecorationEditor.h"
+#include "Editor/Stage/StageEditor.h"
 
 class ModelEditScene : public IScene {
 public:
@@ -29,6 +30,7 @@ private:
 	std::unique_ptr<MapTypeEditor> typeEditor_ = nullptr;
 	std::unique_ptr<MapTextureEditor> textureEditor_ = nullptr;
 	std::unique_ptr<MapDecorationEditor> decorationEditor_ = nullptr;
+	std::unique_ptr<StageEditor> stageEditor_ = nullptr;
 
 	//マップチップorオブジェクト
 	bool whichEditMode_ = true;

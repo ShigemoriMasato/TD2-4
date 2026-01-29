@@ -43,6 +43,9 @@ void ModelEditScene::Initialize() {
 	staticObjectRender_ = std::make_unique<StaticObjectRender>();
 	staticObjectRender_->Initialize(modelManager_, drawDataManager_, true);
 
+	stageEditor_ = std::make_unique<StageEditor>();
+	stageEditor_->Initialize();
+
 #ifdef USE_IMGUI
 	auto& io = ImGui::GetIO();
 	io.IniFilename = "Assets/.EngineResource/modelEdit.ini";
@@ -57,7 +60,7 @@ std::unique_ptr<IScene> ModelEditScene::Update() {
 
 	//カーソル座標
 	Vector3 freeCursor = cameraController_->GetWorldPos();
-	Vector2 gridCursor = GetPositionWithGrid(freeCursor + Vector3(0.5f, 0.0f, 0.5f), 1.0f, {0.5f,0.5f});
+	Vector2 gridCursor = GetPositionWithGrid(freeCursor + Vector3(0.5f, 0.0f, 0.5f), 1.0f, { 0.0f,0.0f });
 	Vector4(freeCursor, 1.0f);
 	//カーソル座標の割り当て
 	typeEditor_->SetCursorPos(gridCursor);
@@ -111,6 +114,7 @@ std::unique_ptr<IScene> ModelEditScene::Update() {
 	textureEditor_->SetMapSize(mapSize.first, mapSize.second);
 	mapRender_->SetConfig(textureEditor_->GetTextureIndices());
 	staticObjectRender_->SetObjects(decorationEditor_->GetDecorations());
+	stageEditor_->SetMapNum(typeEditor_->GetMapNum());
 
 	//更新
 	typeEditor_->Update();
@@ -140,7 +144,7 @@ void ModelEditScene::Draw() {
 
 #ifdef USE_IMGUI
 	Vector2 freeCursor = cameraController_->GetWorldPos();
-	Vector2 gridCursor = GetPositionWithGrid(freeCursor, 1.0f, { 0.5f,0.5f });
+	Vector2 gridCursor = GetPositionWithGrid(freeCursor, 1.0f, { 0.0f,0.0f });
 
 	ImGui::Begin("Debug");
 	ImGui::Text("Free Cursor x : %.2f, y : %.2f", freeCursor.x, freeCursor.y);
@@ -175,6 +179,11 @@ void ModelEditScene::Draw() {
 	typeEditor_->DrawImGui();
 	textureEditor_->DrawImGui();
 	decorationEditor_->DrawImGui();
+	int map = stageEditor_->DrawImGui();
+	if (map != -1) {
+		stageChanged_ = true;
+		currentStage_ = map;
+	}
 	cameraController_->DebugDraw();
 #endif
 

@@ -2,6 +2,11 @@
 #include <imgui/imgui.h>
 #include <string>
 
+void StageEditor::Initialize() {
+	stageData_.resize(1);
+	Load();
+}
+
 int StageEditor::DrawImGui() {
 
 #ifdef USE_IMGUI
@@ -24,10 +29,15 @@ int StageEditor::DrawImGui() {
 		currentMapNum_ = 0;
 		if(stageData_.size()<=currentStage_){
 			stageData_.emplace_back();
+			stageData_.back().configs.emplace_back();
 		}
 	}
 	ImGui::PopID();
 
+	if (stageData_.empty()) {
+		stageData_.emplace_back();
+		stageData_.back().configs.emplace_back();
+	}
 	StageData& stage = stageData_[currentStage_];
 
 	ImGui::DragInt("初期Ore数", &stage.initOreNum, 1.0f, 0, 1000);
@@ -57,7 +67,7 @@ int StageEditor::DrawImGui() {
 	MapConfig& config = stage.configs[currentMapNum_];
 	
 	ImGui::PushID(2);
-	ImGui::Text("MapID: %d", currentStage_);
+	ImGui::Text("MapID: %d", config.mapID);
 	ImGui::SameLine();
 	if (ImGui::Button("-")) {
 		config.mapID = std::max(0, config.mapID - 1);
@@ -72,10 +82,42 @@ int StageEditor::DrawImGui() {
 
 	ImGui::End();
 
+	return config.mapID;
+
 #endif // USE_IMGUI
 
-	return currentMapNum_;
+	return -1;
 }
 
 void StageEditor::Save() {
+
+	for (const auto& stage : stageData_) {
+		binaryManager_.RegisterOutput(stage.initOreNum);
+		int mapSize = static_cast<int>(stage.configs.size());
+		binaryManager_.RegisterOutput(mapSize);
+		for (const auto& config : stage.configs) {
+			binaryManager_.RegisterOutput(config.mapID);
+			binaryManager_.RegisterOutput(config.norma);
+		}
+	}
+
+}
+
+void StageEditor::Load() {
+	auto values = binaryManager_.Read(saveFileName_);
+	size_t index = 0;
+	stageData_.clear();
+
+	while (index < values.size()) {
+		StageData stage;
+		stage.initOreNum = BinaryManager::Reverse<int>(values[index++].get());
+		int mapSize = BinaryManager::Reverse<int>(values[index++].get());
+		for (int i = 0; i < mapSize; ++i) {
+			MapConfig config;
+			config.mapID = BinaryManager::Reverse<int>(values[index++].get());
+			config.norma = BinaryManager::Reverse<int>(values[index++].get());
+			stage.configs.push_back(config);
+		}
+		stageData_.push_back(stage);
+	}
 }

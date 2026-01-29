@@ -16,6 +16,7 @@ void ImGuiforEngine::Initialize(DXDevice* device, CmdListManager* cmdManager, Wi
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // ドッキングを有効化
     io.IniFilename = "Assets/.EngineResource/imgui.ini";
+    io.Fonts->AddFontFromFileTTF("Assets/.EngineResource/Fonts/MPLUS1p-Medium.ttf", 17.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
 
 	ImGui_ImplDX12_InitInfo initInfo;
 	initInfo.Device = device->GetDevice();

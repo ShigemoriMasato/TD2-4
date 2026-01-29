@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <Tool/Binary/BinaryManager.h>
 
 struct MapConfig {
 	int mapID = 0;
@@ -14,6 +15,8 @@ struct StageData {
 class StageEditor {
 public:
 
+	void Initialize();
+
 	void SetMapNum(int mapNum) { maxMapNum_ = mapNum; }
 
 	/// @brief ImGuiの描画
@@ -24,9 +27,14 @@ public:
 
 private:
 
+	void Load();
+
 	std::vector<StageData> stageData_ = std::vector<StageData>(1);
 
 	int currentStage_ = 0;
 	int currentMapNum_ = 0;
 	int maxMapNum_ = 0;
+
+	BinaryManager binaryManager_;
+	const std::string saveFileName_ = "StageConfig";
 };

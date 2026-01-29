@@ -28,6 +28,8 @@ public:
 		};
 	}
 
+	int GetMapNum() const { return static_cast<int>(mcData_.size()); }
+
 	void Save();
 
 private:
