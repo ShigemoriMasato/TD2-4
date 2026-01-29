@@ -26,6 +26,8 @@
 #include"UI/GameOverUI.h"
 // クリアシーン
 #include"UI/ClearUI.h"
+// ポーズシーン
+#include"UI/PauseUI.h"
 
 class GameScene : public IScene {
 public:
@@ -133,6 +135,16 @@ private:
 
 	// クリアシーンを判断
 	bool isClearScene_ = false;
+
+	//================================================
+	// ポーズシーン
+	//================================================
+
+	// ポーズシーン
+	std::unique_ptr<PauseUI> pauseUI_;
+
+	// ポーズシーン
+	bool isPauseScene_ = false;
 
 	//================================================
 	// Tool系

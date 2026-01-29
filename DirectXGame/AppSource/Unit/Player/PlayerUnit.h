@@ -64,6 +64,9 @@ private: // 調整項目
 	// 角度補間
 	float rotateSpeed_ = 7.0f;
 
+	// アニメーション
+	float animeMaxHeight_ = 1.0f;
+
 private:
 
 	// 入力処理

@@ -249,7 +249,7 @@ void PlayerUnit::AnimationUpdate() {
 
 		if (animationTimer_ <= 0.4f) {
 			float localT = animationTimer_ / 0.4f;
-			object_->transform_.position.y = lerp(0.0f, 1.0f, localT, EaseType::EaseInOutCubic);
+			object_->transform_.position.y = lerp(0.0f, animeMaxHeight_, localT, EaseType::EaseInOutCubic);
 
 			// スケール
 			float width = lerp(1.0f, 0.8f, localT, EaseType::EaseInOutCubic);
@@ -258,7 +258,7 @@ void PlayerUnit::AnimationUpdate() {
 			object_->transform_.scale.y = lerp(1.0f, 1.2f, localT, EaseType::EaseInOutCubic);
 		} else if(animationTimer_ <= 0.8f) {
 			float localT = (animationTimer_ - 0.4f) / 0.4f;
-			object_->transform_.position.y = lerp(1.0f, 0.0f, localT, EaseType::EaseInCubic);
+			object_->transform_.position.y = lerp(animeMaxHeight_, 0.0f, localT, EaseType::EaseInCubic);
 
 			// スケール
 			float width = lerp(0.8f, 1.2f, localT, EaseType::EaseInOutCubic);
@@ -291,10 +291,18 @@ void PlayerUnit::RegisterDebugParam() {
 	// 登録
 	GameParamEditor::GetInstance()->AddItem(kGroupName_,"Speed", speed_);
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "ColliderRadius", circleCollider_.radius);
+
+	// アニメーション
+	GameParamEditor::GetInstance()->AddItem("Player_Animation", "MaxTime", moveAnimationTime_);
+	GameParamEditor::GetInstance()->AddItem("Player_Animation", "MaxJumpHeight", animeMaxHeight_);
 }
 
 void PlayerUnit::ApplyDebugParam() {
 	// 適応
 	speed_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "Speed");
 	circleCollider_.radius = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "ColliderRadius");
+
+	// アニメーション
+	moveAnimationTime_ = GameParamEditor::GetInstance()->GetValue<float>("Player_Animation", "MaxTime");
+	animeMaxHeight_ = GameParamEditor::GetInstance()->GetValue<float>("Player_Animation", "MaxJumpHeight");
 }

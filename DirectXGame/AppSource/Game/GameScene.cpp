@@ -257,12 +257,30 @@ void GameScene::InitializeOtherScene() {
 	clearUI_->SetOnRetryClicked([this]() {
 		isSceneChange_ = true;
 		isRetry_ = true;
-		});
+	});
 	// 選択
 	clearUI_->SetOnSelectClicked([this]() {
 		isSceneChange_ = true;
 		isRetry_ = false;
-		});
+	});
+
+	// ポーズシーンUIの初期化
+	pauseUI_ = std::make_unique<PauseUI>();
+	pauseUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), commonData_->keyManager.get(), fontName, drawData, fontLoader_);
+	// リトライ
+	pauseUI_->SetOnRetryClicked([this]() {
+		isPauseScene_ = !isPauseScene_;
+
+		if (isPauseScene_) {
+			timeTracker_->EndMeasureTimes();
+		} else {
+			timeTracker_->StartMeasureTimes();
+		}
+	});
+	// 選択
+	pauseUI_->SetOnSelectClicked([this]() {
+		isPauseScene_ = true;
+	});
 }
 
 std::unique_ptr<IScene> GameScene::Update() {
@@ -291,18 +309,24 @@ std::unique_ptr<IScene> GameScene::Update() {
 		// シーン遷移
 		fadeTransition_->Update();
 	} else {
-		if (isGameOverScene_ || isClearScene_) {
 
-			if (isClearScene_) {
-				// クリアシーンの更新処理
-				clearUI_->Update();
+		// ポーズシーンの更新処理
+		pauseUI_->Update();
+
+		if (!isPauseScene_) {
+			if (isGameOverScene_ || isClearScene_) {
+
+				if (isClearScene_) {
+					// クリアシーンの更新処理
+					clearUI_->Update();
+				} else {
+					// ゲームオーバーの更新処理
+					gameOverUI_->Update();
+				}
 			} else {
-				// ゲームオーバーの更新処理
-				gameOverUI_->Update();
+				// ゲームの更新処理
+				InGameScene();
 			}
-		} else {
-			// ゲームの更新処理
-			InGameScene();
 		}
 	}
 
@@ -381,13 +405,6 @@ void GameScene::InGameScene() {
 	// 鉱石管理の更新処理
 	oreItemManager_->Update();
 
-	// 鉱石が目標数納品を達成するか、鉱石がなくなればクリア
-	if (OreItemStorageNum::currentOreItemNum_ >= OreItemStorageNum::maxOreItemNum_ ||
-		oreItemManager_->GetCurrentOreItemNum() <= 0) {
-		// クリアシーンに移動
-		isClearScene_ = true;
-	}
-
 	//====================================================================
 	// ユニットの更新処理
 	//====================================================================
@@ -421,10 +438,18 @@ void GameScene::InGameScene() {
 	// 時間を更新
 	timeTracker_->Update();
 
-	// 時間切れになればゲームオーバー
+	// 時間切れになれば
 	if (timeTracker_->isFinishd()) {
-		// ゲームオーバーシーンに移動
-		isGameOverScene_ = true;
+
+		// 鉱石が目標数納品を達成するか、鉱石がなくなればクリア
+		if (OreItemStorageNum::currentOreItemNum_ >= OreItemStorageNum::maxOreItemNum_ ||
+			oreItemManager_->GetCurrentOreItemNum() <= 0) {
+			// クリアシーンに移動
+			isClearScene_ = true;
+		} else {
+			// ゲームオーバーシーンに移動
+			isGameOverScene_ = true;
+		}
 	}
 
 	// 時間表示UIを更新
@@ -474,6 +499,9 @@ void GameScene::Draw() {
 
 		// 時間計測表示UI
 		timerUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+		// ポーズシーンを描画
+		pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
 		// ゲームオーバーシーンの描画処理
 		if (isGameOverScene_) {
