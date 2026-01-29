@@ -9,7 +9,7 @@ void FadeTransition::Initialize(DrawData drawData) {
 	bgSpriteObject_->transform_.position = { 640.0f,360.0f,0.0f };
 	bgSpriteObject_->Update();
 
-	isAnimation_ = false;
+	isAnimation_ = true;
 	phase_ = Phase::In;
 }
 

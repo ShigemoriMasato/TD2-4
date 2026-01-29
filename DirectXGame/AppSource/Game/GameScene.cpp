@@ -24,6 +24,13 @@ namespace {
 	std::string unitHpModelName = "UnitHp";
 }
 
+GameScene::~GameScene() {
+	isSceneChange_ = false;
+	isClearScene_ = false;
+	isGameOverScene_ = false;
+	OreItemStorageNum::currentOreItemNum_ = 0;
+}
+
 void GameScene::Initialize() {
 	gameWindow_ = commonData_->mainWindow.get();
 	display_ = commonData_->display.get();
