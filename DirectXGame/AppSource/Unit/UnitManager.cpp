@@ -32,6 +32,7 @@ void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData,
 #endif
 	// 値の適応
 	ApplyDebugParam();
+	maxCurrentOreCount_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MaxOreCount");
 }
 
 void UnitManager::Update() {
@@ -235,5 +236,4 @@ void UnitManager::ApplyDebugParam() {
 	// 適応
 	unitSpawnNum_ = GameParamEditor::GetInstance()->GetValue<uint32_t>(kGroupName_, "SpawnNum");
 	spawnTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "SpawnTime");
-	maxCurrentOreCount_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MaxOreCount");
 }
