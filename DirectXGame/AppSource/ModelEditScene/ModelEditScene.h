@@ -3,8 +3,10 @@
 #include <GameCamera/CameraController.h>
 #include "Render/DebugMCRender.h"
 #include "Render/MapRender.h"
+#include "Render/StaticObjectRender.h"
 #include "Editor/Type/MapTypeEditor.h"
 #include "Editor/Texture/MapTextureEditor.h"
+#include "Editor/Decoration/MapDecorationEditor.h"
 
 class ModelEditScene : public IScene {
 public:
@@ -22,9 +24,11 @@ private:
 	std::unique_ptr<CameraController> cameraController_ = nullptr;
 	std::unique_ptr<DebugMCRender> mcRender_ = nullptr;
 	std::unique_ptr<MapRender> mapRender_ = nullptr;
+	std::unique_ptr<StaticObjectRender> staticObjectRender_ = nullptr;
 
 	std::unique_ptr<MapTypeEditor> typeEditor_ = nullptr;
 	std::unique_ptr<MapTextureEditor> textureEditor_ = nullptr;
+	std::unique_ptr<MapDecorationEditor> decorationEditor_ = nullptr;
 
 	//マップチップorオブジェクト
 	bool whichEditMode_ = true;

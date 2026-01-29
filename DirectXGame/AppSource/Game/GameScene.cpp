@@ -92,9 +92,8 @@ void GameScene::Initialize() {
 	cameraController_->SetMapMaxSize(mapChipField_->GetMaxMapSize());
 
 
-	// 壁モデルを取得
-	int wallModelID = modelManager_->LoadModel(playerModelName);
-	auto wallModel = modelManager_->GetNodeModelData(wallModelID);
+	// Cubeモデルを取得
+	auto wallModel = modelManager_->GetNodeModelData(0);
 
 	// マップの描画機能を初期化
 	mapRender_ = std::make_unique<MapRender>();
@@ -103,7 +102,7 @@ void GameScene::Initialize() {
 
 	//Debug用マップ描画の初期化
 	debugMapRender_ = std::make_unique<DebugMCRender>();
-	debugMapRender_->Initialize(drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(0).drawDataIndex));
+	debugMapRender_->Initialize(drawDataManager_->GetDrawData(wallModel.drawDataIndex));
 	debugMapRender_->SetAlpha(1.0f);
 
 	//ColorMap作成

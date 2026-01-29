@@ -1,12 +1,7 @@
 #pragma once
 #include <Assets/Texture/TextureManager.h>
 #include <Input/Input.h>
-#include <Game/MapData/Data/MapData.h>
-
-struct ChipData {
-	int textureIndex;
-	Direction direction;
-};
+#include <Game/NewMap/NewMap.h>
 
 class MapTextureEditor {
 public:

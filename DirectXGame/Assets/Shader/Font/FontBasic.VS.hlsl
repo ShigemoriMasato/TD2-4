@@ -24,7 +24,7 @@ struct StringUV
     float advanceX;
     float bearingX;
     float bearingY;
-    float penX;
+    float descender;
 };
 StructuredBuffer<StringUV> gUVs : register(t0);
 
@@ -54,7 +54,7 @@ VSOutput main(VSInput input, uint instanceId : SV_InstanceID, uint vertexID : SV
 
     // ===== 位置補正 =====
     float baseX = round(penX);
-    pos.x += baseX + g.bearingX;
+    pos.x += baseX + g.bearingX + g.descender;
     pos.y = round(pos.y);
 
     // ===== 座標変換 =====

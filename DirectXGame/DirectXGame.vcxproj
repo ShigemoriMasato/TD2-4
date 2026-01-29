@@ -190,8 +190,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\Unit\Player\PlayerUnitObject.cpp" />
     <ClCompile Include="AppSource\Unit\UnitEffectManager.cpp" />
     <ClCompile Include="AppSource\Unit\UnitManager.cpp" />
-    <ClCompile Include="AppSource\Game\MapData\Data\MapData.cpp" />
-    <ClCompile Include="AppSource\MapEditor\Editor\Data\Campus.cpp" />
     <ClCompile Include="AppSource\ModelEditScene\Render\DebugMCRender.cpp" />
     <ClCompile Include="Engine\Assets\Audio\AudioManager.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\AudioData.cpp" />
@@ -235,14 +233,16 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="Engine\Utility\src\ConvertString.cpp" />
     <ClCompile Include="Engine\Utility\src\Easing.cpp" />
     <ClCompile Include="Engine\Utility\src\MyMath.cpp" />
-    <ClCompile Include="AppSource\MapEditor\Editor\Data\StageEditor.cpp" />
-    <ClCompile Include="AppSource\MapEditor\MapModelEdit\MapModelEditor.cpp" />
     <ClCompile Include="AppSource\ModelEditScene\ModelEditScene.cpp" />
     <ClCompile Include="AppSource\ModelEditScene\Editor\Decoration\MapDecorationEditor.cpp" />
     <ClCompile Include="AppSource\ModelEditScene\Editor\Texture\MapTextureEditor.cpp" />
     <ClCompile Include="AppSource\ModelEditScene\Editor\Type\MapTypeEditor.cpp" />
     <ClCompile Include="AppSource\ModelEditScene\Render\MapRender.cpp" />
     <ClCompile Include="AppSource\Game\NewMap\NewMapManager.cpp" />
+    <ClCompile Include="AppSource\ModelEditScene\Render\StaticObjectRender.cpp" />
+    <ClInclude Include="AppSource\GameCamera\DebugMousePos.h" />
+    <ClInclude Include="AppSource\GameCamera\SelectCamera.h" />
+    <ClInclude Include="AppSource\GameCommon\DefaultObject.h" />
     <ClCompile Include="AppSource\UI\PauseUI.cpp" />
     <ClInclude Include="AppSource\GameCamera\DebugMousePos.h" />
     <ClInclude Include="AppSource\GameCamera\SelectCamera.h" />
@@ -298,20 +298,14 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="Engine\Assets\Model\ModelManager.cpp" />
     <ClCompile Include="Engine\Assets\Model\ModelLoader.cpp" />
     <ClCompile Include="Engine\Render\PostEffect.cpp" />
-    <ClCompile Include="AppSource\MapEditor\MapEditScene.cpp" />
-    <ClCompile Include="AppSource\Game\MapData\MapDataManager.cpp" />
-    <ClCompile Include="AppSource\MapEditor\Editor\MapEditor.cpp" />
-    <ClCompile Include="AppSource\MapEditor\Editor\MapEditWithImGui.cpp" />
-    <ClCompile Include="AppSource\MapEditor\Editor\Data\Pencil.cpp" />
-    <ClInclude Include="AppSource\MapEditor\Editor\Data\StageEditor.h" />
     <ClInclude Include="Engine\Assets\Fonts\FontLoader.h" />
-    <ClInclude Include="AppSource\MapEditor\MapModelEdit\MapModelEditor.h" />
     <ClInclude Include="AppSource\ModelEditScene\ModelEditScene.h" />
     <ClInclude Include="AppSource\ModelEditScene\Editor\Decoration\MapDecorationEditor.h" />
     <ClInclude Include="AppSource\ModelEditScene\Editor\Texture\MapTextureEditor.h" />
     <ClInclude Include="AppSource\ModelEditScene\Editor\Type\MapTypeEditor.h" />
     <ClInclude Include="AppSource\ModelEditScene\Render\MapRender.h" />
     <ClInclude Include="AppSource\Game\NewMap\NewMapManager.h" />
+    <ClInclude Include="AppSource\ModelEditScene\Render\StaticObjectRender.h" />
     <ClInclude Include="AppSource\UI\PauseUI.h" />
   </ItemGroup>
   <ItemGroup>
@@ -327,8 +321,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\Unit\Player\PlayerUnit.h" />
     <ClInclude Include="AppSource\Unit\Player\PlayerUnitObject.h" />
     <ClInclude Include="AppSource\Unit\UnitManager.h" />
-    <ClInclude Include="AppSource\Game\MapData\Data\MapData.h" />
-    <ClInclude Include="AppSource\MapEditor\Editor\Data\Campus.h" />
     <ClInclude Include="Engine\Assets\Audio\AudioManager.h" />
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
     <ClInclude Include="Engine\Assets\Audio\Data\MP3Data.h" />
@@ -412,11 +404,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="Engine\Render\PostEffect.h" />
     <ClInclude Include="Engine\Screen\Display\IDisplay.h" />
     <ClInclude Include="AppSource\Game\GameScene.h" />
-    <ClInclude Include="AppSource\MapEditor\MapEditScene.h" />
-    <ClInclude Include="AppSource\Game\MapData\MapDataManager.h" />
-    <ClInclude Include="AppSource\MapEditor\Editor\MapEditor.h" />
-    <ClInclude Include="AppSource\MapEditor\Editor\MapEditWithImGui.h" />
-    <ClInclude Include="AppSource\MapEditor\Editor\Data\Pencil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

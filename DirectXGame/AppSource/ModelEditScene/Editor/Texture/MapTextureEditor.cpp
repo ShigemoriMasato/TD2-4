@@ -55,7 +55,12 @@ void MapTextureEditor::Update() {
 void MapTextureEditor::DrawImGui() {
 #ifdef USE_IMGUI
 
-	ImGui::Begin("MapTexture");
+	if (ImGui::Begin("MapTexture")) {
+		if (!editing_) {
+			editing_ = true;
+			someSelected_ = true;
+		}
+	}
 
 	ImGui::BeginChild("TextureList", ImVec2(600, 0));
 

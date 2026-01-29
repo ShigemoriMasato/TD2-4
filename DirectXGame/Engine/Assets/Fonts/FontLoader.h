@@ -15,7 +15,7 @@ struct CharPosition {
 	float advanceX;
 	float bearingX;
 	float bearingY;
-	float penX;
+	float descender;
 };
 
 class FontLoader {

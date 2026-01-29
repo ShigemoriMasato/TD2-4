@@ -3,6 +3,7 @@
 #include <GameCamera/DebugMousePos.h>
 #include <Utility/Color.h>
 #include <Utility/Easing.h>
+#include <imgui/imgui.h>
 
 void MapTypeEditor::Initialize(Input* input) {
 	assert(input);
@@ -43,7 +44,12 @@ void MapTypeEditor::Update() {
 void MapTypeEditor::DrawImGui() {
 #ifdef USE_IMGUI
 
-	ImGui::Begin("MapChip");
+	if (ImGui::Begin("MapChip")) {
+		if (!editing_) {
+			editing_ = true;
+			someSelected_ = true;
+		}
+	}
 
 	for (int i = 0; i < int(TileType::Count); ++i) {
 		ImGui::PushID(i);
@@ -59,8 +65,6 @@ void MapTypeEditor::DrawImGui() {
 		//ボタン
 		if (ImGui::ColorButton(tileStrings_[type].c_str(), ImVec4(color.x, color.y, color.z, 1.0f), 0, size)) {
 			currentType_ = type;
-			someSelected_ = true;
-			editing_ = true;
 		}
 		ImGui::SameLine();
 		ImGui::Text("%s", tileStrings_[type].c_str());

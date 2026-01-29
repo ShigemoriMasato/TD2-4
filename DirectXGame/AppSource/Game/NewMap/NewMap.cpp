@@ -1,4 +1,5 @@
 #include "NewMap.h"
+#include <ModelEditScene/Editor/Texture/MapTextureEditor.h>
 
 namespace {
 

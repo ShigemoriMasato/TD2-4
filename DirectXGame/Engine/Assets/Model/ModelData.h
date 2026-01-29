@@ -10,12 +10,12 @@
 #include <unordered_map>
 
 struct Material {
-	int textureIndex;
-	int normalMapIndex;
-	Vector4 color;
-	Vector4 emissiveColor;
-	Vector4 specularColor;
-	float shininess;
+	int textureIndex = -1;
+	int normalMapIndex = -1;
+	Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Vector4 emissiveColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Vector4 specularColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float shininess = 1.0f;
 };
 
 struct Node {
