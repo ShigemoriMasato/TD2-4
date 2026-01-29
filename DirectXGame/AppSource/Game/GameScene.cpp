@@ -313,20 +313,22 @@ std::unique_ptr<IScene> GameScene::Update() {
 		fadeTransition_->Update();
 	} else {
 
-		// ポーズシーンの更新処理
-		pauseUI_->Update();
+		if (!isGameOverScene_ && !isClearScene_) {
+			// ポーズシーンの更新処理
+			pauseUI_->Update();
+		}
 
-		if (!isPauseScene_) {
-			if (isGameOverScene_ || isClearScene_) {
+		if (isGameOverScene_ || isClearScene_) {
 
-				if (isClearScene_) {
-					// クリアシーンの更新処理
-					clearUI_->Update();
-				} else {
-					// ゲームオーバーの更新処理
-					gameOverUI_->Update();
-				}
+			if (isClearScene_) {
+				// クリアシーンの更新処理
+				clearUI_->Update();
 			} else {
+				// ゲームオーバーの更新処理
+				gameOverUI_->Update();
+			}
+		} else {
+			if (!isPauseScene_) {
 				// ゲームの更新処理
 				InGameScene();
 			}
