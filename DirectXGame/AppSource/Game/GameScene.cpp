@@ -125,9 +125,12 @@ void GameScene::Initialize() {
 	// 鉱石のテクスチャを取得
 	int oreItemTextureIndex = textureManager_->GetTexture("MineralDeposite_02.png");
 
+	// フォント用
+	auto draw = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
+
 	// 鉱石の管理システムを初期化
 	oreItemManager_ = std::make_unique<OreItemManager>();
-	oreItemManager_->Initialize(drawDataManager_->GetDrawData(oreItemModel.drawDataIndex), oreItemTextureIndex);
+	oreItemManager_->Initialize(drawDataManager_->GetDrawData(oreItemModel.drawDataIndex), oreItemTextureIndex, fontName, draw, fontLoader_);
 
 	//鉱床の配置
 	PutGold();

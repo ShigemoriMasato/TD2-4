@@ -5,11 +5,12 @@
 #include"Object/GoldOre.h"
 
 #include"Object/OreOutLineObject.h"
+#include"UI/Object/FontObject.h"
 
 class OreItemManager {
 public:
 
-	void Initialize(const DrawData& goldOreDrawData,int texture);
+	void Initialize(const DrawData& goldOreDrawData,int texture, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader);
 
 	void Update();
 
@@ -54,4 +55,14 @@ private:
 
 	// 選択中のオブジェクトにアウトラインを描画する
 	std::unique_ptr<OreOutLineObject> oreOutLineObject_;
+
+private: // フォント機能
+
+	FontLoader* fontLoader_ = nullptr;
+	DrawData fontDrawData_;
+
+	// フォントデータ
+	std::unordered_map<int32_t, std::unique_ptr<FontObject>> fontList_;
+
+	std::string fontName_;
 };

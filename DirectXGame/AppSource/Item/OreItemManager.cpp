@@ -3,7 +3,11 @@
 // 各鉱石
 #include"Object/GoldOre.h"
 
-void OreItemManager::Initialize(const DrawData& goldOreDrawData, int texture) {
+void OreItemManager::Initialize(const DrawData& goldOreDrawData, int texture, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader) {
+
+	fontLoader_ = fontLoader;
+	fontName_ = fontName;
+	fontDrawData_ = fontDrawData;
 
 	// 金鉱石の描画データを取得
 	goldOreDrawData_ = goldOreDrawData;
@@ -11,6 +15,7 @@ void OreItemManager::Initialize(const DrawData& goldOreDrawData, int texture) {
 
 	// メモリを確保
 	oreItems_.reserve(20);
+	fontList_.reserve(20);
 
 	// アウトライン描画用
 	oreOutLineObject_ = std::make_unique<OreOutLineObject>();
@@ -38,6 +43,11 @@ void OreItemManager::Update() {
 
 		// 更新処理
 		ore->Update();
+
+		// フォントを更新する
+		std::wstring s = std::to_wstring(ore->GetCurrentWorkerNum()) + L"/" + std::to_wstring(ore->GetMaxWorkerNum());
+		fontList_[it->first]->UpdateCharPositions(s, fontLoader_);
+		fontList_[it->first]->Update();
 
 		if (ore->IsDead()) {
 			// 5フレーム後に削除するようにリストに追加
@@ -69,6 +79,9 @@ void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	// 鉱石を描画
 	for (auto& [id, ore] : oreItems_) {
 		ore->Draw(window, vpMatrix);
+
+		// フォントを描画
+		fontList_[id]->Draw(window, vpMatrix);
 	}
 
 	// アウトラインを描画
@@ -181,6 +194,21 @@ void OreItemManager::AddOreItem(OreType type, const Vector3& pos) {
 		break;
 	}
 	}
+
+	// フォント
+	std::unique_ptr<FontObject> fontObject = std::make_unique<FontObject>();
+	fontObject->Initialize(fontName_, L"00/00", fontDrawData_, fontLoader_);
+	fontObject->transform_.position = pos;
+	fontObject->transform_.position.x -= 0.8f;
+	fontObject->transform_.position.y += 4.0f;
+	fontObject->transform_.rotate.x = -2.4f;
+	fontObject->transform_.scale.x = 0.01f;
+	fontObject->transform_.scale.y = -0.01f;
+	fontObject->fontColor_ = { 0.0f,1.0f,1.0f,1.0f };
+	fontObject->Update();
+
+	// フォントを登録
+	fontList_[index] = std::move(fontObject);
 }
 
 bool OreItemManager::IsSelectOre(const Vector3 selectpos, Vector3& worldPos) {
