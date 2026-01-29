@@ -40,6 +40,9 @@ void ModelEditScene::Initialize() {
 	decorationEditor_ = std::make_unique<MapDecorationEditor>();
 	decorationEditor_->Initialize(modelManager_);
 
+	staticObjectRender_ = std::make_unique<StaticObjectRender>();
+	staticObjectRender_->Initialize(modelManager_, drawDataManager_, true);
+
 #ifdef USE_IMGUI
 	auto& io = ImGui::GetIO();
 	io.IniFilename = "Assets/.EngineResource/modelEdit.ini";
@@ -59,6 +62,7 @@ std::unique_ptr<IScene> ModelEditScene::Update() {
 	//カーソル座標の割り当て
 	typeEditor_->SetCursorPos(gridCursor);
 	textureEditor_->SetCursorPos(gridCursor);
+	decorationEditor_->SetCursorPosition(gridCursor);
 
 	//何処を触っているかの設定
 	if (typeEditor_->isSomeSelected()) {
@@ -75,7 +79,7 @@ std::unique_ptr<IScene> ModelEditScene::Update() {
 		//他のエディタで編集できなくする
 		typeEditor_->NonEdit();
 		decorationEditor_->NonEdit();
-	} else if (false/*デコレーション予定*/) {
+	} else if (decorationEditor_->isSomeSelected()) {
 		whichEditMode_ = false;
 
 
@@ -95,19 +99,23 @@ std::unique_ptr<IScene> ModelEditScene::Update() {
 	if (whichEditMode_) {
 		mcRender_->SetAlpha(0.8f);
 		mapRender_->SetAlpha(0.2f);
+		staticObjectRender_->SetAlpha(0.2f);
 	} else {
 		mcRender_->SetAlpha(0.4f);
 		mapRender_->SetAlpha(0.8f);
+		staticObjectRender_->SetAlpha(0.8f);
 	}
 
 	//値のすり合わせ
 	auto mapSize = typeEditor_->GetGridPos();
 	textureEditor_->SetMapSize(mapSize.first, mapSize.second);
 	mapRender_->SetConfig(textureEditor_->GetTextureIndices());
+	staticObjectRender_->SetObjects(decorationEditor_->GetDecorations());
 
 	//更新
 	typeEditor_->Update();
 	textureEditor_->Update();
+	decorationEditor_->Update();
 
 	//更新最後組
 	mcRender_->Update();
@@ -124,6 +132,7 @@ void ModelEditScene::Draw() {
 	display.PreDraw(window.GetCommandObject(), true);
 	mapRender_->Draw(vpMatrix, window.GetWindow());
 	mcRender_->Draw(vpMatrix, typeEditor_->GetColorMap(), typeEditor_->GetCurrentMapChipData(), window.GetWindow());
+	staticObjectRender_->Draw(vpMatrix, window.GetWindow());
 	display.PostDraw(window.GetCommandObject());
 
 	window.PreDraw(true);
@@ -165,6 +174,7 @@ void ModelEditScene::Draw() {
 
 	typeEditor_->DrawImGui();
 	textureEditor_->DrawImGui();
+	decorationEditor_->DrawImGui();
 	cameraController_->DebugDraw();
 #endif
 

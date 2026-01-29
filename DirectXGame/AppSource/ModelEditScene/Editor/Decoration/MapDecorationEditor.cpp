@@ -1,12 +1,14 @@
 #include "MapDecorationEditor.h"
 #include <Utility/Color.h>
 #include <Input/Input.h>
+#include <Utility/SearchFile.h>
+#include <GameCamera/DebugMousePos.h>
 
 void MapDecorationEditor::Initialize(ModelManager* modelManager) {
 	assert(modelManager);
 	modelManager_ = modelManager;
 
-	DevoDataLoad();
+	DecoDataLoad();
 	ModelListLoad();
 }
 
@@ -22,59 +24,53 @@ void MapDecorationEditor::Update() {
 	}
 
 	isHovered_ = false;
-	for (size_t i = 0; i < decorations_.size(); ++i) {
+	//カーソルとデコレーションの当たり判定
+	for (const auto& [modelIndex, transforms] : decorations_) {
 		if (isHold_) {
 			isHovered_ = true;
 			break;
 		}
 
-		float distance = (Vector3(cursorPos_.x, 0.0f, cursorPos_.y) - decorations_[i].first.position).Length();
+		for (size_t i = 0; i < transforms.size(); ++i) {
+			float distance = (Vector3(cursorPos_.x, 0.0f, cursorPos_.y) - transforms[i].position).Length();
 
-		//カーソルと物体が重なっている
-		if (distance <= radius_) {
-			isHovered_ = true;
+			//カーソルと物体が重なっている
+			if (distance <= radius_) {
+				isHovered_ = true;
 
-			//クリックしたら
-			if (Input::GetMouseButtonState()[0] && !isHold_) {
-				isHold_ = true;
-				cursorOffset_ = Vector2(
-					cursorPos_.x - decorations_[i].first.position.x,
-					cursorPos_.y - decorations_[i].first.position.z
-				);
+				//クリックしたら
+				if (Input::GetMouseButtonState()[0] && !isHold_ && DebugMousePos::isHovered) {
+					isHold_ = true;
+					cursorOffset_ = Vector2(
+						cursorPos_.x - transforms[i].position.x,
+						cursorPos_.y - transforms[i].position.z
+					);
 
-				//編集中のモデル変更
-				currentModelID_ = decorations_[i].second;
-				editingModelIndex_ = static_cast<int>(i);
+					//編集中のモデル変更
+					currentModelIndex_ = modelIndex;
+					editingTransformIndex_ = static_cast<int>(i);
+					break;
+				}
 			}
-			break;
 		}
 	}
 
-	if (!isHovered_ && Input::GetMouseButtonState()[0]) {
-		
+	if (!isHovered_ && Input::GetMouseButtonState()[0] && DebugMousePos::isHovered) {
 		//モデルの新規追加
-		std::pair<Transform, int>& newDecoration = decorations_.emplace_back();
-		newDecoration.first.position = Vector3(
-			cursorPos_.x,
-			0.0f,
-			cursorPos_.y
-		);
-		newDecoration.second = currentModelID_;
-
-		editingModelIndex_ = static_cast<int>(decorations_.size() - 1);
-
-		
+		editingTransformIndex_ = static_cast<int>(decorations_[currentModelIndex_].size());
+		decorations_[currentModelIndex_].emplace_back();
+		isHold_ = true;
 	}
 
 	if (isHold_) {
-		Transform& transform = decorations_[editingModelIndex_].first;
+		Transform& transform = decorations_[currentModelIndex_][editingTransformIndex_];
 		transform.position.x = cursorPos_.x - cursorOffset_.x;
 		transform.position.z = cursorPos_.y - cursorOffset_.y;
 	}
 }
 
 void MapDecorationEditor::PreviewDraw() {
-	if (!editing_ || isHovered_ || currentModelID_ == -1) {
+	if (!editing_ || isHovered_ || currentModelIndex_ == -1) {
 		return;
 	}
 }
@@ -87,7 +83,7 @@ void MapDecorationEditor::DrawImGui() {
 		if (!editing_) {
 			editing_ = true;
 			someSelected_ = true;
-			editingModelIndex_ = -1;
+			editingTransformIndex_ = -1;
 		}
 	}
 
@@ -97,18 +93,23 @@ void MapDecorationEditor::DrawImGui() {
 	int buttonNum = 0;
 	for (const auto& [id, modelInfo] : modelList_) {
 		++buttonNum;
+
+		//Index取得
+		int modelIndex = modelManager_->LoadModel(".Deco/" + modelInfo.first);
+
 		ImGui::PushID(id);
 
 		//ボタンの設定
 		ImVec4 color = { modelInfo.second.x, modelInfo.second.y, modelInfo.second.z, 1.0f };
 		ImVec2 size = ImVec2(50, 50);
-		if (currentModelID_ == id) {
+		if (currentModelIndex_ == modelIndex) {
 			size = ImVec2(60, 60);
 		}
 
 		//ボタンの描画
 		if (ImGui::ColorButton(modelInfo.first.c_str(), color, 0, size)) {
-			currentModelID_ = id;
+			currentModelIndex_ = modelIndex;
+			editingTransformIndex_ = -1;
 		}
 
 		ImGui::PopID();
@@ -122,16 +123,25 @@ void MapDecorationEditor::DrawImGui() {
 
 	ImGui::End();
 
+	ImGui::Begin("Debug");
+	ImGui::Text("currentModelID_: %d", currentModelIndex_);
+	ImGui::Text("editingTransformIndex_: %d", editingTransformIndex_);
+	ImGui::Text("isHovered_: %d, DisplayHovered: %d", isHovered_, DebugMousePos::isHovered);
 
-	if (!editing_ || editingModelIndex_ < 0) {
+
+	ImGui::End();
+
+
+	//編集中じゃなかったり、編集対象がいなかったら描画しない
+	if (!editing_ || editingTransformIndex_ < 0) {
 		return;
 	}
 	//現在選択中のモデル表示
 	ImGui::Begin("Current Decoration Model");
 
-	int modelID = decorations_[editingModelIndex_].second;
-	Transform& transform = decorations_[editingModelIndex_].first;
-	const std::string& modelPath = modelList_[modelID].first;
+	int currentModelID = modelIDMap_[currentModelIndex_];
+	Transform& transform = decorations_[currentModelIndex_][editingTransformIndex_];
+	const std::string& modelPath = modelList_[currentModelID].first;
 
 	ImGui::Text("Model: %s", modelPath.c_str());
 	ImGui::Separator();
@@ -141,7 +151,7 @@ void MapDecorationEditor::DrawImGui() {
 	transform.position.y = 0.0f; // Y軸固定
 	ImGui::Separator();
 	ImGui::Text("Model Config");
-	ImGui::ColorEdit3("Color", &modelList_[modelID].second.x);
+	ImGui::ColorEdit3("Color", &modelList_[currentModelID].second.x);
 
 	ImGui::End();
 
@@ -152,8 +162,43 @@ void MapDecorationEditor::DrawImGui() {
 void MapDecorationEditor::Save() {
 }
 
-void MapDecorationEditor::DevoDataLoad() {
+void MapDecorationEditor::DecoDataLoad() {
 }
 
 void MapDecorationEditor::ModelListLoad() {
+	auto values = binaryManager_.Read(saveFileNameModelList_);
+	int index = 0;
+
+	//ディレクトリにあるものを読み込み
+	auto files = SearchFileNames("Assets/Model/.Deco/");
+
+	//新しいものを追加するために、一番古いIDを取得する
+	int oldestID = -1;
+
+	//保存している分を読み込み、ディレクトリにあるものと結合
+	while (index < static_cast<int>(values.size())) {
+		int modelID = BinaryManager::Reverse<int>(values[index++].get());
+		std::string modelPath = BinaryManager::Reverse<std::string>(values[index++].get());
+		Vector3 color = BinaryManager::Reverse<Vector3>(values[index++].get());
+		modelList_[modelID] = { modelPath, color };
+
+		int modelIndex = modelManager_->LoadModel(".Deco/" + modelPath);
+		modelIDMap_[modelIndex] = modelID;
+
+		oldestID = std::max(oldestID, modelID);
+
+		//ディレクトリにあるものを消す
+		auto it = std::find(files.begin(), files.end(), modelPath);
+		if (it != files.end()) {
+			files.erase(it);
+		}
+	}
+
+	//追加していないものを追加する
+	for (const auto& file : files) {
+		++oldestID;
+		int modelIndex = modelManager_->LoadModel(".Deco/" + file);
+		modelList_[oldestID] = { file, Vector3(1.0f, 1.0f, 1.0f) };
+		modelIDMap_[modelIndex] = oldestID;
+	}
 }
