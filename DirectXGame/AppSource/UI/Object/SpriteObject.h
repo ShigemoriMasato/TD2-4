@@ -27,7 +27,7 @@ public:
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
 	void SetTexture(const uint32_t& texutre) {
-		cBuffData_.textureIndex_ = texutre;
+		texture_ = texutre;
 	}
 
 public:
@@ -37,6 +37,8 @@ public:
 
 	// 色
 	Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f };
+
+	uint32_t texture_ = 0;
 
 private:
 

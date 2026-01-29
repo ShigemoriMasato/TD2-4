@@ -9,7 +9,8 @@ void PauseUI::Initialize(DrawData drawData, uint32_t texture, KeyManager* keyMan
 	bgSpriteObject_ = std::make_unique<SpriteObject>();
 	bgSpriteObject_->Initialize(drawData, { 1280.0f,720.0f });
 	bgSpriteObject_->transform_.position = { 640.0f,360.0f,0.0f };
-	bgSpriteObject_->color_ = { 0.1f,0.1f,0.1f,0.9f };
+	//bgSpriteObject_->transform_.scale.y = -
+	bgSpriteObject_->color_ = { 1.0f,1.0f,1.0f,0.9f };
 	bgSpriteObject_->SetTexture(texture);
 	bgSpriteObject_->Update();
 
@@ -61,7 +62,6 @@ void PauseUI::Draw(Window* window, const Matrix4x4& vpMatrix) {
 		// 背景の描画
 		bgSpriteObject_->Draw(window, vpMatrix);
 
-		
 	} else {
 		gameOverFontObject_->Draw(window, vpMatrix);
 	}
