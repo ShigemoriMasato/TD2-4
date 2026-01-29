@@ -141,6 +141,9 @@ private:
 	// デバック用
 	std::string kGroupName_ = "OreUnit";
 
+	bool isDeathAnimation_ = false;
+	bool isEndDeathAnimation_ = false;
+
 private: // 調整項目
 
 	// ダメージを食らう間隔
@@ -174,6 +177,9 @@ private: // 調整項目
 	float minWidth_ = 0.8f;
 	float maxHeight_ = 1.2f;
 	float minHeight_ = 0.8f;
+
+	// 死亡演出
+	float deathAnimationTime_ = 1.0f;
 private:
 
 	// 移動経路を求める
@@ -199,6 +205,9 @@ private:
 
 	// 移動アニメーション処理
 	void MoveAnimationUpdate();
+
+	// 死亡アニメーション
+	void DeathAnimationUpdate();
 
 private:
 	/// <summary>

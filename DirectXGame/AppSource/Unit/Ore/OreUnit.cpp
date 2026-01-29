@@ -80,6 +80,8 @@ void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos, OreItem* o
 	// 初期位置を設定
 	object_->transform_.position = apearPos;
 	object_->transform_.scale = { 0.5f,0.5f,0.5f };
+	object_->transform_.rotate.z = 0.0f;
+	object_->material_.color = { 1.0f,1.0f,1.0f,1.0f };
 	// 拠点位置を設定
 	homePos_ = apearPos;
 
@@ -88,12 +90,15 @@ void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos, OreItem* o
 	isDead_ = false;
 	isRemoveOre_ = false;
 	isToDeliver_ = false;
+	isDeathAnimation_ = false;
+	isEndDeathAnimation_ = false;
 
 	// hpを設定
 	hp_ = maxHp_;
 
 	// 時間をリセット
 	lifeTimer_ = 0.0f;
+	animationTimer_ = 0.0f;
 
 	// 状態を設定
 	state_ = State::GoTo;
@@ -127,12 +132,12 @@ void OreUnit::Update() {
 		stateRequest_ = std::nullopt;
 	}
 
-	if (!isConflict_) {
+	if (!isConflict_ && !isDeathAnimation_) {
 		// プレイヤーの状態による更新処理をおこなう
 		statesTable_[static_cast<size_t>(state_)]();
 	}
 
-	if (state_ != State::Return) {
+	if (state_ != State::Return && !isDeathAnimation_) {
 		// アニメーション処理
 		MoveAnimationUpdate();
 	}
@@ -156,14 +161,24 @@ void OreUnit::Update() {
 
 	// 体力が0の時、死亡する
 	if (hp_ <= 0) {
-
-		if (!isDead_) {
-			// 登録されている労働者を減らす
-			oreItem_->RemoveWorker();
-		}
-
-		isDead_ = true;
+		isDeathAnimation_ = true;
+		object_->material_.color = { 0.8f,0.0f,0.0f,1.0f };
 	}
+
+	if (isDeathAnimation_) {
+
+		// 死亡アニメーション
+		DeathAnimationUpdate();
+
+		if (isEndDeathAnimation_) {
+			if (!isDead_) {
+				// 登録されている労働者を減らす
+				oreItem_->RemoveWorker();
+			}
+			isDead_ = true;
+		}
+	}
+
 }
 
 void OreUnit::Draw(Window* window, const Matrix4x4& vpMatrix) {
@@ -503,6 +518,18 @@ void OreUnit::MoveAnimationUpdate() {
 
 	if (animationTimer_ >= 1.0f) {
 		animationTimer_ = 0.0f;
+	}
+}
+
+void OreUnit::DeathAnimationUpdate() {
+
+	animationTimer_ += FpsCount::deltaTime / deathAnimationTime_;
+
+	object_->transform_.rotate.z = lerp(0.0f, std::numbers::pi_v<float> / 2.0f, animationTimer_, EaseType::EaseInOutCubic);
+
+	if (animationTimer_ >= 1.0f) {
+		object_->transform_.rotate.z = std::numbers::pi_v<float> / 2.0f;
+		isEndDeathAnimation_ = true;
 	}
 }
 
