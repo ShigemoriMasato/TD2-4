@@ -2,6 +2,8 @@
 #include"FpsCount.h"
 #include <Common/DebugParam/GameParamEditor.h>
 
+#include"Item/Object/OreItem.h"
+
 #ifdef USE_IMGUI
 #include <imgui/imgui.h>
 #endif
@@ -38,6 +40,12 @@ void UnitManager::Update() {
 	ApplyDebugParam();
 #endif
 
+	// ユニットのUI
+	oreUnitHPUI_->Update();
+
+	// 鉱石位置をリセット
+	unitEffectManager_->Reset();
+
 	// ユニットの出撃処理
 	UnitSpawn();
 
@@ -50,6 +58,16 @@ void UnitManager::Update() {
 		if (unit->IsActive() && !unit->IsDead()) {
 			// ユニットの更新処理
 			unit->Update();
+
+			// HPを追加
+			if (unit->GetState() != OreUnit::State::Return) {
+				oreUnitHPUI_->Add(unit->GetPos() + Vector3(0.0f, 2.0f, 0.0f), unit->GetHp(), unit->GetMaxHp());
+			}
+
+			// 回収中は鉱石を持たせる
+			if (unit->GetState() == OreUnit::State::ToDeliver) {
+				unitEffectManager_->AddOreItem(unit->GetPos() + Vector3(0.0f, 1.0f, 0.0f));
+			}
 
 			// 更新して有効フラグがfalseだったら、再利用リストに追加する
 			if (!unit->IsActive()) {
@@ -65,6 +83,9 @@ void UnitManager::Update() {
 			}
 		}
 	}
+
+	// ユニットの演出を更新
+	unitEffectManager_->Update();
 }
 
 void UnitManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
@@ -89,7 +110,7 @@ void UnitManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 #endif
 }
 
-void UnitManager::RegisterUnit(const Vector3& targetPos, const int32_t& excessNum) {
+void UnitManager::RegisterUnit(const Vector3& targetPos, const int32_t& excessNum, OreItem* oreItem) {
 
 	// 生成出来る最大の数を超えていれば、早期リターン
 	if (activeCount_ >= maxCurrentOreCount_) {
@@ -100,12 +121,13 @@ void UnitManager::RegisterUnit(const Vector3& targetPos, const int32_t& excessNu
 	data.currentNum = 0;
 	data.spawnNum = unitSpawnNum_ + excessNum;
 	data.pos = targetPos;
+	data.oreItem_ = oreItem;
 
 	// 登録
 	spawnList_.push_back(data);
 }
 
-void UnitManager::AddOreUnit(const Vector3& targetPos) {
+void UnitManager::AddOreUnit(const Vector3& targetPos, OreItem* oreItem) {
 
 	// 生成出来る最大の数を超えていれば、早期リターン
 	if (activeCount_ >= maxCurrentOreCount_) {
@@ -135,11 +157,11 @@ void UnitManager::AddOreUnit(const Vector3& targetPos) {
 			assert(false && "Not found Unit");
 		}
 		// 初期化
-		unit->second->Init(homePos, targetPos);
+		unit->second->Init(homePos, targetPos, oreItem);
 	} else {
 		// 新しく登録
 		std::unique_ptr<OreUnit> oreUnit = std::make_unique<OreUnit>(mapChipField_, oreDrawData_, oreTexIndex_, playerUnit_->GetPos());
-		oreUnit->Init(homePos, targetPos);
+		oreUnit->Init(homePos, targetPos, oreItem);
 
 		oreUnits_[index] = std::move(oreUnit);
 	}
@@ -166,7 +188,7 @@ void UnitManager::UnitSpawn() {
 		spawnTimer_ += FpsCount::deltaTime / spawnTime_;
 
 		if (spawnTimer_ >= 1.0f) {
-			AddOreUnit(spawnData_.pos);
+			AddOreUnit(spawnData_.pos,spawnData_.oreItem_);
 			spawnData_.currentNum++;
 			spawnTimer_ = 0.0f;
 		}
@@ -200,10 +222,12 @@ void UnitManager::RegisterDebugParam() {
 	// 登録
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "SpawnNum", unitSpawnNum_);
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "SpawnTime", spawnTime_);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MaxOreCount", maxCurrentOreCount_);
 }
 
 void UnitManager::ApplyDebugParam() {
 	// 適応
 	unitSpawnNum_ = GameParamEditor::GetInstance()->GetValue<uint32_t>(kGroupName_, "SpawnNum");
 	spawnTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "SpawnTime");
+	maxCurrentOreCount_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MaxOreCount");
 }

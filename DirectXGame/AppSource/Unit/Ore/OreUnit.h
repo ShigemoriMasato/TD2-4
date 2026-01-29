@@ -9,6 +9,8 @@
 #include"OreUnitObject.h"
 #include"Unit/MapChipField.h"
 
+class OreItem;
+
 class OreUnit : public Collider {
 public:
 
@@ -40,7 +42,7 @@ public:
 	/// <param name="drawData">描画データ</param>
 	/// <param name="apearPos">出現位置</param>
 	/// <param name="targetPos">目標位置</param>
-	void Init(const Vector3& apearPos,const Vector3& targetPos);
+	void Init(const Vector3& apearPos,const Vector3& targetPos, OreItem* oreItem);
 
 	void Update();
 
@@ -60,9 +62,19 @@ public:
 	// 向いている方向を取得
 	Vector3 GetDir() const { return dir_; }
 
+	Vector3 GetPos() const { return object_->transform_.position; }
+
+	int32_t GetHp() const { return hp_; }
+	int32_t GetMaxHp() const { return maxHp_; }
+
+	State GetState() const { return state_; }
+
 private:
 	// マップデータ
 	MapChipField* mapChipField_ = nullptr;
+
+	// 採取する鉱石のデータを取得
+	OreItem* oreItem_ = nullptr;
 
 	// オブジェクトデータ
 	std::unique_ptr<OreUnitObject> object_;
@@ -154,6 +166,11 @@ private: // 調整項目
 	// 移動アニメーション
 	float moveAnimationTime_ = 0.6f;
 
+	float maxJumpHeight_ = 1.0f;
+	float maxWidth_ = 1.2f;
+	float minWidth_ = 0.8f;
+	float maxHeight_ = 1.2f;
+	float minHeight_ = 0.8f;
 private:
 
 	// 移動経路を求める

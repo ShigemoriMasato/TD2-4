@@ -4,10 +4,10 @@
 #include"Object/FontObject.h"
 #include <functional>
 
-class GameOverUI {
+class PauseUI {
 public:
 
-	void Initialize(DrawData drawData, KeyManager* keyManager, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader);
+	void Initialize(DrawData drawData,uint32_t texture, KeyManager* keyManager, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader);
 
 	void Update();
 
@@ -36,17 +36,13 @@ private:
 	// テキスト
 	std::unique_ptr<FontObject> gameOverFontObject_;
 
-	// リトライ
-	std::unique_ptr<FontObject> retryFontObject_;
-
-	// ステージ選択へ
-	std::unique_ptr<FontObject> selectFontObject_;
-
 	// クリックコールバック
 	std::function<void()> onRetryClicked_ = nullptr;
 	std::function<void()> onSelectClicked_ = nullptr;
 
 	int selectNum_ = 0;
+
+	bool isDraw_ = false;
 
 private: // 調整項目
 

@@ -4,7 +4,7 @@
 #include"Object/FontObject.h"
 #include <functional>
 
-class GameOverUI {
+class ClearUI {
 public:
 
 	void Initialize(DrawData drawData, KeyManager* keyManager, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader);
@@ -34,7 +34,7 @@ private:
 	bool inAnimation_ = true;
 
 	// テキスト
-	std::unique_ptr<FontObject> gameOverFontObject_;
+	std::unique_ptr<FontObject> clearFontObject_;
 
 	// リトライ
 	std::unique_ptr<FontObject> retryFontObject_;
@@ -46,6 +46,7 @@ private:
 	std::function<void()> onRetryClicked_ = nullptr;
 	std::function<void()> onSelectClicked_ = nullptr;
 
+	// 選択番号
 	int selectNum_ = 0;
 
 private: // 調整項目

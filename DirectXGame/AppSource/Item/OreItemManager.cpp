@@ -10,10 +10,7 @@ void OreItemManager::Initialize(const DrawData& goldOreDrawData, int texture) {
 	oreTexture_ = texture;
 
 	// メモリを確保
-	oreItems_.reserve(10);
-
-	// テストで鉱石を設定
-	AddOreItem(OreType::Large, {4.0f,0.0f,7.0f});
+	oreItems_.reserve(20);
 
 	// アウトライン描画用
 	oreOutLineObject_ = std::make_unique<OreOutLineObject>();
@@ -54,8 +51,12 @@ void OreItemManager::Update() {
 	}
 
 	// 選択されていればアウトラインを更新
-	if (selectId_ != -1) {
+	if (selectId_ != -1 && oreItems_.size() > 0) {
 
+		auto it = oreItems_.find(selectId_);
+		if (it == oreItems_.end()) {
+			return;
+		}
 		// 選択した鉱石の位置を取得
 		OreItem* ore = GetOreItemForId();
 		oreOutLineObject_->transform_.position = ore->GetPos();
@@ -71,7 +72,7 @@ void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	}
 
 	// アウトラインを描画
-	if (selectId_ != -1) {
+	if (selectId_ != -1 && oreItems_.size() > 0) {
 		oreOutLineObject_->Draw(window, vpMatrix);
 	}
 

@@ -6,6 +6,7 @@
 
 #include"Item/OreItemStorageNum.h"
 #include"Item/Object/GoldOre.h"
+#include"Item/Object/OreItem.h"
 
 OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos) {
 	// マップデータ
@@ -39,6 +40,12 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vec
 			timer_ = 0.0f;
 			toRotPos_ = homePos_;
 			startFixScale_ = object_->transform_.scale;
+
+			// 距離によって帰宅時間を求める
+			Vector3 pos = homePos_ - object_->transform_.position;
+			pos.y = 0.0f;
+			float dis = pos.Length();
+			moveTime_ = dis * 0.3f;
 		}
 	};
 
@@ -65,7 +72,10 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vec
 	ApplyDebugParam();
 }
 
-void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos) {
+void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos, OreItem* oreItem) {
+
+	// 取得する鉱石
+	oreItem_ = oreItem;
 
 	// 初期位置を設定
 	object_->transform_.position = apearPos;
@@ -146,6 +156,12 @@ void OreUnit::Update() {
 
 	// 体力が0の時、死亡する
 	if (hp_ <= 0) {
+
+		if (!isDead_) {
+			// 登録されている労働者を減らす
+			oreItem_->RemoveWorker();
+		}
+
 		isDead_ = true;
 	}
 }
@@ -387,6 +403,17 @@ void OreUnit::CalculatePath(const Vector3& goal) {
 		// startPos は現在の自分の位置
 		std::vector<Vector3> calculatedPath = mapChipField_->CalculatePath(object_->transform_.position, goal);
 		path_ = calculatedPath;
+
+		if (!path_.empty()) {
+			Vector3 toFirst = path_.front() - object_->transform_.position;
+			toFirst.y = 0.0f;
+
+			// Move()で使用している判定距離(0.1f)よりも少し広めに判定をとる（例: 0.5f）
+			// これにより「今のマスの中心に戻る」という挙動を防ぐ
+			if (toFirst.Length() < 0.5f) {
+				path_.erase(path_.begin());
+			}
+		}
 	}
 
 	// もし経路が見つからなかった場合
@@ -453,21 +480,21 @@ void OreUnit::MoveAnimationUpdate() {
 
 	if (animationTimer_ <= 0.5f) {
 		float localT = animationTimer_ / 0.5f;
-		object_->transform_.position.y = lerp(0.0f, 1.0f, localT, EaseType::EaseInOutCubic);
+		object_->transform_.position.y = lerp(0.0f, maxJumpHeight_, localT, EaseType::EaseInOutCubic);
 
 		// スケール
-		float width = lerp(1.2f, 0.5f, localT, EaseType::EaseInOutCubic);
+		float width = lerp(maxWidth_, minWidth_, localT, EaseType::EaseInOutCubic);
 		object_->transform_.scale.x = width;
 		object_->transform_.scale.z = width;
-		object_->transform_.scale.y = lerp(0.5f, 1.2f, localT, EaseType::EaseInOutCubic);
+		object_->transform_.scale.y = lerp(minHeight_, maxHeight_, localT, EaseType::EaseInOutCubic);
 	} else {
 		float localT = (animationTimer_ - 0.5f) / 0.5f;
-		object_->transform_.position.y = lerp(1.0f, 0.0f, localT, EaseType::EaseInCubic);
+		object_->transform_.position.y = lerp(maxJumpHeight_, 0.0f, localT, EaseType::EaseInCubic);
 		// スケール
-		float width = lerp(0.5f, 1.2f, localT, EaseType::EaseInOutCubic);
+		float width = lerp(minWidth_, maxWidth_, localT, EaseType::EaseInOutCubic);
 		object_->transform_.scale.x = width;
 		object_->transform_.scale.z = width;
-		object_->transform_.scale.y = lerp(1.2f, 0.5f, localT, EaseType::EaseInOutCubic);
+		object_->transform_.scale.y = lerp(maxHeight_, minHeight_, localT, EaseType::EaseInOutCubic);
 	}
 
 	if (animationTimer_ >= 1.0f) {
@@ -482,8 +509,14 @@ void OreUnit::RegisterDebugParam() {
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MaxHp", maxHp_);	
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RiseHeight", risePosY_);
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RiseTime", riseTime_);
-	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MoveTime", moveTime_);
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "FallTime", FallTime_);
+
+	// アニメーション
+	GameParamEditor::GetInstance()->AddItem("OreUnit_Animation", "MaxJumpHeight", maxJumpHeight_,0);
+	GameParamEditor::GetInstance()->AddItem("OreUnit_Animation", "MaxWidth", maxWidth_, 1);
+	GameParamEditor::GetInstance()->AddItem("OreUnit_Animation", "MinWidth", minWidth_, 2);
+	GameParamEditor::GetInstance()->AddItem("OreUnit_Animation", "MaxHeight", maxHeight_, 3);
+	GameParamEditor::GetInstance()->AddItem("OreUnit_Animation", "MinHeight", minHeight_, 4);
 }
 
 void OreUnit::ApplyDebugParam() {
@@ -493,8 +526,14 @@ void OreUnit::ApplyDebugParam() {
 	maxHp_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MaxHp");
 	risePosY_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "RiseHeight");
 	riseTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "RiseTime");
-	moveTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "MoveTime");
 	FallTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "FallTime");
+
+	// アニメーション
+	maxJumpHeight_ = GameParamEditor::GetInstance()->GetValue<float>("OreUnit_Animation", "MaxJumpHeight");
+	maxWidth_ = GameParamEditor::GetInstance()->GetValue<float>("OreUnit_Animation", "MaxWidth");
+	minWidth_ = GameParamEditor::GetInstance()->GetValue<float>("OreUnit_Animation", "MinWidth");
+	maxHeight_ = GameParamEditor::GetInstance()->GetValue<float>("OreUnit_Animation", "MaxHeight");
+	minHeight_ = GameParamEditor::GetInstance()->GetValue<float>("OreUnit_Animation", "MinHeight");
 }
 
 // ヘルプ関数

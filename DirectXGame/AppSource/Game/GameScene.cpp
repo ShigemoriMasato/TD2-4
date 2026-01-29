@@ -5,6 +5,7 @@
 #include"Item/OreItemStorageNum.h"
 #include"LightManager.h"
 #include <Utility/Easing.h>
+#include<Game/SelectScene.h>
 
 namespace {
 	//MiniMap確認用
@@ -17,8 +18,18 @@ namespace {
 	std::string oreModelName = "Ore";
 
 	std::string mineralModelName = "Mineral";
+	std::string mineralItemModelName = "MineralItem";
 
 	std::string spriteModelName = "Sprite";
+
+	std::string unitHpModelName = "UnitHp";
+}
+
+GameScene::~GameScene() {
+	isSceneChange_ = false;
+	isClearScene_ = false;
+	isGameOverScene_ = false;
+	OreItemStorageNum::currentOreItemNum_ = 0;
 }
 
 void GameScene::Initialize() {
@@ -54,6 +65,10 @@ void GameScene::Initialize() {
 	LightManager::light_.direction = { 0.0f,-1.0f,0.0f };
 	LightManager::light_.intensity = 1.0f;
 
+	// 登録
+	RegisterDebugParam();
+	ApplyDebugParam();
+
 	//==================================================
 	// カメラシステム
 	//==================================================
@@ -73,6 +88,9 @@ void GameScene::Initialize() {
 	// マップデータの受け取り
 	mapChipField_->SetMapChipData(currentMap_.mapChipData);
 
+	// マップの最大サイズを取得
+	cameraController_->SetMapMaxSize(mapChipField_->GetMaxMapSize());
+
 
 	// Cubeモデルを取得
 	auto wallModel = modelManager_->GetNodeModelData(0);
@@ -90,6 +108,10 @@ void GameScene::Initialize() {
 	//ColorMap作成
 	LoadDebugColorMap();
 
+	// MiniMapの初期化
+	miniMap_ = std::make_unique<MiniMap>();
+	miniMap_->Initialize((int)currentMap_.mapChipData[0].size(), (int)currentMap_.mapChipData.size(), textureManager_);
+
 	//================================================================
 	// 鉱石システム
 	//================================================================
@@ -99,11 +121,14 @@ void GameScene::Initialize() {
 	auto oreItemModel = modelManager_->GetNodeModelData(oreItemModelID);
 
 	// 鉱石のテクスチャを取得
-	int oreItemTextrueIndex = textureManager_->GetTexture("Mineral-0.png");
+	int oreItemTextureIndex = textureManager_->GetTexture("MineralDeposite_02.png");
 
 	// 鉱石の管理システムを初期化
 	oreItemManager_ = std::make_unique<OreItemManager>();
-	oreItemManager_->Initialize(drawDataManager_->GetDrawData(oreItemModel.drawDataIndex), oreItemTextrueIndex);
+	oreItemManager_->Initialize(drawDataManager_->GetDrawData(oreItemModel.drawDataIndex), oreItemTextureIndex);
+
+	//鉱床の配置
+	PutGold();
 
 	//============================================================================
 	// ユニットシステム
@@ -130,6 +155,20 @@ void GameScene::Initialize() {
 		drawDataManager_->GetDrawData(oreModel.drawDataIndex), oreTextureIndex,
 		commonData_->keyManager.get());
 
+	// 鉱石モデル
+	int mItemModelID = modelManager_->LoadModel(mineralItemModelName);
+	auto mItemModel = modelManager_->GetNodeModelData(mItemModelID);
+
+	// 鉱石のテクスチャを取得
+	int mItemTextureIndex = textureManager_->GetTexture("Mineral-0.png");
+
+	// ユニットの演出管理クラス(仮で作成したため消すかも)
+	unitEffectManager_ = std::make_unique<UnitEffectManager>();
+	unitEffectManager_->Initialize(drawDataManager_->GetDrawData(mItemModel.drawDataIndex), mItemTextureIndex);
+
+	// 演出管理クラスを取得
+	unitManager_->SetUnitEffect(unitEffectManager_.get());
+
 	//==========================================================================================
 	// ポストエフェクト
 	//==========================================================================================
@@ -140,11 +179,6 @@ void GameScene::Initialize() {
 	postEffectConfig_.window = gameWindow_->GetWindow();
 	postEffectConfig_.origin = display_;
 	postEffectConfig_.jobs_ = 0;
-
-	//=======================================================
-	// ゲームオーバーシーンの初期化
-	//=======================================================
-	InitializeGameOver();
 
 	//==================================================================
 	// UI
@@ -166,6 +200,16 @@ void GameScene::Initialize() {
 	unitCounterUI_->fontObject_->transform_.position.x = 800.0f;
 	unitCounterUI_->fontObject_->transform_.position.y = 128.0f;
 
+	// spriteモデルを取得
+	int uModelID = modelManager_->LoadModel(unitHpModelName);
+	auto uModel = modelManager_->GetNodeModelData(uModelID);
+
+	// ユニットのHpUI
+	oreUnitHpUI_ = std::make_unique<OreUnitHPUI>();
+	oreUnitHpUI_->Initialize(drawDataManager_->GetDrawData(uModel.drawDataIndex));
+	// ユニット管理クラスに持たせる
+	unitManager_->SetUnitHp(oreUnitHpUI_.get());
+
 	// 鉱石のアイテムUI
 	oreItemUI_ = std::make_unique<CounterUI>();
 	oreItemUI_->Initialize(fontName, L"こうせき :", OreItemStorageNum::currentOreItemNum_, OreItemStorageNum::maxOreItemNum_, drawData, fontLoader_);
@@ -175,24 +219,81 @@ void GameScene::Initialize() {
 	// 時間を測る
 	timeTracker_ = std::make_unique<TimeTracker>();
 	timeTracker_->StartMeasureTimes();
+	timeTracker_->SetCountTime(mTime_, sTime_);
 
 	// 時間を表示するUI
 	timerUI_ = std::make_unique<TimerUI>();
 	timerUI_->Initialize(fontName, drawData, fontLoader_);
+
+	//=======================================================
+	// その他のシーンを初期化
+	//=======================================================
+	InitializeOtherScene();
 }
 
-void GameScene::InitializeGameOver() {
+void GameScene::InitializeOtherScene() {
 
 	// spriteモデルを取得
 	int spriteModelID = modelManager_->LoadModel(spriteModelName);
 	auto spriteModel = modelManager_->GetNodeModelData(spriteModelID);
 
+	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
+
 	// ゲームオーバーUIの初期化
 	gameOverUI_ = std::make_unique<GameOverUI>();
-	gameOverUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex));
+	gameOverUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), commonData_->keyManager.get(), fontName, drawData, fontLoader_);
+	// リトライ
+	gameOverUI_->SetOnRetryClicked([this]() {
+		isSceneChange_ = true;
+		isRetry_ = true;
+		});
+	// 選択
+	gameOverUI_->SetOnSelectClicked([this]() {
+		isSceneChange_ = true;
+		isRetry_ = false;
+		});
+
+	// クリアUIの初期化
+	clearUI_ = std::make_unique<ClearUI>();
+	clearUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), commonData_->keyManager.get(), fontName, drawData, fontLoader_);
+	// リトライ
+	clearUI_->SetOnRetryClicked([this]() {
+		isSceneChange_ = true;
+		isRetry_ = true;
+	});
+	// 選択
+	clearUI_->SetOnSelectClicked([this]() {
+		isSceneChange_ = true;
+		isRetry_ = false;
+	});
+
+	// 操作説明のテクスチャを取得
+	int guidTextureIndex = textureManager_->GetTexture("TutrialImage.png");
+
+	// ポーズシーンUIの初期化
+	pauseUI_ = std::make_unique<PauseUI>();
+	pauseUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), static_cast<int32_t>(guidTextureIndex), commonData_->keyManager.get(), fontName, drawData, fontLoader_);
+	// リトライ
+	pauseUI_->SetOnRetryClicked([this]() {
+		isPauseScene_ = !isPauseScene_;
+
+		if (isPauseScene_) {
+			timeTracker_->EndMeasureTimes();
+		} else {
+			timeTracker_->StartMeasureTimes();
+		}
+	});
+	// 選択
+	pauseUI_->SetOnSelectClicked([this]() {
+		isPauseScene_ = true;
+	});
 }
 
 std::unique_ptr<IScene> GameScene::Update() {
+#ifdef USE_IMGUI
+	// 値の適応
+	ApplyDebugParam();
+#endif
 
 	// Δタイムを取得する
 	FpsCount::deltaTime = engine_->GetFPSObserver()->GetDeltatime();
@@ -218,14 +319,35 @@ std::unique_ptr<IScene> GameScene::Update() {
 		// シーン遷移
 		fadeTransition_->Update();
 	} else {
-		if (isGameOverScene_) {
 
-			// UIの更新処理
-			gameOverUI_->Update();
+		if (!isGameOverScene_ && !isClearScene_) {
+			// ポーズシーンの更新処理
+			pauseUI_->Update();
+		}
 
+		if (isGameOverScene_ || isClearScene_) {
+
+			if (isClearScene_) {
+				// クリアシーンの更新処理
+				clearUI_->Update();
+			} else {
+				// ゲームオーバーの更新処理
+				gameOverUI_->Update();
+			}
 		} else {
-			// ゲームの更新処理
-			InGameScene();
+			if (!isPauseScene_) {
+				// ゲームの更新処理
+				InGameScene();
+			}
+		}
+	}
+
+	// 切り替える
+	if (isSceneChange_) {
+		if (isRetry_) {
+			return std::make_unique<GameScene>();
+		} else {
+			return std::make_unique<SelectScene>();
 		}
 	}
 
@@ -259,7 +381,6 @@ void GameScene::InGameScene() {
 
 		// 左クリックを取得
 		if ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80)) {
-
 			// 選択された鉱石を取得
 			OreItem* selectedOreItem = oreItemManager_->GetOreItemForId();
 
@@ -268,7 +389,7 @@ void GameScene::InGameScene() {
 			if (deletaNum >= 0) {
 
 				// おれを追加
-				unitManager_->RegisterUnit(selectedOreItem->GetPos(), 0);
+				unitManager_->RegisterUnit(selectedOreItem->GetPos(), 0, selectedOreItem);
 
 				// 鉱石側の労働者カウントを増やす
 				for (int i = 0; i < unitManager_->GetUnitSpawnNum(); ++i) {
@@ -277,7 +398,7 @@ void GameScene::InGameScene() {
 			} else {
 				if (unitManager_->GetUnitSpawnNum() >= deletaNum * -1.0f) {
 					// おれを追加
-					unitManager_->RegisterUnit(selectedOreItem->GetPos(), deletaNum);
+					unitManager_->RegisterUnit(selectedOreItem->GetPos(), deletaNum, selectedOreItem);
 
 					// 鉱石側の労働者カウントを増やす
 					int32_t actualSpawnCount = unitManager_->GetUnitSpawnNum() + deletaNum;
@@ -303,6 +424,12 @@ void GameScene::InGameScene() {
 	// ユニットの更新処理
 	unitManager_->Update();
 
+	// 出撃出来るユニットがいなくなったらゲームオーバー
+	if (unitManager_->GetMaxOreCount() <= 0) {
+		// ゲームオーバーシーンに移動
+		isGameOverScene_ = true;
+	}
+
 	//============================================
 	// 当たり判定
 	//============================================
@@ -323,50 +450,89 @@ void GameScene::InGameScene() {
 	// 時間を更新
 	timeTracker_->Update();
 
+	// 時間切れになれば
+	if (timeTracker_->isFinishd()) {
+
+		// 鉱石が目標数納品を達成するか、鉱石がなくなればクリア
+		if (OreItemStorageNum::currentOreItemNum_ >= OreItemStorageNum::maxOreItemNum_ ||
+			oreItemManager_->GetCurrentOreItemNum() <= 0) {
+			// クリアシーンに移動
+			isClearScene_ = true;
+		} else {
+			// ゲームオーバーシーンに移動
+			isGameOverScene_ = true;
+		}
+	}
+
 	// 時間表示UIを更新
 	timerUI_->Update();
 }
 
 void GameScene::Draw() {
-	display_->PreDraw(gameWindow_->GetCommandObject(), true);
 
-	// カメラ行列
-	Matrix4x4 vpMatrix = cameraController_->GetVpMatrix();
-	LightManager::light_.cameraWorldPos = cameraController_->GetCameraWorldPos();
+	for (int i = 0; i < 2; ++i) {
+		Matrix4x4 vpMatrix{};
 
-	// マップを描画
-	mapRender_->Draw(vpMatrix, gameWindow_->GetWindow());
+		if (i == 0) {
+			display_->PreDraw(gameWindow_->GetCommandObject(), true);
+			vpMatrix = cameraController_->GetVpMatrix();
+		} else {
+			vpMatrix = miniMap_->PreDraw(gameWindow_->GetWindow())->GetVPMatrix();
+		}
 
-	// デバッグ用マップ描画
-	debugMapRender_->Draw(vpMatrix, colorMap_, currentMap_.mapChipData, gameWindow_->GetWindow());
+		// カメラ行列
+		LightManager::light_.cameraWorldPos = cameraController_->GetCameraWorldPos();
 
-	// 鉱石の描画
-	oreItemManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		// マップを描画
+		mapRender_->Draw(vpMatrix, gameWindow_->GetWindow());
 
-	// ユニットを描画
-	unitManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		// デバッグ用マップ描画
+		debugMapRender_->Draw(vpMatrix, colorMap_, currentMap_.mapChipData, gameWindow_->GetWindow());
 
-	/// UIの描画処理
-	vpMatrix = uiCamera_->GetVPMatrix();
+		// 鉱石の描画
+		oreItemManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
-	// ユニットの数UIを描画
-	unitCounterUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
-	// 鉱石の数UIを描画
-	oreItemUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		// ユニットを描画
+		unitManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
-	// 時間計測表示UI
-	timerUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		// ユニットの演出を描画(仮で作成したクラスなので消すかも)
+		unitEffectManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
-	// ゲームオーバーシーンの描画処理
-	if (isGameOverScene_) {
-		// UIの更新処理
-		gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		// ユニットのHp描画
+		oreUnitHpUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+		/// UIの描画処理
+		vpMatrix = uiCamera_->GetVPMatrix();
+
+		// ユニットの数UIを描画
+		unitCounterUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		// 鉱石の数UIを描画
+		oreItemUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+		// 時間計測表示UI
+		timerUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+		// ポーズシーンを描画
+		pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+		// ゲームオーバーシーンの描画処理
+		if (isGameOverScene_) {
+			// UIの更新処理
+			gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		}
+
+		// クリアシーンの描画処理
+		if (isClearScene_) {
+			// クリアシーンの更新処理
+			clearUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		}
+
+		// シーン遷移の描画
+		fadeTransition_->Draw(gameWindow_->GetWindow(), vpMatrix);
 	}
 
-	// シーン遷移の描画
-	fadeTransition_->Draw(gameWindow_->GetWindow(), vpMatrix);
-
 	display_->PostDraw(gameWindow_->GetCommandObject());
+	miniMap_->PostDraw(gameWindow_->GetWindow());
 
 	//PostEffectとか
 	postEffectConfig_.output = gameWindow_->GetDualDisplay();
@@ -374,9 +540,9 @@ void GameScene::Draw() {
 
 	gameWindow_->PreDraw(false);
 
-	
-	//ImGui
 
+	//ImGui
+	miniMap_->DrawImGui();
 	gameWindow_->DrawDisplayWithImGui();
 	paramManager_->Draw();
 
@@ -387,16 +553,26 @@ void GameScene::Draw() {
 }
 
 void GameScene::RegisterDebugParam() {
+	// ゲームの時間
+	GameParamEditor::GetInstance()->AddItem("GameTime", "m", mTime_);
+	GameParamEditor::GetInstance()->AddItem("GameTime", "s", sTime_);
 
+	// 鉱石数
+	GameParamEditor::GetInstance()->AddItem("OreItem", "MaxOreItem", OreItemStorageNum::maxOreItemNum_);
 }
 
 void GameScene::ApplyDebugParam() {
+	// ゲームの時間
+	mTime_ = GameParamEditor::GetInstance()->GetValue<float>("GameTime", "m");
+	sTime_= GameParamEditor::GetInstance()->GetValue<float>("GameTime", "s");
 
+	// 鉱石数
+	OreItemStorageNum::maxOreItemNum_ = GameParamEditor::GetInstance()->GetValue<int32_t>("OreItem", "MaxOreItem");
 }
 
 void GameScene::LoadDebugColorMap() {
 	auto values = binaryManager_.Read("MapTypeEditorConfig");
-	
+
 	//colorMapの初期化
 	for (int i = 0; i < int(TileType::Count); ++i) {
 		Vector4 color = ConvertColor(lerpColor(0xff5500ff, 0x0055ffff, float(i) / (float(TileType::Count) - 1)));
@@ -408,5 +584,21 @@ void GameScene::LoadDebugColorMap() {
 		int tile = binaryManager_.Reverse<int>(values[index++].get());
 		Vector3 color = binaryManager_.Reverse<Vector3>(values[index++].get());
 		colorMap_[static_cast<TileType>(tile)] = color;
+	}
+}
+
+void GameScene::PutGold() {
+	for (const auto& row : currentMap_.mapChipData) {
+		for (const auto& tile : row) {
+			if (tile == TileType::Gold) {
+
+				Vector3 pos = {
+					static_cast<float>(&tile - &row[0]),
+					0.0f,
+					static_cast<float>(&row - &currentMap_.mapChipData[0])
+				};
+				oreItemManager_->AddOreItem(OreType::Medium, pos);
+			}
+		}
 	}
 }

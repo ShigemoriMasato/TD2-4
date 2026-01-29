@@ -15,15 +15,23 @@
 #include"UI/CounterUI.h"
 #include"UI/TimerUI.h"
 #include"TimeTracker.h"
+#include"UI/OreUnitHPUI.h"
+#include"Unit/UnitEffectManager.h"
 
+#include <Game/MiniMap/MiniMap.h>
 #include <ModelEditScene/Render/MapRender.h>
 #include <ModelEditScene/Render/DebugMCRender.h>
 
 // ゲームオーバーシーン
 #include"UI/GameOverUI.h"
+// クリアシーン
+#include"UI/ClearUI.h"
+// ポーズシーン
+#include"UI/PauseUI.h"
 
 class GameScene : public IScene {
 public:
+	~GameScene();
 
 	void Initialize() override;
 	std::unique_ptr<IScene> Update() override;
@@ -56,9 +64,10 @@ private:
 	std::unique_ptr<PostEffect> postEffect_ = nullptr;
 	PostEffectConfig postEffectConfig_{};
 	Blur blur_{};
-
-	// ゲームオーバーシーン
-	bool isGameOverScene_ = false;
+	
+	// シーン切り替え
+	bool isSceneChange_ = false;
+	bool isRetry_ = true;
 
 	// 遷移の処理
 	std::unique_ptr<FadeTransition> fadeTransition_;
@@ -78,6 +87,9 @@ private:
 	std::unique_ptr<DebugMCRender> debugMapRender_;//マップチップを単純な色で描画
 	std::map<TileType, Vector3> colorMap_;//DebugMCRenderに使う、マップチップの色
 
+	// MiniMap
+	std::unique_ptr<MiniMap> miniMap_;
+
 	// 現在のマップ
 	NewMap currentMap_;
 
@@ -87,10 +99,16 @@ private:
 	// ユニット管理
 	std::unique_ptr<UnitManager> unitManager_;
 
+	// ユニットの演出管理(仮で作ったため消すかも)
+	std::unique_ptr<UnitEffectManager> unitEffectManager_;
+
 	// ユニットの数UI
 	std::unique_ptr<CounterUI> unitCounterUI_;
 	// 鉱石の数UI
 	std::unique_ptr<CounterUI> oreItemUI_;
+
+	// ユニットのHPUI
+	std::unique_ptr<OreUnitHPUI> oreUnitHpUI_;
 
 	// 時間を測る
 	std::unique_ptr<TimeTracker> timeTracker_;
@@ -105,6 +123,28 @@ private:
 	// ゲームオーバーUI
 	std::unique_ptr<GameOverUI> gameOverUI_;
 
+	// ゲームオーバーシーン
+	bool isGameOverScene_ = false;
+
+	//================================================
+	// クリアシーン
+	//================================================
+
+	// クリアUI
+	std::unique_ptr<ClearUI> clearUI_;
+
+	// クリアシーンを判断
+	bool isClearScene_ = false;
+
+	//================================================
+	// ポーズシーン
+	//================================================
+
+	// ポーズシーン
+	std::unique_ptr<PauseUI> pauseUI_;
+
+	// ポーズシーン
+	bool isPauseScene_ = false;
 
 	//================================================
 	// Tool系
@@ -112,13 +152,22 @@ private:
 	//Debug用ColorMapのためのやつ
 	BinaryManager binaryManager_;
 
+private: // デバックの調整項目
+
+	// 時間
+	float mTime_ = 1.0f;
+	float sTime_ = 30.0f;
+
+	// 最大の鉱石数
+	int32_t maxOreItemNum_ = 20;
+
 private:
 
 	// ゲームの実行処理
 	void InGameScene();
 
-	// ゲームオーバーシーンの初期化
-	void InitializeGameOver();
+	// 他のシーンの初期化処理
+	void InitializeOtherScene();
 
 	/// <summary>
 	/// 値を登録する
@@ -134,4 +183,9 @@ private:
 	/// ColorMapを読み込む
 	/// </summary>
 	void LoadDebugColorMap();
+
+	/// <summary>
+	/// 鉱床の配置
+	/// </summary>
+	void PutGold();
 };

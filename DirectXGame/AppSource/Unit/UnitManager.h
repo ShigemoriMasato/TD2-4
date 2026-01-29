@@ -6,6 +6,11 @@
 #include"Unit/Player/PlayerUnit.h"
 #include"Unit/Ore/OreUnit.h"
 
+#include"UI/OreUnitHPUI.h"
+#include"UnitEffectManager.h"
+
+class OreItem;
+
 class UnitManager {
 public:
 
@@ -14,6 +19,7 @@ public:
 		uint32_t spawnNum = 1;  // 出現させる数
 		uint32_t currentNum = 0; // 現在の出現数
 		Vector3 pos = {}; // 出現位置
+		OreItem* oreItem_ = nullptr;
 	};
 
 public:
@@ -29,7 +35,7 @@ public:
 	/// </summary>
 	/// <param name="targetPos">移動する目標位置</param>
 	/// <param name="excessNum">余剰の数</param>
-	void RegisterUnit(const Vector3& targetPos,const int32_t& excessNum);
+	void RegisterUnit(const Vector3& targetPos,const int32_t& excessNum, OreItem* oreItem);
 
 	// 出撃させるユニットの数
 	int32_t GetUnitSpawnNum() const { return unitSpawnNum_; }
@@ -40,10 +46,23 @@ public:
 	// 現在出撃している数
 	int32_t GetOreCount() const { return activeCount_; }
 
+	// UIシステムを取得
+	void SetUnitHp(OreUnitHPUI* oreUnitHPUI) {
+		oreUnitHPUI_ = oreUnitHPUI;
+	}
+
+	// 演出システムを取得
+	void SetUnitEffect(UnitEffectManager* unitEffectManager) {
+		unitEffectManager_ = unitEffectManager;
+	}
+
 private:
 
 	// マップ
 	MapChipField* mapChipField_ = nullptr;
+
+	OreUnitHPUI* oreUnitHPUI_ = nullptr;
+	UnitEffectManager* unitEffectManager_ = nullptr;
 
 	// おれの描画データ
 	DrawData oreDrawData_;
@@ -58,7 +77,7 @@ private:
 	// 最大のおれの数
 	int32_t maxOreCount_ = 100;
 	// 現在出せる最大のおれの数
-	int32_t maxCurrentOreCount_ = 10;
+	int32_t maxCurrentOreCount_ = 20;
 	// 現在のid
 	int32_t currentId_ = 0;
 	// 再利用可能id
@@ -97,7 +116,7 @@ private:
 	/// ユニットを追加
 	/// </summary>
 	/// <param name="targetPos">移動する位置</param>
-	void AddOreUnit(const Vector3& targetPos);
+	void AddOreUnit(const Vector3& targetPos, OreItem* oreItem);
 
 	// 一番近い出現位置を求める
 	Vector3 GetNearHomePos(const Vector3& targetPos);

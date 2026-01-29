@@ -30,6 +30,9 @@ public:
 	// 選択されたIdから鉱石を取得する
 	OreItem* GetOreItemForId();
 
+	// 現在の鉱石の数
+	int32_t GetCurrentOreItemNum() { return static_cast<int32_t>(oreItems_.size()); }
+
 private:
 
 	// 鉱石の描画データ

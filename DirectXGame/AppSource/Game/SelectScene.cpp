@@ -5,10 +5,14 @@
 #include"Utility/Easing.h"
 #include<numbers>
 #include"LightManager.h"
+#include"SelectStageNum.h"
+#include <Game/GameScene.h>
 
 namespace {
 	//Minimap確認用
 	bool poseMode = false;
+
+	std::string fontName = "ZenOldMincho-Medium.ttf";
 
 	std::string playerModelName = "Player";
 
@@ -63,9 +67,11 @@ void SelectScene::Initialize() {
 	int spriteModelID = modelManager_->LoadModel(spriteModelName);
 	auto spriteModel = modelManager_->GetNodeModelData(spriteModelID);
 
+	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
+
 	// ステージのロゴ表示機能
 	selectStageUI_ = std::make_unique<SelectStageUI>();
-	selectStageUI_->Init(drawDataManager_->GetDrawData(spriteModel.drawDataIndex));
+	selectStageUI_->Init(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), fontName, drawData, fontLoader_);
 
 	// プレイヤーモデルを取得
 	int stageModelID = modelManager_->LoadModel(playerModelName);
@@ -107,12 +113,17 @@ std::unique_ptr<IScene> SelectScene::Update() {
 	}
 
 	if (fadeTransition_->IsAnimation()) {
-
+		isSceneChange_ = false;
 		// シーン遷移
 		fadeTransition_->Update();
 	} else {
 		// インゲームの処理
 		InGameScene();
+	}
+
+	// シーンを切り替える
+	if (isSceneChange_ && !fadeTransition_->IsAnimation()) {
+		return std::make_unique<GameScene>();
 	}
 	
 	return nullptr;
@@ -130,6 +141,7 @@ void SelectScene::InGameScene() {
 		if (!selectStageUI_->IsAnimation() && !isPlayerAnimation_) {
 			if (selectStageNum_ > 1) {
 				selectStageNum_ -= 1;
+				SelectStageNum::num_ = selectStageNum_;
 				selectStageUI_->SetAnimation();
 				// プレイヤー関係
 				isPlayerAnimation_ = true;
@@ -147,6 +159,7 @@ void SelectScene::InGameScene() {
 		if (!selectStageUI_->IsAnimation() && !isPlayerAnimation_) {
 			if (selectStageNum_ < maxStageNum_) {
 				selectStageNum_ += 1;
+				SelectStageNum::num_ = selectStageNum_;
 				selectStageUI_->SetAnimation();
 				// プレイヤー関係
 				isPlayerAnimation_ = true;
@@ -158,6 +171,11 @@ void SelectScene::InGameScene() {
 				endRotY_ = std::numbers::pi_v<float> / 2;
 			}
 		}
+	}
+
+	// 決定
+	if (key[Key::Decision]) {
+		isSceneChange_ = true;
 	}
 
 	//==============================================

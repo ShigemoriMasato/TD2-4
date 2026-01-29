@@ -1,6 +1,6 @@
 #include"PlayerUnit.h"
 #include"FpsCount.h"
-
+#include"Utility/Easing.h"
 #include <Common/DebugParam/GameParamEditor.h>
 
 #ifdef USE_IMGUI
@@ -69,6 +69,9 @@ void PlayerUnit::Update() {
 	// 回転処理
 	Rotate();
 
+	// アニメーション処理
+	AnimationUpdate();
+
 	// 更新処理
 	object_->Update();
 
@@ -81,13 +84,13 @@ void PlayerUnit::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	// 描画
 	object_->Draw(window, vpMatrix);
 
-#ifdef USE_IMGUI
-	ImGui::Begin("Player");
-
-	ImGui::DragFloat3("PlayerPos", &object_->transform_.position.x);
-
-	ImGui::End();
-#endif
+//#ifdef USE_IMGUI
+//	ImGui::Begin("Player");
+//
+//	ImGui::DragFloat3("PlayerPos", &object_->transform_.position.x);
+//
+//	ImGui::End();
+//#endif
 }
 
 void PlayerUnit::OnCollision(Collider* other) {
@@ -100,6 +103,7 @@ void PlayerUnit::ProcessMoveInput() {
 
 	// 速度
 	velocity_ = { 0.0f,0.0f,0.0f };
+	isMove_ = false;
 
 	// 操作
 	auto key = keyManager_->GetKeyStates();
@@ -107,21 +111,29 @@ void PlayerUnit::ProcessMoveInput() {
 	if (key[Key::Up]) {
 		velocity_.z = speed_ * FpsCount::deltaTime;
 		dir_ = { 0.0f,0.0f,1.0f };
+		isMove_ = true;
 	}
 
 	if (key[Key::Down]) {
 		velocity_.z = -speed_ * FpsCount::deltaTime;
 		dir_ = { 0.0f,0.0f,-1.0f };
+		isMove_ = true;
 	}
 
 	if (key[Key::Left]) {
 		velocity_.x = -speed_ * FpsCount::deltaTime;
 		dir_ = { -1.0f,0.0f,0.0f };
+		isMove_ = true;
 	}
 
 	if (key[Key::Right]) {
 		velocity_.x = speed_ * FpsCount::deltaTime;
 		dir_ = { 1.0f,0.0f,0.0f };
+		isMove_ = true;
+	}
+
+	if (!isAnimation_ && isMove_) {
+		isAnimation_ = true;
 	}
 }
 
@@ -231,14 +243,74 @@ void PlayerUnit::Rotate() {
 	object_->transform_.rotate = currentRot;
 }
 
+void PlayerUnit::AnimationUpdate() {
+	if (isAnimation_) {
+		animationTimer_ += FpsCount::deltaTime / moveAnimationTime_;
+
+		if (animationTimer_ <= 0.4f) {
+			float localT = animationTimer_ / 0.4f;
+			object_->transform_.position.y = lerp(0.0f, animeMaxHeight_, localT, EaseType::EaseInOutCubic);
+
+			// スケール
+			float width = lerp(1.0f, minWidth_, localT, EaseType::EaseInOutCubic);
+			object_->transform_.scale.x = width;
+			object_->transform_.scale.z = width;
+			object_->transform_.scale.y = lerp(1.0f, maxHeight_, localT, EaseType::EaseInOutCubic);
+		} else if(animationTimer_ <= 0.8f) {
+			float localT = (animationTimer_ - 0.4f) / 0.4f;
+			object_->transform_.position.y = lerp(animeMaxHeight_, 0.0f, localT, EaseType::EaseInCubic);
+
+			// スケール
+			float width = lerp(minWidth_, maxWidth_, localT, EaseType::EaseInOutCubic);
+			object_->transform_.scale.x = width;
+			object_->transform_.scale.z = width;
+			object_->transform_.scale.y = lerp(maxHeight_, minHeight_, localT, EaseType::EaseInOutCubic);
+		} else {
+			float localT = (animationTimer_ - 0.8f) / 0.2f;
+			// スケール
+			float width = lerp(maxWidth_, 1.0f, localT, EaseType::EaseInOutCubic);
+			object_->transform_.scale.x = width;
+			object_->transform_.scale.z = width;
+			object_->transform_.scale.y = lerp(minHeight_, 1.0f, localT, EaseType::EaseInOutCubic);
+		}
+
+		if (animationTimer_ >= 1.0f) {
+			animationTimer_ = 0.0f;
+			object_->transform_.scale = { 1.0f,1.0f,1.0f };
+
+			if (isMove_) {
+				isAnimation_ = true;
+			} else {
+				isAnimation_ = false;
+			}
+		}
+	}
+}
+
 void PlayerUnit::RegisterDebugParam() {
 	// 登録
 	GameParamEditor::GetInstance()->AddItem(kGroupName_,"Speed", speed_);
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "ColliderRadius", circleCollider_.radius);
+
+	// アニメーション
+	GameParamEditor::GetInstance()->AddItem("Player_Animation", "MaxTime", moveAnimationTime_,0);
+	GameParamEditor::GetInstance()->AddItem("Player_Animation", "MaxJumpHeight", animeMaxHeight_,1);
+	GameParamEditor::GetInstance()->AddItem("Player_Animation", "MaxWidth", maxWidth_,2);
+	GameParamEditor::GetInstance()->AddItem("Player_Animation", "MinWidth", minWidth_,3);
+	GameParamEditor::GetInstance()->AddItem("Player_Animation", "MaxHeight", maxHeight_,4);
+	GameParamEditor::GetInstance()->AddItem("Player_Animation", "MinHeight", minHeight_,5);
 }
 
 void PlayerUnit::ApplyDebugParam() {
 	// 適応
 	speed_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "Speed");
 	circleCollider_.radius = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "ColliderRadius");
+
+	// アニメーション
+	moveAnimationTime_ = GameParamEditor::GetInstance()->GetValue<float>("Player_Animation", "MaxTime");
+	animeMaxHeight_ = GameParamEditor::GetInstance()->GetValue<float>("Player_Animation", "MaxJumpHeight");
+	maxWidth_ = GameParamEditor::GetInstance()->GetValue<float>("Player_Animation", "MaxWidth");
+	minWidth_ = GameParamEditor::GetInstance()->GetValue<float>("Player_Animation", "MinWidth");
+	maxHeight_ = GameParamEditor::GetInstance()->GetValue<float>("Player_Animation", "MaxHeight");
+	minHeight_ = GameParamEditor::GetInstance()->GetValue<float>("Player_Animation", "MinHeight");
 }

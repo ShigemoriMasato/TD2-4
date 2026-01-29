@@ -165,6 +165,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\GameCamera\CameraController.cpp" />
     <ClCompile Include="AppSource\GameCamera\SelectCamera.cpp" />
     <ClCompile Include="AppSource\GameCommon\DefaultObject.cpp" />
+    <ClCompile Include="AppSource\Game\MiniMap\MiniMap.cpp" />
     <ClCompile Include="AppSource\Game\NewMap\NewMap.cpp" />
     <ClCompile Include="AppSource\Game\SelectScene.cpp" />
     <ClCompile Include="AppSource\Item\Object\GoldOre.cpp" />
@@ -172,6 +173,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\Item\Object\OreOutLineObject.cpp" />
     <ClCompile Include="AppSource\Item\OreItemManager.cpp" />
     <ClCompile Include="AppSource\TimeTracker.cpp" />
+    <ClCompile Include="AppSource\UI\ClearUI.cpp" />
     <ClCompile Include="AppSource\UI\CounterUI.cpp" />
     <ClCompile Include="AppSource\UI\FadeTransition.cpp" />
     <ClCompile Include="AppSource\UI\GameOverUI.cpp" />
@@ -181,10 +183,12 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\UI\TimerUI.cpp" />
     <ClCompile Include="AppSource\Unit\MapChipField.cpp" />
     <ClCompile Include="AppSource\Unit\MapChipRender.cpp" />
+    <ClCompile Include="AppSource\UI\OreUnitHPUI.cpp" />
     <ClCompile Include="AppSource\Unit\Ore\OreUnit.cpp" />
     <ClCompile Include="AppSource\Unit\Ore\OreUnitObject.cpp" />
     <ClCompile Include="AppSource\Unit\Player\PlayerUnit.cpp" />
     <ClCompile Include="AppSource\Unit\Player\PlayerUnitObject.cpp" />
+    <ClCompile Include="AppSource\Unit\UnitEffectManager.cpp" />
     <ClCompile Include="AppSource\Unit\UnitManager.cpp" />
     <ClCompile Include="AppSource\ModelEditScene\Render\DebugMCRender.cpp" />
     <ClCompile Include="Engine\Assets\Audio\AudioManager.cpp" />
@@ -239,6 +243,12 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\GameCamera\DebugMousePos.h" />
     <ClInclude Include="AppSource\GameCamera\SelectCamera.h" />
     <ClInclude Include="AppSource\GameCommon\DefaultObject.h" />
+    <ClCompile Include="AppSource\UI\PauseUI.cpp" />
+    <ClInclude Include="AppSource\GameCamera\DebugMousePos.h" />
+    <ClInclude Include="AppSource\GameCamera\SelectCamera.h" />
+    <ClInclude Include="AppSource\GameCommon\DefaultObject.h" />
+    <ClInclude Include="AppSource\Game\MapData\Data\StageData.h" />
+    <ClInclude Include="AppSource\Game\MiniMap\MiniMap.h" />
     <ClInclude Include="AppSource\Game\NewMap\NewMap.h" />
     <ClInclude Include="AppSource\Game\SelectScene.h" />
     <ClInclude Include="AppSource\Item\Object\GoldOre.h" />
@@ -248,8 +258,10 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\Item\OreItemManager.h" />
     <ClInclude Include="AppSource\Item\OreItemStorageNum.h" />
     <ClInclude Include="AppSource\LightManager.h" />
+    <ClInclude Include="AppSource\SelectStageNum.h" />
     <ClInclude Include="AppSource\TimeLimit.h" />
     <ClInclude Include="AppSource\TimeTracker.h" />
+    <ClInclude Include="AppSource\UI\ClearUI.h" />
     <ClInclude Include="AppSource\UI\CounterUI.h" />
     <ClInclude Include="AppSource\UI\FadeTransition.h" />
     <ClInclude Include="AppSource\UI\GameOverUI.h" />
@@ -259,6 +271,8 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\UI\TimerUI.h" />
     <ClInclude Include="AppSource\Unit\MapChipRender.h" />
     <ClInclude Include="AppSource\ModelEditScene\Render\DebugMCRender.h" />
+    <ClInclude Include="AppSource\UI\OreUnitHPUI.h" />
+    <ClInclude Include="AppSource\Unit\UnitEffectManager.h" />
     <ClInclude Include="Engine\Utility\Quaternion.h" />
     <ClCompile Include="AppSource\Scene\src\IScene.cpp" />
     <ClCompile Include="AppSource\Scene\src\InitializeScene.cpp" />
@@ -292,6 +306,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\ModelEditScene\Render\MapRender.h" />
     <ClInclude Include="AppSource\Game\NewMap\NewMapManager.h" />
     <ClInclude Include="AppSource\ModelEditScene\Render\StaticObjectRender.h" />
+    <ClInclude Include="AppSource\UI\PauseUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSource\Common\DebugParam\GameParamEditor.h" />
