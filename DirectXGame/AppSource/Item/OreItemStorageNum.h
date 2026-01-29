@@ -9,5 +9,5 @@ public:
 
 	static inline int32_t currentOreItemNum_ = 0;
 
-	static inline int32_t maxOreItemNum_ = 10;
+	static inline int32_t maxOreItemNum_ = 20;
 };
