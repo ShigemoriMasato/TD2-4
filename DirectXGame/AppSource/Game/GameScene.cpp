@@ -216,7 +216,7 @@ void GameScene::Initialize() {
 	// 時間を測る
 	timeTracker_ = std::make_unique<TimeTracker>();
 	timeTracker_->StartMeasureTimes();
-	timeTracker_->SetCountTime(1.0f, 30.0f);
+	timeTracker_->SetCountTime(1.0f, 0.0f);
 
 	// 時間を表示するUI
 	timerUI_ = std::make_unique<TimerUI>();
@@ -232,7 +232,7 @@ void GameScene::InitializeOtherScene() {
 
 	// spriteモデルを取得
 	int spriteModelID = modelManager_->LoadModel(spriteModelName);
-	auto spriteModel = modelManager_->GetNodeModelData(spriteModelID);
+	auto spriteModel = modelManager_->GetNodeModelData(1);
 
 	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
 
@@ -265,11 +265,11 @@ void GameScene::InitializeOtherScene() {
 	});
 
 	// 操作説明のテクスチャを取得
-	//int guidTextureIndex = textureManager_->GetTexture("MineralDeposite_02.png");
+	int guidTextureIndex = textureManager_->GetTexture("TutrialImage.png");
 
 	// ポーズシーンUIの初期化
 	pauseUI_ = std::make_unique<PauseUI>();
-	pauseUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex),0, commonData_->keyManager.get(), fontName, drawData, fontLoader_);
+	pauseUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), static_cast<int32_t>(guidTextureIndex), commonData_->keyManager.get(), fontName, drawData, fontLoader_);
 	// リトライ
 	pauseUI_->SetOnRetryClicked([this]() {
 		isPauseScene_ = !isPauseScene_;
