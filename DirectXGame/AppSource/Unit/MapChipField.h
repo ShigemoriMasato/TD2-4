@@ -99,6 +99,9 @@ public: // マップの情報
 	// マップの最大サイズを取得
 	Vector2 GetMaxMapSize() { return Vector2(static_cast<float>(kNumBlockVirtical), static_cast<float>(kNumBlockHorizontal)); }
 
+	// 拠点位置を取得
+	std::vector<Vector3> GetHomePos() { return homePosList_; }
+
 public: // マップの当たり判定
 
 	/// <summary>

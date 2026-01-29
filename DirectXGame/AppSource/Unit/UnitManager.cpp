@@ -137,6 +137,9 @@ void UnitManager::AddOreUnit(const Vector3& targetPos, OreItem* oreItem) {
 	// 出現位置を求める
 	Vector3 homePos = GetNearHomePos(targetPos);
 
+	// 拠点をアニメーションさせる
+	HomeManager_->SetAnimation(homePos);
+
 	bool isReuse = false;
 	int32_t index;
 	if (!freeIndices_.empty()) {

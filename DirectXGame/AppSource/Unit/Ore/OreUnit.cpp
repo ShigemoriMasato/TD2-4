@@ -186,10 +186,8 @@ void OreUnit::OnCollision(Collider* other) {
 	// プレイヤーとの当たり判定
 	if (isPlayer) {
 
-		if (state_ != State::Return) {
-			if (isConflict_) {
-				isConflict_ = false;
-			}
+		if (isConflict_) {
+			isConflict_ = false;
 		}
 
 		if (state_ != State::ToDeliver) { return; }
@@ -240,6 +238,9 @@ void OreUnit::OnCollision(Collider* other) {
 		OreUnit* oreUnit = dynamic_cast<OreUnit*>(other);
 
 		if (oreUnit) {
+
+			// 既に衝突していたら早期リターン
+			if (oreUnit->GetState() == State::Mining || oreUnit->GetState() == State::Return) { return; }
 
 			// 内積を取得する
 			float dot = MyMath::dot(oreUnit->GetDir(),dir_);
@@ -460,6 +461,9 @@ void OreUnit::Rotate() {
 	Vector3 toTarget = nextTarget - object_->transform_.position;
 	toTarget.y = 0.0f;
 	toTarget.Normalize();
+
+	// 現在の進行方向ベクトルを保持
+	dir_ = toTarget;
 
 	Vector3 targetRot = { 0, 0, 0 };
 	// Y軸回転を取得

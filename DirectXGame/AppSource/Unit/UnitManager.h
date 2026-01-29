@@ -9,6 +9,8 @@
 #include"UI/OreUnitHPUI.h"
 #include"UnitEffectManager.h"
 
+#include"Item/HomeManager.h"
+
 class OreItem;
 
 class UnitManager {
@@ -56,6 +58,11 @@ public:
 		unitEffectManager_ = unitEffectManager;
 	}
 
+	// 拠点管理クラスを取得
+	void SetHomeManager(HomeManager* home) {
+		HomeManager_ = home;
+	}
+
 private:
 
 	// マップ
@@ -63,6 +70,9 @@ private:
 
 	OreUnitHPUI* oreUnitHPUI_ = nullptr;
 	UnitEffectManager* unitEffectManager_ = nullptr;
+
+	// 拠点管理クラス
+	HomeManager* HomeManager_ = nullptr;
 
 	// おれの描画データ
 	DrawData oreDrawData_;
