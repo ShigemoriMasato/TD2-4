@@ -403,6 +403,17 @@ void OreUnit::CalculatePath(const Vector3& goal) {
 		// startPos は現在の自分の位置
 		std::vector<Vector3> calculatedPath = mapChipField_->CalculatePath(object_->transform_.position, goal);
 		path_ = calculatedPath;
+
+		if (!path_.empty()) {
+			Vector3 toFirst = path_.front() - object_->transform_.position;
+			toFirst.y = 0.0f;
+
+			// Move()で使用している判定距離(0.1f)よりも少し広めに判定をとる（例: 0.5f）
+			// これにより「今のマスの中心に戻る」という挙動を防ぐ
+			if (toFirst.Length() < 0.5f) {
+				path_.erase(path_.begin());
+			}
+		}
 	}
 
 	// もし経路が見つからなかった場合
