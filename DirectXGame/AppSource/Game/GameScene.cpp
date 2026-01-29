@@ -18,6 +18,7 @@ namespace {
 	std::string oreModelName = "Ore";
 
 	std::string mineralModelName = "Mineral";
+	std::string mineralItemModelName = "MineralItem";
 
 	std::string spriteModelName = "Sprite";
 
@@ -117,7 +118,7 @@ void GameScene::Initialize() {
 	auto oreItemModel = modelManager_->GetNodeModelData(oreItemModelID);
 
 	// 鉱石のテクスチャを取得
-	int oreItemTextureIndex = textureManager_->GetTexture("Mineral-0.png");
+	int oreItemTextureIndex = textureManager_->GetTexture("MineralDeposite_02.png");
 
 	// 鉱石の管理システムを初期化
 	oreItemManager_ = std::make_unique<OreItemManager>();
@@ -151,9 +152,16 @@ void GameScene::Initialize() {
 		drawDataManager_->GetDrawData(oreModel.drawDataIndex), oreTextureIndex,
 		commonData_->keyManager.get());
 
+	// 鉱石モデル
+	int mItemModelID = modelManager_->LoadModel(mineralItemModelName);
+	auto mItemModel = modelManager_->GetNodeModelData(mItemModelID);
+
+	// 鉱石のテクスチャを取得
+	int mItemTextureIndex = textureManager_->GetTexture("Mineral-0.png");
+
 	// ユニットの演出管理クラス(仮で作成したため消すかも)
 	unitEffectManager_ = std::make_unique<UnitEffectManager>();
-	unitEffectManager_->Initialize(drawDataManager_->GetDrawData(oreItemModel.drawDataIndex), oreItemTextureIndex);
+	unitEffectManager_->Initialize(drawDataManager_->GetDrawData(mItemModel.drawDataIndex), mItemTextureIndex);
 
 	// 演出管理クラスを取得
 	unitManager_->SetUnitEffect(unitEffectManager_.get());
