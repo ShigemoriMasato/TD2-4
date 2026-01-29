@@ -113,7 +113,7 @@ std::unique_ptr<IScene> SelectScene::Update() {
 	}
 
 	if (fadeTransition_->IsAnimation()) {
-
+		isSceneChange_ = false;
 		// シーン遷移
 		fadeTransition_->Update();
 	} else {
@@ -122,7 +122,7 @@ std::unique_ptr<IScene> SelectScene::Update() {
 	}
 
 	// シーンを切り替える
-	if (isSceneChange_) {
+	if (isSceneChange_ && !fadeTransition_->IsAnimation()) {
 		return std::make_unique<GameScene>();
 	}
 	
