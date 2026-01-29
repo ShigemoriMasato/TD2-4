@@ -1,5 +1,6 @@
 #include"SpriteObject.h"
 #include"Utility/MatrixFactory.h"
+#include<numbers>
 
 SpriteObject::~SpriteObject() {
 
@@ -24,7 +25,10 @@ void SpriteObject::Initialize(DrawData drawData, const Vector2& size) {
 
 	// 画像のサイズ設定
 	transform_.scale.x = size.x;
-	transform_.scale.y = -size.y;
+	transform_.scale.y = size.y;
+
+	// 回転して辻褄を合わせる
+	transform_.rotate.z = -std::numbers::pi_v<float>;
 
 	// uv行列の初期化
 	cBuffData_.uvMatrix = Matrix4x4::Identity();
