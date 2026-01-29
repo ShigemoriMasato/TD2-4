@@ -139,6 +139,12 @@ void MapDecorationEditor::DrawImGui() {
 	ImGui::DragFloat3("Scale", &transform.scale.x, 0.1f);
 	ImGui::DragFloat3("Rotate", &transform.rotate.x, 0.1f);
 	ImGui::DragFloat3("Position", &transform.position.x, 0.1f);
+
+	if (ImGui::Button("Delete")) {
+		decorations_[currentModelIndex_].erase(decorations_[currentModelIndex_].begin() + editingTransformIndex_);
+		editingTransformIndex_ = -1;
+	}
+
 	transform.position.y = 0.0f; // Y軸固定
 	ImGui::Separator();
 	ImGui::Text("Model Config");
@@ -151,9 +157,48 @@ void MapDecorationEditor::DrawImGui() {
 }
 
 void MapDecorationEditor::Save() {
+	for (const auto& [modelID, config] : modelList_) {
+		binaryManager_.RegisterOutput(modelID);
+		binaryManager_.RegisterOutput(config.first);
+		binaryManager_.RegisterOutput(config.second);
+	}
+	binaryManager_.Write(saveFileNameModelList_);
+
+	for (const auto& [modelIndex, transforms] : decorations_) {
+		int modelID = modelIDMap_[modelIndex];
+		binaryManager_.RegisterOutput(modelID);
+		binaryManager_.RegisterOutput(static_cast<int>(transforms.size()));
+		for (const auto& transform : transforms) {
+			binaryManager_.RegisterOutput(transform.position);
+			binaryManager_.RegisterOutput(transform.rotate);
+			binaryManager_.RegisterOutput(transform.scale);
+		}
+	}
+	binaryManager_.Write(saveFileNameDecorationData_);
 }
 
 void MapDecorationEditor::DecoDataLoad() {
+	auto values = binaryManager_.Read(saveFileNameDecorationData_);
+
+	if (values.empty()) {
+		return;
+	}
+
+	int index = 0;
+
+	while (index < static_cast<int>(values.size())) {
+		int modelID = BinaryManager::Reverse<int>(values[index++].get());
+		int transformCount = BinaryManager::Reverse<int>(values[index++].get());
+		std::vector<Transform> transforms;
+		for (int i = 0; i < transformCount; ++i) {
+			Transform transform;
+			transform.position = BinaryManager::Reverse<Vector3>(values[index++].get());
+			transform.rotate = BinaryManager::Reverse<Vector3>(values[index++].get());
+			transform.scale = BinaryManager::Reverse<Vector3>(values[index++].get());
+			transforms.push_back(transform);
+		}
+		decorations_[modelID] = transforms;
+	}
 }
 
 void MapDecorationEditor::ModelListLoad() {

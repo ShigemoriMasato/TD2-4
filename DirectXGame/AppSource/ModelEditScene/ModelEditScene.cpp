@@ -173,6 +173,7 @@ void ModelEditScene::Draw() {
 		typeEditor_->Save();
 		textureEditor_->TextureSave();
 		textureEditor_->MapSave();
+		decorationEditor_->Save();
 	}
 	ImGui::End();
 
