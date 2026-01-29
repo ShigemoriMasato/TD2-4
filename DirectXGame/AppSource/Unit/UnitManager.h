@@ -77,7 +77,7 @@ private:
 	// 最大のおれの数
 	int32_t maxOreCount_ = 100;
 	// 現在出せる最大のおれの数
-	int32_t maxCurrentOreCount_ = 10;
+	int32_t maxCurrentOreCount_ = 100;
 	// 現在のid
 	int32_t currentId_ = 0;
 	// 再利用可能id
