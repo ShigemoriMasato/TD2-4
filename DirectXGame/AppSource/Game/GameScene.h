@@ -152,6 +152,15 @@ private:
 	//Debug用ColorMapのためのやつ
 	BinaryManager binaryManager_;
 
+private: // デバックの調整項目
+
+	// 時間
+	float mTime_ = 1.0f;
+	float sTime_ = 30.0f;
+
+	// 最大の鉱石数
+	int32_t maxOreItemNum_ = 20;
+
 private:
 
 	// ゲームの実行処理

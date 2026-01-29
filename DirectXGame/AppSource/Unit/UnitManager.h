@@ -75,7 +75,7 @@ private:
 	// <id, インスタンス>
 	std::unordered_map<int32_t, std::unique_ptr<OreUnit>> oreUnits_;
 	// 最大のおれの数
-	int32_t maxOreCount_ = 20;
+	int32_t maxOreCount_ = 100;
 	// 現在出せる最大のおれの数
 	int32_t maxCurrentOreCount_ = 20;
 	// 現在のid
