@@ -22,5 +22,5 @@ float4 main(VertexShaderOutput input) : SV_TARGET
     {
         discard;
     }
-    return color;
+    return outputColor;
 }
