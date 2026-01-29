@@ -179,7 +179,7 @@ private: // 調整項目
 	float minHeight_ = 0.8f;
 
 	// 死亡演出
-	float deathAnimationTime_ = 1.0f;
+	float deathAnimationTime_ = 1.5f;
 private:
 
 	// 移動経路を求める

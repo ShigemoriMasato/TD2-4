@@ -535,12 +535,13 @@ void OreUnit::DeathAnimationUpdate() {
 
 void OreUnit::RegisterDebugParam() {
 	// 登録
-	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MoveSpeed", moveSpeed_);
-	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RotateSpeed", rotateSpeed_);
-	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MaxHp", maxHp_);	
-	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RiseHeight", risePosY_);
-	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RiseTime", riseTime_);
-	GameParamEditor::GetInstance()->AddItem(kGroupName_, "FallTime", FallTime_);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MoveSpeed", moveSpeed_,0);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RotateSpeed", rotateSpeed_,1);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MaxHp", maxHp_,2);	
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RiseHeight", risePosY_,3);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RiseReturnTime", riseTime_, 4);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "FallReturnTime", FallTime_, 5);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MiningTime", miningTime_,6);
 
 	// アニメーション
 	GameParamEditor::GetInstance()->AddItem("OreUnit_Animation", "MaxJumpHeight", maxJumpHeight_,0);
@@ -548,6 +549,8 @@ void OreUnit::RegisterDebugParam() {
 	GameParamEditor::GetInstance()->AddItem("OreUnit_Animation", "MinWidth", minWidth_, 2);
 	GameParamEditor::GetInstance()->AddItem("OreUnit_Animation", "MaxHeight", maxHeight_, 3);
 	GameParamEditor::GetInstance()->AddItem("OreUnit_Animation", "MinHeight", minHeight_, 4);
+
+	GameParamEditor::GetInstance()->AddItem("OreUnit_Animation", "DeathAnimationTime", deathAnimationTime_, 5);
 }
 
 void OreUnit::ApplyDebugParam() {
@@ -556,8 +559,9 @@ void OreUnit::ApplyDebugParam() {
 	rotateSpeed_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "RotateSpeed");
 	maxHp_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MaxHp");
 	risePosY_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "RiseHeight");
-	riseTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "RiseTime");
-	FallTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "FallTime");
+	riseTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "RiseReturnTime");
+	FallTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "FallReturnTime");
+	miningTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "MiningTime");
 
 	// アニメーション
 	maxJumpHeight_ = GameParamEditor::GetInstance()->GetValue<float>("OreUnit_Animation", "MaxJumpHeight");
@@ -565,6 +569,8 @@ void OreUnit::ApplyDebugParam() {
 	minWidth_ = GameParamEditor::GetInstance()->GetValue<float>("OreUnit_Animation", "MinWidth");
 	maxHeight_ = GameParamEditor::GetInstance()->GetValue<float>("OreUnit_Animation", "MaxHeight");
 	minHeight_ = GameParamEditor::GetInstance()->GetValue<float>("OreUnit_Animation", "MinHeight");
+
+	deathAnimationTime_ = GameParamEditor::GetInstance()->GetValue<float>("OreUnit_Animation", "DeathAnimationTime");
 }
 
 // ヘルプ関数
