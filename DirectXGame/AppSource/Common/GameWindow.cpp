@@ -25,7 +25,13 @@ void GameWindow::DrawDisplayWithImGui() {
 	}
 
 	for (const auto& config : displayTextureIndices_) {
-		ImGui::Begin(config.name.c_str());
+		bool isOpen = ImGui::Begin(config.name.c_str());
+
+		if (!isOpen && config.name == "Main Display") {
+			DebugMousePos::isHovered = false;
+			DebugMousePos::isGrabbed = false;
+		}
+
 		TextureData* textureData = textureManager_->GetTextureData(config.textureIndex);
 		auto textureHandle = textureData->GetGPUHandle();
 		ImGuiIO& io = ImGui::GetIO();
