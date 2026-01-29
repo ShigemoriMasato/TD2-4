@@ -3,11 +3,12 @@
 // 各鉱石
 #include"Object/GoldOre.h"
 
-void OreItemManager::Initialize(const DrawData& goldOreDrawData, int texture, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader) {
+void OreItemManager::Initialize(const DrawData& goldOreDrawData, int texture, DrawData spriteDrawData, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader) {
 
 	fontLoader_ = fontLoader;
 	fontName_ = fontName;
 	fontDrawData_ = fontDrawData;
+	spriteDrawData_ = spriteDrawData;
 
 	// 金鉱石の描画データを取得
 	goldOreDrawData_ = goldOreDrawData;
@@ -46,8 +47,8 @@ void OreItemManager::Update() {
 
 		// フォントを更新する
 		std::wstring s = std::to_wstring(ore->GetCurrentWorkerNum()) + L"/" + std::to_wstring(ore->GetMaxWorkerNum());
-		fontList_[it->first]->UpdateCharPositions(s, fontLoader_);
-		fontList_[it->first]->Update();
+		fontList_[it->first].font->UpdateCharPositions(s, fontLoader_);
+		fontList_[it->first].font->Update();
 
 		if (ore->IsDead()) {
 			// 5フレーム後に削除するようにリストに追加
@@ -81,7 +82,8 @@ void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 		ore->Draw(window, vpMatrix);
 
 		// フォントを描画
-		fontList_[id]->Draw(window, vpMatrix);
+		fontList_[id].bgSprite->Draw(window, vpMatrix);
+		fontList_[id].font->Draw(window, vpMatrix);
 	}
 
 	// アウトラインを描画
@@ -195,20 +197,32 @@ void OreItemManager::AddOreItem(OreType type, const Vector3& pos) {
 	}
 	}
 
+	TextData data;
+
 	// フォント
-	std::unique_ptr<FontObject> fontObject = std::make_unique<FontObject>();
-	fontObject->Initialize(fontName_, L"00/00", fontDrawData_, fontLoader_);
-	fontObject->transform_.position = pos;
-	fontObject->transform_.position.x -= 0.8f;
-	fontObject->transform_.position.y += 4.0f;
-	fontObject->transform_.rotate.x = -2.4f;
-	fontObject->transform_.scale.x = 0.01f;
-	fontObject->transform_.scale.y = -0.01f;
-	fontObject->fontColor_ = { 0.0f,1.0f,1.0f,1.0f };
-	fontObject->Update();
+	data.font = std::make_unique<FontObject>();
+	data.font->Initialize(fontName_, L"00/00", fontDrawData_, fontLoader_);
+	data.font->transform_.position = pos;
+	data.font->transform_.position.x -= 0.8f;
+	data.font->transform_.position.y += 4.0f;
+	data.font->transform_.rotate.x = -2.4f;
+	data.font->transform_.scale.x = 0.01f;
+	data.font->transform_.scale.y = -0.01f;
+	data.font->fontColor_ = { 0.0f,1.0f,1.0f,1.0f };
+	data.font->Update();
+
+	
+	data.bgSprite = std::make_unique<DefaultObject>();
+	data.bgSprite->Initialize(spriteDrawData_, 0);
+	data.bgSprite->transform_.position = pos;
+	data.bgSprite->transform_.position += Vector3(-0.2f,3.8f,0.4f);
+	data.bgSprite->transform_.scale = { 2.0f,1.0f,1.0f };
+	data.bgSprite->transform_.rotate.x = -2.4f;
+	data.bgSprite->material_.color = { 0.0f,0.0f,0.0f,0.8f };
+	data.bgSprite->Update();
 
 	// フォントを登録
-	fontList_[index] = std::move(fontObject);
+	fontList_[index] = std::move(data);
 }
 
 bool OreItemManager::IsSelectOre(const Vector3 selectpos, Vector3& worldPos) {

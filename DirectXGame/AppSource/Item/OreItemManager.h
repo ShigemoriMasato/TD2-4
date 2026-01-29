@@ -6,11 +6,12 @@
 
 #include"Object/OreOutLineObject.h"
 #include"UI/Object/FontObject.h"
+#include"GameCommon/DefaultObject.h"
 
 class OreItemManager {
 public:
 
-	void Initialize(const DrawData& goldOreDrawData,int texture, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader);
+	void Initialize(const DrawData& goldOreDrawData,int texture, DrawData spriteDrawData,const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader);
 
 	void Update();
 
@@ -58,11 +59,17 @@ private:
 
 private: // フォント機能
 
+	struct TextData {
+		std::unique_ptr<FontObject> font;
+		std::unique_ptr<DefaultObject> bgSprite;
+	};
+
 	FontLoader* fontLoader_ = nullptr;
 	DrawData fontDrawData_;
+	DrawData spriteDrawData_;
 
 	// フォントデータ
-	std::unordered_map<int32_t, std::unique_ptr<FontObject>> fontList_;
+	std::unordered_map<int32_t, TextData> fontList_;
 
 	std::string fontName_;
 };
