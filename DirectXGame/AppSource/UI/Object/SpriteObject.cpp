@@ -16,6 +16,7 @@ void SpriteObject::Initialize(DrawData drawData, const Vector2& size) {
 
 	// 描画モデルを設定
 	renderObject_->SetDrawData(drawData);
+	renderObject_->SetUseTexture(true);
 
 	// worldTransformを登録
 	cBuffDataIndex_ = renderObject_->CreateCBV(sizeof(ConstBufferData), ShaderType::VERTEX_SHADER, "TestScene::VSData");

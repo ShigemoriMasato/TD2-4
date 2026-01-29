@@ -11,6 +11,8 @@ public:
 		Vector4 color;
 		Matrix4x4 uvMatrix;
 		Matrix4x4 WVP;
+		uint32_t textureIndex_ = 0;
+		float padding[3];
 	};
 
 	~SpriteObject();
@@ -23,6 +25,10 @@ public:
 
 	// 描画
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
+
+	void SetTexture(const uint32_t& texutre) {
+		cBuffData_.textureIndex_ = texutre;
+	}
 
 public:
 
