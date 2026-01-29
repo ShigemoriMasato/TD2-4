@@ -264,6 +264,9 @@ void GameScene::InitializeOtherScene() {
 		isRetry_ = false;
 	});
 
+	// 操作説明のテクスチャを取得
+	//int guidTextureIndex = textureManager_->GetTexture("MineralDeposite_02.png");
+
 	// ポーズシーンUIの初期化
 	pauseUI_ = std::make_unique<PauseUI>();
 	pauseUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex),0, commonData_->keyManager.get(), fontName, drawData, fontLoader_);
