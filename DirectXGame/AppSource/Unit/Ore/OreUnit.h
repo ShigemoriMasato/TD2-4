@@ -166,6 +166,11 @@ private: // 調整項目
 	// 移動アニメーション
 	float moveAnimationTime_ = 0.6f;
 
+	float maxJumpHeight_ = 1.0f;
+	float maxWidth_ = 1.2f;
+	float minWidth_ = 0.8f;
+	float maxHeight_ = 1.2f;
+	float minHeight_ = 0.8f;
 private:
 
 	// 移動経路を求める

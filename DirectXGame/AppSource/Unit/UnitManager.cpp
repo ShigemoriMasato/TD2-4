@@ -222,10 +222,12 @@ void UnitManager::RegisterDebugParam() {
 	// 登録
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "SpawnNum", unitSpawnNum_);
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "SpawnTime", spawnTime_);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MaxOreCount", maxCurrentOreCount_);
 }
 
 void UnitManager::ApplyDebugParam() {
 	// 適応
 	unitSpawnNum_ = GameParamEditor::GetInstance()->GetValue<uint32_t>(kGroupName_, "SpawnNum");
 	spawnTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "SpawnTime");
+	maxCurrentOreCount_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MaxOreCount");
 }

@@ -65,6 +65,10 @@ void GameScene::Initialize() {
 	LightManager::light_.direction = { 0.0f,-1.0f,0.0f };
 	LightManager::light_.intensity = 1.0f;
 
+	// 登録
+	RegisterDebugParam();
+	ApplyDebugParam();
+
 	//==================================================
 	// カメラシステム
 	//==================================================
@@ -216,7 +220,7 @@ void GameScene::Initialize() {
 	// 時間を測る
 	timeTracker_ = std::make_unique<TimeTracker>();
 	timeTracker_->StartMeasureTimes();
-	timeTracker_->SetCountTime(1.0f, 0.0f);
+	timeTracker_->SetCountTime(mTime_, sTime_);
 
 	// 時間を表示するUI
 	timerUI_ = std::make_unique<TimerUI>();
@@ -287,6 +291,10 @@ void GameScene::InitializeOtherScene() {
 }
 
 std::unique_ptr<IScene> GameScene::Update() {
+#ifdef USE_IMGUI
+	// 値の適応
+	ApplyDebugParam();
+#endif
 
 	// Δタイムを取得する
 	FpsCount::deltaTime = engine_->GetFPSObserver()->GetDeltatime();
@@ -546,11 +554,21 @@ void GameScene::Draw() {
 }
 
 void GameScene::RegisterDebugParam() {
+	// ゲームの時間
+	GameParamEditor::GetInstance()->AddItem("GameTime", "m", mTime_);
+	GameParamEditor::GetInstance()->AddItem("GameTime", "s", sTime_);
 
+	// 鉱石数
+	GameParamEditor::GetInstance()->AddItem("OreItem", "MaxOreItem", OreItemStorageNum::maxOreItemNum_);
 }
 
 void GameScene::ApplyDebugParam() {
+	// ゲームの時間
+	mTime_ = GameParamEditor::GetInstance()->GetValue<float>("GameTime", "m");
+	sTime_= GameParamEditor::GetInstance()->GetValue<float>("GameTime", "s");
 
+	// 鉱石数
+	OreItemStorageNum::maxOreItemNum_ = GameParamEditor::GetInstance()->GetValue<int32_t>("OreItem", "MaxOreItem");
 }
 
 void GameScene::LoadDebugColorMap() {

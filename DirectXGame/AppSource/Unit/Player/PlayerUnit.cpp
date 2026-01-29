@@ -252,26 +252,26 @@ void PlayerUnit::AnimationUpdate() {
 			object_->transform_.position.y = lerp(0.0f, animeMaxHeight_, localT, EaseType::EaseInOutCubic);
 
 			// スケール
-			float width = lerp(1.0f, 0.8f, localT, EaseType::EaseInOutCubic);
+			float width = lerp(1.0f, minWidth_, localT, EaseType::EaseInOutCubic);
 			object_->transform_.scale.x = width;
 			object_->transform_.scale.z = width;
-			object_->transform_.scale.y = lerp(1.0f, 1.2f, localT, EaseType::EaseInOutCubic);
+			object_->transform_.scale.y = lerp(1.0f, maxHeight_, localT, EaseType::EaseInOutCubic);
 		} else if(animationTimer_ <= 0.8f) {
 			float localT = (animationTimer_ - 0.4f) / 0.4f;
 			object_->transform_.position.y = lerp(animeMaxHeight_, 0.0f, localT, EaseType::EaseInCubic);
 
 			// スケール
-			float width = lerp(0.8f, 1.2f, localT, EaseType::EaseInOutCubic);
+			float width = lerp(minWidth_, maxWidth_, localT, EaseType::EaseInOutCubic);
 			object_->transform_.scale.x = width;
 			object_->transform_.scale.z = width;
-			object_->transform_.scale.y = lerp(1.2f, 0.5f, localT, EaseType::EaseInOutCubic);
+			object_->transform_.scale.y = lerp(maxHeight_, minHeight_, localT, EaseType::EaseInOutCubic);
 		} else {
 			float localT = (animationTimer_ - 0.8f) / 0.2f;
 			// スケール
-			float width = lerp(1.2f, 1.0f, localT, EaseType::EaseInOutCubic);
+			float width = lerp(maxWidth_, 1.0f, localT, EaseType::EaseInOutCubic);
 			object_->transform_.scale.x = width;
 			object_->transform_.scale.z = width;
-			object_->transform_.scale.y = lerp(0.5f, 1.0f, localT, EaseType::EaseInOutCubic);
+			object_->transform_.scale.y = lerp(minHeight_, 1.0f, localT, EaseType::EaseInOutCubic);
 		}
 
 		if (animationTimer_ >= 1.0f) {
@@ -293,8 +293,12 @@ void PlayerUnit::RegisterDebugParam() {
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "ColliderRadius", circleCollider_.radius);
 
 	// アニメーション
-	GameParamEditor::GetInstance()->AddItem("Player_Animation", "MaxTime", moveAnimationTime_);
-	GameParamEditor::GetInstance()->AddItem("Player_Animation", "MaxJumpHeight", animeMaxHeight_);
+	GameParamEditor::GetInstance()->AddItem("Player_Animation", "MaxTime", moveAnimationTime_,0);
+	GameParamEditor::GetInstance()->AddItem("Player_Animation", "MaxJumpHeight", animeMaxHeight_,1);
+	GameParamEditor::GetInstance()->AddItem("Player_Animation", "MaxWidth", maxWidth_,2);
+	GameParamEditor::GetInstance()->AddItem("Player_Animation", "MinWidth", minWidth_,3);
+	GameParamEditor::GetInstance()->AddItem("Player_Animation", "MaxHeight", maxHeight_,4);
+	GameParamEditor::GetInstance()->AddItem("Player_Animation", "MinHeight", minHeight_,5);
 }
 
 void PlayerUnit::ApplyDebugParam() {
@@ -305,4 +309,8 @@ void PlayerUnit::ApplyDebugParam() {
 	// アニメーション
 	moveAnimationTime_ = GameParamEditor::GetInstance()->GetValue<float>("Player_Animation", "MaxTime");
 	animeMaxHeight_ = GameParamEditor::GetInstance()->GetValue<float>("Player_Animation", "MaxJumpHeight");
+	maxWidth_ = GameParamEditor::GetInstance()->GetValue<float>("Player_Animation", "MaxWidth");
+	minWidth_ = GameParamEditor::GetInstance()->GetValue<float>("Player_Animation", "MinWidth");
+	maxHeight_ = GameParamEditor::GetInstance()->GetValue<float>("Player_Animation", "MaxHeight");
+	minHeight_ = GameParamEditor::GetInstance()->GetValue<float>("Player_Animation", "MinHeight");
 }
