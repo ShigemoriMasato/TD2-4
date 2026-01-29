@@ -2,7 +2,7 @@
 #include"Utility/Easing.h"
 #include"FpsCount.h"
 
-void PauseUI::Initialize(DrawData drawData, KeyManager* keyManager, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader) {
+void PauseUI::Initialize(DrawData drawData, uint32_t texture, KeyManager* keyManager, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader) {
 	keyManager_ = keyManager;
 
 	// 描画機能の初期化
@@ -10,16 +10,18 @@ void PauseUI::Initialize(DrawData drawData, KeyManager* keyManager, const std::s
 	bgSpriteObject_->Initialize(drawData, { 1280.0f,720.0f });
 	bgSpriteObject_->transform_.position = { 640.0f,360.0f,0.0f };
 	bgSpriteObject_->color_ = { 0.1f,0.1f,0.1f,0.9f };
+	bgSpriteObject_->SetTexture(texture);
 	bgSpriteObject_->Update();
 
 	// テキストの初期化
 	gameOverFontObject_ = std::make_unique<FontObject>();
-	gameOverFontObject_->Initialize(fontName, L"Pause Scene", fontDrawData, fontLoader);
-	gameOverFontObject_->transform_.position.x = 640.0f - (static_cast<float>(gameOverFontObject_->GetTextSize()) * 48.0f * 0.5f);
-	gameOverFontObject_->transform_.position.y = 220.0f;
-	gameOverFontObject_->transform_.scale.x = 1.5f;
-	gameOverFontObject_->transform_.scale.y = -1.5f;
-	gameOverFontObject_->fontColor_ = { 0.0f,0.0f,0.0f,0.0f };
+	gameOverFontObject_->Initialize(fontName, L"space : 説明", fontDrawData, fontLoader);
+	//gameOverFontObject_->transform_.position.x = 640.0f - (static_cast<float>(gameOverFontObject_->GetTextSize()) * 48.0f * 0.5f);
+	gameOverFontObject_->transform_.position.x = 32.0f;
+	gameOverFontObject_->transform_.position.y = 650.0f;
+	gameOverFontObject_->transform_.scale.x = 0.8f;
+	gameOverFontObject_->transform_.scale.y = -0.8f;
+	gameOverFontObject_->fontColor_ = { 0.0f,1.0f,1.0f,1.0f };
 }
 
 void PauseUI::Update() {
@@ -59,7 +61,9 @@ void PauseUI::Draw(Window* window, const Matrix4x4& vpMatrix) {
 		// 背景の描画
 		bgSpriteObject_->Draw(window, vpMatrix);
 
-		//gameOverFontObject_->Draw(window, vpMatrix);
+		
+	} else {
+		gameOverFontObject_->Draw(window, vpMatrix);
 	}
 }
 

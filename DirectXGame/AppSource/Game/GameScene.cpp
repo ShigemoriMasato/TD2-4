@@ -266,7 +266,7 @@ void GameScene::InitializeOtherScene() {
 
 	// ポーズシーンUIの初期化
 	pauseUI_ = std::make_unique<PauseUI>();
-	pauseUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), commonData_->keyManager.get(), fontName, drawData, fontLoader_);
+	pauseUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex),0, commonData_->keyManager.get(), fontName, drawData, fontLoader_);
 	// リトライ
 	pauseUI_->SetOnRetryClicked([this]() {
 		isPauseScene_ = !isPauseScene_;

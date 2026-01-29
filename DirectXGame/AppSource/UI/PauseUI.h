@@ -7,7 +7,7 @@
 class PauseUI {
 public:
 
-	void Initialize(DrawData drawData, KeyManager* keyManager, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader);
+	void Initialize(DrawData drawData,uint32_t texture, KeyManager* keyManager, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader);
 
 	void Update();
 
