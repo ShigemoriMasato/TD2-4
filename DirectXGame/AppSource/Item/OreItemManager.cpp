@@ -53,6 +53,10 @@ void OreItemManager::Update() {
 	// 選択されていればアウトラインを更新
 	if (selectId_ != -1 && oreItems_.size() > 0) {
 
+		auto it = oreItems_.find(selectId_);
+		if (it == oreItems_.end()) {
+			return;
+		}
 		// 選択した鉱石の位置を取得
 		OreItem* ore = GetOreItemForId();
 		oreOutLineObject_->transform_.position = ore->GetPos();
