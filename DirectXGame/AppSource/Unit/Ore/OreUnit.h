@@ -69,6 +69,9 @@ public:
 
 	State GetState() const { return state_; }
 
+	// 衝突判定
+	bool IsConflict() const { return isConflict_; }
+
 private:
 	// マップデータ
 	MapChipField* mapChipField_ = nullptr;
