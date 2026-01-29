@@ -18,6 +18,7 @@
 #include"UI/OreUnitHPUI.h"
 #include"Unit/UnitEffectManager.h"
 
+#include <Game/MiniMap/MiniMap.h>
 #include <ModelEditScene/Render/MapRender.h>
 #include <ModelEditScene/Render/DebugMCRender.h>
 
@@ -82,6 +83,9 @@ private:
 	std::unique_ptr<MapRender> mapRender_;
 	std::unique_ptr<DebugMCRender> debugMapRender_;//マップチップを単純な色で描画
 	std::map<TileType, Vector3> colorMap_;//DebugMCRenderに使う、マップチップの色
+
+	// MiniMap
+	std::unique_ptr<MiniMap> miniMap_;
 
 	// 現在のマップ
 	NewMap currentMap_;

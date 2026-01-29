@@ -75,7 +75,7 @@ void GameScene::Initialize() {
 	mapChipField_ = std::make_unique<MapChipField>();
 	// マップデータの受け取り
 	mapChipField_->SetMapChipData(currentMap_.mapChipData);
-	
+
 	// マップの最大サイズを取得
 	cameraController_->SetMapMaxSize(mapChipField_->GetMaxMapSize());
 
@@ -96,6 +96,10 @@ void GameScene::Initialize() {
 
 	//ColorMap作成
 	LoadDebugColorMap();
+
+	// MiniMapの初期化
+	miniMap_ = std::make_unique<MiniMap>();
+	miniMap_->Initialize((int)currentMap_.mapChipData[0].size(), (int)currentMap_.mapChipData.size(), textureManager_);
 
 	//================================================================
 	// 鉱石システム
@@ -224,12 +228,12 @@ void GameScene::InitializeOtherScene() {
 	gameOverUI_->SetOnRetryClicked([this]() {
 		isSceneChange_ = true;
 		isRetry_ = true;
-	});
+		});
 	// 選択
 	gameOverUI_->SetOnSelectClicked([this]() {
 		isSceneChange_ = true;
 		isRetry_ = false;
-	});
+		});
 
 	// クリアUIの初期化
 	clearUI_ = std::make_unique<ClearUI>();
@@ -238,12 +242,12 @@ void GameScene::InitializeOtherScene() {
 	clearUI_->SetOnRetryClicked([this]() {
 		isSceneChange_ = true;
 		isRetry_ = true;
-	});
+		});
 	// 選択
 	clearUI_->SetOnSelectClicked([this]() {
 		isSceneChange_ = true;
 		isRetry_ = false;
-	});
+		});
 }
 
 std::unique_ptr<IScene> GameScene::Update() {
@@ -413,57 +417,67 @@ void GameScene::InGameScene() {
 }
 
 void GameScene::Draw() {
-	display_->PreDraw(gameWindow_->GetCommandObject(), true);
 
-	// カメラ行列
-	Matrix4x4 vpMatrix = cameraController_->GetVpMatrix();
-	LightManager::light_.cameraWorldPos = cameraController_->GetCameraWorldPos();
+	for (int i = 0; i < 2; ++i) {
+		Matrix4x4 vpMatrix{};
 
-	// マップを描画
-	mapRender_->Draw(vpMatrix, gameWindow_->GetWindow());
+		if (i == 0) {
+			display_->PreDraw(gameWindow_->GetCommandObject(), true);
+			vpMatrix = cameraController_->GetVpMatrix();
+		} else {
+			vpMatrix = miniMap_->PreDraw(gameWindow_->GetWindow())->GetVPMatrix();
+		}
 
-	// デバッグ用マップ描画
-	debugMapRender_->Draw(vpMatrix, colorMap_, currentMap_.mapChipData, gameWindow_->GetWindow());
+		// カメラ行列
+		LightManager::light_.cameraWorldPos = cameraController_->GetCameraWorldPos();
 
-	// 鉱石の描画
-	oreItemManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		// マップを描画
+		mapRender_->Draw(vpMatrix, gameWindow_->GetWindow());
 
-	// ユニットを描画
-	unitManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		// デバッグ用マップ描画
+		debugMapRender_->Draw(vpMatrix, colorMap_, currentMap_.mapChipData, gameWindow_->GetWindow());
 
-	// ユニットの演出を描画(仮で作成したクラスなので消すかも)
-	unitEffectManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		// 鉱石の描画
+		oreItemManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
-	// ユニットのHp描画
-	oreUnitHpUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		// ユニットを描画
+		unitManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
-	/// UIの描画処理
-	vpMatrix = uiCamera_->GetVPMatrix();
+		// ユニットの演出を描画(仮で作成したクラスなので消すかも)
+		unitEffectManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
-	// ユニットの数UIを描画
-	unitCounterUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
-	// 鉱石の数UIを描画
-	oreItemUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		// ユニットのHp描画
+		oreUnitHpUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
-	// 時間計測表示UI
-	timerUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		/// UIの描画処理
+		vpMatrix = uiCamera_->GetVPMatrix();
 
-	// ゲームオーバーシーンの描画処理
-	if (isGameOverScene_) {
-		// UIの更新処理
-		gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		// ユニットの数UIを描画
+		unitCounterUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		// 鉱石の数UIを描画
+		oreItemUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+		// 時間計測表示UI
+		timerUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+		// ゲームオーバーシーンの描画処理
+		if (isGameOverScene_) {
+			// UIの更新処理
+			gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		}
+
+		// クリアシーンの描画処理
+		if (isClearScene_) {
+			// クリアシーンの更新処理
+			clearUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		}
+
+		// シーン遷移の描画
+		fadeTransition_->Draw(gameWindow_->GetWindow(), vpMatrix);
 	}
-
-	// クリアシーンの描画処理
-	if (isClearScene_) {
-		// クリアシーンの更新処理
-		clearUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
-	}
-
-	// シーン遷移の描画
-	fadeTransition_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
 	display_->PostDraw(gameWindow_->GetCommandObject());
+	miniMap_->PostDraw(gameWindow_->GetWindow());
 
 	//PostEffectとか
 	postEffectConfig_.output = gameWindow_->GetDualDisplay();
@@ -471,9 +485,9 @@ void GameScene::Draw() {
 
 	gameWindow_->PreDraw(false);
 
-	
-	//ImGui
 
+	//ImGui
+	miniMap_->DrawImGui();
 	gameWindow_->DrawDisplayWithImGui();
 	paramManager_->Draw();
 
@@ -493,7 +507,7 @@ void GameScene::ApplyDebugParam() {
 
 void GameScene::LoadDebugColorMap() {
 	auto values = binaryManager_.Read("MapTypeEditorConfig");
-	
+
 	//colorMapの初期化
 	for (int i = 0; i < int(TileType::Count); ++i) {
 		Vector4 color = ConvertColor(lerpColor(0xff5500ff, 0x0055ffff, float(i) / (float(TileType::Count) - 1)));
@@ -513,10 +527,10 @@ void GameScene::PutGold() {
 		for (const auto& tile : row) {
 			if (tile == TileType::Gold) {
 
-				Vector3 pos = { 
+				Vector3 pos = {
 					static_cast<float>(&tile - &row[0]),
 					0.0f,
-					static_cast<float>(&row - &currentMap_.mapChipData[0]) 
+					static_cast<float>(&row - &currentMap_.mapChipData[0])
 				};
 				oreItemManager_->AddOreItem(OreType::Medium, pos);
 			}

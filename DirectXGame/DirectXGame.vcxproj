@@ -165,6 +165,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\GameCamera\CameraController.cpp" />
     <ClCompile Include="AppSource\GameCamera\SelectCamera.cpp" />
     <ClCompile Include="AppSource\GameCommon\DefaultObject.cpp" />
+    <ClCompile Include="AppSource\Game\MiniMap\MiniMap.cpp" />
     <ClCompile Include="AppSource\Game\NewMap\NewMap.cpp" />
     <ClCompile Include="AppSource\Game\SelectScene.cpp" />
     <ClCompile Include="AppSource\Item\Object\GoldOre.cpp" />
@@ -246,6 +247,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\GameCamera\SelectCamera.h" />
     <ClInclude Include="AppSource\GameCommon\DefaultObject.h" />
     <ClInclude Include="AppSource\Game\MapData\Data\StageData.h" />
+    <ClInclude Include="AppSource\Game\MiniMap\MiniMap.h" />
     <ClInclude Include="AppSource\Game\NewMap\NewMap.h" />
     <ClInclude Include="AppSource\Game\SelectScene.h" />
     <ClInclude Include="AppSource\Item\Object\GoldOre.h" />
