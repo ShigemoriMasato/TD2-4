@@ -98,6 +98,9 @@ void UnitManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 		if (!unit->IsActive()) { continue; }
 		unit->Draw(window, vpMatrix);
 	}
+}
+
+void UnitManager::DrawUI() {
 
 #ifdef USE_IMGUI
 

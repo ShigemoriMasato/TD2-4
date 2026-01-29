@@ -75,7 +75,9 @@ void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	if (selectId_ != -1 && oreItems_.size() > 0) {
 		oreOutLineObject_->Draw(window, vpMatrix);
 	}
+}
 
+void OreItemManager::DrawUI() {
 #ifdef USE_IMGUI
 
 	ImGui::Begin("OreItemInfo");
@@ -110,6 +112,37 @@ void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 			ImGui::TreePop();
 		}
 		ImGui::PopID();
+	}
+
+	ImGui::Separator();
+
+	bool is = true;
+	auto it = oreItems_.find(selectId_);
+	if (it == oreItems_.end()) {
+		is = false;
+	}
+
+	if (is) {
+		OreItem* ore = GetOreItemForId();
+		// HP
+		int hp = ore->GetHp();
+		int maxHp = ore->GetMaxHp();
+		ImGui::Text("Hp: %d / %d", hp, maxHp);
+
+		// 労働者数
+		int currentWorker = ore->GetCurrentWorkerNum();
+		int maxWorker = ore->GetMaxWorkerNum();
+		ImGui::Text("Workers: %d / %d", currentWorker, maxWorker);
+
+		// 座標
+		Vector3 pos = ore->GetPos();
+		float p[3] = { pos.x, pos.y, pos.z };
+		ImGui::InputFloat3("Position", p, "%.2f", ImGuiInputTextFlags_ReadOnly);
+
+		// サイズ
+		Vector3 size = ore->GetSize();
+		float s[3] = { size.x, size.y, size.z };
+		ImGui::InputFloat3("Size", s, "%.2f", ImGuiInputTextFlags_ReadOnly);
 	}
 	ImGui::End();
 #endif
