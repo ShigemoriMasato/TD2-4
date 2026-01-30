@@ -27,7 +27,7 @@ void InitializeScene::Initialize() {
 	commonData_->postEffectDrawDataIndex = drawDataManager_->CreateDrawData();
 
 	commonData_->newMapManager = std::make_unique<NewMapManager>();
-	commonData_->newMapManager->Initialize();
+	commonData_->newMapManager->Initialize(modelManager_);
 
 	// 保存されているパラメーターを取得する
 	GameParamEditor::GetInstance()->LoadFiles();
@@ -37,7 +37,7 @@ void InitializeScene::Initialize() {
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
-	return std::make_unique<ModelEditScene>();
+	return std::make_unique<GameScene>();
 }
 
 void InitializeScene::Draw() {

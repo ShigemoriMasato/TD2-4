@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <map>
+#include <Utility/DataStructures.h>
 #include <Tool/Binary/BinaryManager.h>
 
 enum class TileType {
@@ -32,7 +33,7 @@ struct NewMap {
 	//描画用(地面のデータたち)
 	std::vector<std::vector<ChipData>> renderData;
 	//Decoration追加予定
-
+	std::map<int, std::vector<Transform>> decorations;
 
 	//任意の方向に回転させる
 	void Rotate(Direction dir);

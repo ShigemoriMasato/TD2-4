@@ -1,8 +1,30 @@
 #include "NewMapManager.h"
 
-void NewMapManager::Initialize() {
+void NewMapManager::Initialize(ModelManager* modelManager) {
+	modelManager_ = modelManager;
 	LoadTexturePaths();
 	LoadMapData();
+	LoadModelList();
+	LoadDecoData();
+}
+
+CurrentStageConfig NewMapManager::GetStageMap(int stage, int map) {
+	CurrentStageConfig config;
+	if(stageData_.size() <= stage) {
+		config.initOreNum = 10;
+		config.norma = 10000000;
+		config.currentMap = newMapData_[0];
+		config.currentMapID = 0;
+		return config;
+	}
+	int mapID = stageData_[stage].configs[map].mapID;
+
+	config.initOreNum = stageData_[stage].initOreNum;
+	config.norma = stageData_[stage].configs[map].norma;
+	config.currentMapID = mapID;
+	config.currentMap = newMapData_[mapID];
+
+	return config;
 }
 
 void NewMapManager::LoadTexturePaths() {
@@ -64,5 +86,83 @@ void NewMapManager::LoadMapData() {
 		}
 
 		newMapData_.push_back(newMap);
+	}
+}
+
+void NewMapManager::LoadDecoData() {
+	auto values = binaryManager_.Read(saveFileNameDecorationData_);
+
+	if (values.empty()) {
+		return;
+	}
+
+	int index = 0;
+
+	int mapCount = BinaryManager::Reverse<int>(values[index++].get());
+	newMapData_.resize(mapCount);
+
+	for (int i = 0; i < mapCount; ++i) { //マップの数だけfor
+
+		int decorationCount = BinaryManager::Reverse<int>(values[index++].get());
+
+		for (int j = 0; j < decorationCount; ++j) {// モデルの数だけfor
+
+			int modelID = BinaryManager::Reverse<int>(values[index++].get());
+			int modelIndex = modelMap_[modelID].first;
+			int transformCount = BinaryManager::Reverse<int>(values[index++].get());
+			std::vector<Transform> transforms;
+
+			for (int k = 0; k < transformCount; ++k) { //配置された数だけfor
+				Transform transform;
+				transform.position = BinaryManager::Reverse<Vector3>(values[index++].get());
+				transform.rotate = BinaryManager::Reverse<Vector3>(values[index++].get());
+				transform.scale = BinaryManager::Reverse<Vector3>(values[index++].get());
+				transforms.push_back(transform);
+			}
+
+			newMapData_[i].decorations[modelIndex] = transforms;
+		}
+
+	}
+}
+
+void NewMapManager::LoadModelList() {
+	auto values = binaryManager_.Read(saveFileNameModelList_);
+	if (values.empty()) {
+		return;
+	}
+	int index = 0;
+	while (index < values.size()) {
+		int modelID = BinaryManager::Reverse<int>(values[index++].get());
+		std::string modelPath = BinaryManager::Reverse<std::string>(values[index++].get());
+		int modelIndex = modelManager_->LoadModel(".Deco/" + modelPath);
+		modelMap_[modelID] = { modelIndex, modelPath };
+
+		//colorは使わないので読み飛ばし
+		++index;
+	}
+}
+
+void NewMapManager::LoadStageConfig() {
+	auto values = binaryManager_.Read(saveFileNameStageData_);
+	if (values.empty()) {
+		return;
+	}
+	int index = 0;
+
+	while (index < values.size()) {
+		StageData stage = stageData_.emplace_back();
+		int initOre = BinaryManager::Reverse<int>(values[index++].get());
+		int mapSize = BinaryManager::Reverse<int>(values[index++].get());
+		std::vector<MapConfig> configs;
+		configs.resize(mapSize);
+		for (int i = 0; i < mapSize; ++i) {
+			int mapID = BinaryManager::Reverse<int>(values[index++].get());
+			int norma = BinaryManager::Reverse<int>(values[index++].get());
+			configs[i] = { mapID, norma };
+		}
+		
+		stage.initOreNum = initOre;
+		stage.configs = configs;
 	}
 }

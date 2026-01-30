@@ -89,12 +89,12 @@ void GameScene::Initialize() {
 	// マップシステム
 	//============================================
 
-	currentMap_ = commonData_->newMapManager->GetMapData(0);
+	currentMap_ = commonData_->newMapManager->GetStageMap(commonData_->nextStageIndex, commonData_->nextMapIndex);
 
 	// マップデータ解釈機能を初期化
 	mapChipField_ = std::make_unique<MapChipField>();
 	// マップデータの受け取り
-	mapChipField_->SetMapChipData(currentMap_.mapChipData);
+	mapChipField_->SetMapChipData(currentMap_.currentMap.mapChipData);
 
 	// マップの最大サイズを取得
 	cameraController_->SetMapMaxSize(mapChipField_->GetMaxMapSize());
@@ -106,19 +106,24 @@ void GameScene::Initialize() {
 	// マップの描画機能を初期化
 	mapRender_ = std::make_unique<MapRender>();
 	mapRender_->Initialize(drawDataManager_->GetDrawData(wallModel.drawDataIndex));
-	mapRender_->SetConfig(currentMap_.renderData);
+	mapRender_->SetConfig(currentMap_.currentMap.renderData);
 
 	//Debug用マップ描画の初期化
 	debugMapRender_ = std::make_unique<DebugMCRender>();
 	debugMapRender_->Initialize(drawDataManager_->GetDrawData(wallModel.drawDataIndex));
 	debugMapRender_->SetAlpha(1.0f);
 
+	//装飾用オブジェクトの描画機能を初期化
+	staticObjectRender_ = std::make_unique<StaticObjectRender>();
+	staticObjectRender_->Initialize(modelManager_, drawDataManager_, false);
+	staticObjectRender_->SetObjects(currentMap_.currentMap.decorations);
+
 	//ColorMap作成
 	LoadDebugColorMap();
 
 	// MiniMapの初期化
 	miniMap_ = std::make_unique<MiniMap>();
-	miniMap_->Initialize((int)currentMap_.mapChipData[0].size(), (int)currentMap_.mapChipData.size(), textureManager_);
+	miniMap_->Initialize((int)currentMap_.currentMap.mapChipData[0].size(), (int)currentMap_.currentMap.mapChipData.size(), textureManager_);
 
 	//================================================================
 	// 鉱石システム
@@ -522,8 +527,11 @@ void GameScene::Draw() {
 		// マップを描画
 		mapRender_->Draw(vpMatrix, gameWindow_->GetWindow());
 
+		// 装飾オブジェクトの描画
+		staticObjectRender_->Draw(vpMatrix, gameWindow_->GetWindow());
+
 		// デバッグ用マップ描画
-		debugMapRender_->Draw(vpMatrix, colorMap_, currentMap_.mapChipData, gameWindow_->GetWindow());
+		debugMapRender_->Draw(vpMatrix, colorMap_, currentMap_.currentMap.mapChipData, gameWindow_->GetWindow());
 
 		// 鉱石の描画
 		oreItemManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
@@ -635,14 +643,15 @@ void GameScene::LoadDebugColorMap() {
 }
 
 void GameScene::PutGold() {
-	for (const auto& row : currentMap_.mapChipData) {
+	const MapChipData& data = currentMap_.currentMap.mapChipData;
+	for (const auto& row : data) {
 		for (const auto& tile : row) {
 			if (tile == TileType::Gold) {
 
 				Vector3 pos = {
 					static_cast<float>(&tile - &row[0]),
 					0.0f,
-					static_cast<float>(&row - &currentMap_.mapChipData[0])
+					static_cast<float>(&row - &currentMap_.currentMap.mapChipData[0])
 				};
 				oreItemManager_->AddOreItem(OreType::Medium, pos);
 			}

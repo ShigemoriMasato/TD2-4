@@ -52,6 +52,8 @@ void ModelEditScene::Initialize() {
 #endif
 
 	textureManager_->LoadAllTextures();
+
+	stageChanged_ = true;
 }
 
 std::unique_ptr<IScene> ModelEditScene::Update() {
@@ -96,6 +98,7 @@ std::unique_ptr<IScene> ModelEditScene::Update() {
 		stageChanged_ = false;
 		typeEditor_->SetCurrentStage(currentStage_);
 		textureEditor_->SetCurrentStage(currentStage_);
+		decorationEditor_->SetCurrentMap(currentStage_);
 	}
 
 	//Alphaの設定
