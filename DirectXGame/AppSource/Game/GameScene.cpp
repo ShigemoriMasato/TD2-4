@@ -245,6 +245,10 @@ void GameScene::Initialize() {
 	// ユニット管理クラスに持たせる
 	unitManager_->SetUnitHp(oreUnitHpUI_.get());
 
+	// 登録
+	RegisterDebugParam();
+	ApplyDebugParam();
+
 	// 時間を測る
 	timeTracker_ = std::make_unique<TimeTracker>();
 	timeTracker_->StartMeasureTimes();
@@ -254,9 +258,6 @@ void GameScene::Initialize() {
 	// その他のシーンを初期化
 	//=======================================================
 	InitializeOtherScene();
-	// 登録
-	RegisterDebugParam();
-	ApplyDebugParam();
 }
 
 void GameScene::InitializeOtherScene() {
