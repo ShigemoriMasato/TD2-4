@@ -10,6 +10,7 @@ enum class TileType {
 	Wall,
 	Home,
 	Gold,
+	Slow,
 	Count
 };
 

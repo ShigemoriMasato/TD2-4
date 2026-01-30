@@ -14,7 +14,8 @@ void MapTypeEditor::Initialize(Input* input) {
 		{TileType::Road, "Road"},
 		{TileType::Wall, "Wall"},
 		{TileType::Home, "Home"},
-		{TileType::Gold, "Gold"}
+		{TileType::Gold, "Gold"},
+		{TileType::Slow, "Slow"}
 	};
 
 	Load();
