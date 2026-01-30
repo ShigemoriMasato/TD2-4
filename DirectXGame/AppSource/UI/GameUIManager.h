@@ -1,6 +1,5 @@
 #pragma once
 #include"Object/FontObject.h"
-#include<array>
 
 #include"UI/CounterUI.h"
 #include"UI/TimerUI.h"
@@ -13,6 +12,13 @@ public:
 	void Update(const int32_t& unitNum,const int32_t& maxUnitNum);
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
+
+public:
+
+	// 前の時間を取得
+	void SetPreTime(const int& time) {
+		timerUI_->SetPreTime(time);
+	}
 
 private:
 

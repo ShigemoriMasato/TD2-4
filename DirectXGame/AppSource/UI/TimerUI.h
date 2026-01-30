@@ -11,6 +11,10 @@ public:
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
+	void SetPreTime(const int& time) {
+		preTime_ = time;
+	}
+
 public:
 
 	Vector3 pos_ = {500.0f,128.0f,0.0f};
@@ -20,9 +24,20 @@ private:
 	// フォントロード
 	FontLoader* fontLoader_ = nullptr;
 
-	// 四桁の番号
-	std::array<std::unique_ptr<FontObject>, 4> numSprites_;
+	// フォント
+	std::unique_ptr<FontObject> numFont_;
 
-	// 番号テキスト
-	std::wstring numText_[10];
+	// 色
+	Vector4 fontColor_ = { 0.8f,0.8f,0.0f,1.0f };
+
+	int preTime_ = 0;
+
+	float timer_ = 0.0f;
+	float maxTime_ = 0.3f;
+
+	bool isAnimation_ = false;
+
+private:
+
+	void Animation();
 };

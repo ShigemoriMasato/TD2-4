@@ -34,6 +34,9 @@ void InitializeScene::Initialize() {
 
 	// テクスチャを全てロード
 	textureManager_->LoadAllTextures();
+
+	commonData_->nextStageIndex = 0;
+	commonData_->nextMapIndex = 0;
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {

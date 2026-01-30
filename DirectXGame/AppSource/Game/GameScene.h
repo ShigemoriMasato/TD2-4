@@ -189,4 +189,10 @@ private:
 	/// 鉱床の配置
 	/// </summary>
 	void PutGold();
+
+	/// <summary>
+	/// Positionの初期位置を取得
+	/// </summary>
+	/// <returns>初期位置</returns>
+	Vector3 GetPlayerInitPosition();
 };

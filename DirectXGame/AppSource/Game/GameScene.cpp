@@ -186,7 +186,7 @@ void GameScene::Initialize() {
 	unitManager_->Initalize(mapChipField_.get(),
 		drawDataManager_->GetDrawData(playerModel.drawDataIndex), playerTextureIndex,
 		drawDataManager_->GetDrawData(oreModel.drawDataIndex), oreTextureIndex,
-		commonData_->keyManager.get());
+		commonData_->keyManager.get(), GetPlayerInitPosition());
 
 	// 拠点管理クラスを設定
 	unitManager_->SetHomeManager(homeManager_.get());
@@ -403,15 +403,14 @@ void GameScene::InGameScene() {
 	// ユニットの選択処理
 	//==============================================================
 
-	// 左クリックを取得
-	if ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80)) {
+	// マウスの位置に鉱石が存在していればユニットを動かす
+	Vector3 oreWorldPos = {};
+	if (oreItemManager_->IsSelectOre(cameraController_->GetWorldPos(), oreWorldPos)) {
 
-		// クリックアニメーションを開始
-		cameraController_->StartAnimation();
-
-		// マウスの位置に鉱石が存在していればユニットを動かす
-		Vector3 oreWorldPos = {};
-		if (oreItemManager_->IsSelectOre(cameraController_->GetWorldPos(), oreWorldPos)) {
+		// 左クリックを取得
+		if ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80)) {
+			// クリックアニメーションを開始
+			cameraController_->StartAnimation();
 
 			int32_t num = unitManager_->GetMaxOreCount() - unitManager_->GetOreCount();
 
@@ -444,6 +443,13 @@ void GameScene::InGameScene() {
 					}
 				}
 			}
+		}
+	} else {
+		// 左クリックを取得
+		if ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80)) {
+
+			// クリックアニメーションを開始
+			cameraController_->StartAnimation();
 		}
 	}
 
@@ -484,6 +490,9 @@ void GameScene::InGameScene() {
 	//====================================================
 	// 時間の更新処理
 	//====================================================
+
+	// 前の時間を取得
+	gameUIManager_->SetPreTime(TimeLimit::totalSeconds);
 
 	// 時間を更新
 	timeTracker_->Update();
@@ -676,4 +685,21 @@ void GameScene::PutGold() {
 			oreItemManager_->AddOreItem(type, pos);
 		}
 	}
+}
+
+Vector3 GameScene::GetPlayerInitPosition() {
+	for(auto& row : currentMap_.currentMap.mapChipData){
+		for(auto& tile : row){
+			if(tile == TileType::PlayerSpawn){
+				tile = TileType::Road;
+				return {
+					static_cast<float>(&tile - &row[0]),
+					0.0f,
+					static_cast<float>(&row - &currentMap_.currentMap.mapChipData[0])
+				};
+			}
+		}
+	}
+
+	return { 3.0f,0.0f,3.0f };
 }
