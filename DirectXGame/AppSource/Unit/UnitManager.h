@@ -65,6 +65,8 @@ public:
 		HomeManager_ = home;
 	}
 
+	Vector3 GetPlayerPosition() { return *playerUnit_->GetPos(); }
+
 private:
 
 	// マップ
