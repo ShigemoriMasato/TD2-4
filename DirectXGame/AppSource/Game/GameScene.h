@@ -21,6 +21,7 @@
 #include <Game/MiniMap/MiniMap.h>
 #include <ModelEditScene/Render/MapRender.h>
 #include <ModelEditScene/Render/DebugMCRender.h>
+#include <ModelEditScene/Render/StaticObjectRender.h>
 
 // ゲームオーバーシーン
 #include"UI/GameOverUI.h"
@@ -86,12 +87,13 @@ private:
 	std::unique_ptr<MapRender> mapRender_;
 	std::unique_ptr<DebugMCRender> debugMapRender_;//マップチップを単純な色で描画
 	std::map<TileType, Vector3> colorMap_;//DebugMCRenderに使う、マップチップの色
+	std::unique_ptr<StaticObjectRender> staticObjectRender_;//マップ上の動かないオブジェクトを描画
 
 	// MiniMap
 	std::unique_ptr<MiniMap> miniMap_;
 
 	// 現在のマップ
-	NewMap currentMap_;
+	CurrentStageConfig currentMap_;
 
 	// 鉱石の管理
 	std::unique_ptr<OreItemManager> oreItemManager_;

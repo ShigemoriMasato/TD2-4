@@ -31,7 +31,6 @@ void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData,
 	RegisterDebugParam();
 #endif
 	// 値の適応
-	ApplyDebugParam();
 	maxCurrentOreCount_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MaxOreCount");
 }
 

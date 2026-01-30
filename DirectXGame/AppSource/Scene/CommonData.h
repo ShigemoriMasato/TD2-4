@@ -11,5 +11,8 @@ struct CommonData {
 	std::unique_ptr<NewMapManager> newMapManager;
 	bool exeFinished_ = false;
 
+	int nextStageIndex = -1;
+	uint32_t nextMapIndex = 0;
+
 	int postEffectDrawDataIndex = -1;
 };

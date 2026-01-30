@@ -8,8 +8,8 @@ void MapDecorationEditor::Initialize(ModelManager* modelManager) {
 	assert(modelManager);
 	modelManager_ = modelManager;
 
-	DecoDataLoad();
 	ModelListLoad();
+	DecoDataLoad();
 }
 
 void MapDecorationEditor::Update() {
@@ -25,7 +25,7 @@ void MapDecorationEditor::Update() {
 
 	isHovered_ = false;
 	//カーソルとデコレーションの当たり判定
-	for (const auto& [modelIndex, transforms] : decorations_) {
+	for (const auto& [modelIndex, transforms] : decorations_[currentMapID_]) {
 		if (isHold_) {
 			isHovered_ = true;
 			break;
@@ -57,13 +57,13 @@ void MapDecorationEditor::Update() {
 
 	if (!isHovered_ && Input::GetMouseButtonState()[0] && DebugMousePos::isHovered) {
 		//モデルの新規追加
-		editingTransformIndex_ = static_cast<int>(decorations_[currentModelIndex_].size());
-		decorations_[currentModelIndex_].emplace_back();
+		editingTransformIndex_ = static_cast<int>(decorations_[currentMapID_][currentModelIndex_].size());
+		decorations_[currentMapID_][currentModelIndex_].emplace_back();
 		isHold_ = true;
 	}
 
 	if (isHold_) {
-		Transform& transform = decorations_[currentModelIndex_][editingTransformIndex_];
+		Transform& transform = decorations_[currentMapID_][currentModelIndex_][editingTransformIndex_];
 		transform.position.x = cursorPos_.x - cursorOffset_.x;
 		transform.position.z = cursorPos_.y - cursorOffset_.y;
 	}
@@ -131,7 +131,7 @@ void MapDecorationEditor::DrawImGui() {
 	ImGui::Begin("Current Decoration Model");
 
 	int currentModelID = modelIDMap_[currentModelIndex_];
-	Transform& transform = decorations_[currentModelIndex_][editingTransformIndex_];
+	Transform& transform = decorations_[currentMapID_][currentModelIndex_][editingTransformIndex_];
 	const std::string& modelPath = modelList_[currentModelID].first;
 
 	ImGui::Text("Model: %s", modelPath.c_str());
@@ -141,7 +141,7 @@ void MapDecorationEditor::DrawImGui() {
 	ImGui::DragFloat3("Position", &transform.position.x, 0.1f);
 
 	if (ImGui::Button("Delete")) {
-		decorations_[currentModelIndex_].erase(decorations_[currentModelIndex_].begin() + editingTransformIndex_);
+		decorations_[currentMapID_][currentModelIndex_].erase(decorations_[currentMapID_][currentModelIndex_].begin() + editingTransformIndex_);
 		editingTransformIndex_ = -1;
 	}
 
@@ -164,17 +164,29 @@ void MapDecorationEditor::Save() {
 	}
 	binaryManager_.Write(saveFileNameModelList_);
 
-	for (const auto& [modelIndex, transforms] : decorations_) {
-		int modelID = modelIDMap_[modelIndex];
-		binaryManager_.RegisterOutput(modelID);
-		binaryManager_.RegisterOutput(static_cast<int>(transforms.size()));
-		for (const auto& transform : transforms) {
-			binaryManager_.RegisterOutput(transform.position);
-			binaryManager_.RegisterOutput(transform.rotate);
-			binaryManager_.RegisterOutput(transform.scale);
+	binaryManager_.RegisterOutput(static_cast<int>(decorations_.size()));
+	for (const auto& mapDecorations : decorations_) {
+		binaryManager_.RegisterOutput(static_cast<int>(mapDecorations.size()));
+		for (const auto& [modelIndex, transforms] : mapDecorations) {
+			int modelID = modelIDMap_[modelIndex];
+			binaryManager_.RegisterOutput(modelID);
+			binaryManager_.RegisterOutput(static_cast<int>(transforms.size()));
+			for (const auto& transform : transforms) {
+				binaryManager_.RegisterOutput(transform.position);
+				binaryManager_.RegisterOutput(transform.rotate);
+				binaryManager_.RegisterOutput(transform.scale);
+			}
 		}
 	}
 	binaryManager_.Write(saveFileNameDecorationData_);
+}
+
+void MapDecorationEditor::SetCurrentMap(int mapID) {
+	currentMapID_ = mapID;
+	if (currentMapID_ >= static_cast<int>(decorations_.size())) {
+		decorations_.resize(currentMapID_ + 1);
+	}
+	editingTransformIndex_ = -1;
 }
 
 void MapDecorationEditor::DecoDataLoad() {
@@ -186,18 +198,39 @@ void MapDecorationEditor::DecoDataLoad() {
 
 	int index = 0;
 
-	while (index < static_cast<int>(values.size())) {
-		int modelID = BinaryManager::Reverse<int>(values[index++].get());
-		int transformCount = BinaryManager::Reverse<int>(values[index++].get());
-		std::vector<Transform> transforms;
-		for (int i = 0; i < transformCount; ++i) {
-			Transform transform;
-			transform.position = BinaryManager::Reverse<Vector3>(values[index++].get());
-			transform.rotate = BinaryManager::Reverse<Vector3>(values[index++].get());
-			transform.scale = BinaryManager::Reverse<Vector3>(values[index++].get());
-			transforms.push_back(transform);
+	int mapCount = BinaryManager::Reverse<int>(values[index++].get());
+	decorations_.resize(mapCount);
+
+	for (int j = 0; j < mapCount; ++j) { //マップの数だけfor
+
+		int decorationCount = BinaryManager::Reverse<int>(values[index++].get());
+
+		for (int k = 0; k < decorationCount; ++k) {// モデルの数だけfor
+
+			int modelID = BinaryManager::Reverse<int>(values[index++].get());
+			
+			int modelIndex = 0;
+			for (const auto& [mIndex, mID] : modelIDMap_) {
+				if (mID == modelID) {
+					modelIndex = mIndex;
+					break;
+				}
+			}
+
+			int transformCount = BinaryManager::Reverse<int>(values[index++].get());
+			std::vector<Transform> transforms;
+
+			for (int i = 0; i < transformCount; ++i) { //配置された数だけfor
+				Transform transform;
+				transform.position = BinaryManager::Reverse<Vector3>(values[index++].get());
+				transform.rotate = BinaryManager::Reverse<Vector3>(values[index++].get());
+				transform.scale = BinaryManager::Reverse<Vector3>(values[index++].get());
+				transforms.push_back(transform);
+			}
+
+			decorations_[j][modelIndex] = transforms;
 		}
-		decorations_[modelID] = transforms;
+
 	}
 }
 

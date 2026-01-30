@@ -32,8 +32,8 @@ void StaticObjectRender::SetAlpha(float alpha) {
 
 void StaticObjectRender::SetObjects(const std::map<int, std::vector<Transform>>& objects) {
 	// オブジェクトの初期化
-	for (auto& [modelIndex, transform] : objects) {
-		vsData_[modelIndex].clear();
+	for (auto& [modelIndex, data] : vsData_) {
+		data.clear();
 	}
 
 	for (auto& [modelIndex, transforms] : objects) {
@@ -50,7 +50,7 @@ void StaticObjectRender::SetObjects(const std::map<int, std::vector<Transform>>&
 
 		//無い場合はRenderObjectを生成
 		auto render = std::make_unique<RenderObject>("StaticObjectRender_" + std::to_string(modelIndex));
-		render->instanceNum_ = 0;
+		render->instanceNum_ = 0xffffffff;
 		NodeModelData modelData = modelManager_->GetNodeModelData(modelIndex);
 		DrawData drawData = drawDataManager_->GetDrawData(modelData.drawDataIndex);
 		//初期化は数を集計した後にやる
@@ -68,7 +68,7 @@ void StaticObjectRender::SetObjects(const std::map<int, std::vector<Transform>>&
 
 	for (auto& [modelIndex, render] : objects_) {
 
-		if (render->instanceNum_ != 0) {
+		if (render->instanceNum_ != 0xffffffff) {
 			//描画数だけ合わせる
 			render->instanceNum_ = static_cast<int>(vsData_[modelIndex].size());
 			continue;
