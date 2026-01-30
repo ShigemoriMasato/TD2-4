@@ -13,6 +13,7 @@ enum class TileType {
 	MediumGold,
 	LargeGold,
 	Slow,
+	PlayerSpawn,
 	Count
 };
 

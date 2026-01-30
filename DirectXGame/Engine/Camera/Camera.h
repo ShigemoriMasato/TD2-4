@@ -61,9 +61,9 @@ public:
 	void SetTransform(Matrix4x4 mat);
 
 	//VPMatrixを取得
-	Matrix4x4 GetVPMatrix() const;
+	virtual Matrix4x4 GetVPMatrix() const;
 
-	Matrix4x4 GetTranformMatrix() const { return transformMatrix_; }
+	Matrix4x4 GetTransformMatrix() const { return transformMatrix_; }
 	Matrix4x4 GetProjectionMatrix() const { return projectionMatrix_; }
 
 protected:

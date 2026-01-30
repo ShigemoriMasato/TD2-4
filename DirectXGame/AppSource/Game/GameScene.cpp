@@ -86,6 +86,7 @@ void GameScene::Initialize() {
 	//============================================
 
 	currentMap_ = commonData_->newMapManager->GetStageMap(commonData_->nextStageIndex, commonData_->nextMapIndex);
+	Vector3 playerInitPos = GetPlayerInitPosition();
 
 	// マップデータ解釈機能を初期化
 	mapChipField_ = std::make_unique<MapChipField>();
@@ -186,7 +187,7 @@ void GameScene::Initialize() {
 	unitManager_->Initalize(mapChipField_.get(),
 		drawDataManager_->GetDrawData(playerModel.drawDataIndex), playerTextureIndex,
 		drawDataManager_->GetDrawData(oreModel.drawDataIndex), oreTextureIndex,
-		commonData_->keyManager.get());
+		commonData_->keyManager.get(), playerInitPos);
 
 	// 拠点管理クラスを設定
 	unitManager_->SetHomeManager(homeManager_.get());
@@ -387,6 +388,7 @@ void GameScene::InGameScene() {
 	//====================================================
 	// カメラの更新庶路
 	//====================================================
+	cameraController_->SetTargetPos(unitManager_->GetPlayerPosition());
 
 	// マウスのスクリーン座標を取得する
 	POINT cursorPos;
@@ -420,8 +422,8 @@ void GameScene::InGameScene() {
 				OreItem* selectedOreItem = oreItemManager_->GetOreItemForId();
 
 				// 追加出来るかを確認
-				int32_t deletaNum = selectedOreItem->IsFullWorker(unitManager_->GetUnitSpawnNum());
-				if (deletaNum >= 0) {
+				int32_t deltaNum = selectedOreItem->IsFullWorker(unitManager_->GetUnitSpawnNum());
+				if (deltaNum >= 0) {
 
 					// おれを追加
 					unitManager_->RegisterUnit(selectedOreItem->GetPos(), 0, selectedOreItem);
@@ -431,12 +433,12 @@ void GameScene::InGameScene() {
 						selectedOreItem->AddWorker();
 					}
 				} else {
-					if (unitManager_->GetUnitSpawnNum() >= deletaNum * -1.0f) {
+					if (unitManager_->GetUnitSpawnNum() >= deltaNum * -1.0f) {
 						// おれを追加
-						unitManager_->RegisterUnit(selectedOreItem->GetPos(), deletaNum, selectedOreItem);
+						unitManager_->RegisterUnit(selectedOreItem->GetPos(), deltaNum, selectedOreItem);
 
 						// 鉱石側の労働者カウントを増やす
-						int32_t actualSpawnCount = unitManager_->GetUnitSpawnNum() + deletaNum;
+						int32_t actualSpawnCount = unitManager_->GetUnitSpawnNum() + deltaNum;
 						for (int i = 0; i < actualSpawnCount; ++i) {
 							selectedOreItem->AddWorker();
 						}
@@ -526,7 +528,7 @@ void GameScene::Draw() {
 
 		if (i == 0) {
 			display_->PreDraw(gameWindow_->GetCommandObject(), true);
-			vpMatrix = cameraController_->GetVpMatrix();
+			vpMatrix = cameraController_->GetVPMatrix();
 		} else {
 			vpMatrix = miniMap_->PreDraw(gameWindow_->GetWindow())->GetVPMatrix();
 		}
@@ -685,4 +687,21 @@ void GameScene::PutGold() {
 			oreItemManager_->AddOreItem(type, pos);
 		}
 	}
+}
+
+Vector3 GameScene::GetPlayerInitPosition() {
+	for(auto& row : currentMap_.currentMap.mapChipData){
+		for(auto& tile : row){
+			if(tile == TileType::PlayerSpawn){
+				tile = TileType::Road;
+				return {
+					static_cast<float>(&tile - &row[0]),
+					0.0f,
+					static_cast<float>(&row - &currentMap_.currentMap.mapChipData[0])
+				};
+			}
+		}
+	}
+
+	return { 3.0f,0.0f,3.0f };
 }

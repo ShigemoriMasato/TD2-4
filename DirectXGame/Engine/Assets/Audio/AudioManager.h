@@ -18,8 +18,14 @@
 class AudioManager {
 public:
 
-	AudioManager() = default;
 	~AudioManager();
+
+	void Finalize() { delete this; }
+
+	AudioManager* GetInstance() {
+		static AudioManager* instance = new AudioManager();
+		return instance;
+	}
 
 	/**
 	 * @brief オーディオシステムの初期化
@@ -84,6 +90,8 @@ public:
 	AudioData* GetAudioData(uint32_t id);
 
 private:
+
+	AudioManager() = default;
 
 	/// @brief XAudio2のインスタンス
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;
