@@ -653,9 +653,9 @@ void GameScene::LoadDebugColorMap() {
 }
 
 void GameScene::PutGold() {
-	const MapChipData& data = currentMap_.currentMap.mapChipData;
-	for (const auto& row : data) {
-		for (const auto& tile : row) {
+	MapChipData& data = currentMap_.currentMap.mapChipData;
+	for (auto& row : data) {
+		for (auto& tile : row) {
 
 			OreType type = OreType::Small;
 
@@ -683,6 +683,8 @@ void GameScene::PutGold() {
 				static_cast<float>(&row - &currentMap_.currentMap.mapChipData[0])
 			};
 			oreItemManager_->AddOreItem(type, pos);
+
+			tile = TileType::Gold;
 		}
 	}
 }
