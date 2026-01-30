@@ -1,50 +1,75 @@
 #include"TimerUI.h"
 #include"TimeLimit.h"
+#include"FpsCount.h"
+#include"Utility/Easing.h"
 
 void TimerUI::Initialize(const std::string& fontName, DrawData drawData, FontLoader* fontLoader) {
 	// フォントローダーを取得
 	fontLoader_ = fontLoader;
 
-	// 番号を登録
-	numText_[0] = L"0";
-	numText_[1] = L"1";
-	numText_[2] = L"2";
-	numText_[3] = L"3";
-	numText_[4] = L"4";
-	numText_[5] = L"5";
-	numText_[6] = L"6";
-	numText_[7] = L"7";
-	numText_[8] = L"8";
-	numText_[9] = L"9";
-
-	// テキストの初期化
-	for (int i = 0; i < numSprites_.size(); ++i) {
-		numSprites_[i] = std::make_unique<FontObject>();
-		numSprites_[i]->Initialize(fontName, numText_[0], drawData, fontLoader);
-		if (i <= 1) {
-			numSprites_[i]->transform_.position.x = pos_.x + i * 32.0f;
-		} else {
-			numSprites_[i]->transform_.position.x = pos_.x + i * 32.0f + 54.0f;
-		}
-		numSprites_[i]->transform_.position.y = pos_.y;
-	}
+	// フォント
+	numFont_ = std::make_unique<FontObject>();
+	numFont_->Initialize(fontName, std::to_wstring(TimeLimit::totalSeconds), drawData, fontLoader);
+	numFont_->transform_.position.x = pos_.x;
+	numFont_->transform_.position.y = pos_.y;
 }
 
 void TimerUI::Update() {
 
-	// 時間の更新処理
-	for (int i = 0; i < numSprites_.size(); ++i) {
-		if (i == 1) {
-			numSprites_[i]->UpdateCharPositions(numText_[TimeLimit::numbers[i]] + L" : ", fontLoader_);
-		} else {
-			numSprites_[i]->UpdateCharPositions(numText_[TimeLimit::numbers[i]], fontLoader_);
-		}	
+	// 時間文字の更新処理
+	numFont_->UpdateCharPositions(std::to_wstring(TimeLimit::totalSeconds), fontLoader_);
+
+	// 文字をアニメーション
+	if (TimeLimit::totalSeconds <= 30) {
+
+		if (preTime_ != TimeLimit::totalSeconds) {
+			isAnimation_ = true;
+		}
+
+		// アニメーションの更新処理
+		if (isAnimation_) {
+			Animation();
+		}
 	}
 }
 
 void TimerUI::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	// 数字を描画する
-	for (int i = 0; i < numSprites_.size(); ++i) {
-		numSprites_[i]->Draw(window, vpMatrix);
+	numFont_->Draw(window, vpMatrix);
+}
+
+void TimerUI::Animation() {
+
+	timer_ += FpsCount::deltaTime / maxTime_;
+
+	if (timer_ <= 0.5f) {
+		float localT = timer_ / 0.5f;
+
+		// 座標
+		numFont_->transform_.position.x = lerp(pos_.x, pos_.x - (32.0f * 0.5f), localT, EaseType::EaseInCubic);
+
+		// スケール
+		float width = lerp(1.0f, 1.5f, localT, EaseType::EaseInCubic);
+		numFont_->transform_.scale.x = width;
+		numFont_->transform_.scale.y = -width;
+		// フォントの色
+		numFont_->fontColor_ = lerp(fontColor_,Vector4(1.0f,1.0f,1.0f,1.0f),localT,EaseType::EaseInCubic);
+	} else {
+		float localT = (timer_ - 0.5f) / 0.5f;
+
+		// 座標
+		numFont_->transform_.position.x = lerp(pos_.x - (32.0f * 0.5f),pos_.x, localT, EaseType::EaseInCubic);
+
+		// スケール
+		float width = lerp(1.5f, 1.0f, localT, EaseType::EaseInCubic);
+		numFont_->transform_.scale.x = width;
+		numFont_->transform_.scale.y = -width;
+		// フォントの色
+		numFont_->fontColor_ = lerp(Vector4(1.0f, 1.0f, 1.0f, 1.0f),fontColor_ , localT, EaseType::EaseInCubic);
+	}
+
+	if (timer_ >= 1.0f) {
+		isAnimation_ = false;
+		timer_ = 0.0f;
 	}
 }
