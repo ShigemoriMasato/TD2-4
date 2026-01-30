@@ -2,10 +2,12 @@
 #include"Camera/Camera.h"
 #include"Input/Input.h"
 
+#include"GameCommon/DefaultObject.h"
+
 class CameraController : public Camera {
 public:
 
-	void Initialize(Input* input);
+	void Initialize(Input* input, DrawData drawData, int texture);
 
 	void Update();
 
@@ -19,6 +21,9 @@ public:
 	/// <param name="screenHeight">スクリーンの高さ</param>
 	/// <returns>3D空間上の座標</returns>
 	Vector3 ScreenToWorld(const Vector2& screenPos, float screenWidth = 1280.0f, float screenHeight = 720.0f) const;
+
+	// アニメーションを描画
+	void DrawAnimation(Window* window, const Matrix4x4& vpMatrix);
 
 public:
 
@@ -40,6 +45,14 @@ public:
 	// マップの最大サイズを取得
 	void SetMapMaxSize(const Vector2& size) {
 		mapMaxSize_ = size;
+	}
+
+	// アニメーションの開始
+	void StartAnimation() {
+		if (!isAnimation_) {
+			isAnimation_ = true;
+			clickObject_->transform_.position = worldPos_ + Vector3(0.0f,0.2f,0.0f);
+		}
 	}
 
 private:
@@ -68,4 +81,17 @@ private:
 
 	// ワールド座標の位置
 	Vector3 worldPos_ = {};
+
+	// クリックアニメーション
+	std::unique_ptr<DefaultObject> clickObject_;
+
+	bool isAnimation_ = false;
+
+	float timer_ = 0.0f;
+	float maxTime_ = 0.3f;
+
+private:
+
+	// クリックアニメーション
+	void ClickAnimation();
 };
