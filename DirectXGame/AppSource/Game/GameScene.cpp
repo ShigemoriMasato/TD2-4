@@ -79,7 +79,7 @@ void GameScene::Initialize() {
 
 	// ゲームカメラを設定
 	cameraController_ = std::make_unique<CameraController>();
-	cameraController_->Initialize(input_, drawDataManager_->GetDrawData(clickModel.drawDataIndex),0);
+	cameraController_->Initialize(input_, drawDataManager_->GetDrawData(clickModel.drawDataIndex), 0);
 
 	//============================================
 	// マップシステム
@@ -287,12 +287,12 @@ void GameScene::InitializeOtherScene() {
 	clearUI_->SetOnRetryClicked([this]() {
 		isSceneChange_ = true;
 		isRetry_ = true;
-	});
+		});
 	// 選択
 	clearUI_->SetOnSelectClicked([this]() {
 		isSceneChange_ = true;
 		isRetry_ = false;
-	});
+		});
 
 	// 操作説明のテクスチャを取得
 	int guidTextureIndex = textureManager_->GetTexture("TutrialImage.png");
@@ -309,11 +309,11 @@ void GameScene::InitializeOtherScene() {
 		} else {
 			timeTracker_->StartMeasureTimes();
 		}
-	});
+		});
 	// 選択
 	pauseUI_->SetOnSelectClicked([this]() {
 		isPauseScene_ = true;
-	});
+		});
 }
 
 std::unique_ptr<IScene> GameScene::Update() {
@@ -444,7 +444,7 @@ void GameScene::InGameScene() {
 				}
 			}
 		}
-	} 
+	}
 
 	//=====================================================
 	// 鉱石の更新処理
@@ -619,7 +619,7 @@ void GameScene::RegisterDebugParam() {
 void GameScene::ApplyDebugParam() {
 	// ゲームの時間
 	mTime_ = GameParamEditor::GetInstance()->GetValue<float>("GameTime", "m");
-	sTime_= GameParamEditor::GetInstance()->GetValue<float>("GameTime", "s");
+	sTime_ = GameParamEditor::GetInstance()->GetValue<float>("GameTime", "s");
 
 	// 鉱石数
 	OreItemStorageNum::maxOreItemNum_ = GameParamEditor::GetInstance()->GetValue<int32_t>("OreItem", "MaxOreItem");
@@ -646,15 +646,33 @@ void GameScene::PutGold() {
 	const MapChipData& data = currentMap_.currentMap.mapChipData;
 	for (const auto& row : data) {
 		for (const auto& tile : row) {
-			if (tile == TileType::Gold) {
 
-				Vector3 pos = {
-					static_cast<float>(&tile - &row[0]),
-					0.0f,
-					static_cast<float>(&row - &currentMap_.currentMap.mapChipData[0])
-				};
-				oreItemManager_->AddOreItem(OreType::Medium, pos);
+			OreType type = OreType::Small;
+
+			switch (tile) {
+			case TileType::Gold:
+				type = OreType::Small;
+				break;
+			case TileType::MediumGold:
+				type = OreType::Medium;
+				break;
+			case TileType::LargeGold:
+				type = OreType::Large;
+				break;
+			default:
+				type = OreType::MaxCount;
 			}
+
+			if (type == OreType::MaxCount) {
+				continue;
+			}
+
+			Vector3 pos = {
+				static_cast<float>(&tile - &row[0]),
+				0.0f,
+				static_cast<float>(&row - &currentMap_.currentMap.mapChipData[0])
+			};
+			oreItemManager_->AddOreItem(type, pos);
 		}
 	}
 }
