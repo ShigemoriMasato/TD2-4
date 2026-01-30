@@ -8,7 +8,7 @@
 #include <imgui/imgui.h>
 #endif
 
-void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData, int pIndex, DrawData oreDrawData, int oIndex, KeyManager* keyManager) {
+void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData, int pIndex, DrawData oreDrawData, int oIndex, KeyManager* keyManager, Vector3 playerInitPos) {
 	// マップデータを取得
 	mapChipField_ = mapChipField;
 
@@ -17,7 +17,7 @@ void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData,
 
 	// プレイヤーユニットを初期化
 	playerUnit_ = std::make_unique<PlayerUnit>();
-	playerUnit_->Init(mapChipField_, playerDrawData,pIndex,{3.0f,0.0f,3.0f}, keyManager);
+	playerUnit_->Init(mapChipField_, playerDrawData,pIndex,playerInitPos, keyManager);
 
 	// おれのモデルデータを取得
 	oreDrawData_ = oreDrawData;

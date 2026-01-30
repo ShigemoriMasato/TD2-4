@@ -186,7 +186,7 @@ void GameScene::Initialize() {
 	unitManager_->Initalize(mapChipField_.get(),
 		drawDataManager_->GetDrawData(playerModel.drawDataIndex), playerTextureIndex,
 		drawDataManager_->GetDrawData(oreModel.drawDataIndex), oreTextureIndex,
-		commonData_->keyManager.get());
+		commonData_->keyManager.get(), GetPlayerInitPosition());
 
 	// 拠点管理クラスを設定
 	unitManager_->SetHomeManager(homeManager_.get());
@@ -684,4 +684,21 @@ void GameScene::PutGold() {
 			oreItemManager_->AddOreItem(type, pos);
 		}
 	}
+}
+
+Vector3 GameScene::GetPlayerInitPosition() {
+	for(auto& row : currentMap_.currentMap.mapChipData){
+		for(auto& tile : row){
+			if(tile == TileType::PlayerSpawn){
+				tile = TileType::Road;
+				return {
+					static_cast<float>(&tile - &row[0]),
+					0.0f,
+					static_cast<float>(&row - &currentMap_.currentMap.mapChipData[0])
+				};
+			}
+		}
+	}
+
+	return { 3.0f,0.0f,3.0f };
 }

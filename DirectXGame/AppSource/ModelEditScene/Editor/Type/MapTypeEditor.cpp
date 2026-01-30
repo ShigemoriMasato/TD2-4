@@ -17,7 +17,8 @@ void MapTypeEditor::Initialize(Input* input) {
 		{TileType::Gold, "SmallGold"},
 		{TileType::MediumGold, "MediumGold"},
 		{TileType::LargeGold, "LargeGold"},
-		{TileType::Slow, "Slow"}
+		{TileType::Slow, "Slow"},
+		{TileType::PlayerSpawn, "PlayerSpawn"},
 	};
 
 	Load();
