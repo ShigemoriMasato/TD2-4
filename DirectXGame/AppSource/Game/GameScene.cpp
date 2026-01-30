@@ -69,10 +69,6 @@ void GameScene::Initialize() {
 	LightManager::light_.direction = { 0.0f,-1.0f,0.0f };
 	LightManager::light_.intensity = 1.0f;
 
-	// 登録
-	RegisterDebugParam();
-	ApplyDebugParam();
-
 	//==================================================
 	// カメラシステム
 	//==================================================
@@ -95,6 +91,7 @@ void GameScene::Initialize() {
 	mapChipField_ = std::make_unique<MapChipField>();
 	// マップデータの受け取り
 	mapChipField_->SetMapChipData(currentMap_.currentMap.mapChipData);
+
 
 	// マップの最大サイズを取得
 	cameraController_->SetMapMaxSize(mapChipField_->GetMaxMapSize());
@@ -256,6 +253,9 @@ void GameScene::Initialize() {
 	// その他のシーンを初期化
 	//=======================================================
 	InitializeOtherScene();
+	// 登録
+	RegisterDebugParam();
+	ApplyDebugParam();
 }
 
 void GameScene::InitializeOtherScene() {
@@ -613,7 +613,7 @@ void GameScene::RegisterDebugParam() {
 	GameParamEditor::GetInstance()->AddItem("GameTime", "s", sTime_);
 
 	// 鉱石数
-	GameParamEditor::GetInstance()->AddItem("OreItem", "MaxOreItem", OreItemStorageNum::maxOreItemNum_);
+	GameParamEditor::GetInstance()->AddItem("OreItem", "MaxOreItem", currentMap_.norma);
 }
 
 void GameScene::ApplyDebugParam() {

@@ -8,8 +8,8 @@ void MapDecorationEditor::Initialize(ModelManager* modelManager) {
 	assert(modelManager);
 	modelManager_ = modelManager;
 
-	DecoDataLoad();
 	ModelListLoad();
+	DecoDataLoad();
 }
 
 void MapDecorationEditor::Update() {
@@ -183,7 +183,7 @@ void MapDecorationEditor::Save() {
 
 void MapDecorationEditor::SetCurrentMap(int mapID) {
 	currentMapID_ = mapID;
-	if(currentMapID_ >= static_cast<int>(decorations_.size())) {
+	if (currentMapID_ >= static_cast<int>(decorations_.size())) {
 		decorations_.resize(currentMapID_ + 1);
 	}
 	editingTransformIndex_ = -1;
@@ -202,12 +202,21 @@ void MapDecorationEditor::DecoDataLoad() {
 	decorations_.resize(mapCount);
 
 	for (int j = 0; j < mapCount; ++j) { //マップの数だけfor
-		
+
 		int decorationCount = BinaryManager::Reverse<int>(values[index++].get());
 
 		for (int k = 0; k < decorationCount; ++k) {// モデルの数だけfor
 
 			int modelID = BinaryManager::Reverse<int>(values[index++].get());
+			
+			int modelIndex = 0;
+			for (const auto& [mIndex, mID] : modelIDMap_) {
+				if (mID == modelID) {
+					modelIndex = mIndex;
+					break;
+				}
+			}
+
 			int transformCount = BinaryManager::Reverse<int>(values[index++].get());
 			std::vector<Transform> transforms;
 
@@ -218,8 +227,8 @@ void MapDecorationEditor::DecoDataLoad() {
 				transform.scale = BinaryManager::Reverse<Vector3>(values[index++].get());
 				transforms.push_back(transform);
 			}
-		
-			decorations_[j][modelID] = transforms;
+
+			decorations_[j][modelIndex] = transforms;
 		}
 
 	}
