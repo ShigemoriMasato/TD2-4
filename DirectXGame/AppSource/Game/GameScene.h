@@ -12,8 +12,7 @@
 #include"GameCamera/CameraController.h"
 #include"UI/FadeTransition.h"
 #include"UI/Object/FontObject.h"
-#include"UI/CounterUI.h"
-#include"UI/TimerUI.h"
+#include"UI/GameUIManager.h"
 #include"TimeTracker.h"
 #include"UI/OreUnitHPUI.h"
 #include"Unit/UnitEffectManager.h"
@@ -106,19 +105,14 @@ private:
 	// ユニットの演出管理(仮で作ったため消すかも)
 	std::unique_ptr<UnitEffectManager> unitEffectManager_;
 
-	// ユニットの数UI
-	std::unique_ptr<CounterUI> unitCounterUI_;
-	// 鉱石の数UI
-	std::unique_ptr<CounterUI> oreItemUI_;
+	// ゲームで仕様するHI管理クラス
+	std::unique_ptr<GameUIManager> gameUIManager_;
 
 	// ユニットのHPUI
 	std::unique_ptr<OreUnitHPUI> oreUnitHpUI_;
 
 	// 時間を測る
 	std::unique_ptr<TimeTracker> timeTracker_;
-
-	// 計測時間をだすUI
-	std::unique_ptr<TimerUI> timerUI_;
 
 	//================================================
 	// ゲームオーバーシーン
