@@ -25,6 +25,8 @@ namespace {
 	std::string unitHpModelName = "UnitHp";
 
 	std::string oreBaseModelName = "OreBase";
+
+	std::string clickName = "ClickMark";
 }
 
 GameScene::~GameScene() {
@@ -75,9 +77,13 @@ void GameScene::Initialize() {
 	// カメラシステム
 	//==================================================
 
+	// プレイヤーモデルを取得
+	int clickModelID = modelManager_->LoadModel(clickName);
+	auto clickModel = modelManager_->GetNodeModelData(clickModelID);
+
 	// ゲームカメラを設定
 	cameraController_ = std::make_unique<CameraController>();
-	cameraController_->Initialize(input_);
+	cameraController_->Initialize(input_, drawDataManager_->GetDrawData(clickModel.drawDataIndex),0);
 
 	//============================================
 	// マップシステム
@@ -403,14 +409,17 @@ void GameScene::InGameScene() {
 	// ユニットの選択処理
 	//==============================================================
 
-	// マウスの位置に鉱石が存在していればユニットを動かす
-	Vector3 oreWorldPos = {};
-	if (oreItemManager_->IsSelectOre(cameraController_->GetWorldPos(), oreWorldPos)) {
+	// 左クリックを取得
+	if ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80)) {
 
-		// 左クリックを取得
-		if ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80)) {
+		// クリックアニメーションを開始
+		cameraController_->StartAnimation();
 
-			int32_t num =  unitManager_->GetMaxOreCount() - unitManager_->GetOreCount();
+		// マウスの位置に鉱石が存在していればユニットを動かす
+		Vector3 oreWorldPos = {};
+		if (oreItemManager_->IsSelectOre(cameraController_->GetWorldPos(), oreWorldPos)) {
+
+			int32_t num = unitManager_->GetMaxOreCount() - unitManager_->GetOreCount();
 
 			if (num > 0) {
 
@@ -442,7 +451,7 @@ void GameScene::InGameScene() {
 				}
 			}
 		}
-	}
+	} 
 
 	//=====================================================
 	// 鉱石の更新処理
@@ -544,6 +553,13 @@ void GameScene::Draw() {
 
 		// ユニットのHp描画
 		oreUnitHpUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+		// マウスのクリックアニメーション
+		cameraController_->DrawAnimation(gameWindow_->GetWindow(), vpMatrix);
+
+		//============================================================================
+		// 2D描画
+		//============================================================================
 
 		/// UIの描画処理
 		vpMatrix = uiCamera_->GetVPMatrix();

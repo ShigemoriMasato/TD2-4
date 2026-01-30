@@ -22,7 +22,7 @@ ModelEditScene::~ModelEditScene() {
 
 void ModelEditScene::Initialize() {
 	cameraController_ = std::make_unique<CameraController>();
-	cameraController_->Initialize(input_);
+	cameraController_->Initialize(input_, drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(0).drawDataIndex),0);
 
 	mcRender_ = std::make_unique<DebugMCRender>();
 	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(0).drawDataIndex);

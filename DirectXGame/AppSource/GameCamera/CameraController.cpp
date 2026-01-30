@@ -4,12 +4,13 @@
 #include"DebugMousePos.h"
 #include"FpsCount.h"
 #include<algorithm>
+#include"Utility/Easing.h"
 
 #ifdef USE_IMGUI
 #include <imgui/imgui.h>
 #endif
 
-void CameraController::Initialize(Input* input) {
+void CameraController::Initialize(Input* input, DrawData drawData, int texture) {
 
 	// 入力処理を取得
 	input_ = input;
@@ -19,6 +20,10 @@ void CameraController::Initialize(Input* input) {
 	position_ = { 0.0f,8.0f,0.0f };
 	rotation_ = { -1.0f,0.0f,0.0f };
 	MakeMatrix();
+
+	// クリック位置を描画
+	clickObject_ = std::make_unique<DefaultObject>();
+	clickObject_->Initialize(drawData, texture);
 }
 
 void CameraController::Update() {
@@ -64,6 +69,12 @@ void CameraController::Update() {
 #else
 	worldPos_ = ScreenToWorld(DebugMousePos::screenMousePos, 1280.0f, 720.0f);
 #endif
+
+	// クリック時のアニメーションを描画
+	if (isAnimation_) {
+		ClickAnimation();
+	}
+
 }
 
 void CameraController::DebugDraw() {
@@ -155,4 +166,28 @@ void CameraController::MakeMatrix() {
 	worldMatrix_ = Matrix::MakeAffineMatrix(scale_,rotation_,position_);
 	//vpMatrix_ = transformMatrix_ * projectionMatrix_;
 	vpMatrix_ = Matrix::MakeTranslationMatrix(-position_ - offset) * Matrix::MakeRotationMatrix(rotation_) * projectionMatrix_;
+}
+
+void CameraController::DrawAnimation(Window* window, const Matrix4x4& vpMatrix) {
+	// クリックアニメーションを描画
+	clickObject_->Draw(window, vpMatrix);
+}
+
+void CameraController::ClickAnimation() {
+
+	timer_ += FpsCount::deltaTime / maxTime_;
+
+	float width = lerp(1.0f, 2.0f, timer_, EaseType::EaseInOutCubic);
+	clickObject_->transform_.scale.x = width;
+	clickObject_->transform_.scale.z = width;
+
+	clickObject_->material_.color.w = lerp(1.0f, 0.0f, timer_, EaseType::Linear);
+
+	if (timer_ >= 1.0f) {
+		timer_ = 0.0f;
+		isAnimation_ = false;
+	}
+
+	// 更新処理
+	clickObject_->Update();
 }
