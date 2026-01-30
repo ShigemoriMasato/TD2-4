@@ -289,7 +289,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="Engine\Screen\Display\src\IDisplay.cpp" />
     <ClCompile Include="AppSource\Game\GameScene.cpp" />
     <ClCompile Include="Engine\Assets\Fonts\FontLoader.cpp" />
-    <ClCompile Include="AppSource\GameCamera\FollowCamera.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\SHEngine.cpp" />
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
@@ -316,7 +315,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\ModelEditScene\Render\StaticObjectRender.h" />
     <ClInclude Include="AppSource\UI\PauseUI.h" />
     <ClInclude Include="AppSource\ModelEditScene\Editor\Stage\StageEditor.h" />
-    <ClInclude Include="AppSource\GameCamera\FollowCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSource\Common\DebugParam\GameParamEditor.h" />

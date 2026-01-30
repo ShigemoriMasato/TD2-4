@@ -17,6 +17,7 @@ CurrentStageConfig NewMapManager::GetStageMap(int stage, int map) {
 		config.currentMapID = 0;
 		return config;
 	}
+	map = std::clamp(map, 0, int(stageData_[stage].configs.size()));
 	int mapID = stageData_[stage].configs[map].mapID;
 
 	config.initOreNum = stageData_[stage].initOreNum;

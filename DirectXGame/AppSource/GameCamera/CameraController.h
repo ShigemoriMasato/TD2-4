@@ -55,12 +55,16 @@ public:
 		}
 	}
 
+	void SetTargetPos(const Vector3 pos) {
+		targetPos_ = pos;
+	}
+
 private:
 
 	void MakeMatrix() override;
 
 
-	Vector3 backDir_ = { 0.0f,-0.9f,0.4f };
+	Vector3 backDir_ = { 0.0f, -0.9f, 0.5f };
 	float backDist_ = -40.0f;
 
 	Input* input_ = nullptr;
@@ -86,9 +90,14 @@ private:
 	std::unique_ptr<DefaultObject> clickObject_;
 
 	bool isAnimation_ = false;
+	bool isFollow_ = true;
 
 	float timer_ = 0.0f;
 	float maxTime_ = 0.3f;
+
+private://追従カメラ
+	Vector3 targetPos_ = {};
+	float followSpeed_ = 5.0f;
 
 private:
 

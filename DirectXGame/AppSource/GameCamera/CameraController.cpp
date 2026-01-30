@@ -27,26 +27,47 @@ void CameraController::Initialize(Input* input, DrawData drawData, int texture) 
 }
 
 void CameraController::Update() {
+	
+	if (isFollow_) {
+		
+		float dist = (targetPos_ - position_).Length();
 
-	// 0:左, 1:右, 2:中
-	BYTE* mouseKey = input_->GetMouseButtonState();
+		if (dist > 1.0f * FpsCount::deltaTime) {
+			Vector3 dir = (targetPos_ - position_).Normalize();
+			position_ += dir * dist * followSpeed_ * FpsCount::deltaTime;
+		} else {
+			position_ = targetPos_;
+		}
 
-	// 左クリックを押している状態
-	if (mouseKey && (mouseKey[1]) && DebugMousePos::isGrabbed) {
-		if (!preClicked_) {
-			mousePos_ = {};
-			clickedCameraPos_ = position_;
-			preClicked_ = true;
+		if (input_->GetMouseButtonState()[1]) {
+			isFollow_ = false;
 		}
-		// マウスの移動量を座標に追加
-		mousePos_ += input_->GetMouseMove();
-		float length = mousePos_.Length();
-		if (length > deadZone_) {
-			Vector2 move = (length - deadZone_) * mousePos_.Normalize() * 0.05f;
-			position_ = clickedCameraPos_ + Vector3(-move.x, 0, move.y);
-		}
+
 	} else {
-		preClicked_ = false;
+		// 0:左, 1:右, 2:中
+		BYTE* mouseKey = input_->GetMouseButtonState();
+
+		// 左クリックを押している状態
+		if (mouseKey && (mouseKey[1]) && DebugMousePos::isGrabbed) {
+			if (!preClicked_) {
+				mousePos_ = {};
+				clickedCameraPos_ = position_;
+				preClicked_ = true;
+			}
+			// マウスの移動量を座標に追加
+			mousePos_ += input_->GetMouseMove();
+			float length = mousePos_.Length();
+			if (length > deadZone_) {
+				Vector2 move = (length - deadZone_) * mousePos_.Normalize() * 0.05f;
+				position_ = clickedCameraPos_ + Vector3(-move.x, 0, move.y);
+			}
+		} else {
+			preClicked_ = false;
+		}
+
+		if (input_->GetKeyState(DIK_LSHIFT)) {
+			isFollow_ = true;
+		}
 	}
 
 	if (DebugMousePos::isHovered) {
@@ -55,6 +76,7 @@ void CameraController::Update() {
 
 	// カメラの移動範囲を制限する
 	position_.x = std::clamp(position_.x,0.0f, mapMaxSize_.x * 1.5f);
+	position_.y = 0.0f;
 	position_.z = std::clamp(position_.z, -3.0f, mapMaxSize_.y * 0.5f);
 
 	// カメラの喀出を制限(カメラの見える範囲は固定になると思うのでいらないかも)

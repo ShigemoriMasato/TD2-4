@@ -37,6 +37,10 @@ void StaticObjectRender::SetObjects(const std::map<int, std::vector<Transform>>&
 	}
 
 	for (auto& [modelIndex, transforms] : objects) {
+		if (transforms.empty()) {
+			continue;
+		}
+
 		const auto& it = objects_.find(modelIndex);
 
 		//すでにオブジェクトが存在する場合はworldMatrixだけ追加する

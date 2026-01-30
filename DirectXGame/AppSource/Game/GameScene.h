@@ -5,30 +5,31 @@
 #include <Render/PostEffect.h>
 #include <Collision/ColliderManager.h>
 
-#include"Unit/UnitManager.h"
-#include"Unit/MapChipField.h"
-#include"Unit/MapChipRender.h"
-#include"Item/OreItemManager.h"
-#include"GameCamera/CameraController.h"
-#include"UI/FadeTransition.h"
-#include"UI/Object/FontObject.h"
-#include"UI/GameUIManager.h"
-#include"TimeTracker.h"
-#include"UI/OreUnitHPUI.h"
-#include"Unit/UnitEffectManager.h"
-#include"Item/HomeManager.h"
+#include "Unit/UnitManager.h"
+#include "Unit/MapChipField.h"
+#include "Unit/MapChipRender.h"
+#include "Item/OreItemManager.h"
+#include "UI/FadeTransition.h"
+#include "UI/Object/FontObject.h"
+#include "UI/GameUIManager.h"
+#include "TimeTracker.h"
+#include "UI/OreUnitHPUI.h"
+#include "Unit/UnitEffectManager.h"
+#include "Item/HomeManager.h"
 
 #include <Game/MiniMap/MiniMap.h>
 #include <ModelEditScene/Render/MapRender.h>
 #include <ModelEditScene/Render/DebugMCRender.h>
 #include <ModelEditScene/Render/StaticObjectRender.h>
 
+#include "GameCamera/CameraController.h"
+
 // ゲームオーバーシーン
-#include"UI/GameOverUI.h"
+#include "UI/GameOverUI.h"
 // クリアシーン
-#include"UI/ClearUI.h"
+#include "UI/ClearUI.h"
 // ポーズシーン
-#include"UI/PauseUI.h"
+#include "UI/PauseUI.h"
 
 class GameScene : public IScene {
 public:
@@ -65,7 +66,7 @@ private:
 	std::unique_ptr<PostEffect> postEffect_ = nullptr;
 	PostEffectConfig postEffectConfig_{};
 	Blur blur_{};
-	
+
 	// シーン切り替え
 	bool isSceneChange_ = false;
 	bool isRetry_ = true;

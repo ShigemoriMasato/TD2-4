@@ -386,6 +386,7 @@ void GameScene::InGameScene() {
 	//====================================================
 	// カメラの更新庶路
 	//====================================================
+	cameraController_->SetTargetPos(unitManager_->GetPlayerPosition());
 
 	// マウスのスクリーン座標を取得する
 	POINT cursorPos;
@@ -420,8 +421,8 @@ void GameScene::InGameScene() {
 				OreItem* selectedOreItem = oreItemManager_->GetOreItemForId();
 
 				// 追加出来るかを確認
-				int32_t deletaNum = selectedOreItem->IsFullWorker(unitManager_->GetUnitSpawnNum());
-				if (deletaNum >= 0) {
+				int32_t deltaNum = selectedOreItem->IsFullWorker(unitManager_->GetUnitSpawnNum());
+				if (deltaNum >= 0) {
 
 					// おれを追加
 					unitManager_->RegisterUnit(selectedOreItem->GetPos(), 0, selectedOreItem);
@@ -431,12 +432,12 @@ void GameScene::InGameScene() {
 						selectedOreItem->AddWorker();
 					}
 				} else {
-					if (unitManager_->GetUnitSpawnNum() >= deletaNum * -1.0f) {
+					if (unitManager_->GetUnitSpawnNum() >= deltaNum * -1.0f) {
 						// おれを追加
-						unitManager_->RegisterUnit(selectedOreItem->GetPos(), deletaNum, selectedOreItem);
+						unitManager_->RegisterUnit(selectedOreItem->GetPos(), deltaNum, selectedOreItem);
 
 						// 鉱石側の労働者カウントを増やす
-						int32_t actualSpawnCount = unitManager_->GetUnitSpawnNum() + deletaNum;
+						int32_t actualSpawnCount = unitManager_->GetUnitSpawnNum() + deltaNum;
 						for (int i = 0; i < actualSpawnCount; ++i) {
 							selectedOreItem->AddWorker();
 						}
@@ -516,7 +517,7 @@ void GameScene::Draw() {
 
 		if (i == 0) {
 			display_->PreDraw(gameWindow_->GetCommandObject(), true);
-			vpMatrix = cameraController_->GetVpMatrix();
+			vpMatrix = cameraController_->GetVPMatrix();
 		} else {
 			vpMatrix = miniMap_->PreDraw(gameWindow_->GetWindow())->GetVPMatrix();
 		}
