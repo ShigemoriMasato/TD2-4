@@ -402,15 +402,14 @@ void GameScene::InGameScene() {
 	// ユニットの選択処理
 	//==============================================================
 
-	// 左クリックを取得
-	if ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80)) {
+	// マウスの位置に鉱石が存在していればユニットを動かす
+	Vector3 oreWorldPos = {};
+	if (oreItemManager_->IsSelectOre(cameraController_->GetWorldPos(), oreWorldPos)) {
 
-		// クリックアニメーションを開始
-		cameraController_->StartAnimation();
-
-		// マウスの位置に鉱石が存在していればユニットを動かす
-		Vector3 oreWorldPos = {};
-		if (oreItemManager_->IsSelectOre(cameraController_->GetWorldPos(), oreWorldPos)) {
+		// 左クリックを取得
+		if ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80)) {
+			// クリックアニメーションを開始
+			cameraController_->StartAnimation();
 
 			int32_t num = unitManager_->GetMaxOreCount() - unitManager_->GetOreCount();
 
@@ -443,6 +442,13 @@ void GameScene::InGameScene() {
 					}
 				}
 			}
+		}
+	} else {
+		// 左クリックを取得
+		if ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80)) {
+
+			// クリックアニメーションを開始
+			cameraController_->StartAnimation();
 		}
 	}
 
@@ -483,6 +489,9 @@ void GameScene::InGameScene() {
 	//====================================================
 	// 時間の更新処理
 	//====================================================
+
+	// 前の時間を取得
+	gameUIManager_->SetPreTime(TimeLimit::totalSeconds);
 
 	// 時間を更新
 	timeTracker_->Update();
