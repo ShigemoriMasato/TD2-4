@@ -137,12 +137,12 @@ void GameScene::Initialize() {
 	auto draw = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
 	// spriteモデルを取得
 	int sprModelID = modelManager_->LoadModel(spriteModelName);
-	auto spreModel = modelManager_->GetNodeModelData(sprModelID);
+	auto sprModel = modelManager_->GetNodeModelData(sprModelID);
 
 	// 鉱石の管理システムを初期化
 	oreItemManager_ = std::make_unique<OreItemManager>();
 	oreItemManager_->Initialize(drawDataManager_->GetDrawData(oreItemModel.drawDataIndex), oreItemTextureIndex,
-		drawDataManager_->GetDrawData(spreModel.drawDataIndex),
+		drawDataManager_->GetDrawData(sprModel.drawDataIndex),
 		fontName, draw, fontLoader_);
 
 	//鉱床の配置
