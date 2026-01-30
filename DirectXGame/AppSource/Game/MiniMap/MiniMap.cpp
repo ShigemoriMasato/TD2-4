@@ -1,7 +1,7 @@
 #include "MiniMap.h"
 #include <numbers>
 
-void MiniMap::Initialize(int mapWidth, int mapHeight, TextureManager* textureManager) {
+void MiniMap::Initialize(int mapWidth, int mapHeight, TextureManager* textureManager, const DrawData& plane) {
 	// カメラの初期化
 	camera_ = std::make_unique<Camera>();
 	camera_->SetProjectionMatrix(PerspectiveFovDesc());
@@ -19,6 +19,15 @@ void MiniMap::Initialize(int mapWidth, int mapHeight, TextureManager* textureMan
 	int textureHandle1 = textureManager->CreateWindowTexture(1280, 720, 0xffffffff);
 	int textureHandle2 = textureManager->CreateWindowTexture(1280, 720, 0xffffffff);
 	display_->Initialize(textureManager->GetTextureData(textureHandle1), textureManager->GetTextureData(textureHandle2));
+
+	miniMapRender_ = std::make_unique<RenderObject>();
+	miniMapRender_->Initialize();
+	miniMapRender_->SetDrawData(plane);
+	miniMapRender_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "Matrix");
+	miniMapRender_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	miniMapRender_->SetUseTexture(true);
+	miniMapRender_->psoConfig_.vs = "Simple.VS.hlsl";
+	miniMapRender_->psoConfig_.ps = "PostEffect/Simple.PS.hlsl";
 }
 
 Camera* MiniMap::PreDraw(Window* window) {

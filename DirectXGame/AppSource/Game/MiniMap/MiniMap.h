@@ -3,13 +3,15 @@
 #include <Screen/DualDisplay.h>
 #include <Screen/Window.h>
 #include <Utility/DataStructures.h>
+#include <Render/RenderObject.h>
 
 class MiniMap {
 public:
 
-	void Initialize(int mapWidth, int mapHeight, TextureManager* textureManager);
+	void Initialize(int mapWidth, int mapHeight, TextureManager* textureManager, const DrawData& plane);
 	Camera* PreDraw(Window* window);
 	void PostDraw(Window* window);
+	void Draw(Window* window);
 	void DrawImGui();
 
 	int GetTextureIndex() const { return display_->GetTextureData()->GetOffset(); }
@@ -23,4 +25,5 @@ private:
 	float distRatio_ = 0.2f;
 	float dist = 0.0f;
 
+	std::unique_ptr<RenderObject> miniMapRender_ = nullptr;
 };
