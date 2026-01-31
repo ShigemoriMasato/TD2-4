@@ -129,6 +129,10 @@ private:
 
 	// 衝突フラグ
 	bool isConflict_ = false;
+	// クールタイム
+	float conflictCoolTimer_ = 0.0f;
+	float conflictCoolTime_ = 1.0f;
+	bool isCoolTimeEnd_ = false;
 
 	// 鉱石からの離脱を取得
 	bool isRemoveOre_ = false;

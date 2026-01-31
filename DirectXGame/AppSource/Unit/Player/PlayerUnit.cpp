@@ -11,6 +11,9 @@ void PlayerUnit::Init(MapChipField* mapChipField, DrawData drawData, int pIndex,
 	// マップデータ
 	mapChipField_ = mapChipField;
 
+	// マップの最大サイズを取得
+	mapMapSize_ = mapChipField_->GetMaxMapSize();
+
 	// 入力を取得
 	keyManager_ = keyManager;
 
@@ -71,6 +74,9 @@ void PlayerUnit::Update() {
 
 	// アニメーション処理
 	AnimationUpdate();
+
+	object_->transform_.position.x = std::clamp(object_->transform_.position.x,0.0f, mapMapSize_.x - 1.0f);
+	object_->transform_.position.z = std::clamp(object_->transform_.position.z,0.0f, mapMapSize_.y - 1.0f);
 
 	// 更新処理
 	object_->Update();

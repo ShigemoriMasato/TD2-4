@@ -46,6 +46,12 @@ void OreItemManager::Update() {
 		fontList_[it->first].font->UpdateCharPositions(s, fontLoader_);
 		fontList_[it->first].font->Update();
 
+		if (ore->GetCurrentWorkerNum() >= ore->GetMaxWorkerNum()) {
+			fontList_[it->first].font->fontColor_ = { 0.8f,0.0f,0.0f,1.0f };
+		} else {
+			fontList_[it->first].font->fontColor_ = { 0.0f,1.0f,1.0f,1.0f };
+		}
+
 		if (ore->IsDead()) {
 
 			// 壊れた場所のマップチップ番号を空気に変換する
