@@ -86,6 +86,7 @@ void GameScene::Initialize() {
 	//============================================
 
 	currentMap_ = commonData_->newMapManager->GetStageMap(commonData_->nextStageIndex, commonData_->nextMapIndex);
+	Vector3 playerInitPos = GetPlayerInitPosition();
 
 	// マップデータ解釈機能を初期化
 	mapChipField_ = std::make_unique<MapChipField>();
@@ -187,7 +188,7 @@ void GameScene::Initialize() {
 	unitManager_->Initalize(mapChipField_.get(),
 		drawDataManager_->GetDrawData(playerModel.drawDataIndex), playerTextureIndex,
 		drawDataManager_->GetDrawData(oreModel.drawDataIndex), oreTextureIndex,
-		commonData_->keyManager.get(), GetPlayerInitPosition());
+		commonData_->keyManager.get(), playerInitPos);
 
 	// 拠点管理クラスを設定
 	unitManager_->SetHomeManager(homeManager_.get());
