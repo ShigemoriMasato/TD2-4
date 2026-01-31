@@ -47,6 +47,12 @@ void OreItemManager::Update() {
 		fontList_[it->first].font->Update();
 
 		if (ore->IsDead()) {
+
+			// 壊れた場所のマップチップ番号を空気に変換する
+			Vector3 pos = ore->GetPos();
+			MapChipField::IndexSet index = MapChipField_->GetMapChipIndexSetByPosition(pos);
+			MapChipField_->SetMapChipBlockType(index.xIndex, index.zIndex, TileType::Air);
+
 			// 5フレーム後に削除するようにリストに追加
 			graveyard_.push_back({ std::move(ore), 5 });
 

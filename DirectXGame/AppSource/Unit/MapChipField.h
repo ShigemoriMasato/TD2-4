@@ -82,6 +82,14 @@ public: // マップの情報
 	Vector3 GetMapChipPositionByIndex(int32_t xIndex, int32_t zIndex) const;
 
 	/// <summary>
+	/// 指定した番号のデータを変更する
+	/// </summary>
+	/// <param name="xIndex"></param>
+	/// <param name="zIndex"></param>
+	/// <param name="type"></param>
+	void SetMapChipBlockType(int32_t xIndex, int32_t zIndex, TileType type);
+
+	/// <summary>
 	/// 指定座標がマップチップで何番目かを返す
 	/// </summary>
 	/// <param name="position"></param>
