@@ -4,6 +4,7 @@
 #include <Screen/Window.h>
 #include <Utility/DataStructures.h>
 #include <Render/RenderObject.h>
+#include <functional>
 
 class MiniMap {
 public:
@@ -19,6 +20,9 @@ public:
 
 	int GetTextureIndex() const { return display_->GetTextureData()->GetOffset(); }
 
+	// クリックした時の時間の制御
+	void SetOnClicked(std::function<void()> cb) { onClicked_ = std::move(cb); }
+
 private:
 
 	std::unique_ptr<Camera> camera_ = nullptr;
@@ -30,6 +34,9 @@ private:
 	float dist = 0.0f;
 
 	std::unique_ptr<RenderObject> miniMapRender_ = nullptr;
+
+	// クリックコールバック
+	std::function<void()> onClicked_ = nullptr;
 
 private:// 幕系
 	

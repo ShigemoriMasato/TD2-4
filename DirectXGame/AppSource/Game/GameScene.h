@@ -93,6 +93,7 @@ private:
 
 	// MiniMap
 	std::unique_ptr<MiniMap> miniMap_;
+	bool isActiveMinMap_ = false;
 
 	// 現在のマップ
 	CurrentStageConfig currentMap_;

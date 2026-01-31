@@ -86,6 +86,11 @@ Vector3 MapChipField::GetMapChipPositionByIndex(int32_t xIndex, int32_t zIndex) 
 	return Vector3(kBlockWidth * static_cast<float>(xIndex), 0, static_cast<float>(kBlockHeight * zIndex));
 }
 
+void MapChipField::SetMapChipBlockType(int32_t xIndex, int32_t zIndex, TileType type) {
+	// データ番号変更
+	data_[zIndex][xIndex] = type;
+}
+
 MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Vector3& position) {
 	// 指定座標がマップチップで何番目かを返す
 	MapChipField::IndexSet indexSet = {};

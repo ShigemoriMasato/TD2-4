@@ -157,6 +157,9 @@ void GameScene::Initialize() {
 		smallIndex, midleIndex, largelIndex);
 	oreItemManager_->Initialize(drawDataManager_->GetDrawData(sprModel.drawDataIndex),fontName, draw, fontLoader_);
 
+	// マップシステムを取得
+	oreItemManager_->SetMapChipField(mapChipField_.get());
+
 	//鉱床の配置
 	PutGold();
 
@@ -274,6 +277,17 @@ void GameScene::Initialize() {
 	startCountUI_->Initialize(fontName, drawData, fontLoader_);
 	startCountUI_->isStart_ = true;
 
+	// ミニマップ操作時の時間操作処理
+	miniMap_->SetOnClicked([this]() {
+		if (miniMap_->PleasePose()) {
+			timeTracker_->EndMeasureTimes();
+			isActiveMinMap_ = true;
+		} else {
+			timeTracker_->StartMeasureTimes();
+			isActiveMinMap_ = false;
+		}
+	});
+
 	//=======================================================
 	// その他のシーンを初期化
 	//=======================================================
@@ -352,7 +366,7 @@ std::unique_ptr<IScene> GameScene::Update() {
 
 	// MiniMapがポーズを要求してきたらΔタイムを0にする
 	if (miniMap_->PleasePose()) {
-		FpsCount::deltaTime = 0.0f;
+		//FpsCount::deltaTime = 0.0f;
 	}
 
 	// 入力処理の更新
@@ -406,8 +420,16 @@ std::unique_ptr<IScene> GameScene::Update() {
 			}
 		} else {
 			if (!isPauseScene_ && startCountUI_->isStartAnimeEnd()) {
-				// ゲームの更新処理
-				InGameScene();
+
+				//====================================================
+				// ミニマップの更新処理
+				//====================================================
+				miniMap_->Update();
+
+				if (!isActiveMinMap_) {
+					// ゲームの更新処理
+					InGameScene();
+				}
 			}
 		}
 	}
@@ -480,11 +502,6 @@ void GameScene::InGameScene() {
 	}
 	// カメラの更新処理
 	cameraController_->Update();
-
-	//====================================================
-	// ミニマップの更新処理
-	//====================================================
-	miniMap_->Update();
 
 	//==============================================================
 	// ユニットの選択処理

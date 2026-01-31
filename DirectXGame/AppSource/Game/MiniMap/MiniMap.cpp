@@ -61,6 +61,9 @@ void MiniMap::Update() {
 		} else {
 			pleasePose_ = false;
 		}
+
+		// コールバック関数
+		onClicked_();
 	}
 
 	auto key = Input::GetKeyState();
@@ -69,6 +72,8 @@ void MiniMap::Update() {
 	//特定のキーが押されたらモードを切り替える
 	if ((key[DIK_TAB] && !prekey[DIK_TAB]) || (key[DIK_M] && prekey[DIK_M]) || key[DIK_F4] && key[DIK_F4]) {
 		pleasePose_ = !pleasePose_;
+		// コールバック関数
+		onClicked_();
 	}
 }
 
