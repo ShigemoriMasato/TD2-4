@@ -37,4 +37,6 @@ private:
 
 	BinaryManager binaryManager_;
 	const std::string saveFileName_ = "StageConfig";
+
+	const int version_ = 1;
 };

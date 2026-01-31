@@ -41,6 +41,7 @@ Logger getLogger(const std::string& name, uint32_t flag) {
 
 	std::vector<spdlog::sink_ptr> sinks;
 
+#ifdef USE_IMGUI
 	if (flag & MakeFile) {
 		std::filesystem::create_directories("Logs/" + name);
 
@@ -66,6 +67,7 @@ Logger getLogger(const std::string& name, uint32_t flag) {
 	if (flag & UseConsole) {
 		sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
 	}
+#endif
 
 	auto logger = std::make_shared<spdlog::logger>(name, sinks.begin(), sinks.end());
 	spdlog::register_logger(logger);

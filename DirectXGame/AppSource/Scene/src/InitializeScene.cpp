@@ -38,12 +38,14 @@ void InitializeScene::Initialize() {
 
 	commonData_->nextStageIndex = 0;
 	commonData_->nextMapIndex = 0;
-
-	// ランダム生成器を初期化
+	commonData_->nextMapIndex = 1;
+  
+  // ランダム生成器を初期化
 	RandomGenerator::Initialize();
 }
 
-std::unique_ptr<IScene> InitializeScene::Update() {
+std::unique_ptr<IScene> InitializeScene::Update(){
+
 	//return std::make_unique<ModelEditScene>();
 	return std::make_unique<GameScene>();
 }
@@ -113,7 +115,7 @@ void InitializeScene::EngineSetup() {
 	//FPS
 	auto fps = engine_->GetFPSObserver();
 	fps->SetIsFix(true);
-	fps->SetTargetFPS(60.0);
+	fps->SetTargetFPS(30.0);
 }
 
 void InitializeScene::SetupKeyManager() {

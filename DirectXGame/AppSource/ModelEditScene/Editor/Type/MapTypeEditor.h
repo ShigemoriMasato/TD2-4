@@ -37,6 +37,7 @@ private:
 	void Load();
 
 	std::vector<MapChipData> mcData_{};
+	std::vector<int> endlessPriority_{};
 	int currentStage_ = 0;
 	Vector2 cursorPos_{};
 	Input* input_{ nullptr };
