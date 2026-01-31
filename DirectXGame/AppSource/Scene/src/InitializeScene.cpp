@@ -39,7 +39,7 @@ void InitializeScene::Initialize() {
 	commonData_->nextMapIndex = 1;
 }
 
-std::unique_ptr<IScene> InitializeScene::Update();
+std::unique_ptr<IScene> InitializeScene::Update(){
 
 	//return std::make_unique<ModelEditScene>();
 	return std::make_unique<GameScene>();
