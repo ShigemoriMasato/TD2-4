@@ -477,7 +477,7 @@ void GameScene::InGameScene() {
 	// ミニマップの更新処理
 	//====================================================
 	miniMap_->Update();
-  
+
 	//==============================================================
 	// ユニットの選択処理
 	//==============================================================
@@ -621,11 +621,11 @@ void GameScene::Draw() {
 			/// UIの描画処理
 			vpMatrix2d = uiCamera_->GetVPMatrix();
 
-		// 開始と終わりのカウントの描画
-		startCountUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+			// 開始と終わりのカウントの描画
+			startCountUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 
-		// ポーズシーンを描画
-		pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+			// ポーズシーンを描画
+			pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 
 			// ゲームのUIを描画
 			gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
