@@ -3,11 +3,13 @@
 #include"Object/SpriteObject.h"
 #include"UI/CounterUI.h"
 #include"UI/TimerUI.h"
+#include"Effect/QuotaClearEffectUI.h"
+#include"Effect/CollectEffectUI.h"
 
 class GameUIManager {
 public:
 
-	void Initialize(DrawData spriteData,const std::string& fontName, DrawData fontData, FontLoader* fontLoader);
+	void Initialize(DrawData spriteData,int starTexture,int lineTexture,const std::string& fontName, DrawData fontData, FontLoader* fontLoader);
 
 	void Update(const int32_t& unitNum,const int32_t& maxUnitNum);
 
@@ -47,6 +49,12 @@ private:
 
 	// ユニット文字
 	std::unique_ptr<FontObject> unitFontObject_;
+
+	// ノルマクリア演出
+	std::unique_ptr<QuotaClearEffectUI> quotaClearEffectUI_;
+
+	// 収集演出
+	std::unique_ptr<CollectEffectUI> collectEffectUI_;
 
 private:
 

@@ -6,7 +6,7 @@ struct VertexShaderOutput
     uint textureHandle : TEXCOORD1;
 };
 
-Texture2D<float4> gTexture[] : register(t0);
+Texture2D<float4> gTexture[] : register(t8);
 SamplerState gSampler : register(s0);
 
 struct PixelShaderOutput
@@ -17,6 +17,7 @@ struct PixelShaderOutput
 PixelShaderOutput main(VertexShaderOutput input)
 {
     PixelShaderOutput output;
-    output.color = input.color;
+    float4 textureColor = gTexture[input.textureHandle].Sample(gSampler, input.texcoord);
+    output.color = textureColor * input.color;
     return output;
 }

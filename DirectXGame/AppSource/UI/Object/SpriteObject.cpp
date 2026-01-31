@@ -6,7 +6,7 @@ SpriteObject::~SpriteObject() {
 
 }
 
-void SpriteObject::Initialize(DrawData drawData, const Vector2& size) {
+void SpriteObject::Initialize(DrawData drawData, const Vector2& size, BlendStateID blend) {
 
 	// psoを設定
 	renderObject_ = std::make_unique<RenderObject>();
@@ -14,6 +14,7 @@ void SpriteObject::Initialize(DrawData drawData, const Vector2& size) {
 	renderObject_->psoConfig_.inputLayoutID = InputLayoutID::Default;
 	renderObject_->psoConfig_.vs = "Sprite.VS.hlsl";
 	renderObject_->psoConfig_.ps = "Sprite.PS.hlsl";
+	renderObject_->psoConfig_.blendID = blend;
 
 	// 描画モデルを設定
 	renderObject_->SetDrawData(drawData);

@@ -6,6 +6,7 @@
 #include <imgui/imgui.h>
 #include <Utility/DataStructures.h>
 #include<Common/DebugParam/GameParamEditor.h>
+#include"RandomGenerator.h"
 
 #ifdef USE_IMGUI
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -36,7 +37,11 @@ void InitializeScene::Initialize() {
 	textureManager_->LoadAllTextures();
 
 	commonData_->nextStageIndex = 0;
+	commonData_->nextMapIndex = 0;
 	commonData_->nextMapIndex = 1;
+  
+  // ランダム生成器を初期化
+	RandomGenerator::Initialize();
 }
 
 std::unique_ptr<IScene> InitializeScene::Update(){

@@ -1,12 +1,8 @@
-#include"OreUnitHPUI.h"
+#include"InstancingObject.h"
 #include"Utility/MatrixFactory.h"
 #include<numbers>
 
-#ifdef USE_IMGUI
-#include <imgui/imgui.h>
-#endif
-
-void OreUnitHPUI::Initialize(DrawData wallDrawData) {
+void InstancingObject::Initialize(DrawData spriteDrawData) {
 
 	// psoを設定
 	renderObject_ = std::make_unique<RenderObject>();
@@ -16,7 +12,7 @@ void OreUnitHPUI::Initialize(DrawData wallDrawData) {
 	renderObject_->psoConfig_.ps = "Instancing3d.PS.hlsl";
 
 	// 描画モデルを設定
-	renderObject_->SetDrawData(wallDrawData);
+	renderObject_->SetDrawData(spriteDrawData);
 	renderObject_->SetUseTexture(true);
 
 	// worldTransformを登録
@@ -39,54 +35,21 @@ void OreUnitHPUI::Initialize(DrawData wallDrawData) {
 		instancingData_[index].WVP = Matrix4x4::Identity();
 		instancingData_[index].World = Matrix4x4::Identity();
 		instancingData_[index].color = { 1.0f,1.0f,1.0f,1.0f };
-		instancingData_[index].textureHandle = 0;
+		instancingData_[index].textureHandle = texture_;
 	}
 
 	// 値を設定
 	renderObject_->CopyBufferData(vsDataIndex_, instancingData_.data(), sizeof(ParticleForGPU) * instancingData_.size());
 }
 
-void OreUnitHPUI::Update() {
+void InstancingObject::Update() {
 
-	// 現在の数をリセット
-	index_ = 0;
-
-}
-
-void OreUnitHPUI::Add(const Vector3& pos, const int32_t& hp, const int32_t& maxHp) {
-	
-	// hpの比率を取得
-	float p = static_cast<float>(hp) / static_cast<float>(maxHp);
-
-	for (int32_t i = index_; i < index_ + 3; ++i) {
-
-		transformDatas_[i].transform.rotate.x = rotX_;
-
-		if (i == index_) {
-			// 外枠
-			transformDatas_[i].transform.position = pos + Vector3(-baseScale_.x * 0.6f,0.0f,0.0f);
-			transformDatas_[i].transform.scale = baseScale_ + Vector3(0.2f,0.2f,0.0f);
-			transformDatas_[i].color = { 1.0f,1.0f,1.0f,1.0f };
-		} else if (i == index_ + 1) {
-			// 中
-			transformDatas_[i].transform.position = pos + Vector3(-baseScale_.x * 0.5f,0.01f,-0.01f);
-			transformDatas_[i].transform.scale = baseScale_;
-			transformDatas_[i].color = { 0.2f,0.2f,0.2f,1.0f };
-		} else if (i == index_ + 2) {
-			// ゲージ
-			transformDatas_[i].transform.position = pos + Vector3(-baseScale_.x * 0.5f, 0.011f, -0.011f);
-			transformDatas_[i].transform.scale = baseScale_;
-			transformDatas_[i].transform.scale.x = p * baseScale_.x;
-			transformDatas_[i].color = { 0.0f,1.0f,0.0f,1.0f };
-		}
-
+	for (size_t i = 0; i < index_; ++i) {
 		transformDatas_[i].worldMatrix = Matrix::MakeAffineMatrix(transformDatas_[i].transform.scale, transformDatas_[i].transform.rotate, transformDatas_[i].transform.position);
 	}
-	// 数をカウント
-	index_ += 3;
 }
 
-void OreUnitHPUI::Draw(Window* window, const Matrix4x4& vpMatrix) {
+void InstancingObject::Draw(Window* window, const Matrix4x4& vpMatrix) {
 
 	// 描画個数
 	renderObject_->instanceNum_ = index_;
@@ -104,9 +67,4 @@ void OreUnitHPUI::Draw(Window* window, const Matrix4x4& vpMatrix) {
 
 	// 描画
 	renderObject_->Draw(window);
-
-	//ImGui::Begin("tst");
-	//ImGui::DragFloat("rot", &rotX_, 0.1f);
-	//ImGui::DragFloat3("sca", &baseScale_.x, 0.1f);
-	//ImGui::End();
 }
