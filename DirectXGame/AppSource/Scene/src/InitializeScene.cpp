@@ -36,12 +36,12 @@ void InitializeScene::Initialize() {
 	textureManager_->LoadAllTextures();
 
 	commonData_->nextStageIndex = 0;
-	commonData_->nextMapIndex = 0;
+	commonData_->nextMapIndex = 1;
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
-	//return std::make_unique<ModelEditScene>();
-	return std::make_unique<GameScene>();
+	return std::make_unique<ModelEditScene>();
+	//return std::make_unique<GameScene>();
 }
 
 void InitializeScene::Draw() {
