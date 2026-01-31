@@ -122,7 +122,9 @@ void GameScene::Initialize() {
 	// MiniMapの初期化
 	miniMap_ = std::make_unique<MiniMap>();
 	DrawData planeData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
-	miniMap_->Initialize((int)currentMap_.currentMap.mapChipData[0].size(), (int)currentMap_.currentMap.mapChipData.size(), textureManager_, planeData);
+	DrawData visionFrame = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(modelManager_->LoadModel("VisionFrame")).drawDataIndex);
+	miniMap_->Initialize((int)currentMap_.currentMap.mapChipData[0].size(), (int)currentMap_.currentMap.mapChipData.size(),
+		textureManager_, planeData, visionFrame);
 
 	//================================================================
 	// 鉱石システム
@@ -563,6 +565,8 @@ void GameScene::Draw() {
 		// マウスのクリックアニメーション
 		cameraController_->DrawAnimation(gameWindow_->GetWindow(), vpMatrix);
 
+		Matrix4x4 vpMatrix2d;
+
 		//MiniMap
 		if (i == 1) {
 
@@ -571,33 +575,35 @@ void GameScene::Draw() {
 			//============================================================================
 
 			/// UIの描画処理
-			vpMatrix = uiCamera_->GetVPMatrix();
+			vpMatrix2d = uiCamera_->GetVPMatrix();
 
 			// ゲームのUIを描画
-			gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
+			gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 
 			// ポーズシーンを描画
-			pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+			pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 
 			// ゲームオーバーシーンの描画処理
 			if (isGameOverScene_) {
 				// UIの更新処理
-				gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+				gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 			}
 
 			// クリアシーンの描画処理
 			if (isClearScene_) {
 				// クリアシーンの更新処理
-				clearUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+				clearUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 			}
 
 			// シーン遷移の描画
-			fadeTransition_->Draw(gameWindow_->GetWindow(), vpMatrix);
+			fadeTransition_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 
 			miniMap_->Draw(gameWindow_->GetWindow());
 
 		} else {
-			miniMap_->PostDraw(gameWindow_->GetWindow());
+			Vector3 playerPos = unitManager_->GetPlayerPosition();
+			float range = cameraController_->GetRange();
+			miniMap_->PostDraw(gameWindow_->GetWindow(), vpMatrix, playerPos, range);
 		}
 	}
 

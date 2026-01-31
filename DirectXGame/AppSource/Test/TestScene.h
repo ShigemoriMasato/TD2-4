@@ -48,6 +48,8 @@ private:
 	// テストパラメーター
 	float testParam_ = 0.0f;
 
+	std::unique_ptr<RenderObject> modelTest_ = nullptr;
+
 
 	// MapRender用
 	std::unique_ptr<MapRender> mapRender_ = nullptr;

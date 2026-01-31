@@ -1,7 +1,7 @@
 #include "MiniMap.h"
 #include <numbers>
 
-void MiniMap::Initialize(int mapWidth, int mapHeight, TextureManager* textureManager, const DrawData& plane) {
+void MiniMap::Initialize(int mapWidth, int mapHeight, TextureManager* textureManager, const DrawData& plane, const DrawData& visionField) {
 	// カメラの初期化
 	camera_ = std::make_unique<Camera>();
 	camera_->SetProjectionMatrix(PerspectiveFovDesc());
@@ -28,6 +28,16 @@ void MiniMap::Initialize(int mapWidth, int mapHeight, TextureManager* textureMan
 	miniMapRender_->SetUseTexture(true);
 	miniMapRender_->psoConfig_.vs = "Simple.VS.hlsl";
 	miniMapRender_->psoConfig_.ps = "PostEffect/Simple.PS.hlsl";
+
+	visionField_ = std::make_unique<RenderObject>();
+	visionField_->Initialize();
+	visionField_->SetDrawData(visionField);
+	visionField_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+	visionField_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	visionField_->SetUseTexture(true);
+	visionField_->psoConfig_.vs = "Simple.VS.hlsl";
+	visionField_->psoConfig_.ps = "PostEffect/Simple.PS.hlsl";
+	vfModelsTextureIndex_ = textureManager->LoadTexture("Mineral-0.png");
 }
 
 Camera* MiniMap::PreDraw(Window* window) {
@@ -35,7 +45,15 @@ Camera* MiniMap::PreDraw(Window* window) {
 	return camera_.get();
 }
 
-void MiniMap::PostDraw(Window* window) {
+void MiniMap::PostDraw(Window* window, const Matrix4x4& vpMatrix, Vector3 playerPosition, float range) {
+	//枠を描画
+	float scale = range / rangeAdjust_;
+	Vector3 pos = { playerPosition.x, 0.1f, playerPosition.z };
+	Matrix4x4 mat = Matrix::MakeAffineMatrix({scale, scale, scale }, {}, pos) * vpMatrix;
+	visionField_->CopyBufferData(0, &mat, sizeof(Matrix4x4));
+	visionField_->CopyBufferData(1, &vfModelsTextureIndex_, sizeof(int));
+	visionField_->Draw(window);
+
 	display_->PostDraw(window->GetCommandObject());
 }
 
