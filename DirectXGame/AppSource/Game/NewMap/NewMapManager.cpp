@@ -11,7 +11,7 @@ void NewMapManager::Initialize(ModelManager* modelManager) {
 
 CurrentStageConfig NewMapManager::GetStageMap(int stage, int map) {
 	CurrentStageConfig config;
-	if(stageData_.size() <= stage) {
+	if (stageData_.size() <= stage) {
 		config.initOreNum = 10;
 		config.norma = 10000000;
 		config.currentMap = newMapData_[0];
@@ -26,6 +26,60 @@ CurrentStageConfig NewMapManager::GetStageMap(int stage, int map) {
 	config.currentMapID = mapID;
 	config.currentMap = newMapData_[mapID];
 
+	return config;
+}
+
+CurrentStageConfig NewMapManager::GetEndlessMap(int stageCount, int prevMap) {
+	std::vector<int> maps;
+	if (stageCount < 2) {
+		for (int i = 0; i < int(newMapData_.size()); ++i) {
+			if (newMapData_[i].endlessPriority == 0 && i != prevMap) {
+				maps.push_back(i);
+			}
+		}
+	} else if (stageCount < 5) {
+		for (int i = 0; i < int(newMapData_.size()); ++i) {
+			if (newMapData_[i].endlessPriority <= 1 && i != prevMap) {
+				maps.push_back(i);
+			}
+		}
+	} else {
+		for (int i = 0; i < int(newMapData_.size()); ++i) {
+			if (newMapData_[i].endlessPriority > 0 && i != prevMap) {
+				maps.push_back(i);
+			}
+		}
+	}
+
+	int factID = rand() % int(maps.size());
+	CurrentStageConfig config;
+
+	//ノルマの計算（シグモイド関数によるS字カーブ）		- AI作成 -
+	// - minNorma: 最小値（stageCount=0付近）
+	// - maxNorma: 理論上の最大値（実際は * 0.6f で60%に制限）
+	// - midPoint: S字カーブの中心点（ここで加速度が最大になる）
+	// - steepness: カーブの急さ（大きいほど急、小さいほど緩やか）
+	// 
+	// 現在の挙動:
+	//   stageCount 0〜3: 緩やかに上昇（+1〜2）
+	//   stageCount 4〜9: 加速して上昇（+3〜4）
+	//   stageCount 10〜: 再び緩やかに（+1〜0）
+	//   stageCount 20時点で約50〜53
+	//
+	// 調整方法:
+	//   - 全体を緩やかに → steepness を小さく（例: 0.3f）
+	//   - 全体を急に → steepness を大きく（例: 0.7f）
+	//   - 加速開始を遅らせる → midPoint を大きく（例: 10.0f）
+	//   - 最終値を上げる → 0.6f を大きく（例: 0.8f）
+	float minNorma = 15.0f;
+	float maxNorma = 100.0f;
+	float midPoint = 7.0f;   // 加速の中心を4と10の間に
+	float steepness = 0.5f;  // 急な上昇
+	float t = 1.0f / (1.0f + std::exp(-steepness * (stageCount - midPoint)));
+	config.norma = int(minNorma + (maxNorma - minNorma) * t * 0.6f);  // 20で約50になるよう調整
+	config.initOreNum = 10;
+	config.currentMapID = maps[factID];
+	config.currentMap = newMapData_[maps[factID]];
 	return config;
 }
 
@@ -53,7 +107,7 @@ void NewMapManager::LoadMapData() {
 	int mapIndex = 0;
 	int textureIndex = 0;
 
-	while(mapIndex < mapValues.size() && textureIndex < textureValues.size()) {
+	while (mapIndex < mapValues.size() && textureIndex < textureValues.size()) {
 		NewMap newMap;
 
 		//マップの大きさの読み込み
@@ -64,7 +118,7 @@ void NewMapManager::LoadMapData() {
 		int texHeight = BinaryManager::Reverse<int>(textureValues[textureIndex++].get());
 
 		//大きさが合わなかったら読み込み失敗
-		if(texWidth != width || texHeight != height) {
+		if (texWidth != width || texHeight != height) {
 			return;
 		}
 
