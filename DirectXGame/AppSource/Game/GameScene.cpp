@@ -130,24 +130,32 @@ void GameScene::Initialize() {
 	// 鉱石システム
 	//================================================================
 
-	// 鉱石モデル
-	int oreItemModelID = modelManager_->LoadModel(mineralModelName);
-	auto oreItemModel = modelManager_->GetNodeModelData(oreItemModelID);
-
-	// 鉱石のテクスチャを取得
-	int oreItemTextureIndex = textureManager_->GetTexture("MineralDeposite_02.png");
-
 	// フォント用
 	auto draw = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
 	// spriteモデルを取得
 	int sprModelID = modelManager_->LoadModel(spriteModelName);
 	auto sprModel = modelManager_->GetNodeModelData(sprModelID);
 
+
+	// 鉱石モデル
+	int smallModelID = modelManager_->LoadModel(mineralModelName);
+	auto smallModel = modelManager_->GetNodeModelData(smallModelID);
+	int smallIndex = textureManager_->GetTexture("MineralDeposite_Small.png");
+
+	int midleModelID = modelManager_->LoadModel(mineralModelName);
+	auto midleModel = modelManager_->GetNodeModelData(midleModelID);
+	int midleIndex = textureManager_->GetTexture("MineralDeposite_Middle-0.png");
+
+	int largeModelID = modelManager_->LoadModel(mineralModelName);
+	auto largeModel = modelManager_->GetNodeModelData(largeModelID);
+	int largelIndex = textureManager_->GetTexture("MineralDeposite_Large-0.png");
+
 	// 鉱石の管理システムを初期化
 	oreItemManager_ = std::make_unique<OreItemManager>();
-	oreItemManager_->Initialize(drawDataManager_->GetDrawData(oreItemModel.drawDataIndex), oreItemTextureIndex,
-		drawDataManager_->GetDrawData(sprModel.drawDataIndex),
-		fontName, draw, fontLoader_);
+	// 描画データを設定ｓる
+	oreItemManager_->SetModle(drawDataManager_->GetDrawData(smallModel.drawDataIndex), drawDataManager_->GetDrawData(midleModel.drawDataIndex), drawDataManager_->GetDrawData(largeModel.drawDataIndex),
+		smallIndex, midleIndex, largelIndex);
+	oreItemManager_->Initialize(drawDataManager_->GetDrawData(sprModel.drawDataIndex),fontName, draw, fontLoader_);
 
 	//鉱床の配置
 	PutGold();
