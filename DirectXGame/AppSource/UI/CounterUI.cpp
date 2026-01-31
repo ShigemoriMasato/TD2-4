@@ -26,6 +26,7 @@ void CounterUI::Initialize(const std::string& fontName, int32_t curNum, int32_t 
 void CounterUI::Update(int32_t curNum, int32_t maxNum) {
 
 	fontObject_->transform_.scale = size_;
+	isNumChanged_ = false;
 
 	if (curNum != currenyNum_ || maxNum != maxNum_) {
 
@@ -33,6 +34,8 @@ void CounterUI::Update(int32_t curNum, int32_t maxNum) {
 		maxNum_ = maxNum;
 
 		isAnimation_ = true;
+
+		isNumChanged_ = true;
 
 		// カウントによりテクスチャを更新
 		fontObject_->UpdateCharPositions(std::to_wstring(curNum), fontLoader_);

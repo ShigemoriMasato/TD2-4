@@ -231,9 +231,14 @@ void GameScene::Initialize() {
 
 	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
 
+	// 星の画像
+	int starTextureIndex = textureManager_->GetTexture("star.png");
+	// 演出用の線
+	int lineTextureIndex = textureManager_->GetTexture("lineEffect.png");
+
 	// ゲームのUI管理クラス
 	gameUIManager_ = std::make_unique<GameUIManager>();
-	gameUIManager_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), fontName, drawData, fontLoader_);
+	gameUIManager_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), starTextureIndex, lineTextureIndex, fontName, drawData, fontLoader_);
 
 	// spriteモデルを取得(アンカーポイントが違うスプライト)
 	int uModelID = modelManager_->LoadModel(unitHpModelName);

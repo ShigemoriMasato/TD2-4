@@ -11,6 +11,8 @@ public:
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
+	bool IsNumChanged() const { return isNumChanged_; }
+
 public:
 
 	Vector3 pos_;
@@ -35,6 +37,8 @@ private:
 	bool isAnimation_ = false;
 
 	float textSize_ = 64.0f;
+
+	bool isNumChanged_ = false;
 
 private:
 

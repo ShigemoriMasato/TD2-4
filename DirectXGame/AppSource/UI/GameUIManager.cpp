@@ -2,7 +2,7 @@
 #include"Item/OreItemStorageNum.h"
 #include <Common/DebugParam/GameParamEditor.h>
 
-void GameUIManager::Initialize(DrawData spriteData, const std::string& fontName, DrawData fontData, FontLoader* fontLoader) {
+void GameUIManager::Initialize(DrawData spriteData, int starTexture, int lineTexture, const std::string& fontName, DrawData fontData, FontLoader* fontLoader) {
 	fontLoader_ = fontLoader;
 
 	// ユニットの数UI
@@ -44,6 +44,14 @@ void GameUIManager::Initialize(DrawData spriteData, const std::string& fontName,
 	unitFontObject_ = std::make_unique<FontObject>();
 	unitFontObject_->Initialize(fontName, L"ユニット", fontData, fontLoader);
 
+	// ノルマクリアUI
+	quotaClearEffectUI_ = std::make_unique<QuotaClearEffectUI>();
+	quotaClearEffectUI_->Initialize(spriteData, starTexture);
+
+	// 収集演出UI
+	collectEffectUI_ = std::make_unique<CollectEffectUI>();
+	collectEffectUI_->Initialize(spriteData, starTexture, lineTexture);
+
 #ifdef USE_IMGUI
 	RegisterDebugParam();
 #endif
@@ -61,8 +69,28 @@ void GameUIManager::Update(const int32_t& unitNum, const int32_t& maxUnitNum) {
 	// 鉱石の数を更新
 	oreItemUI_->Update(OreItemStorageNum::currentOreItemNum_, OreItemStorageNum::maxOreItemNum_);
 
+	// ノルマの文字を変える
+	if (OreItemStorageNum::currentOreItemNum_ >= OreItemStorageNum::maxOreItemNum_) {
+		// ノルマクリア
+		quotaFontObject_->UpdateCharPositions(L"ノルマクリア!", fontLoader_);
+		quotaFontObject_->fontColor_ = { 0.8f,0.8f,0.0f,1.0f };
+		quotaFontObject_->transform_.position.x = 834.0f;
+		quotaClearEffectUI_->isLoop_ = true;
+
+		// 回収演出
+		if (oreItemUI_->IsNumChanged()) {
+			collectEffectUI_->StartAnimation();
+		}
+	}
+
 	// 時間表示UIを更新
 	timerUI_->Update();
+
+	// ノルマクリア演出の更新処理
+	quotaClearEffectUI_->Update();
+
+	// 回収演出の更新処理
+	collectEffectUI_->Update();
 }
 
 void GameUIManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
@@ -83,6 +111,12 @@ void GameUIManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 
 	// 時間計測表示UI
 	timerUI_->Draw(window, vpMatrix);
+
+	// ノルマクリア演出を描画
+	quotaClearEffectUI_->Draw(window, vpMatrix);
+
+	// 拐取演出
+	collectEffectUI_->Draw(window, vpMatrix);
 }
 
 void GameUIManager::RegisterDebugParam() {
@@ -106,6 +140,8 @@ void GameUIManager::RegisterDebugParam() {
 	GameParamEditor::GetInstance()->AddItem("GameUIManager", "QuotaFontSize", quotaFontObject_->transform_.scale, i++);
 	GameParamEditor::GetInstance()->AddItem("GameUIManager", "UnitFontPos", unitFontObject_->transform_.position, i++);
 	GameParamEditor::GetInstance()->AddItem("GameUIManager", "UnitFontSize", unitFontObject_->transform_.scale, i++);
+
+	GameParamEditor::GetInstance()->AddItem("QuotaClearEffect", "Pos", quotaClearEffectUI_->pos_);
 }
 
 void GameUIManager::ApplyDebugParam() {
@@ -130,6 +166,9 @@ void GameUIManager::ApplyDebugParam() {
 	quotaFontObject_->transform_.scale = GameParamEditor::GetInstance()->GetValue<Vector3>("GameUIManager", "QuotaFontSize");
 	unitFontObject_->transform_.position = GameParamEditor::GetInstance()->GetValue<Vector3>("GameUIManager", "UnitFontPos");
 	unitFontObject_->transform_.scale = GameParamEditor::GetInstance()->GetValue<Vector3>("GameUIManager", "UnitFontSize");
+
+	quotaClearEffectUI_->pos_ = GameParamEditor::GetInstance()->GetValue<Vector3>("QuotaClearEffect", "Pos");
+	collectEffectUI_->pos_ = quotaClearEffectUI_->pos_;
 
 	upSpriteObject_->Update();
 	downSpriteObject_->Update();
