@@ -120,7 +120,8 @@ void GameScene::Initialize() {
 
 	// MiniMapの初期化
 	miniMap_ = std::make_unique<MiniMap>();
-	miniMap_->Initialize((int)currentMap_.currentMap.mapChipData[0].size(), (int)currentMap_.currentMap.mapChipData.size(), textureManager_);
+	DrawData planeData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
+	miniMap_->Initialize((int)currentMap_.currentMap.mapChipData[0].size(), (int)currentMap_.currentMap.mapChipData.size(), textureManager_, planeData);
 
 	//================================================================
 	// 鉱石システム
@@ -525,10 +526,10 @@ void GameScene::Draw() {
 		Matrix4x4 vpMatrix{};
 
 		if (i == 0) {
+			vpMatrix = miniMap_->PreDraw(gameWindow_->GetWindow())->GetVPMatrix();
+		} else {
 			display_->PreDraw(gameWindow_->GetCommandObject(), true);
 			vpMatrix = cameraController_->GetVPMatrix();
-		} else {
-			vpMatrix = miniMap_->PreDraw(gameWindow_->GetWindow())->GetVPMatrix();
 		}
 
 		// カメラ行列
@@ -561,37 +562,45 @@ void GameScene::Draw() {
 		// マウスのクリックアニメーション
 		cameraController_->DrawAnimation(gameWindow_->GetWindow(), vpMatrix);
 
-		//============================================================================
-		// 2D描画
-		//============================================================================
+		//MiniMap
+		if (i == 1) {
 
-		/// UIの描画処理
-		vpMatrix = uiCamera_->GetVPMatrix();
+			//============================================================================
+			// 2D描画
+			//============================================================================
 
-		// ゲームのUIを描画
-		gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
+			/// UIの描画処理
+			vpMatrix = uiCamera_->GetVPMatrix();
 
-		// ポーズシーンを描画
-		pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+			// ゲームのUIを描画
+			gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
-		// ゲームオーバーシーンの描画処理
-		if (isGameOverScene_) {
-			// UIの更新処理
-			gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+			// ポーズシーンを描画
+			pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+			// ゲームオーバーシーンの描画処理
+			if (isGameOverScene_) {
+				// UIの更新処理
+				gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+			}
+
+			// クリアシーンの描画処理
+			if (isClearScene_) {
+				// クリアシーンの更新処理
+				clearUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+			}
+
+			// シーン遷移の描画
+			fadeTransition_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+			miniMap_->Draw(gameWindow_->GetWindow());
+
+		} else {
+			miniMap_->PostDraw(gameWindow_->GetWindow());
 		}
-
-		// クリアシーンの描画処理
-		if (isClearScene_) {
-			// クリアシーンの更新処理
-			clearUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
-		}
-
-		// シーン遷移の描画
-		fadeTransition_->Draw(gameWindow_->GetWindow(), vpMatrix);
 	}
 
 	display_->PostDraw(gameWindow_->GetCommandObject());
-	miniMap_->PostDraw(gameWindow_->GetWindow());
 
 	//PostEffectとか
 	postEffectConfig_.output = gameWindow_->GetDualDisplay();
@@ -690,9 +699,9 @@ void GameScene::PutGold() {
 }
 
 Vector3 GameScene::GetPlayerInitPosition() {
-	for(auto& row : currentMap_.currentMap.mapChipData){
-		for(auto& tile : row){
-			if(tile == TileType::PlayerSpawn){
+	for (auto& row : currentMap_.currentMap.mapChipData) {
+		for (auto& tile : row) {
+			if (tile == TileType::PlayerSpawn) {
 				tile = TileType::Road;
 				return {
 					static_cast<float>(&tile - &row[0]),

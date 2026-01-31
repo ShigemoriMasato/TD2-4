@@ -39,6 +39,15 @@ void MiniMap::PostDraw(Window* window) {
 	display_->PostDraw(window->GetCommandObject());
 }
 
+void MiniMap::Draw(Window* window) {
+	Matrix4x4 matWorld = Matrix::MakeAffineMatrix({ 0.5f, 0.5f, 0.0f }, {0.0f, 0.0f, 1.57f}, { 0.75f, -0.75f, 0.0f });
+	miniMapRender_->CopyBufferData(0, &matWorld, sizeof(Matrix4x4));
+	int textureIndex = display_->GetTextureData()->GetOffset();
+	miniMapRender_->CopyBufferData(1, &textureIndex, sizeof(int));
+
+	miniMapRender_->Draw(window);
+}
+
 void MiniMap::DrawImGui() {
 #ifdef USE_IMGUI
 
