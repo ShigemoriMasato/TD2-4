@@ -28,7 +28,6 @@ void OreObject::Initialize(DrawData drawData, int texture) {
 	material_.color = { 1.0f,1.0f,1.0f,1.0f };
 	material_.textureIndex = texture;
 	material_.isActive = true;
-	renderObject_->CopyBufferData(psDataIndex_, &material_, sizeof(Material));
 }
 
 void OreObject::Update() {
@@ -43,6 +42,7 @@ void OreObject::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	// カメラによる位置を設定
 	vsData_.WVP = worldMatrix_ * vpMatrix;
 	renderObject_->CopyBufferData(vsDataIndex_, &vsData_, sizeof(TransformationMatrix));
+	renderObject_->CopyBufferData(psDataIndex_, &material_, sizeof(Material));
 	renderObject_->CopyBufferData(lightDataIndex_, &LightManager::light_, sizeof(DirectionalLight));
 
 	// 描画

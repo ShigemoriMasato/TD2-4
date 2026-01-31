@@ -46,4 +46,5 @@ public:
 	virtual int32_t GetMaxWorkerNum() = 0;
 	virtual int32_t GetMaxHp() = 0;
 	virtual int32_t GetHp() = 0;
+	virtual float GetRotY() = 0;
 };
