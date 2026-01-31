@@ -105,7 +105,7 @@ public: // マップの情報
 	Rect GetRectByIndex(int32_t xIndex, int32_t zIndex);
 
 	// マップの最大サイズを取得
-	Vector2 GetMaxMapSize() { return Vector2(static_cast<float>(kNumBlockVirtical), static_cast<float>(kNumBlockHorizontal)); }
+	Vector2 GetMaxMapSize() { return Vector2(static_cast<float>(kNumBlockHorizontal),static_cast<float>(kNumBlockVirtical)); }
 
 	// 拠点位置を取得
 	std::vector<Vector3> GetHomePos() { return homePosList_; }
