@@ -1,6 +1,6 @@
 #include"GoldOre.h"
 #include <Common/DebugParam/GameParamEditor.h>
-void GoldOre::Init(DrawData drawData, int texture, const Vector3& pos, OreType type) {
+void GoldOre::Init(DrawData drawData, int texture, const Vector3& pos, OreType type, const float& rotY) {
 	
 	// オブジェクトを初期化
 	object_ = std::make_unique<OreObject>();
@@ -11,6 +11,7 @@ void GoldOre::Init(DrawData drawData, int texture, const Vector3& pos, OreType t
 
 	// 初期位置を設定
 	object_->transform_.position = pos;
+	object_->transform_.rotate.y = rotY;
 
 	// 設定
 	quadCollider_.topLeft = { -size_.x * 0.5f + object_->transform_.position.x, -size_.z * 0.5f + object_->transform_.position.z};
