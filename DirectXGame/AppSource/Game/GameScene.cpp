@@ -145,15 +145,15 @@ void GameScene::Initialize() {
 
 
 	// 鉱石モデル
-	int smallModelID = modelManager_->LoadModel(mineralModelName);
+	int smallModelID = modelManager_->LoadModel("Small");
 	auto smallModel = modelManager_->GetNodeModelData(smallModelID);
 	int smallIndex = textureManager_->GetTexture("MineralDeposite_Small.png");
 
-	int middleModelID = modelManager_->LoadModel(mineralModelName);
-	auto middleModel = modelManager_->GetNodeModelData(middleModelID);
-	int middleIndex = textureManager_->GetTexture("MineralDeposite_Middle-0.png");
+	int midleModelID = modelManager_->LoadModel("Middle");
+	auto midleModel = modelManager_->GetNodeModelData(midleModelID);
+	int midleIndex = textureManager_->GetTexture("MineralDeposite_Middle-0.png");
 
-	int largeModelID = modelManager_->LoadModel(mineralModelName);
+	int largeModelID = modelManager_->LoadModel("Large");
 	auto largeModel = modelManager_->GetNodeModelData(largeModelID);
 	int largeIndex = textureManager_->GetTexture("MineralDeposite_Large-0.png");
 
@@ -181,9 +181,15 @@ void GameScene::Initialize() {
 	// 鉱石のテクスチャを取得
 	int homeIndex = textureManager_->GetTexture("OreBase-0.png");
 
+	// spriteモデルを取得
+	int spritModelID = modelManager_->LoadModel(spriteModelName);
+	auto spritModel = modelManager_->GetNodeModelData(spritModelID);
+
 	// 拠点管理クラス
 	homeManager_ = std::make_unique<HomeManager>();
-	homeManager_->Initialize(drawDataManager_->GetDrawData(homeModel.drawDataIndex), homeIndex, mapChipField_->GetHomePos());
+	homeManager_->Initialize(drawDataManager_->GetDrawData(homeModel.drawDataIndex), homeIndex, mapChipField_->GetHomePos(), drawDataManager_->GetDrawData(spritModel.drawDataIndex));
+	// カメラを設定
+	homeManager_->SetCamera(cameraController_.get());
 
 	//============================================================================
 	// ユニットシステム
@@ -652,6 +658,9 @@ void GameScene::Draw() {
 
 			/// UIの描画処理
 			vpMatrix2d = uiCamera_->GetVPMatrix();
+
+			// 家のマークUIを表示
+			homeManager_->DrawUI(gameWindow_->GetWindow(), vpMatrix2d);
 
 			// 開始と終わりのカウントの描画
 			startCountUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);

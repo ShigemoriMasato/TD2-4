@@ -26,6 +26,10 @@ void CameraController::Initialize(Input* input, DrawData drawData, int texture) 
 	clickObject_ = std::make_unique<DefaultObject>();
 	clickObject_->Initialize(drawData, texture);
 
+	vpMatrix_ = Matrix4x4::Identity();
+	worldMatrix_ = Matrix4x4::Identity();
+	transformMatrix_ = Matrix4x4::Identity();
+  
 	auto edit = GameParamEditor::GetInstance();
 	edit->CreateGroup("Camera", "GameScene");
 	edit->AddItem("Camera", "InitBackDist", initBackDist_, 1);
@@ -242,4 +246,100 @@ void CameraController::ClickAnimation() {
 
 	// 更新処理
 	clickObject_->Update();
+}
+
+Vector3 CameraController::WorldToScreen(const Vector3& worldPos) const {
+	// VP行列を取得
+	Matrix4x4 mat = vpMatrix_;
+
+	// ワールド座標をクリップ空間座標に変換
+	float w = worldPos.x * mat.m[0][3] + worldPos.y * mat.m[1][3] + worldPos.z * mat.m[2][3] + mat.m[3][3];
+
+	// カメラの真横や後ろにある場合
+	// スクリーン座標としては無効だが、判定用にwをそのまま返すか、例外的な値を返す
+	if (w <= 0.0f) {
+		return Vector3(0.0f, 0.0f, w);
+	}
+
+	float x = worldPos.x * mat.m[0][0] + worldPos.y * mat.m[1][0] + worldPos.z * mat.m[2][0] + mat.m[3][0];
+	float y = worldPos.x * mat.m[0][1] + worldPos.y * mat.m[1][1] + worldPos.z * mat.m[2][1] + mat.m[3][1];
+
+	// 透視投影除算
+	float ndcX = x / w;
+	float ndcY = y / w;
+
+	// スクリーン座標系に変換
+	Vector3 screenPos;
+	screenPos.x = (ndcX + 1.0f) * 0.5f * 1280.0f;
+	screenPos.y = (1.0f - ndcY) * 0.5f * 720.0f;
+	screenPos.z = w;
+
+	return screenPos;
+}
+
+MarkerResult CameraController::GetMarkerInfo(const Vector3& targetWorldPos, float margin, float screenWidth, float screenHeight) {
+	MarkerResult result;
+	Vector2 center = { screenWidth * 0.5f, screenHeight * 0.5f };
+
+	// ワールド座標をスクリーン座標に変換
+	Vector3 screenPos3D = WorldToScreen(targetWorldPos);
+	Vector2 targetScreenPos = { screenPos3D.x, screenPos3D.y };
+	float w = screenPos3D.z;
+
+	// カメラの後ろにいる場合の補正
+	if (w < 0.0f) {
+		targetScreenPos = center - (targetScreenPos - center);
+	}
+
+	// 画面内判定
+	if (w > 0.0f &&
+		targetScreenPos.x >= margin && targetScreenPos.x <= (screenWidth - margin) &&
+		targetScreenPos.y >= margin && targetScreenPos.y <= (screenHeight - margin)) {
+		// 画面内にいる
+		result.isVisible = true; 
+	} else {
+		// 画面外にいる
+		result.isVisible = false; 
+	}
+
+	// 中心からターゲットへの方向ベクトルを計算
+	Vector2 dir = targetScreenPos - center;
+
+	// 回転角度を計算
+	result.rotation = std::atan2(dir.y, dir.x);
+
+	// 画面半分のサイズ。空白を考慮
+	float halfW = (screenWidth * 0.5f) - margin;
+	float halfH = (screenHeight * 0.5f) - margin;
+
+	// 比率を計算して、枠に収まるようにスケーリング
+	float slope = (dir.x != 0.0f) ? (dir.y / dir.x) : 0.0f;
+
+	if (dir.x == 0.0f && dir.y == 0.0f) {
+		// 重なっている場合は中心
+		result.position = center;
+	} else {
+		// 矩形の境界との交点計算
+		// X軸方向の壁までの距離比率
+		float factor = 1.0f;
+
+		// とりあえずX軸基準で壁にぶつかると仮定
+		if (std::abs(dir.x) > 0.001f) {
+			float xLimit = (dir.x > 0) ? halfW : -halfW;
+			factor = xLimit / dir.x;
+		} else {
+			factor = 10000.0f;
+		}
+
+		// Y軸方向の壁チェック
+		if (std::abs(dir.y * factor) > halfH) {
+			float yLimit = (dir.y > 0) ? halfH : -halfH;
+			factor = yLimit / dir.y;
+		}
+
+		// 中心座標に、スケーリングしたベクトルを加算
+		result.position = center + (dir * factor);
+	}
+
+	return result;
 }
