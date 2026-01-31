@@ -5,6 +5,7 @@
 #include"FpsCount.h"
 #include<algorithm>
 #include"Utility/Easing.h"
+#include <Common/DebugParam/GameParamEditor.h>
 
 #ifdef USE_IMGUI
 #include <imgui/imgui.h>
@@ -24,10 +25,23 @@ void CameraController::Initialize(Input* input, DrawData drawData, int texture) 
 	// クリック位置を描画
 	clickObject_ = std::make_unique<DefaultObject>();
 	clickObject_->Initialize(drawData, texture);
+
+	auto edit = GameParamEditor::GetInstance();
+	edit->CreateGroup("Camera", "GameScene");
+	edit->AddItem("Camera", "InitBackDist", initBackDist_, 1);
+	edit->AddItem("Camera", "FollowSpeed", followSpeed_, 2);
+	initBackDist_ = edit->GetValue<float>("Camera", "InitBackDist");
+
+	backDist_ = initBackDist_;
+	targetBackDist_ = initBackDist_;
 }
 
 void CameraController::Update() {
-	
+
+	auto edit = GameParamEditor::GetInstance();
+	initBackDist_ = edit->GetValue<float>("Camera", "InitBackDist");
+	followSpeed_ = edit->GetValue<float>("Camera", "FollowSpeed");
+
 	if (isFollow_) {
 		
 		float dist = (targetPos_ - position_).Length();
@@ -70,8 +84,21 @@ void CameraController::Update() {
 		}
 	}
 
+
+	if (input_->GetKeyState(DIK_LSHIFT)) {
+		targetBackDist_ = initBackDist_;
+	}
+
 	if (DebugMousePos::isHovered) {
-		backDist_ += input_->GetMouseWheel() * 0.02f;
+		targetBackDist_ += input_->GetMouseWheel() * 0.02f;
+	}
+
+	float diff = backDist_ - targetBackDist_;
+	if (std::abs(diff) < 0.3f * FpsCount::deltaTime) {
+		backDist_ = targetBackDist_;
+	} else {
+		float speed = -diff * 10.0f;
+		backDist_ += speed * FpsCount::deltaTime;
 	}
 
 	// カメラの移動範囲を制限する
@@ -111,6 +138,9 @@ void CameraController::DebugDraw() {
 	ImGui::Text("BackDist : %.2f", backDist_);
 	ImGui::DragFloat3("BackDir", &backDir_.x, 0.01f);
 	backDir_ = backDir_.Normalize();
+
+	ImGui::Text("InitDist: %f", initBackDist_);
+	ImGui::Text("TargetDist: %f, CurrentDist: %f", targetBackDist_, backDist_);
 	ImGui::End();
 #endif
 }
