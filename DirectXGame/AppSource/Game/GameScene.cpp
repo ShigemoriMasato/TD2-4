@@ -160,8 +160,8 @@ void GameScene::Initialize() {
 	// 鉱石の管理システムを初期化
 	oreItemManager_ = std::make_unique<OreItemManager>();
 	// 描画データを設定ｓる
-	oreItemManager_->SetModle(drawDataManager_->GetDrawData(smallModel.drawDataIndex), drawDataManager_->GetDrawData(middleModel.drawDataIndex), drawDataManager_->GetDrawData(largeModel.drawDataIndex),
-		smallIndex, middleIndex, largeIndex);
+	oreItemManager_->SetModle(drawDataManager_->GetDrawData(smallModel.drawDataIndex), drawDataManager_->GetDrawData(midleModel.drawDataIndex), drawDataManager_->GetDrawData(largeModel.drawDataIndex),
+		smallIndex, midleIndex, largeIndex);
 	oreItemManager_->Initialize(drawDataManager_->GetDrawData(sprModel.drawDataIndex), fontName, draw, fontLoader_);
 
 	// マップシステムを取得
