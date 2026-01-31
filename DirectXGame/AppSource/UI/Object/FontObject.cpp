@@ -12,7 +12,7 @@ void FontObject::Initialize(const std::string& fontName, const std::wstring& tex
 	renderObject_->psoConfig_.vs = "Font/FontBasic.VS.hlsl";
 	renderObject_->psoConfig_.ps = "Font/FontBasic.PS.hlsl";
 	// バッファの作成
-	renderObject_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "FontObject::WVPMatrix");
+	renderObject_->CreateCBV(sizeof(Matrix4x4) * 2, ShaderType::VERTEX_SHADER, "FontObject::WVPMatrix");
 	renderObject_->CreateSRV(sizeof(CharPosition), 256, ShaderType::VERTEX_SHADER, "FontObject::CharPosition");
 	renderObject_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "FontObject::TextureIndex");
 	renderObject_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "FontObject::FontColor");
@@ -57,10 +57,11 @@ void FontObject::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	}
 
 	// ワールド行列の計算
-	wvpMatrix_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position) * vpMatrix;
+	matrices_[0] = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
+	matrices_[1] = vpMatrix;
 
 	// バッファにデータをコピー
-	renderObject_->CopyBufferData(0, &wvpMatrix_, sizeof(Matrix4x4));
+	renderObject_->CopyBufferData(0, matrices_, sizeof(Matrix4x4) * 2);
 	renderObject_->CopyBufferData(1, charPositions_.data(), sizeof(CharPosition) * charPositions_.size());
 	renderObject_->CopyBufferData(2, &textureIndex_, sizeof(int));
 	renderObject_->CopyBufferData(3, &fontColor_, sizeof(Vector4));

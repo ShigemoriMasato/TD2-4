@@ -37,7 +37,6 @@ void InitializeScene::Initialize() {
 	textureManager_->LoadAllTextures();
 
 	commonData_->nextStageIndex = 0;
-	commonData_->nextMapIndex = 0;
 	commonData_->nextMapIndex = 1;
   
   // ランダム生成器を初期化

@@ -71,7 +71,7 @@ private:
 	std::vector<CharPosition> charPositions_;
 
 	// ワールドビュープロジェクション行列
-	Matrix4x4 wvpMatrix_{};
+	Matrix4x4 matrices_[2]{};
 
 	// テクスチャインデックス
 	int textureIndex_ = -1;

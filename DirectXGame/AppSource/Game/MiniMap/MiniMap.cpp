@@ -2,6 +2,7 @@
 #include <numbers>
 #include <GameCamera/DebugMousePos.h>
 #include <Input/Input.h>
+#include <Common/DebugParam/GameParamEditor.h>
 
 void MiniMap::Initialize(int mapWidth, int mapHeight, TextureManager* textureManager, const DrawData& plane, const DrawData& visionField) {
 	// カメラの初期化
@@ -55,10 +56,12 @@ void MiniMap::Update() {
 		Vector2 min = Vector2(960, 540) + deadZone;
 		Vector2 max = Vector2(1280, 720);
 
-		//Minimapがクリックされたら
+		//MiniMapがクリックされたら
 		if (screenMousePos_.x >= min.x && screenMousePos_.x <= max.x && screenMousePos_.y >= min.y && screenMousePos_.y <= max.y) {
 			pleasePose_ = !pleasePose_;
 		} else {
+
+
 			pleasePose_ = false;
 		}
 

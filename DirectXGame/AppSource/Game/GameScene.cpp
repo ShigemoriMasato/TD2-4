@@ -84,8 +84,15 @@ void GameScene::Initialize() {
 	//============================================
 	// マップシステム
 	//============================================
+	if (commonData_->isEndlessMode) {
+		currentMap_ = commonData_->newMapManager->GetEndlessMap(commonData_->nextMapIndex, commonData_->prevMapIndex);
 
-	currentMap_ = commonData_->newMapManager->GetStageMap(commonData_->nextStageIndex, commonData_->nextMapIndex);
+		commonData_->stageCount++;
+		commonData_->prevMapIndex = currentMap_.currentMapID;
+	} else {
+		currentMap_ = commonData_->newMapManager->GetStageMap(commonData_->nextStageIndex, commonData_->nextMapIndex);
+	}
+
 	Vector3 playerInitPos = GetPlayerInitPosition();
 
 	// マップデータ解釈機能を初期化
@@ -148,14 +155,14 @@ void GameScene::Initialize() {
 
 	int largeModelID = modelManager_->LoadModel("Large");
 	auto largeModel = modelManager_->GetNodeModelData(largeModelID);
-	int largelIndex = textureManager_->GetTexture("MineralDeposite_Large-0.png");
+	int largeIndex = textureManager_->GetTexture("MineralDeposite_Large-0.png");
 
 	// 鉱石の管理システムを初期化
 	oreItemManager_ = std::make_unique<OreItemManager>();
 	// 描画データを設定ｓる
-	oreItemManager_->SetModle(drawDataManager_->GetDrawData(smallModel.drawDataIndex), drawDataManager_->GetDrawData(midleModel.drawDataIndex), drawDataManager_->GetDrawData(largeModel.drawDataIndex),
-		smallIndex, midleIndex, largelIndex);
-	oreItemManager_->Initialize(drawDataManager_->GetDrawData(sprModel.drawDataIndex),fontName, draw, fontLoader_);
+	oreItemManager_->SetModle(drawDataManager_->GetDrawData(smallModel.drawDataIndex), drawDataManager_->GetDrawData(middleModel.drawDataIndex), drawDataManager_->GetDrawData(largeModel.drawDataIndex),
+		smallIndex, middleIndex, largeIndex);
+	oreItemManager_->Initialize(drawDataManager_->GetDrawData(sprModel.drawDataIndex), fontName, draw, fontLoader_);
 
 	// マップシステムを取得
 	oreItemManager_->SetMapChipField(mapChipField_.get());
@@ -292,7 +299,7 @@ void GameScene::Initialize() {
 			timeTracker_->StartMeasureTimes();
 			isActiveMinMap_ = false;
 		}
-	});
+		});
 
 	//=======================================================
 	// その他のシーンを初期化

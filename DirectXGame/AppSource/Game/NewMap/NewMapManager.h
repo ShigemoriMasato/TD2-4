@@ -21,6 +21,8 @@ public:
 	NewMap GetMapData(int stageNum) { return newMapData_[stageNum]; };
 
 	CurrentStageConfig GetStageMap(int stage, int map);
+	CurrentStageConfig GetEndlessMap(int stageCount, int prevMap);
+
 	//テクスチャIDからパスへの対応表
 	std::map<int, std::string> GetTextureMap() { return textureMap_; };
 
