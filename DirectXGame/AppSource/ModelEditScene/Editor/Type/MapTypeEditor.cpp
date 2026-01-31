@@ -90,6 +90,35 @@ void MapTypeEditor::DrawImGui() {
 		row.resize(width_);
 	}
 
+
+	//EndlessPriority
+
+	ImGui::Begin("EndlessPriority");
+
+	for (int i = 0; i < 4; ++i) {
+		if (ImGui::Button(std::to_string(i).c_str())) {
+			endlessPriority_[currentStage_] = i;
+		}
+
+		//最後以外同じ行に
+		if (i != 3) {
+			ImGui::SameLine();
+		}
+	}
+	if (ImGui::Button("NotSelected")) {
+		endlessPriority_[currentStage_] = 4;
+	}
+
+	std::string priorityText = "Current Priority: ";
+	if (endlessPriority_[currentStage_] == 4) {
+		priorityText += "NotSelected";
+	} else {
+		priorityText += std::to_string(endlessPriority_[currentStage_]);
+	}
+	ImGui::Text("%s", priorityText.c_str());
+
+	ImGui::End();
+
 #endif // USE_IMGUI
 }
 
@@ -97,6 +126,7 @@ void MapTypeEditor::SetCurrentStage(int currentStage) {
 	currentStage_ = currentStage;
 	if (mcData_.size() <= currentStage_) {
 		mcData_.resize(currentStage_ + 1);
+		endlessPriority_.resize(currentStage_ + 1, 4);
 	}
 
 	width_ = int(mcData_[currentStage_].empty() ? 0 : mcData_[currentStage_].front().size());
@@ -135,6 +165,8 @@ void MapTypeEditor::Load() {
 
 EditorConfigLoad:
 
+	endlessPriority_.resize(mcData_.size(), 4);
+
 	values = binaryManager_.Read(saveEditorConfigFileName_);
 
 	if (values.empty()) {
@@ -154,7 +186,8 @@ EditorConfigLoad:
 }
 
 void MapTypeEditor::Save() {
-	for (const auto& mc : mcData_) {
+	for (int i = 0; i < mcData_.size(); ++i) {
+		const auto& mc = mcData_[i];
 		int height = int(mc.size());
 		int width = 0;
 
@@ -170,6 +203,8 @@ void MapTypeEditor::Save() {
 				binaryManager_.RegisterOutput(int(mc[i][j]));
 			}
 		}
+
+		binaryManager_.RegisterOutput(endlessPriority_[i]);
 	}
 
 	binaryManager_.Write(saveStageFileName_);

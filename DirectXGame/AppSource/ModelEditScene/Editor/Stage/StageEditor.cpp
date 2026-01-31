@@ -91,6 +91,8 @@ int StageEditor::DrawImGui() {
 
 void StageEditor::Save() {
 
+	binaryManager_.RegisterOutput(version_);
+
 	for (const auto& stage : stageData_) {
 		binaryManager_.RegisterOutput(stage.initOreNum);
 		int mapSize = static_cast<int>(stage.configs.size());
@@ -109,16 +111,22 @@ void StageEditor::Load() {
 	size_t index = 0;
 	stageData_.clear();
 
-	while (index < values.size()) {
-		StageData stage;
-		stage.initOreNum = BinaryManager::Reverse<int>(values[index++].get());
-		int mapSize = BinaryManager::Reverse<int>(values[index++].get());
-		for (int i = 0; i < mapSize; ++i) {
-			MapConfig config;
-			config.mapID = BinaryManager::Reverse<int>(values[index++].get());
-			config.norma = BinaryManager::Reverse<int>(values[index++].get());
-			stage.configs.push_back(config);
+	int version = BinaryManager::Reverse<int>(values[index++].get());
+
+	if (version == 1) {
+		while (index < values.size()) {
+			StageData stage;
+			stage.initOreNum = BinaryManager::Reverse<int>(values[index++].get());
+			int mapSize = BinaryManager::Reverse<int>(values[index++].get());
+			for (int i = 0; i < mapSize; ++i) {
+				MapConfig config;
+				config.mapID = BinaryManager::Reverse<int>(values[index++].get());
+				config.norma = BinaryManager::Reverse<int>(values[index++].get());
+				stage.configs.push_back(config);
+			}
+			stageData_.push_back(stage);
 		}
-		stageData_.push_back(stage);
+	} else if (version == 2) {
+
 	}
 }

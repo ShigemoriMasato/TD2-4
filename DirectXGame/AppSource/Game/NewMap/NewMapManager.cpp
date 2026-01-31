@@ -77,6 +77,9 @@ void NewMapManager::LoadMapData() {
 			}
 		}
 
+		int endlessPriority = BinaryManager::Reverse<int>(mapValues[mapIndex++].get());
+		newMap.endlessPriority = endlessPriority;
+
 		//描画データ読み込み
 		newMap.renderData.resize(height, std::vector<ChipData>(width));
 		for (int y = 0; y < height; ++y) {
@@ -152,19 +155,23 @@ void NewMapManager::LoadStageConfig() {
 	}
 	int index = 0;
 
-	while (index < values.size()) {
-		StageData& stage = stageData_.emplace_back();
-		int initOre = BinaryManager::Reverse<int>(values[index++].get());
-		int mapSize = BinaryManager::Reverse<int>(values[index++].get());
-		std::vector<MapConfig> configs;
-		configs.resize(mapSize);
-		for (int i = 0; i < mapSize; ++i) {
-			int mapID = BinaryManager::Reverse<int>(values[index++].get());
-			int norma = BinaryManager::Reverse<int>(values[index++].get());
-			configs[i] = { mapID, norma };
+	int version = BinaryManager::Reverse<int>(values[index++].get());
+
+	if (version == 1) {
+		while (index < values.size()) {
+			StageData& stage = stageData_.emplace_back();
+			int initOre = BinaryManager::Reverse<int>(values[index++].get());
+			int mapSize = BinaryManager::Reverse<int>(values[index++].get());
+			std::vector<MapConfig> configs;
+			configs.resize(mapSize);
+			for (int i = 0; i < mapSize; ++i) {
+				int mapID = BinaryManager::Reverse<int>(values[index++].get());
+				int norma = BinaryManager::Reverse<int>(values[index++].get());
+				configs[i] = { mapID, norma };
+			}
+
+			stage.initOreNum = initOre;
+			stage.configs = configs;
 		}
-		
-		stage.initOreNum = initOre;
-		stage.configs = configs;
 	}
 }
