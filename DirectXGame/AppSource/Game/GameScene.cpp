@@ -245,18 +245,26 @@ void GameScene::Initialize() {
 	// ユニット管理クラスに持たせる
 	unitManager_->SetUnitHp(oreUnitHpUI_.get());
 
+	// 登録
+	RegisterDebugParam();
+	ApplyDebugParam();
+
 	// 時間を測る
 	timeTracker_ = std::make_unique<TimeTracker>();
-	timeTracker_->StartMeasureTimes();
 	timeTracker_->SetCountTime(mTime_, sTime_);
+
+	// 最初と最後のカウントをするUI
+	startCountUI_ = std::make_unique<StartCountUI>();
+	startCountUI_->Initialize(fontName, drawData, fontLoader_);
+	startCountUI_->isStart_ = true;
 
 	//=======================================================
 	// その他のシーンを初期化
 	//=======================================================
 	InitializeOtherScene();
-	// 登録
-	RegisterDebugParam();
-	ApplyDebugParam();
+
+	// 最初に一度だけ更新処理を呼ぶ
+	InGameScene();
 }
 
 void GameScene::InitializeOtherScene() {
@@ -323,9 +331,6 @@ std::unique_ptr<IScene> GameScene::Update() {
 	ApplyDebugParam();
 #endif
 
-	// Δタイムを取得する
-	FpsCount::deltaTime = engine_->GetFPSObserver()->GetDeltatime();
-
 	// 入力処理の更新
 	input_->Update();
 	commonData_->keyManager->Update();
@@ -333,8 +338,21 @@ std::unique_ptr<IScene> GameScene::Update() {
 	debugCamera_->Update();
 	camera_ = *static_cast<Camera*>(debugCamera_.get());
 
+	//===========================================================
+	// 時間計測処理
+	//===========================================================
+
+	// Δタイムを取得する
+	FpsCount::deltaTime = engine_->GetFPSObserver()->GetDeltatime();
+
+	// スタートアニメーションが終わった時、計測をスタートする
+	if (!isTimerSet_ && startCountUI_->isStartAnimeEnd()) {
+		timeTracker_->StartMeasureTimes();
+		isTimerSet_ = true;
+	}
+
 	//=============================================================
-	// シーン遷移の管理
+	// シーン遷移、シーンの管理
 	//=============================================================
 
 	// 演出が終わったので次のシーンに切り替える
@@ -348,7 +366,7 @@ std::unique_ptr<IScene> GameScene::Update() {
 		fadeTransition_->Update();
 	} else {
 
-		if (!isGameOverScene_ && !isClearScene_) {
+		if (!isGameOverScene_ && !isClearScene_ && startCountUI_->isStartAnimeEnd()) {
 			// ポーズシーンの更新処理
 			pauseUI_->Update();
 		}
@@ -363,12 +381,51 @@ std::unique_ptr<IScene> GameScene::Update() {
 				gameOverUI_->Update();
 			}
 		} else {
-			if (!isPauseScene_) {
+			if (!isPauseScene_ && startCountUI_->isStartAnimeEnd()) {
 				// ゲームの更新処理
 				InGameScene();
 			}
 		}
 	}
+
+	//====================================================
+	// 時間の更新処理
+	//====================================================
+
+	// 前の時間を取得
+	gameUIManager_->SetPreTime(TimeLimit::totalSeconds);
+	startCountUI_->SetPreTime(TimeLimit::totalSeconds);
+
+	// 時間を更新
+	timeTracker_->Update();
+
+	// 時間切れになれば
+	if (timeTracker_->isFinishd()) {
+
+		// 鉱石が目標数納品を達成するか、鉱石がなくなればクリア
+		if (OreItemStorageNum::currentOreItemNum_ >= OreItemStorageNum::maxOreItemNum_ ||
+			oreItemManager_->GetCurrentOreItemNum() <= 0) {
+			// クリアシーンに移動
+			isClearScene_ = true;
+		} else {
+			// ゲームオーバーシーンに移動
+			isGameOverScene_ = true;
+		}
+	}
+
+	//================================================
+	// UIの更新処理
+	//================================================
+
+	// ゲームシーンのUIの更新処理
+	gameUIManager_->Update(unitManager_->GetMaxOreCount() - unitManager_->GetOreCount(), unitManager_->GetMaxOreCount());
+
+	// 開始と最後のカウントする更新処理
+	startCountUI_->Update();
+
+	//================================================
+	// シーンの切り替え
+	//================================================
 
 	// 切り替える
 	if (isSceneChange_) {
@@ -399,7 +456,7 @@ void GameScene::InGameScene() {
 	}
 	// カメラの更新処理
 	cameraController_->Update();
-
+	
 	//==============================================================
 	// ユニットの選択処理
 	//==============================================================
@@ -487,37 +544,6 @@ void GameScene::InGameScene() {
 
 	// 全ての当たり判定を判定
 	colliderManager_->CollisionCheckAll();
-
-	//====================================================
-	// 時間の更新処理
-	//====================================================
-
-	// 前の時間を取得
-	gameUIManager_->SetPreTime(TimeLimit::totalSeconds);
-
-	// 時間を更新
-	timeTracker_->Update();
-
-	// 時間切れになれば
-	if (timeTracker_->isFinishd()) {
-
-		// 鉱石が目標数納品を達成するか、鉱石がなくなればクリア
-		if (OreItemStorageNum::currentOreItemNum_ >= OreItemStorageNum::maxOreItemNum_ ||
-			oreItemManager_->GetCurrentOreItemNum() <= 0) {
-			// クリアシーンに移動
-			isClearScene_ = true;
-		} else {
-			// ゲームオーバーシーンに移動
-			isGameOverScene_ = true;
-		}
-	}
-
-	//================================================
-	// UIの更新処理
-	//================================================
-
-	// ゲームシーンのUIの更新処理
-	gameUIManager_->Update(unitManager_->GetMaxOreCount() - unitManager_->GetOreCount(), unitManager_->GetMaxOreCount());
 }
 
 void GameScene::Draw() {
@@ -571,6 +597,9 @@ void GameScene::Draw() {
 
 		// ゲームのUIを描画
 		gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+		// 開始と終わりのカウントの描画
+		startCountUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
 		// ポーズシーンを描画
 		pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
