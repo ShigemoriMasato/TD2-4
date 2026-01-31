@@ -42,6 +42,8 @@ public:
 		return worldPos;
 	}
 
+	float GetRange() const { return backDist_ * -1.0f; }
+
 	// マップの最大サイズを取得
 	void SetMapMaxSize(const Vector2& size) {
 		mapMaxSize_ = size;

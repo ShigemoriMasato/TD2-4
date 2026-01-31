@@ -79,6 +79,17 @@ void TestScene::Initialize() {
 	debugMCRender_ = std::make_unique<DebugMCRender>();
 	debugMCRender_->Initialize(drawData);
 	debugMCRender_->SetAlpha(0.4f);
+
+	modelTest_ = std::make_unique<RenderObject>("ModelTest");
+	modelTest_->Initialize();
+	LoadModelID = modelManager_->LoadModel("VisionFrame");
+	drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(LoadModelID).drawDataIndex);
+	modelTest_->SetDrawData(drawData);
+	modelTest_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+	modelTest_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	modelTest_->SetUseTexture(true);
+	modelTest_->psoConfig_.vs = "Simple.VS.hlsl";
+	modelTest_->psoConfig_.ps = "PostEffect/Simple.PS.hlsl";
 }
 
 std::unique_ptr<IScene> TestScene::Update() {
@@ -128,6 +139,8 @@ void TestScene::Draw() {
 	auto window = commonData_->mainWindow.get();
 	auto display = commonData_->display.get();
 
+	Matrix4x4 vpMatrix3d = debugCamera_->GetVPMatrix();
+
 	display->PreDraw(window->GetCommandObject(), true);
 	//renderObject_->Draw(window->GetWindow());
 	debugLine_->Draw(window->GetWindow());
@@ -140,6 +153,11 @@ void TestScene::Draw() {
 	fontTest_->CopyBufferData(3, &fontColor_, sizeof(Vector4));
 	fontTest_->instanceNum_ = static_cast<uint32_t>(charPositions_.size());
 	fontTest_->Draw(window->GetWindow());
+
+	modelTest_->CopyBufferData(0, &vpMatrix3d, sizeof(Matrix4x4));
+	textureIndex = textureManager_->LoadTexture("Mineral-0.png");
+	modelTest_->CopyBufferData(1, &textureIndex, sizeof(int));
+	modelTest_->Draw(window->GetWindow());
 
 	mapRender_->Draw(debugCamera_->GetVPMatrix(), window->GetWindow());
 	debugMCRender_->Draw(debugCamera_->GetVPMatrix(), colorMap_,  currentMap_.mapChipData, window->GetWindow());
