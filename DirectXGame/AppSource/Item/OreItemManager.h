@@ -8,6 +8,8 @@
 #include"UI/Object/FontObject.h"
 #include"GameCommon/DefaultObject.h"
 
+#include"Unit/MapChipField.h"
+
 class OreItemManager {
 public:
 
@@ -47,7 +49,14 @@ public:
 		largeTexture_ = lt;
 	}
 
+	void SetMapChipField(MapChipField* MapChipField) {
+		MapChipField_ = MapChipField;
+	}
+
 private:
+
+	// マップの解釈昨日
+	MapChipField* MapChipField_ = nullptr;
 
 	// 鉱石の達
 	std::unordered_map<int32_t, std::unique_ptr<OreItem>> oreItems_;

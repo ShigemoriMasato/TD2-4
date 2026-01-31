@@ -148,6 +148,16 @@ void OreUnit::Update() {
 	// 当たり判定の位置を更新
 	circleCollider_.center = Vector2(object_->transform_.position.x, object_->transform_.position.z);
 
+	// 当たり判定
+	if (isCoolTimeEnd_) {
+		conflictCoolTimer_ += FpsCount::deltaTime / conflictCoolTime_;
+
+		if (conflictCoolTimer_ >= 1.0f) {
+			conflictCoolTimer_ = 0.0f;
+			isCoolTimeEnd_ = false;
+		}
+	}
+
 	// 帰宅していれば体力処理を飛ばす
 	if (state_ == State::Return) { return; }
 
@@ -203,6 +213,7 @@ void OreUnit::OnCollision(Collider* other) {
 
 		if (isConflict_) {
 			isConflict_ = false;
+			isCoolTimeEnd_ = true;
 		}
 
 		if (state_ != State::ToDeliver) { return; }
@@ -249,6 +260,7 @@ void OreUnit::OnCollision(Collider* other) {
 	// ユニット
 	if (isUnit) {
 		if (state_ != State::GoTo && state_ != State::ToDeliver) { return; }
+		if (isCoolTimeEnd_) { return; }
 
 		OreUnit* oreUnit = dynamic_cast<OreUnit*>(other);
 
