@@ -18,7 +18,7 @@ public:
 	~SpriteObject();
 
 	// 初期化
-	void Initialize(DrawData drawData,const Vector2& size);
+	void Initialize(DrawData drawData,const Vector2& size, BlendStateID blend = BlendStateID::Normal);
 
 	// 更新処理
 	void Update();

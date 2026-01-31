@@ -42,6 +42,8 @@ public:
 		return worldPos;
 	}
 
+	float GetRange() const { return backDist_ * -1.0f; }
+
 	// マップの最大サイズを取得
 	void SetMapMaxSize(const Vector2& size) {
 		mapMaxSize_ = size;
@@ -66,6 +68,8 @@ private:
 
 	Vector3 backDir_ = { 0.0f, -0.9f, 0.5f };
 	float backDist_ = -40.0f;
+	float targetBackDist_ = -40.0f;
+	float initBackDist_ = 0.0f;
 
 	Input* input_ = nullptr;
 	//クリックした瞬間のマウス座標

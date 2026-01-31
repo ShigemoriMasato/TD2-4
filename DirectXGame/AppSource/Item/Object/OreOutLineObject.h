@@ -41,6 +41,9 @@ public:
 	// srt
 	Transform transform_;
 
+	// マテリアル関係
+	Material material_{};
+
 private:
 
 	//　オブジェクトデータ
@@ -50,9 +53,7 @@ private:
 	TransformationMatrix vsData_{};
 	int vsDataIndex_ = -1;
 	Matrix4x4 worldMatrix_;
-
-	// マテリアル関係
-	Material material_{};
+	
 	int psDataIndex_ = -1;
 
 	// ライト

@@ -174,9 +174,13 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\Item\Object\OreObject.cpp" />
     <ClCompile Include="AppSource\Item\Object\OreOutLineObject.cpp" />
     <ClCompile Include="AppSource\Item\OreItemManager.cpp" />
+    <ClCompile Include="AppSource\RandomGenerator.cpp" />
     <ClCompile Include="AppSource\TimeTracker.cpp" />
     <ClCompile Include="AppSource\UI\ClearUI.cpp" />
     <ClCompile Include="AppSource\UI\CounterUI.cpp" />
+    <ClCompile Include="AppSource\UI\Effect\CollectEffectUI.cpp" />
+    <ClCompile Include="AppSource\UI\Effect\InstancingObject.cpp" />
+    <ClCompile Include="AppSource\UI\Effect\QuotaClearEffectUI.cpp" />
     <ClCompile Include="AppSource\UI\FadeTransition.cpp" />
     <ClCompile Include="AppSource\UI\GameOverUI.cpp" />
     <ClCompile Include="AppSource\UI\GameUIManager.cpp" />
@@ -245,6 +249,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\Game\NewMap\NewMapManager.cpp" />
     <ClCompile Include="AppSource\ModelEditScene\Render\StaticObjectRender.cpp" />
     <ClCompile Include="AppSource\ModelEditScene\Editor\Stage\StageEditor.cpp" />
+    <ClCompile Include="AppSource\OreAddScene\OreAddScene.cpp" />
     <ClInclude Include="AppSource\GameCamera\DebugMousePos.h" />
     <ClInclude Include="AppSource\GameCamera\SelectCamera.h" />
     <ClInclude Include="AppSource\GameCommon\DefaultObject.h" />
@@ -265,11 +270,15 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\Item\OreItemManager.h" />
     <ClInclude Include="AppSource\Item\OreItemStorageNum.h" />
     <ClInclude Include="AppSource\LightManager.h" />
+    <ClInclude Include="AppSource\RandomGenerator.h" />
     <ClInclude Include="AppSource\SelectStageNum.h" />
     <ClInclude Include="AppSource\TimeLimit.h" />
     <ClInclude Include="AppSource\TimeTracker.h" />
     <ClInclude Include="AppSource\UI\ClearUI.h" />
     <ClInclude Include="AppSource\UI\CounterUI.h" />
+    <ClInclude Include="AppSource\UI\Effect\CollectEffectUI.h" />
+    <ClInclude Include="AppSource\UI\Effect\InstancingObject.h" />
+    <ClInclude Include="AppSource\UI\Effect\QuotaClearEffectUI.h" />
     <ClInclude Include="AppSource\UI\FadeTransition.h" />
     <ClInclude Include="AppSource\UI\GameOverUI.h" />
     <ClInclude Include="AppSource\UI\GameUIManager.h" />
@@ -317,6 +326,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\ModelEditScene\Render\StaticObjectRender.h" />
     <ClInclude Include="AppSource\UI\PauseUI.h" />
     <ClInclude Include="AppSource\ModelEditScene\Editor\Stage\StageEditor.h" />
+    <ClInclude Include="AppSource\OreAddScene\OreAddScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSource\Common\DebugParam\GameParamEditor.h" />

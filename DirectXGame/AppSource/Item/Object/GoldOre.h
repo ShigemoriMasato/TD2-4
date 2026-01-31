@@ -7,7 +7,7 @@
 class GoldOre : public OreItem,public Collider {
 public:
 
-	void Init(DrawData drawData,int texture, const Vector3& pos, OreType type);
+	void Init(DrawData drawData,int texture, const Vector3& pos, OreType type,const float& rotY);
 
 	void Update() override;
 
@@ -22,6 +22,8 @@ public:
 
 	// 位置
 	Vector3 GetPos() override { return object_->transform_.position; }
+
+	float GetRotY() override { return object_->transform_.rotate.y; }
 
 	// サイズ
 	Vector3 GetSize() override { return size_; }

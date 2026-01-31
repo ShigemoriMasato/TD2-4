@@ -8,10 +8,12 @@
 #include"UI/Object/FontObject.h"
 #include"GameCommon/DefaultObject.h"
 
+#include"Unit/MapChipField.h"
+
 class OreItemManager {
 public:
 
-	void Initialize(const DrawData& goldOreDrawData,int texture, DrawData spriteDrawData,const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader);
+	void Initialize(DrawData spriteDrawData,const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader);
 
 	void Update();
 
@@ -21,7 +23,7 @@ public:
 
 public:
 
-	void AddOreItem(OreType type, const Vector3& pos);
+	void AddOreItem(OreType type, const Vector3& pos, const float& rotY = 0.0f);
 
 	/// <summary>
 	/// 選択した位置に鉱石が存在しているかを取得
@@ -37,11 +39,24 @@ public:
 	// 現在の鉱石の数
 	int32_t GetCurrentOreItemNum() { return static_cast<int32_t>(oreItems_.size()); }
 
+	// 描画データを設定
+	void SetModle(const DrawData& smallDrawData, const DrawData& midleDrawData, const DrawData& largeDrawData, int st,int mt,int lt) {
+		smallDrawData_ = smallDrawData;
+		midleDrawData_ = midleDrawData;
+		largeDrawData_ = largeDrawData;
+		smallTexture_ = st;
+		midleTexture_ = mt;
+		largeTexture_ = lt;
+	}
+
+	void SetMapChipField(MapChipField* MapChipField) {
+		MapChipField_ = MapChipField;
+	}
+
 private:
 
-	// 鉱石の描画データ
-	DrawData goldOreDrawData_;
-	int oreTexture_ = 0;
+	// マップの解釈昨日
+	MapChipField* MapChipField_ = nullptr;
 
 	// 鉱石の達
 	std::unordered_map<int32_t, std::unique_ptr<OreItem>> oreItems_;
@@ -56,6 +71,14 @@ private:
 
 	// 選択中のオブジェクトにアウトラインを描画する
 	std::unique_ptr<OreOutLineObject> oreOutLineObject_;
+
+	// 描画データ
+	DrawData smallDrawData_;
+	int smallTexture_ = 0;
+	DrawData midleDrawData_;
+	int midleTexture_ = 0;
+	DrawData largeDrawData_;
+	int largeTexture_ = 0;
 
 private: // フォント機能
 

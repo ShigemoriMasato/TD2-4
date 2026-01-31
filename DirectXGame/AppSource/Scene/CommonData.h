@@ -13,6 +13,11 @@ struct CommonData {
 
 	int nextStageIndex = -1;
 	uint32_t nextMapIndex = 0;
+	//EndlessMode用
+	int stageCount = 0;
+	//EndlessMode用
+	int prevMapIndex = -1;
+	bool isEndlessMode = false;
 
 	int postEffectDrawDataIndex = -1;
 };

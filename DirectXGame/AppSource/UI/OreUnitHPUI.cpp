@@ -17,6 +17,7 @@ void OreUnitHPUI::Initialize(DrawData wallDrawData) {
 
 	// 描画モデルを設定
 	renderObject_->SetDrawData(wallDrawData);
+	renderObject_->SetUseTexture(true);
 
 	// worldTransformを登録
 	vsDataIndex_ = renderObject_->CreateSRV(sizeof(ParticleForGPU), maxNum_, ShaderType::VERTEX_SHADER, "TestScene::SkinningMatrices");

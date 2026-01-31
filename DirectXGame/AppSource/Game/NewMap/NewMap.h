@@ -38,6 +38,8 @@ struct NewMap {
 	std::vector<std::vector<ChipData>> renderData;
 	//Decoration追加予定
 	std::map<int, std::vector<Transform>> decorations;
+	//Endressの選出優先度
+	int endlessPriority = 0;
 
 	//任意の方向に回転させる
 	void Rotate(Direction dir);

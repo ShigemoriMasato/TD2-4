@@ -84,8 +84,15 @@ void GameScene::Initialize() {
 	//============================================
 	// マップシステム
 	//============================================
+	if (commonData_->isEndlessMode) {
+		currentMap_ = commonData_->newMapManager->GetEndlessMap(commonData_->nextMapIndex, commonData_->prevMapIndex);
 
-	currentMap_ = commonData_->newMapManager->GetStageMap(commonData_->nextStageIndex, commonData_->nextMapIndex);
+		commonData_->stageCount++;
+		commonData_->prevMapIndex = currentMap_.currentMapID;
+	} else {
+		currentMap_ = commonData_->newMapManager->GetStageMap(commonData_->nextStageIndex, commonData_->nextMapIndex);
+	}
+
 	Vector3 playerInitPos = GetPlayerInitPosition();
 
 	// マップデータ解釈機能を初期化
@@ -121,18 +128,14 @@ void GameScene::Initialize() {
 
 	// MiniMapの初期化
 	miniMap_ = std::make_unique<MiniMap>();
-	miniMap_->Initialize((int)currentMap_.currentMap.mapChipData[0].size(), (int)currentMap_.currentMap.mapChipData.size(), textureManager_);
+	DrawData planeData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
+	DrawData visionFrame = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(modelManager_->LoadModel("VisionFrame")).drawDataIndex);
+	miniMap_->Initialize((int)currentMap_.currentMap.mapChipData[0].size(), (int)currentMap_.currentMap.mapChipData.size(),
+		textureManager_, planeData, visionFrame);
 
 	//================================================================
 	// 鉱石システム
 	//================================================================
-
-	// 鉱石モデル
-	int oreItemModelID = modelManager_->LoadModel(mineralModelName);
-	auto oreItemModel = modelManager_->GetNodeModelData(oreItemModelID);
-
-	// 鉱石のテクスチャを取得
-	int oreItemTextureIndex = textureManager_->GetTexture("MineralDeposite_02.png");
 
 	// フォント用
 	auto draw = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
@@ -140,11 +143,29 @@ void GameScene::Initialize() {
 	int sprModelID = modelManager_->LoadModel(spriteModelName);
 	auto sprModel = modelManager_->GetNodeModelData(sprModelID);
 
+
+	// 鉱石モデル
+	int smallModelID = modelManager_->LoadModel(mineralModelName);
+	auto smallModel = modelManager_->GetNodeModelData(smallModelID);
+	int smallIndex = textureManager_->GetTexture("MineralDeposite_Small.png");
+
+	int middleModelID = modelManager_->LoadModel(mineralModelName);
+	auto middleModel = modelManager_->GetNodeModelData(middleModelID);
+	int middleIndex = textureManager_->GetTexture("MineralDeposite_Middle-0.png");
+
+	int largeModelID = modelManager_->LoadModel(mineralModelName);
+	auto largeModel = modelManager_->GetNodeModelData(largeModelID);
+	int largeIndex = textureManager_->GetTexture("MineralDeposite_Large-0.png");
+
 	// 鉱石の管理システムを初期化
 	oreItemManager_ = std::make_unique<OreItemManager>();
-	oreItemManager_->Initialize(drawDataManager_->GetDrawData(oreItemModel.drawDataIndex), oreItemTextureIndex,
-		drawDataManager_->GetDrawData(sprModel.drawDataIndex),
-		fontName, draw, fontLoader_);
+	// 描画データを設定ｓる
+	oreItemManager_->SetModle(drawDataManager_->GetDrawData(smallModel.drawDataIndex), drawDataManager_->GetDrawData(middleModel.drawDataIndex), drawDataManager_->GetDrawData(largeModel.drawDataIndex),
+		smallIndex, middleIndex, largeIndex);
+	oreItemManager_->Initialize(drawDataManager_->GetDrawData(sprModel.drawDataIndex), fontName, draw, fontLoader_);
+
+	// マップシステムを取得
+	oreItemManager_->SetMapChipField(mapChipField_.get());
 
 	//鉱床の配置
 	PutGold();
@@ -231,9 +252,14 @@ void GameScene::Initialize() {
 
 	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
 
+	// 星の画像
+	int starTextureIndex = textureManager_->GetTexture("star.png");
+	// 演出用の線
+	int lineTextureIndex = textureManager_->GetTexture("lineEffect.png");
+
 	// ゲームのUI管理クラス
 	gameUIManager_ = std::make_unique<GameUIManager>();
-	gameUIManager_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), fontName, drawData, fontLoader_);
+	gameUIManager_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), starTextureIndex, lineTextureIndex, fontName, drawData, fontLoader_);
 
 	// spriteモデルを取得(アンカーポイントが違うスプライト)
 	int uModelID = modelManager_->LoadModel(unitHpModelName);
@@ -257,6 +283,17 @@ void GameScene::Initialize() {
 	startCountUI_ = std::make_unique<StartCountUI>();
 	startCountUI_->Initialize(fontName, drawData, fontLoader_);
 	startCountUI_->isStart_ = true;
+
+	// ミニマップ操作時の時間操作処理
+	miniMap_->SetOnClicked([this]() {
+		if (miniMap_->PleasePose()) {
+			timeTracker_->EndMeasureTimes();
+			isActiveMinMap_ = true;
+		} else {
+			timeTracker_->StartMeasureTimes();
+			isActiveMinMap_ = false;
+		}
+		});
 
 	//=======================================================
 	// その他のシーンを初期化
@@ -331,6 +368,14 @@ std::unique_ptr<IScene> GameScene::Update() {
 	ApplyDebugParam();
 #endif
 
+	// Δタイムを取得する
+	FpsCount::deltaTime = engine_->GetFPSObserver()->GetDeltatime();
+
+	// MiniMapがポーズを要求してきたらΔタイムを0にする
+	if (miniMap_->PleasePose()) {
+		//FpsCount::deltaTime = 0.0f;
+	}
+
 	// 入力処理の更新
 	input_->Update();
 	commonData_->keyManager->Update();
@@ -382,8 +427,16 @@ std::unique_ptr<IScene> GameScene::Update() {
 			}
 		} else {
 			if (!isPauseScene_ && startCountUI_->isStartAnimeEnd()) {
-				// ゲームの更新処理
-				InGameScene();
+
+				//====================================================
+				// ミニマップの更新処理
+				//====================================================
+				miniMap_->Update();
+
+				if (!isActiveMinMap_) {
+					// ゲームの更新処理
+					InGameScene();
+				}
 			}
 		}
 	}
@@ -442,7 +495,7 @@ std::unique_ptr<IScene> GameScene::Update() {
 void GameScene::InGameScene() {
 
 	//====================================================
-	// カメラの更新庶路
+	// カメラの更新処理
 	//====================================================
 	cameraController_->SetTargetPos(unitManager_->GetPlayerPosition());
 
@@ -456,7 +509,7 @@ void GameScene::InGameScene() {
 	}
 	// カメラの更新処理
 	cameraController_->Update();
-	
+
 	//==============================================================
 	// ユニットの選択処理
 	//==============================================================
@@ -552,10 +605,10 @@ void GameScene::Draw() {
 		Matrix4x4 vpMatrix{};
 
 		if (i == 0) {
+			vpMatrix = miniMap_->PreDraw(gameWindow_->GetWindow())->GetVPMatrix();
+		} else {
 			display_->PreDraw(gameWindow_->GetCommandObject(), true);
 			vpMatrix = cameraController_->GetVPMatrix();
-		} else {
-			vpMatrix = miniMap_->PreDraw(gameWindow_->GetWindow())->GetVPMatrix();
 		}
 
 		// カメラ行列
@@ -588,40 +641,55 @@ void GameScene::Draw() {
 		// マウスのクリックアニメーション
 		cameraController_->DrawAnimation(gameWindow_->GetWindow(), vpMatrix);
 
-		//============================================================================
-		// 2D描画
-		//============================================================================
+		Matrix4x4 vpMatrix2d;
 
-		/// UIの描画処理
-		vpMatrix = uiCamera_->GetVPMatrix();
+		//MiniMap
+		if (i == 1) {
 
-		// ゲームのUIを描画
-		gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
+			//============================================================================
+			// 2D描画
+			//============================================================================
 
-		// 開始と終わりのカウントの描画
-		startCountUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+			/// UIの描画処理
+			vpMatrix2d = uiCamera_->GetVPMatrix();
 
-		// ポーズシーンを描画
-		pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+			// 開始と終わりのカウントの描画
+			startCountUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 
-		// ゲームオーバーシーンの描画処理
-		if (isGameOverScene_) {
-			// UIの更新処理
-			gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+			// ポーズシーンを描画
+			pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
+
+			// ゲームのUIを描画
+			gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
+
+			// ポーズシーンを描画
+			pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
+
+			// ゲームオーバーシーンの描画処理
+			if (isGameOverScene_) {
+				// UIの更新処理
+				gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
+			}
+
+			// クリアシーンの描画処理
+			if (isClearScene_) {
+				// クリアシーンの更新処理
+				clearUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
+			}
+
+			// シーン遷移の描画
+			fadeTransition_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
+
+			miniMap_->Draw(gameWindow_->GetWindow());
+
+		} else {
+			Vector3 playerPos = unitManager_->GetPlayerPosition();
+			float range = cameraController_->GetRange();
+			miniMap_->PostDraw(gameWindow_->GetWindow(), vpMatrix, playerPos, range);
 		}
-
-		// クリアシーンの描画処理
-		if (isClearScene_) {
-			// クリアシーンの更新処理
-			clearUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
-		}
-
-		// シーン遷移の描画
-		fadeTransition_->Draw(gameWindow_->GetWindow(), vpMatrix);
 	}
 
 	display_->PostDraw(gameWindow_->GetCommandObject());
-	miniMap_->PostDraw(gameWindow_->GetWindow());
 
 	//PostEffectとか
 	postEffectConfig_.output = gameWindow_->GetDualDisplay();
@@ -683,9 +751,9 @@ void GameScene::LoadDebugColorMap() {
 }
 
 void GameScene::PutGold() {
-	const MapChipData& data = currentMap_.currentMap.mapChipData;
-	for (const auto& row : data) {
-		for (const auto& tile : row) {
+	MapChipData& data = currentMap_.currentMap.mapChipData;
+	for (auto& row : data) {
+		for (auto& tile : row) {
 
 			OreType type = OreType::Small;
 
@@ -713,14 +781,16 @@ void GameScene::PutGold() {
 				static_cast<float>(&row - &currentMap_.currentMap.mapChipData[0])
 			};
 			oreItemManager_->AddOreItem(type, pos);
+
+			tile = TileType::Gold;
 		}
 	}
 }
 
 Vector3 GameScene::GetPlayerInitPosition() {
-	for(auto& row : currentMap_.currentMap.mapChipData){
-		for(auto& tile : row){
-			if(tile == TileType::PlayerSpawn){
+	for (auto& row : currentMap_.currentMap.mapChipData) {
+		for (auto& tile : row) {
+			if (tile == TileType::PlayerSpawn) {
 				tile = TileType::Road;
 				return {
 					static_cast<float>(&tile - &row[0]),

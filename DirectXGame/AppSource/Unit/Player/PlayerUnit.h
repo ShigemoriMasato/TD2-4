@@ -55,6 +55,8 @@ private:
 	float animationTimer_ = 0.0f;
 	float moveAnimationTime_ = 0.2f;
 	bool isMove_ = false;
+
+	Vector2 mapMapSize_;
 	
 private: // 調整項目
 
