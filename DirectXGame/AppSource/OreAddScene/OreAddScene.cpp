@@ -1,6 +1,12 @@
 #include "OreAddScene.h"
 
+namespace {
+	std::string fontName = "YDWbananaslipplus.otf";
+}
+
 void OreAddScene::Initialize() {
+	fontTexture_ = fontLoader_->Load(fontName, 64);
+	
 }
 
 std::unique_ptr<IScene> OreAddScene::Update() {

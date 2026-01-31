@@ -19,5 +19,9 @@ struct CommonData {
 	int prevMapIndex = -1;
 	bool isEndlessMode = false;
 
+	//ゲームシーンの設定
+	int goldNum = 0;
+	int oreNum = 0;
+
 	int postEffectDrawDataIndex = -1;
 };

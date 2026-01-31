@@ -13,6 +13,6 @@ public:
 
 private:
 
-
+	int fontTexture_ = -1;
 
 };

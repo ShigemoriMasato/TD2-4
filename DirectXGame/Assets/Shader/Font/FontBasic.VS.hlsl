@@ -7,7 +7,8 @@ struct VSOutput
 
 cbuffer MatrixBuffer : register(b0)
 {
-    float4x4 wvp;
+    float4x4 world;
+    float4x4 vp;
 }
 
 struct VSInput
@@ -57,7 +58,7 @@ VSOutput main(VSInput input, uint instanceId : SV_InstanceID, uint vertexID : SV
     pos.x += baseX + g.bearingX;
 
     // ===== 座標変換 =====
-    output.position = mul(float4(pos, 0.0, 1.0), wvp);
+    output.position = mul(float4(pos, 0.0, 1.0), mul(world, vp));
 
     // ===== UV変換 =====
     output.texcoord = float2((vertexID == 0 || vertexID == 1 ? g.uv0.x : g.uv1.x), (vertexID == 0 || vertexID == 3 ? g.uv0.y : g.uv1.y));
