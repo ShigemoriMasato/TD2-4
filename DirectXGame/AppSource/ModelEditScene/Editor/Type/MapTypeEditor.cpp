@@ -160,6 +160,8 @@ void MapTypeEditor::Load() {
 					mcData_[i][y][x] = TileType(binaryManager_.Reverse<int>(values[index++].get()));
 				}
 			}
+
+			endlessPriority_.push_back(binaryManager_.Reverse<int>(values[index++].get()));
 		}
 	}
 
