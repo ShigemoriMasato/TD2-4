@@ -329,6 +329,11 @@ std::unique_ptr<IScene> GameScene::Update() {
 	// Δタイムを取得する
 	FpsCount::deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 
+	// MiniMapがポーズを要求してきたらΔタイムを0にする
+	if (miniMap_->PleasePose()) {
+		FpsCount::deltaTime = 0.0f;
+	}
+
 	// 入力処理の更新
 	input_->Update();
 	commonData_->keyManager->Update();
@@ -388,7 +393,7 @@ std::unique_ptr<IScene> GameScene::Update() {
 void GameScene::InGameScene() {
 
 	//====================================================
-	// カメラの更新庶路
+	// カメラの更新処理
 	//====================================================
 	cameraController_->SetTargetPos(unitManager_->GetPlayerPosition());
 
@@ -402,6 +407,11 @@ void GameScene::InGameScene() {
 	}
 	// カメラの更新処理
 	cameraController_->Update();
+
+	//====================================================
+	// ミニマップの更新処理
+	//====================================================
+	miniMap_->Update();
 
 	//==============================================================
 	// ユニットの選択処理
