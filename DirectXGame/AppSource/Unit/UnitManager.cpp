@@ -176,7 +176,7 @@ void UnitManager::AddOreUnit(const Vector3& targetPos, OreItem* oreItem) {
 		unit->second->Init(homePos, targetPos, oreItem);
 	} else {
 		// 新しく登録
-		std::unique_ptr<OreUnit> oreUnit = std::make_unique<OreUnit>(mapChipField_, oreDrawData_, oreTexIndex_, playerUnit_->GetPos(), unitMarkUIManager_);
+		std::unique_ptr<OreUnit> oreUnit = std::make_unique<OreUnit>(mapChipField_, oreDrawData_, oreTexIndex_, playerUnit_->GetPos(), unitMarkUIManager_, unitEffectManager_);
 		oreUnit->Init(homePos, targetPos, oreItem);
 
 		oreUnits_[index] = std::move(oreUnit);

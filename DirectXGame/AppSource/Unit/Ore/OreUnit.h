@@ -11,6 +11,8 @@
 
 #include"Unit/UnitMarkUIManager.h"
 
+#include"Unit/UnitEffectManager.h"
+
 class OreItem;
 
 class OreUnit : public Collider {
@@ -35,7 +37,7 @@ public:
 
 public:
 
-	OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos, UnitMarkUIManager* unitMarkUIManager);
+	OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos, UnitMarkUIManager* unitMarkUIManager, UnitEffectManager* unitEffectManager);
 
 	/// <summary>
 	/// 初期化
@@ -83,6 +85,9 @@ private:
 
 	// ユニットマークUI
 	UnitMarkUIManager* unitMarkUIManager_ = nullptr;
+
+	// 演出管理
+	UnitEffectManager* unitEffectManager_ = nullptr;
 
 	// オブジェクトデータ
 	std::unique_ptr<OreUnitObject> object_;

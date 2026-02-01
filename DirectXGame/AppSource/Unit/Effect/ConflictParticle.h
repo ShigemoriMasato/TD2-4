@@ -2,18 +2,19 @@
 #include<vector>
 #include"UI/Effect/InstancingObject.h"
 
-class CollectParticle {
+class ConflictParticle {
 public:
 
 	// 1つのパーティクルがもつデータ
 	struct ParticleData {
 		Transform transform; // トラスフォーム
+		Vector3 velocity; // 速度
 		Vector4 color;       // 色
 		float lifeTime;      // 生存時間
 		float currentTime;   // 現在の時間
 		uint32_t textureHandle = 0; // 使用するテクスチャ
 
-		float rotSpeed;
+		Vector3 rotSpeed;
 		float speed;
 		float startScale;
 	};
@@ -27,11 +28,8 @@ public:
 	// 描画
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
-public:
-
-	Vector3 pos_;
-
-	int texture_ = 0;
+	// 衝突演出
+	void AddConflict(const Vector3& pos);
 
 private: // パーティクル
 
@@ -42,7 +40,7 @@ private: // パーティクル
 	std::vector<ParticleData> particleDatas_;
 
 	// 描画の最大数
-	uint32_t maxNum_ = 50;
+	uint32_t maxNum_ = 200;
 
 	// 数を数える
 	int32_t index_ = 0;
@@ -52,7 +50,7 @@ private: // パーティクル
 
 private:
 
-	ParticleData MakeNewData();
+	ParticleData MakeNewData(const Vector3& pos);
 
 	void Create();
 
