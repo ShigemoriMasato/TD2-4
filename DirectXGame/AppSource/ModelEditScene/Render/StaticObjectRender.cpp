@@ -15,6 +15,15 @@ void StaticObjectRender::Draw(const Matrix4x4& vpMatrix, Window* window) {
 	}
 
 	for (auto& [modelIndex, render] : objects_) {
+		Material mat = materialData_[modelIndex];
+		NodeModelData modelData = modelManager_->GetNodeModelData(modelIndex);
+
+		int materialIndex = modelData.materialIndex[0];
+		mat.color = modelData.materials[materialIndex].color;
+		mat.color.w = 1.0f;
+		mat.textureIndex = modelData.materials[materialIndex].textureIndex;
+		render->CopyBufferData(1, &mat, sizeof(Material));
+		
 		render->CopyBufferData(0, vsData_[modelIndex].data(), sizeof(VSData) * vsData_[modelIndex].size());
 		//todo 後でライトの情報を渡す
 
@@ -98,10 +107,5 @@ void StaticObjectRender::SetObjects(const std::map<int, std::vector<Transform>>&
 		render->psoConfig_.ps = "Model/Obj.PS.hlsl";
 		render->SetUseTexture(true);
 
-		Material mat = materialData_[modelIndex];
-		int materialIndex = modelData.materialIndex[0];
-		mat.color = modelData.materials[materialIndex].color;
-		mat.textureIndex = modelData.materials[materialIndex].textureIndex;
-		render->CopyBufferData(1, &mat, sizeof(Material));
 	}
 }
