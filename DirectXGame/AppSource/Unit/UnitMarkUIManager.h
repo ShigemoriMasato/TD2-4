@@ -78,6 +78,8 @@ private:
 	float playerMargin_ = 64.0f;
 	float conflictMargin_ = 64.0f;
 
+	float conflictOffsetY_ = -150.0f;
+
 private:
 
 	// 位置をまとめる

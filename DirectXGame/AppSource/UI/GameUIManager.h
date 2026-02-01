@@ -9,7 +9,7 @@
 class GameUIManager {
 public:
 
-	void Initialize(DrawData spriteData,int starTexture,int lineTexture,const std::string& fontName, DrawData fontData, FontLoader* fontLoader);
+	void Initialize(DrawData spriteData,int starTexture,int lineTexture,int oreIcon,int itemIcon,const std::string& fontName, DrawData fontData, FontLoader* fontLoader);
 
 	void Update(const int32_t& unitNum,const int32_t& maxUnitNum);
 
@@ -38,8 +38,11 @@ private:
 	// 背景画像
 	std::unique_ptr<SpriteObject> upSpriteObject_;
 	std::unique_ptr<SpriteObject> downSpriteObject_;
-
 	Vector4 bgColor_ = { 0.0f,0.0f,0.0f,1.0f };
+
+	// アイコン画像
+	std::unique_ptr<SpriteObject> oreIconSpriteObject_;
+	std::unique_ptr<SpriteObject> itemIconSpriteObject_;
 
 	// 階層名前
 	std::unique_ptr<FontObject> floorFontObject_;

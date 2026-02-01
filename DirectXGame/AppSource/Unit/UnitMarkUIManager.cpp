@@ -114,24 +114,23 @@ void UnitMarkUIManager::SetPlayerPos(const Vector3& pos) {
 void UnitMarkUIManager::AddConflictMarkUI(const Vector3& pos) {
 	MarkerResult marker = cameraController_->GetMarkerInfo(pos, conflictMargin_);
 
-	if (!marker.isVisible) {
+    activeIndex_++;
 
-		activeIndex_++;
-
-		if (activeIndex_ < maxNum_) {
-			markUIList_[activeIndex_].arrowObject_->transform_.position.x = marker.position.x;
-			markUIList_[activeIndex_].arrowObject_->transform_.position.y = marker.position.y;
-			markUIList_[activeIndex_].arrowObject_->transform_.rotate.z = marker.rotation + offsetRot_;
+    if (marker.isVisible) {
+        if (activeIndex_ < maxNum_) {
+            markUIList_[activeIndex_].arrowObject_->transform_.position.x = -256.0f;
+            markUIList_[activeIndex_].arrowObject_->transform_.position.y = marker.position.y;
+            markUIList_[activeIndex_].arrowObject_->transform_.rotate.z = marker.rotation + offsetRot_;
             // icon
             markUIList_[activeIndex_].iconObject_->transform_.position.x = marker.position.x;
-            markUIList_[activeIndex_].iconObject_->transform_.position.y = marker.position.y;
-		} else {
-			MarkUI mark;
-			mark.arrowObject_ = std::make_unique<SpriteObject>();
-			mark.arrowObject_->Initialize(spriteDrawData_, { conflictSize_,conflictSize_ });
-			mark.arrowObject_->transform_.position = { marker.position.x,marker.position.y,0.0f };
-			mark.arrowObject_->transform_.rotate.z = marker.rotation;
-			mark.arrowObject_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+            markUIList_[activeIndex_].iconObject_->transform_.position.y = marker.position.y + conflictOffsetY_;
+        } else {
+            MarkUI mark;
+            mark.arrowObject_ = std::make_unique<SpriteObject>();
+            mark.arrowObject_->Initialize(spriteDrawData_, { conflictSize_,conflictSize_ });
+            mark.arrowObject_->transform_.position = { -256.0f,marker.position.y,0.0f };
+            mark.arrowObject_->transform_.rotate.z = marker.rotation;
+            mark.arrowObject_->color_ = { 1.0f,1.0f,1.0f,1.0f };
             mark.arrowObject_->SetTexture(arrowTex_);
             // icon
             mark.iconObject_ = std::make_unique<SpriteObject>();
@@ -140,12 +139,40 @@ void UnitMarkUIManager::AddConflictMarkUI(const Vector3& pos) {
             mark.iconObject_->color_ = { 1.0f,1.0f,1.0f,1.0f };
             mark.iconObject_->SetTexture(iconTex_);
 
-			// マークUIを登録する
-			markUIList_.push_back(std::move(mark));
+            // マークUIを登録する
+            markUIList_.push_back(std::move(mark));
 
-			maxNum_++;
-		}
-	}
+            maxNum_++;
+        }
+    } else {
+        if (activeIndex_ < maxNum_) {
+            markUIList_[activeIndex_].arrowObject_->transform_.position.x = marker.position.x;
+            markUIList_[activeIndex_].arrowObject_->transform_.position.y = marker.position.y;
+            markUIList_[activeIndex_].arrowObject_->transform_.rotate.z = marker.rotation + offsetRot_;
+            // icon
+            markUIList_[activeIndex_].iconObject_->transform_.position.x = marker.position.x;
+            markUIList_[activeIndex_].iconObject_->transform_.position.y = marker.position.y;
+        } else {
+            MarkUI mark;
+            mark.arrowObject_ = std::make_unique<SpriteObject>();
+            mark.arrowObject_->Initialize(spriteDrawData_, { conflictSize_,conflictSize_ });
+            mark.arrowObject_->transform_.position = { marker.position.x,marker.position.y,0.0f };
+            mark.arrowObject_->transform_.rotate.z = marker.rotation;
+            mark.arrowObject_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+            mark.arrowObject_->SetTexture(arrowTex_);
+            // icon
+            mark.iconObject_ = std::make_unique<SpriteObject>();
+            mark.iconObject_->Initialize(spriteDrawData_, { conflictSize_,conflictSize_ });
+            mark.iconObject_->transform_.position = { marker.position.x,marker.position.y,0.0f };
+            mark.iconObject_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+            mark.iconObject_->SetTexture(iconTex_);
+
+            // マークUIを登録する
+            markUIList_.push_back(std::move(mark));
+
+            maxNum_++;
+        }
+    }
 }
 
 void UnitMarkUIManager::ProcessClusters() {
@@ -213,6 +240,7 @@ void UnitMarkUIManager::RegisterDebugParam() {
     GameParamEditor::GetInstance()->AddItem("MarkUI", "PlayerMargin", playerMargin_,1);
     GameParamEditor::GetInstance()->AddItem("MarkUI", "ConflictSize", conflictSize_,2);
     GameParamEditor::GetInstance()->AddItem("MarkUI", "ConflictMargin", conflictMargin_,3);
+    GameParamEditor::GetInstance()->AddItem("MarkUI", "ConflictOffsetY", conflictOffsetY_, 4);
 }
 
 void UnitMarkUIManager::ApplyDebugParam() {
@@ -221,4 +249,5 @@ void UnitMarkUIManager::ApplyDebugParam() {
     playerMargin_ = GameParamEditor::GetInstance()->GetValue<float>("MarkUI", "PlayerMargin");
     conflictSize_ = GameParamEditor::GetInstance()->GetValue<float>("MarkUI", "ConflictSize");  
     conflictMargin_ = GameParamEditor::GetInstance()->GetValue<float>("MarkUI", "ConflictMargin");
+    conflictOffsetY_ = GameParamEditor::GetInstance()->GetValue<float>("MarkUI", "ConflictOffsetY");
 }
