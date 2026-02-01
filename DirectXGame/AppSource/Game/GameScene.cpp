@@ -6,10 +6,11 @@
 #include"LightManager.h"
 #include <Utility/Easing.h>
 #include<Game/SelectScene.h>
+#include <OreAddScene/OreAddScene.h>
 
 namespace {
 	//MiniMap確認用
-	bool poseMode = false;
+	bool hasNextMap_ = true;
 
 	std::string fontName = "YDWbananaslipplus.otf";
 
@@ -84,6 +85,7 @@ void GameScene::Initialize() {
 	//============================================
 	// マップシステム
 	//============================================
+	hasNextMap_ = true;
 	if (commonData_->isEndlessMode) {
 		currentMap_ = commonData_->newMapManager->GetEndlessMap(commonData_->nextMapIndex, commonData_->prevMapIndex);
 
@@ -91,7 +93,20 @@ void GameScene::Initialize() {
 		commonData_->prevMapIndex = currentMap_.currentMapID;
 	} else {
 		currentMap_ = commonData_->newMapManager->GetStageMap(commonData_->nextStageIndex, commonData_->nextMapIndex);
+		
+		if (currentMap_.currentMapID != commonData_->nextMapIndex){
+			Logger logger = getLogger("GameScene");
+			logger->info("MapDataError: Stage {} Map {}", commonData_->nextStageIndex, commonData_->nextMapIndex);
+		}
+
+		commonData_->nextMapIndex++;
+		auto map = commonData_->newMapManager->GetStageMap(commonData_->nextStageIndex, commonData_->nextMapIndex);
+		if (map.currentMapID == -1) {
+			hasNextMap_ = false;
+		}
 	}
+
+	commonData_->norma = currentMap_.norma;
 
 	Vector3 playerInitPos = GetPlayerInitPosition();
 
@@ -242,7 +257,10 @@ void GameScene::Initialize() {
 
 	postEffectConfig_.window = gameWindow_->GetWindow();
 	postEffectConfig_.origin = display_;
-	postEffectConfig_.jobs_ = 0;
+	postEffectConfig_.jobs_ = UINT(PostEffectJob::Fade);
+	
+	fade_.alpha = 0.0f;
+	fade_.color = { 0.0f,0.0f,0.0f };
 
 	//==================================================================
 	// UI
@@ -334,7 +352,7 @@ void GameScene::InitializeOtherScene() {
 
 	// クリアUIの初期化
 	clearUI_ = std::make_unique<ClearUI>();
-	clearUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), commonData_->keyManager.get(), fontName, drawData, fontLoader_);
+	clearUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), commonData_->keyManager.get(), fontName, drawData, fontLoader_, hasNextMap_);
 	// リトライ
 	clearUI_->SetOnRetryClicked([this]() {
 		isSceneChange_ = true;
@@ -489,7 +507,16 @@ std::unique_ptr<IScene> GameScene::Update() {
 	// 切り替える
 	if (isSceneChange_) {
 		if (isRetry_) {
-			return std::make_unique<GameScene>();
+
+			//即席フェードアウト処理
+			static float timer = 0.0f;
+			timer += FpsCount::deltaTime;
+			fade_.alpha = std::min(timer, 1.0f);
+
+			if (timer >= 1.5f) {
+				timer = 0.0f;
+				return std::make_unique<OreAddScene>();
+			}
 		} else {
 			return std::make_unique<SelectScene>();
 		}
@@ -701,10 +728,17 @@ void GameScene::Draw() {
 	display_->PostDraw(gameWindow_->GetCommandObject());
 
 	//PostEffectとか
+#ifdef SH_RELEASE
 	postEffectConfig_.output = gameWindow_->GetDualDisplay();
+#endif
+	postEffect_->CopyBuffer(PostEffectJob::Fade, fade_);
 	postEffect_->Draw(postEffectConfig_);
 
+#ifdef SH_RELEASE
 	gameWindow_->PreDraw(false);
+#else
+	gameWindow_->PreDraw(true);
+#endif
 
 
 	//ImGui

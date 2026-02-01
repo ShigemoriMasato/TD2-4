@@ -78,4 +78,6 @@ private:
 
 	// 更新フラグ
 	bool isDirty_ = true;	
+
+	FontLoader* fontLoader_ = nullptr;
 };

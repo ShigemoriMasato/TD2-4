@@ -57,6 +57,11 @@ void PostEffect::Draw(const PostEffectConfig& config) {
 	IDisplay* output = intermediateDisplay_.get();
 	auto cmdObject = config.window->GetCommandObject();
 
+	//jobがなければ飛ばす
+	if (jobs == 0) {
+		goto FINAL_DRAW;
+	}
+
 	for (const auto& [job, obj] : postEffectObjects_) {
 		//ジョブがなければ終了
 		if (!(jobs & job)) {
@@ -77,7 +82,13 @@ void PostEffect::Draw(const PostEffectConfig& config) {
 		origin->ToTexture(cmdObject);
 		//jobを完遂したので削除
 		jobs &= ~job;
+
+		if(jobs == 0) {
+			break;
+		}
 	}
+
+FINAL_DRAW:
 
 	//最終出力先に描画
 	output = config.output;

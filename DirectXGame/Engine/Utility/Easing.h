@@ -103,7 +103,7 @@ float Apply(float t, EaseType type);
 template<typename T>
 T lerp(const T& start, const T& end, float t, EaseType type = EaseType::Linear) {
 	float easedT = Apply(t, type);
-	return start + (end - start) * easedT;
+	return T(start + (end - start) * easedT);
 }
 
 /// @brief 任意型の補間、行って帰ってくる
@@ -122,11 +122,11 @@ T lerp_RoundTrip(const T& start, const T& end, float t,
 	if (t < 0.5f) {
 		// 行き：start → end
 		float normalizedT = t * 2.0f;           // 0〜0.5 → 0〜1
-		return Lerp<T>(start, end, normalizedT, goType);
+		return lerp<T>(start, end, normalizedT, goType);
 	} else {
 		// 帰り：end → start
 		float normalizedT = (t - 0.5f) * 2.0f;  // 0.5〜1 → 0〜1
-		return Lerp<T>(end, start, normalizedT, backType);
+		return lerp<T>(end, start, normalizedT, backType);
 	}
 }
 

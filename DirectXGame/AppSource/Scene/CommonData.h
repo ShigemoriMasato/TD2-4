@@ -20,8 +20,9 @@ struct CommonData {
 	bool isEndlessMode = false;
 
 	//ゲームシーンの設定
-	int goldNum = 0;
-	int oreNum = 0;
+	int norma = 100;
+	int goldNum = 200;
+	int oreNum = 100;
 
 	int postEffectDrawDataIndex = -1;
 };

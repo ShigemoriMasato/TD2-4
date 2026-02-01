@@ -108,7 +108,7 @@ void CameraController::Update() {
 	// カメラの移動範囲を制限する
 	position_.x = std::clamp(position_.x,0.0f, mapMaxSize_.x * 1.5f);
 	position_.y = 0.0f;
-	position_.z = std::clamp(position_.z, -3.0f, mapMaxSize_.y * 0.5f);
+	position_.z = std::clamp(position_.z, -3.0f, mapMaxSize_.y * 0.8f);
 
 	// カメラの喀出を制限(カメラの見える範囲は固定になると思うのでいらないかも)
 	backDist_ = std::clamp(backDist_, -100.0f, -10.0f);

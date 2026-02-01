@@ -3,6 +3,7 @@
 #include <Game/GameScene.h>
 #include <ModelEditScene/ModelEditScene.h>
 #include<Game/SelectScene.h>
+#include <OreAddScene/OreAddScene.h>
 #include <imgui/imgui.h>
 #include <Utility/DataStructures.h>
 #include<Common/DebugParam/GameParamEditor.h>
@@ -37,14 +38,14 @@ void InitializeScene::Initialize() {
 	textureManager_->LoadAllTextures();
 
 	commonData_->nextStageIndex = 0;
-	commonData_->nextMapIndex = 1;
+	commonData_->nextMapIndex = 0;
   
   // ランダム生成器を初期化
 	RandomGenerator::Initialize();
 }
 
 std::unique_ptr<IScene> InitializeScene::Update(){
-
+	//return std::make_unique<OreAddScene>();
 	//return std::make_unique<ModelEditScene>();
 	return std::make_unique<GameScene>();
 }

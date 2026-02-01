@@ -10,18 +10,9 @@ struct Grayscale {
 	float intensity = 0.0f; // グレースケール強度
 };
 
-enum class FadeType : int {
-	Black,      // ブラックフェード
-	White,		// ホワイトフェード
-	Radial,     // 放射状フェード
-	Wipe,       // ワイプフェード
-	Dissolve,   // ディゾルブフェード
-};
-
 struct Fade {
 	Vector3 color = { 0.0f, 0.0f, 0.0f };	// フェードカラー（White時は{1,1,1}）
 	float alpha = 0.0f;						// フェードの透明度 (0.0 - 1.0)
-	FadeType type = FadeType::Black;		// フェードのタイプ
 };
 
 struct GridTransition {

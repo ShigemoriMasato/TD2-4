@@ -11,11 +11,11 @@ void NewMapManager::Initialize(ModelManager* modelManager) {
 
 CurrentStageConfig NewMapManager::GetStageMap(int stage, int map) {
 	CurrentStageConfig config;
-	if (stageData_.size() <= stage) {
+	if (stageData_.size() <= stage || stageData_[stage].configs.size() <= map) {
 		config.initOreNum = 10;
 		config.norma = 10000000;
 		config.currentMap = newMapData_[0];
-		config.currentMapID = 0;
+		config.currentMapID = -1;
 		return config;
 	}
 	map = std::clamp(map, 0, int(stageData_[stage].configs.size()));

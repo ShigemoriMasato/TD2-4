@@ -66,7 +66,7 @@ private:
 
 	std::unique_ptr<PostEffect> postEffect_ = nullptr;
 	PostEffectConfig postEffectConfig_{};
-	Blur blur_{};
+	Fade fade_{};
 
 	// シーン切り替え
 	bool isSceneChange_ = false;
