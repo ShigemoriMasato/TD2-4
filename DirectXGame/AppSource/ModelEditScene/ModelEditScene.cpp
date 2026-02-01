@@ -111,8 +111,8 @@ std::unique_ptr<IScene> ModelEditScene::Update() {
 		staticObjectRender_->SetAlpha(0.2f);
 	} else {
 		mcRender_->SetAlpha(0.4f);
-		mapRender_->SetAlpha(0.8f);
-		staticObjectRender_->SetAlpha(0.8f);
+		mapRender_->SetAlpha(1.0f);
+		staticObjectRender_->SetAlpha(1.0f);
 	}
 
 	//値のすり合わせ
