@@ -39,10 +39,22 @@ public:
 	/// </summary>
 	/// <param name="targetPos">移動する目標位置</param>
 	/// <param name="excessNum">余剰の数</param>
-	void RegisterUnit(const Vector3& targetPos,const int32_t& excessNum, OreItem* oreItem);
+	void RegisterUnit(const Vector3& targetPos,const int32_t& spawnNum,const int32_t& excessNum, OreItem* oreItem);
 
 	// 出撃させるユニットの数
-	int32_t GetUnitSpawnNum() const { return unitSpawnNum_; }
+	int32_t GetUnitSpawnNum() const {
+		// 現在の空き枠を計算する
+		int32_t remainingSpace = maxCurrentOreCount_ - activeCount_;
+		if (remainingSpace <= 0) {
+			return 0;
+		}
+
+		if (remainingSpace < (int32_t)unitSpawnNum_) {
+			return remainingSpace;
+		}
+
+		return unitSpawnNum_;
+	}
 
 	// 最大の数
 	int32_t GetMaxOreCount() const { return maxCurrentOreCount_; }
