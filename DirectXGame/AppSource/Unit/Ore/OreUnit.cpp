@@ -66,10 +66,8 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vec
 	// 当たり判定の初期化
 	Initialize();
 
-#ifdef USE_IMGUI
 	// 値の登録
 	RegisterDebugParam();
-#endif
 	// 値の適応
 	ApplyDebugParam();
 }
