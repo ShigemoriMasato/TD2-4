@@ -73,13 +73,26 @@ private:
 	bool isPlayerDraw_ = false;
 
 	float playerSize_ = 128.0f;
-
 	float conflictSize_ = 200.0f;
+
+	float playerMargin_ = 64.0f;
+	float conflictMargin_ = 64.0f;
 
 private:
 
 	// 位置をまとめる
 	void ProcessClusters();
+
+
+	/// <summary>
+	/// 値を登録する
+	/// </summary>
+	void RegisterDebugParam();
+
+	/// <summary>
+	/// 値を適応する
+	/// </summary>
+	void ApplyDebugParam();
 };
 
 // ヘルプ関数
