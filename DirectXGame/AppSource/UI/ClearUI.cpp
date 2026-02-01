@@ -105,6 +105,7 @@ void ClearUI::InUpdate() {
 		if (key[Key::DownTri]) {
 			selectNum_ = 1;
 			retryFontObject_->fontColor_ = { 0.5f,0.5f,0.5f,1.0f };
+			selectFontObject_->fontColor_ = { 1.0f,1.0f,1.0f,1.0f };
 		}
 	} else {
 		selectNum_ = 1;

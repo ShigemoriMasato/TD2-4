@@ -13,7 +13,7 @@ public:
 
 	void Update(const int32_t& unitNum,const int32_t& maxUnitNum);
 
-	void Draw(Window* window, const Matrix4x4& vpMatrix);
+	void Draw(Window* window, const Matrix4x4& vpMatrix, bool isDrawEffect);
 
 public:
 

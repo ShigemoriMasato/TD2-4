@@ -15,12 +15,12 @@ void MiniMap::Initialize(int mapWidth, int mapHeight, TextureManager* textureMan
 	dist = std::max(mapWidth, mapHeight) * 0.5f / std::tan(0.45f / 2.0f);
 	transform_.position = { mapWidth / 2.0f - 0.5f, 0.0f, mapHeight / 2.0f - 0.5f };
 	Vector3 cameraPos = transform_.position + Vector3{ 0.0f, dist * distRatio_, 0.0f };
-	camera_->SetTransform(Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, { cameraPos }));
+	camera_->SetTransform(Matrix::MakeAffineMatrix({1.0f, 1.0f, 1.0f}, transform_.rotate, { cameraPos }));
 	camera_->MakeMatrix();
 	// デュアルディスプレイの初期化
 	display_ = std::make_unique<DualDisplay>("MiniMapDisplay");
-	int textureHandle1 = textureManager->CreateWindowTexture(1280, 720, 0x000000ff);
-	int textureHandle2 = textureManager->CreateWindowTexture(1280, 720, 0x000000ff);
+	int textureHandle1 = textureManager->CreateWindowTexture(1280, 720, 0x88ffaaff);
+	int textureHandle2 = textureManager->CreateWindowTexture(1280, 720, 0x88ffaaff);
 	display_->Initialize(textureManager->GetTextureData(textureHandle1), textureManager->GetTextureData(textureHandle2));
 
 	miniMapRender_ = std::make_unique<RenderObject>();

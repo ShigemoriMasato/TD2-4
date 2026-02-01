@@ -705,6 +705,8 @@ void GameScene::Draw() {
 			/// UIの描画処理
 			vpMatrix2d = uiCamera_->GetVPMatrix();
 
+			miniMap_->Draw(gameWindow_->GetWindow());
+
 			// ユニットのUIマークを描画
 			unitMarkUIManager_->DrawUI(gameWindow_->GetWindow(), vpMatrix2d);
 
@@ -715,7 +717,7 @@ void GameScene::Draw() {
 			pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 
 			// ゲームのUIを描画
-			gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
+			gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix2d, !miniMap_->PleasePose());
 
 			// ポーズシーンを描画
 			pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
@@ -734,8 +736,6 @@ void GameScene::Draw() {
 
 			// シーン遷移の描画
 			fadeTransition_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
-
-			miniMap_->Draw(gameWindow_->GetWindow());
 
 		} else {
 			Vector3 playerPos = unitManager_->GetPlayerPosition();

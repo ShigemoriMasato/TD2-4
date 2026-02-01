@@ -27,6 +27,8 @@ public:
 	// シングルトン
 	static GameParamEditor* GetInstance();
 
+	void Finalize();
+
 	/// <summary>
 	/// グループ作成
 	/// </summary>

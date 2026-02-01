@@ -1,5 +1,6 @@
 #include "../SceneManager.h"
 #include "Scene/InitializeScene.h"
+#include <Common/DebugParam/GameParamEditor.h>
 
 void SceneManager::Initialize(SHEngine* engine) {
 	commonData_ = std::make_unique<CommonData>();

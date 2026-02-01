@@ -93,7 +93,7 @@ void GameUIManager::Update(const int32_t& unitNum, const int32_t& maxUnitNum) {
 	collectEffectUI_->Update();
 }
 
-void GameUIManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
+void GameUIManager::Draw(Window* window, const Matrix4x4& vpMatrix, bool isDrawEffect) {
 
 	// 背景
 	upSpriteObject_->Draw(window, vpMatrix);
@@ -112,11 +112,13 @@ void GameUIManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	// 時間計測表示UI
 	timerUI_->Draw(window, vpMatrix);
 
-	// ノルマクリア演出を描画
-	quotaClearEffectUI_->Draw(window, vpMatrix);
+	if (isDrawEffect) {
+		// ノルマクリア演出を描画
+		quotaClearEffectUI_->Draw(window, vpMatrix);
 
-	// 拐取演出
-	collectEffectUI_->Draw(window, vpMatrix);
+		// 拐取演出
+		collectEffectUI_->Draw(window, vpMatrix);
+	}
 }
 
 void GameUIManager::RegisterDebugParam() {

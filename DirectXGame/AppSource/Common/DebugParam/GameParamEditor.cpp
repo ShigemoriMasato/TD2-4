@@ -6,9 +6,22 @@
 #include <filesystem>
 #include <Utility/SearchFile.h>
 
+namespace fs = std::filesystem;
+
 GameParamEditor* GameParamEditor::GetInstance() {
 	static GameParamEditor instance;
 	return &instance;
+}
+
+void GameParamEditor::Finalize() {
+	//グループ名の保存ファイルがなければ作成する
+	for (auto& [name, group] : datas_) {
+
+		if(fs::exists("Assets/Binary/" + kDirectoryPath + name + ".sg")) {
+			SaveFile(name);
+		}
+
+	}
 }
 
 void GameParamEditor::CreateGroup(const std::string& groupName, const std::string& sceneName) {
