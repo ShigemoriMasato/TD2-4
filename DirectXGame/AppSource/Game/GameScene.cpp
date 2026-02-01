@@ -248,9 +248,13 @@ void GameScene::Initialize() {
 	// 鉱石のテクスチャを取得
 	int mItemTextureIndex = textureManager_->GetTexture("Mineral-0.png");
 
+	// 鉱石モデル
+	int boxModelID = modelManager_->LoadModel("BoxParticle");
+	auto boxModel = modelManager_->GetNodeModelData(boxModelID);
+
 	// ユニットの演出管理クラス(仮で作成したため消すかも)
 	unitEffectManager_ = std::make_unique<UnitEffectManager>();
-	unitEffectManager_->Initialize(drawDataManager_->GetDrawData(mItemModel.drawDataIndex), mItemTextureIndex);
+	unitEffectManager_->Initialize(drawDataManager_->GetDrawData(mItemModel.drawDataIndex), mItemTextureIndex, drawDataManager_->GetDrawData(boxModel.drawDataIndex));
 
 	// 演出管理クラスを取得
 	unitManager_->SetUnitEffect(unitEffectManager_.get());
@@ -661,6 +665,10 @@ void GameScene::InGameScene() {
 
 	// 全ての当たり判定を判定
 	colliderManager_->CollisionCheckAll();
+
+
+	// 衝突判定あとの演出更新処理
+	unitEffectManager_->PostCollisionUpdate();
 }
 
 void GameScene::Draw() {
@@ -696,7 +704,7 @@ void GameScene::Draw() {
 		// ユニットを描画
 		unitManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
-		// ユニットの演出を描画(仮で作成したクラスなので消すかも)
+		// ユニットの演出を描画
 		unitEffectManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
 		// ユニットのHp描画
