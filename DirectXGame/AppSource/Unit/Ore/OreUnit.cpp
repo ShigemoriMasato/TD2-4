@@ -8,9 +8,11 @@
 #include"Item/Object/GoldOre.h"
 #include"Item/Object/OreItem.h"
 
-OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos) {
+OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos, UnitMarkUIManager* unitMarkUIManager) {
 	// マップデータ
 	mapChipField_ = mapChipField;
+	
+	unitMarkUIManager_ = unitMarkUIManager;
 
 	// プレイヤー座標を取得
 	playerPos_ = playerPos;
@@ -140,7 +142,7 @@ void OreUnit::Update() {
 		statesTable_[static_cast<size_t>(state_)]();
 	}
 
-	if (state_ != State::Return && !isDeathAnimation_) {
+	if (state_ != State::Return && !isDeathAnimation_ && !isConflict_) {
 		// アニメーション処理
 		MoveAnimationUpdate();
 	}
@@ -159,6 +161,22 @@ void OreUnit::Update() {
 			conflictCoolTimer_ = 0.0f;
 			isCoolTimeEnd_ = false;
 		}
+	}
+
+	// 衝突した時は色を変える
+	if (isConflict_) {
+		if (object_->material_.color.x != 0.5f) {
+			object_->material_.color = { 0.5f,0.5f,0.5f,1.0f };
+			object_->transform_.position.y = 0.0f;
+			object_->transform_.scale = { 1.0f,1.0f,1.0f };
+			animationTimer_ = 0.0f;
+		}
+
+		// 衝突位置を設定
+		unitMarkUIManager_->AddConflict(object_->transform_.position);
+
+	} else {
+		object_->material_.color = { 1.0f,1.0f,1.0f,1.0f };
 	}
 
 	// slow状態を確認

@@ -11,6 +11,8 @@
 
 #include"Item/HomeManager.h"
 
+#include"UnitMarkUIManager.h"
+
 class OreItem;
 
 class UnitManager {
@@ -77,6 +79,11 @@ public:
 		HomeManager_ = home;
 	}
 
+	// UIマーク
+	void SetUnitMarkUI(UnitMarkUIManager* unitMarkUIManager){
+		unitMarkUIManager_ = unitMarkUIManager;
+	}
+
 	Vector3 GetPlayerPosition() { return *playerUnit_->GetPos(); }
 
 private:
@@ -89,6 +96,9 @@ private:
 
 	// 拠点管理クラス
 	HomeManager* HomeManager_ = nullptr;
+
+	// ユニットマークUI
+	UnitMarkUIManager* unitMarkUIManager_ = nullptr;
 
 	// おれの描画データ
 	DrawData oreDrawData_;

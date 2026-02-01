@@ -199,6 +199,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\Unit\UnitEffectManager.cpp" />
     <ClCompile Include="AppSource\Unit\UnitManager.cpp" />
     <ClCompile Include="AppSource\ModelEditScene\Render\DebugMCRender.cpp" />
+    <ClCompile Include="AppSource\Unit\UnitMarkUIManager.cpp" />
     <ClCompile Include="Engine\Assets\Audio\AudioManager.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\AudioData.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\MP3Data.cpp" />
@@ -291,6 +292,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\ModelEditScene\Render\DebugMCRender.h" />
     <ClInclude Include="AppSource\UI\OreUnitHPUI.h" />
     <ClInclude Include="AppSource\Unit\UnitEffectManager.h" />
+    <ClInclude Include="AppSource\Unit\UnitMarkUIManager.h" />
     <ClInclude Include="Engine\Utility\Quaternion.h" />
     <ClCompile Include="AppSource\Scene\src\IScene.cpp" />
     <ClCompile Include="AppSource\Scene\src\InitializeScene.cpp" />

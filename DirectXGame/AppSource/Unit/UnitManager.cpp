@@ -40,6 +40,9 @@ void UnitManager::Update() {
 	ApplyDebugParam();
 #endif
 
+	// ユニットマーククラスのリセット
+	unitMarkUIManager_->Reset();
+
 	// ユニットのUI
 	oreUnitHPUI_->Update();
 
@@ -51,6 +54,9 @@ void UnitManager::Update() {
 
 	// プレイヤーの更新処理
 	playerUnit_->Update();
+
+	// プレイヤー位置を設定
+	unitMarkUIManager_->SetPlayerPos(*playerUnit_->GetPos());
 
 	// おれユニットの更新処理
 	for (auto& [id, unit] : oreUnits_) {
@@ -86,6 +92,9 @@ void UnitManager::Update() {
 
 	// ユニットの演出を更新
 	unitEffectManager_->Update();
+
+	// ユニットのマーク処理を更新
+	unitMarkUIManager_->Update();
 }
 
 void UnitManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
@@ -164,7 +173,7 @@ void UnitManager::AddOreUnit(const Vector3& targetPos, OreItem* oreItem) {
 		unit->second->Init(homePos, targetPos, oreItem);
 	} else {
 		// 新しく登録
-		std::unique_ptr<OreUnit> oreUnit = std::make_unique<OreUnit>(mapChipField_, oreDrawData_, oreTexIndex_, playerUnit_->GetPos());
+		std::unique_ptr<OreUnit> oreUnit = std::make_unique<OreUnit>(mapChipField_, oreDrawData_, oreTexIndex_, playerUnit_->GetPos(), unitMarkUIManager_);
 		oreUnit->Init(homePos, targetPos, oreItem);
 
 		oreUnits_[index] = std::move(oreUnit);
