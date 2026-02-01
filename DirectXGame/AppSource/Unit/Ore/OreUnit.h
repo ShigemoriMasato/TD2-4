@@ -148,6 +148,9 @@ private:
 	bool isDeathAnimation_ = false;
 	bool isEndDeathAnimation_ = false;
 
+	bool isSlow_ = false;
+	float speed_ = 0.0f;
+
 private: // 調整項目
 
 	// ダメージを食らう間隔
@@ -158,6 +161,9 @@ private: // 調整項目
 
 	// 移動速度
 	float moveSpeed_ = 2.0f;
+
+	// 鈍足状態の移動速度
+	float slowspeed_ = 0.5f;
 
 	// 角度補間
 	float rotateSpeed_ = 3.0f;

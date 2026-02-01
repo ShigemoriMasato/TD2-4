@@ -563,26 +563,31 @@ void GameScene::InGameScene() {
 				// 選択された鉱石を取得
 				OreItem* selectedOreItem = oreItemManager_->GetOreItemForId();
 
-				// 追加出来るかを確認
-				int32_t deltaNum = selectedOreItem->IsFullWorker(unitManager_->GetUnitSpawnNum());
-				if (deltaNum >= 0) {
+				// 出撃させる数
+				int32_t spawnNum = unitManager_->GetUnitSpawnNum();
 
-					// おれを追加
-					unitManager_->RegisterUnit(selectedOreItem->GetPos(), 0, selectedOreItem);
+				if (spawnNum > 0) {
+					// 追加出来るかを確認
+					int32_t deltaNum = selectedOreItem->IsFullWorker(spawnNum);
+					if (deltaNum >= 0) {
 
-					// 鉱石側の労働者カウントを増やす
-					for (int i = 0; i < unitManager_->GetUnitSpawnNum(); ++i) {
-						selectedOreItem->AddWorker();
-					}
-				} else {
-					if (unitManager_->GetUnitSpawnNum() >= deltaNum * -1.0f) {
 						// おれを追加
-						unitManager_->RegisterUnit(selectedOreItem->GetPos(), deltaNum, selectedOreItem);
+						unitManager_->RegisterUnit(selectedOreItem->GetPos(), spawnNum, 0, selectedOreItem);
 
 						// 鉱石側の労働者カウントを増やす
-						int32_t actualSpawnCount = unitManager_->GetUnitSpawnNum() + deltaNum;
-						for (int i = 0; i < actualSpawnCount; ++i) {
+						for (int i = 0; i < spawnNum; ++i) {
 							selectedOreItem->AddWorker();
+						}
+					} else {
+						if (spawnNum >= deltaNum * -1.0f) {
+							// おれを追加
+							unitManager_->RegisterUnit(selectedOreItem->GetPos(), spawnNum, deltaNum, selectedOreItem);
+
+							// 鉱石側の労働者カウントを増やす
+							int32_t actualSpawnCount = spawnNum + deltaNum;
+							for (int i = 0; i < actualSpawnCount; ++i) {
+								selectedOreItem->AddWorker();
+							}
 						}
 					}
 				}
