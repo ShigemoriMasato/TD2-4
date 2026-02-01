@@ -98,7 +98,7 @@ void CameraController::Update() {
 	}
 
 	float diff = backDist_ - targetBackDist_;
-	if (std::abs(diff) < 0.3f * FpsCount::deltaTime) {
+	if (std::abs(diff) < 0.5f * FpsCount::deltaTime) {
 		backDist_ = targetBackDist_;
 	} else {
 		float speed = -diff * 10.0f;
@@ -112,6 +112,7 @@ void CameraController::Update() {
 
 	// カメラの喀出を制限(カメラの見える範囲は固定になると思うのでいらないかも)
 	backDist_ = std::clamp(backDist_, -100.0f, -10.0f);
+	targetBackDist_ = std::clamp(targetBackDist_, -100.0f, -10.0f);
 
 	// カメラの更新処理
 	MakeMatrix();

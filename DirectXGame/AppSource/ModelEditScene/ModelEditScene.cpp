@@ -1,5 +1,6 @@
 #include "ModelEditScene.h"
 #include <GameCamera/DebugMousePos.h>
+#include <FpsCount.h>
 
 namespace {
 	Vector2 GetPositionWithGrid(const Vector3& worldPos, float gridSize, Vector2 offset) {
@@ -57,6 +58,8 @@ void ModelEditScene::Initialize() {
 }
 
 std::unique_ptr<IScene> ModelEditScene::Update() {
+	FpsCount::deltaTime = engine_->GetFPSObserver()->GetDeltatime();
+
 	input_->Update();
 	cameraController_->Update();
 
