@@ -34,6 +34,12 @@ GameScene::~GameScene() {
 	isSceneChange_ = false;
 	isClearScene_ = false;
 	isGameOverScene_ = false;
+
+	// ゲームシーンで取得した鉱石の数
+	commonData_->oreItemCurrentNum = OreItemStorageNum::currentOreItemNum_;
+	// ゲームシーンで残っているおれ
+	commonData_->oreUnitCurrentNum = unitManager_->GetMaxOreCount();
+
 	OreItemStorageNum::currentOreItemNum_ = 0;
 }
 
@@ -179,6 +185,9 @@ void GameScene::Initialize() {
 		smallIndex, midleIndex, largeIndex);
 	oreItemManager_->Initialize(drawDataManager_->GetDrawData(sprModel.drawDataIndex), fontName, draw, fontLoader_);
 
+	// 鉱石の回収ノルマを設定
+	OreItemStorageNum::maxOreItemNum_ = currentMap_.norma;
+
 	// マップシステムを取得
 	oreItemManager_->SetMapChipField(mapChipField_.get());
 
@@ -227,7 +236,7 @@ void GameScene::Initialize() {
 	unitManager_->Initalize(mapChipField_.get(),
 		drawDataManager_->GetDrawData(playerModel.drawDataIndex), playerTextureIndex,
 		drawDataManager_->GetDrawData(oreModel.drawDataIndex), oreTextureIndex,
-		commonData_->keyManager.get(), playerInitPos);
+		commonData_->keyManager.get(), playerInitPos, commonData_->nextOreUnitMaxNum);
 
 	// 拠点管理クラスを設定
 	unitManager_->SetHomeManager(homeManager_.get());
@@ -423,6 +432,15 @@ std::unique_ptr<IScene> GameScene::Update() {
 	debugCamera_->Update();
 	camera_ = *static_cast<Camera*>(debugCamera_.get());
 
+	// マウスのスクリーン座標を取得する
+	POINT cursorPos;
+	if (GetCursorPos(&cursorPos)) {
+		// スクリーン座標をクライアント座標に変換
+		ScreenToClient(gameWindow_->GetWindow()->GetHwnd(), &cursorPos);
+		// カーソル位置をワールド座標に変換
+		DebugMousePos::screenMousePos = { static_cast<float>(cursorPos.x), static_cast<float>(cursorPos.y) };
+	}
+
 	//===========================================================
 	// 時間計測処理
 	//===========================================================
@@ -548,14 +566,6 @@ void GameScene::InGameScene() {
 	//====================================================
 	cameraController_->SetTargetPos(unitManager_->GetPlayerPosition());
 
-	// マウスのスクリーン座標を取得する
-	POINT cursorPos;
-	if (GetCursorPos(&cursorPos)) {
-		// スクリーン座標をクライアント座標に変換
-		ScreenToClient(gameWindow_->GetWindow()->GetHwnd(), &cursorPos);
-		// カーソル位置をワールド座標に変換
-		DebugMousePos::screenMousePos = { static_cast<float>(cursorPos.x), static_cast<float>(cursorPos.y) };
-	}
 	// カメラの更新処理
 	cameraController_->Update();
 
@@ -794,7 +804,7 @@ void GameScene::ApplyDebugParam() {
 	sTime_ = GameParamEditor::GetInstance()->GetValue<float>("GameTime", "s");
 
 	// 鉱石数
-	OreItemStorageNum::maxOreItemNum_ = GameParamEditor::GetInstance()->GetValue<int32_t>("OreItem", "MaxOreItem");
+	//OreItemStorageNum::maxOreItemNum_ = GameParamEditor::GetInstance()->GetValue<int32_t>("OreItem", "MaxOreItem");
 }
 
 void GameScene::LoadDebugColorMap() {

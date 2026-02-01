@@ -28,7 +28,7 @@ public:
 
 public:
 
-	void Initalize(MapChipField* mapChipField, DrawData playerDrawData,int pIndex, DrawData oreDrawData,int oIndex, KeyManager* keyManager, Vector3 playerInitPos);
+	void Initalize(MapChipField* mapChipField, DrawData playerDrawData,int pIndex, DrawData oreDrawData,int oIndex, KeyManager* keyManager, Vector3 playerInitPos,int32_t maxOreNum);
 
 	void Update();
 

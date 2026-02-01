@@ -24,5 +24,13 @@ struct CommonData {
 	int goldNum = 200;
 	int oreNum = 100;
 
+	// ゲームシーンで取得した鉱石の数
+	int32_t oreItemCurrentNum = 0;
+	// ゲームシーンで残っているおれ
+	int32_t oreUnitCurrentNum = 20;
+
+	// 次のシーンのおれユニットの数
+	int32_t nextOreUnitMaxNum = 20;
+
 	int postEffectDrawDataIndex = -1;
 };
