@@ -31,6 +31,11 @@ public:
 		conflictPosList_.push_back(pos);
 	}
 
+	// 煙の取得
+	void AddSmoke(const Vector3& pos) {
+		unitParticle_->AddSmoke(pos);
+	}
+
 private:
 	DrawData oreItemData_;
 	int oreItemTexture_;

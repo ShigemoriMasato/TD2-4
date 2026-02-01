@@ -204,7 +204,10 @@ void OreUnit::Update() {
 
 	// 体力が0の時、死亡する
 	if (hp_ <= 0) {
-		isDeathAnimation_ = true;
+		if (!isDeathAnimation_) {
+			isDeathAnimation_ = true;
+			unitEffectManager_->AddSmoke(object_->transform_.position);
+		}
 		object_->material_.color = { 0.8f,0.0f,0.0f,1.0f };
 	}
 
