@@ -189,6 +189,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\UI\SelectStageUI.cpp" />
     <ClCompile Include="AppSource\UI\StartCountUI.cpp" />
     <ClCompile Include="AppSource\UI\TimerUI.cpp" />
+    <ClCompile Include="AppSource\Unit\Effect\ConflictParticle.cpp" />
     <ClCompile Include="AppSource\Unit\MapChipField.cpp" />
     <ClCompile Include="AppSource\Unit\MapChipRender.cpp" />
     <ClCompile Include="AppSource\UI\OreUnitHPUI.cpp" />
@@ -289,6 +290,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\UI\SelectStageUI.h" />
     <ClInclude Include="AppSource\UI\StartCountUI.h" />
     <ClInclude Include="AppSource\UI\TimerUI.h" />
+    <ClInclude Include="AppSource\Unit\Effect\ConflictParticle.h" />
     <ClInclude Include="AppSource\Unit\MapChipRender.h" />
     <ClInclude Include="AppSource\ModelEditScene\Render\DebugMCRender.h" />
     <ClInclude Include="AppSource\UI\OreUnitHPUI.h" />

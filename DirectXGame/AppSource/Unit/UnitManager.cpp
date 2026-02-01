@@ -8,7 +8,7 @@
 #include <imgui/imgui.h>
 #endif
 
-void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData, int pIndex, DrawData oreDrawData, int oIndex, KeyManager* keyManager, Vector3 playerInitPos) {
+void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData, int pIndex, DrawData oreDrawData, int oIndex, KeyManager* keyManager, Vector3 playerInitPos, int32_t maxOreNum) {
 	// マップデータを取得
 	mapChipField_ = mapChipField;
 
@@ -23,6 +23,9 @@ void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData,
 	oreDrawData_ = oreDrawData;
 	oreTexIndex_ = oIndex;
 
+	// おれの最大数を取得
+	maxCurrentOreCount_ = maxOreNum;
+
 	// おれのメモリを確保
 	oreUnits_.reserve(maxOreCount_);
 
@@ -31,7 +34,7 @@ void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData,
 	RegisterDebugParam();
 #endif
 	// 値の適応
-	maxCurrentOreCount_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MaxOreCount");
+	//maxCurrentOreCount_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MaxOreCount");
 }
 
 void UnitManager::Update() {
