@@ -113,7 +113,7 @@ void UnitManager::DrawUI() {
 #endif
 }
 
-void UnitManager::RegisterUnit(const Vector3& targetPos, const int32_t& excessNum, OreItem* oreItem) {
+void UnitManager::RegisterUnit(const Vector3& targetPos, const int32_t& spawnNum, const int32_t& excessNum, OreItem* oreItem) {
 
 	// 生成出来る最大の数を超えていれば、早期リターン
 	if (activeCount_ >= maxCurrentOreCount_) {
@@ -122,20 +122,18 @@ void UnitManager::RegisterUnit(const Vector3& targetPos, const int32_t& excessNu
 
 	SpawnData data;
 	data.currentNum = 0;
-	data.spawnNum = unitSpawnNum_ + excessNum;
+	data.spawnNum = spawnNum + excessNum;
 	data.pos = targetPos;
 	data.oreItem_ = oreItem;
+
+	// ユニットのアクティブカウントを加算
+	activeCount_ += data.spawnNum;
 
 	// 登録
 	spawnList_.push_back(data);
 }
 
 void UnitManager::AddOreUnit(const Vector3& targetPos, OreItem* oreItem) {
-
-	// 生成出来る最大の数を超えていれば、早期リターン
-	if (activeCount_ >= maxCurrentOreCount_) {
-		return;
-	}
 
 	// 出現位置を求める
 	Vector3 homePos = GetNearHomePos(targetPos);
@@ -171,8 +169,6 @@ void UnitManager::AddOreUnit(const Vector3& targetPos, OreItem* oreItem) {
 
 		oreUnits_[index] = std::move(oreUnit);
 	}
-
-	activeCount_++;
 }
 
 void UnitManager::UnitSpawn() {
