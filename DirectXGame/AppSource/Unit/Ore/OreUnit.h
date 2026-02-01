@@ -9,6 +9,8 @@
 #include"OreUnitObject.h"
 #include"Unit/MapChipField.h"
 
+#include"Unit/UnitMarkUIManager.h"
+
 class OreItem;
 
 class OreUnit : public Collider {
@@ -33,7 +35,7 @@ public:
 
 public:
 
-	OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos);
+	OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos, UnitMarkUIManager* unitMarkUIManager);
 
 	/// <summary>
 	/// 初期化
@@ -78,6 +80,9 @@ private:
 
 	// 採取する鉱石のデータを取得
 	OreItem* oreItem_ = nullptr;
+
+	// ユニットマークUI
+	UnitMarkUIManager* unitMarkUIManager_ = nullptr;
 
 	// オブジェクトデータ
 	std::unique_ptr<OreUnitObject> object_;

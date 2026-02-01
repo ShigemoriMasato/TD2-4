@@ -202,9 +202,7 @@ void GameScene::Initialize() {
 
 	// 拠点管理クラス
 	homeManager_ = std::make_unique<HomeManager>();
-	homeManager_->Initialize(drawDataManager_->GetDrawData(homeModel.drawDataIndex), homeIndex, mapChipField_->GetHomePos(), drawDataManager_->GetDrawData(spritModel.drawDataIndex));
-	// カメラを設定
-	homeManager_->SetCamera(cameraController_.get());
+	homeManager_->Initialize(drawDataManager_->GetDrawData(homeModel.drawDataIndex), homeIndex, mapChipField_->GetHomePos());
 
 	//============================================================================
 	// ユニットシステム
@@ -318,6 +316,22 @@ void GameScene::Initialize() {
 			isActiveMinMap_ = false;
 		}
 		});
+
+
+	// 矢印の画像
+	int arrowIndex = textureManager_->GetTexture("Arrow.png");
+	int alertIndex = textureManager_->GetTexture("AlertIcon.png");
+	int playerIconIndex = textureManager_->GetTexture("PlayerIcon.png");
+
+	// ユニットのUI管理
+	unitMarkUIManager_ = std::make_unique<UnitMarkUIManager>();
+	unitMarkUIManager_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), arrowIndex, alertIndex, playerIconIndex);
+
+	// カメラを設定
+	unitMarkUIManager_->SetCamera(cameraController_.get());
+
+	// ユニット管理クラスに登録する
+	unitManager_->SetUnitMarkUI(unitMarkUIManager_.get());
 
 	//=======================================================
 	// その他のシーンを初期化
@@ -691,8 +705,8 @@ void GameScene::Draw() {
 			/// UIの描画処理
 			vpMatrix2d = uiCamera_->GetVPMatrix();
 
-			// 家のマークUIを表示
-			homeManager_->DrawUI(gameWindow_->GetWindow(), vpMatrix2d);
+			// ユニットのUIマークを描画
+			unitMarkUIManager_->DrawUI(gameWindow_->GetWindow(), vpMatrix2d);
 
 			// 開始と終わりのカウントの描画
 			startCountUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
