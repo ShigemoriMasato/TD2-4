@@ -2,7 +2,7 @@
 #include"Item/OreItemStorageNum.h"
 #include <Common/DebugParam/GameParamEditor.h>
 
-void GameUIManager::Initialize(DrawData spriteData, int starTexture, int lineTexture, const std::string& fontName, DrawData fontData, FontLoader* fontLoader) {
+void GameUIManager::Initialize(DrawData spriteData, int starTexture, int lineTexture, int oreIcon, int itemIcon,const std::string& fontName, DrawData fontData, FontLoader* fontLoader) {
 	fontLoader_ = fontLoader;
 
 	// ユニットの数UI
@@ -34,6 +34,21 @@ void GameUIManager::Initialize(DrawData spriteData, int starTexture, int lineTex
 	downSpriteObject_->transform_.position = { 640.0f,360.0f,0.0f };
 	downSpriteObject_->color_ = { 0.1f,0.1f,0.1f,1.0f };
 	downSpriteObject_->Update();
+
+	// icon
+	oreIconSpriteObject_ = std::make_unique<SpriteObject>();
+	oreIconSpriteObject_->Initialize(spriteData, { 64.0f,64.0f });
+	oreIconSpriteObject_->transform_.position = { 640.0f,360.0f,0.0f };
+	oreIconSpriteObject_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+	oreIconSpriteObject_->SetTexture(oreIcon);
+	oreIconSpriteObject_->Update();
+	// icon
+	itemIconSpriteObject_ = std::make_unique<SpriteObject>();
+	itemIconSpriteObject_->Initialize(spriteData, { 64.0f,64.0f });
+	itemIconSpriteObject_->transform_.position = { 640.0f,360.0f,0.0f };
+	itemIconSpriteObject_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+	itemIconSpriteObject_->SetTexture(itemIcon);
+	itemIconSpriteObject_->Update();
 
 	floorFontObject_ = std::make_unique<FontObject>();
 	floorFontObject_->Initialize(fontName, L"Wave1", fontData, fontLoader);
@@ -99,6 +114,10 @@ void GameUIManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	upSpriteObject_->Draw(window, vpMatrix);
 	downSpriteObject_->Draw(window, vpMatrix);
 
+	// アイコン描画
+	oreIconSpriteObject_->Draw(window, vpMatrix);
+	itemIconSpriteObject_->Draw(window, vpMatrix);
+
 	// 説明文字を描画
 	quotaFontObject_->Draw(window, vpMatrix);
 	floorFontObject_->Draw(window, vpMatrix);
@@ -141,6 +160,12 @@ void GameUIManager::RegisterDebugParam() {
 	GameParamEditor::GetInstance()->AddItem("GameUIManager", "UnitFontPos", unitFontObject_->transform_.position, i++);
 	GameParamEditor::GetInstance()->AddItem("GameUIManager", "UnitFontSize", unitFontObject_->transform_.scale, i++);
 
+	// icon
+	GameParamEditor::GetInstance()->AddItem("GameUIManager", "OreUnitIconPos", oreIconSpriteObject_->transform_.position, i++);
+	GameParamEditor::GetInstance()->AddItem("GameUIManager", "OreUnitIconSize", oreIconSpriteObject_->transform_.scale, i++);
+	GameParamEditor::GetInstance()->AddItem("GameUIManager", "OreItemIconPos", itemIconSpriteObject_->transform_.position, i++);
+	GameParamEditor::GetInstance()->AddItem("GameUIManager", "OreItemIconSize", itemIconSpriteObject_->transform_.scale, i++);
+
 	GameParamEditor::GetInstance()->AddItem("QuotaClearEffect", "Pos", quotaClearEffectUI_->pos_);
 }
 
@@ -167,9 +192,19 @@ void GameUIManager::ApplyDebugParam() {
 	unitFontObject_->transform_.position = GameParamEditor::GetInstance()->GetValue<Vector3>("GameUIManager", "UnitFontPos");
 	unitFontObject_->transform_.scale = GameParamEditor::GetInstance()->GetValue<Vector3>("GameUIManager", "UnitFontSize");
 
+	// icon
+	oreIconSpriteObject_->transform_.position = GameParamEditor::GetInstance()->GetValue<Vector3>("GameUIManager", "OreUnitIconPos");
+	oreIconSpriteObject_->transform_.scale = GameParamEditor::GetInstance()->GetValue<Vector3>("GameUIManager", "OreUnitIconSize");
+	itemIconSpriteObject_->transform_.position = GameParamEditor::GetInstance()->GetValue<Vector3>("GameUIManager", "OreItemIconPos");
+	itemIconSpriteObject_->transform_.scale = GameParamEditor::GetInstance()->GetValue<Vector3>("GameUIManager", "OreItemIconSize");
+
 	quotaClearEffectUI_->pos_ = GameParamEditor::GetInstance()->GetValue<Vector3>("QuotaClearEffect", "Pos");
 	collectEffectUI_->pos_ = quotaClearEffectUI_->pos_;
 
 	upSpriteObject_->Update();
 	downSpriteObject_->Update();
+
+	// icon
+	oreIconSpriteObject_->Update();
+	itemIconSpriteObject_->Update();
 }

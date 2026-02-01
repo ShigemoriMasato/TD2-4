@@ -278,10 +278,13 @@ void GameScene::Initialize() {
 	int starTextureIndex = textureManager_->GetTexture("star.png");
 	// 演出用の線
 	int lineTextureIndex = textureManager_->GetTexture("lineEffect.png");
+	// icon
+	int oreItemTextureIndex = textureManager_->GetTexture("OreItem.png");
+	int oreiTextureIndex = textureManager_->GetTexture("Ore.png");
 
 	// ゲームのUI管理クラス
 	gameUIManager_ = std::make_unique<GameUIManager>();
-	gameUIManager_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), starTextureIndex, lineTextureIndex, fontName, drawData, fontLoader_);
+	gameUIManager_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), starTextureIndex, lineTextureIndex, oreiTextureIndex,oreItemTextureIndex, fontName, drawData, fontLoader_);
 
 	// spriteモデルを取得(アンカーポイントが違うスプライト)
 	int uModelID = modelManager_->LoadModel(unitHpModelName);
@@ -316,7 +319,6 @@ void GameScene::Initialize() {
 			isActiveMinMap_ = false;
 		}
 		});
-
 
 	// 矢印の画像
 	int arrowIndex = textureManager_->GetTexture("Arrow.png");
