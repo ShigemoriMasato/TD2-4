@@ -34,6 +34,12 @@ GameScene::~GameScene() {
 	isSceneChange_ = false;
 	isClearScene_ = false;
 	isGameOverScene_ = false;
+
+	// ゲームシーンで取得した鉱石の数
+	commonData_->oreItemCurrentNum = OreItemStorageNum::currentOreItemNum_;
+	// ゲームシーンで残っているおれ
+	commonData_->oreUnitCurrentNum = unitManager_->GetMaxOreCount();
+
 	OreItemStorageNum::currentOreItemNum_ = 0;
 }
 
@@ -179,6 +185,9 @@ void GameScene::Initialize() {
 		smallIndex, midleIndex, largeIndex);
 	oreItemManager_->Initialize(drawDataManager_->GetDrawData(sprModel.drawDataIndex), fontName, draw, fontLoader_);
 
+	// 鉱石の回収ノルマを設定
+	OreItemStorageNum::maxOreItemNum_ = currentMap_.norma;
+
 	// マップシステムを取得
 	oreItemManager_->SetMapChipField(mapChipField_.get());
 
@@ -227,7 +236,7 @@ void GameScene::Initialize() {
 	unitManager_->Initalize(mapChipField_.get(),
 		drawDataManager_->GetDrawData(playerModel.drawDataIndex), playerTextureIndex,
 		drawDataManager_->GetDrawData(oreModel.drawDataIndex), oreTextureIndex,
-		commonData_->keyManager.get(), playerInitPos);
+		commonData_->keyManager.get(), playerInitPos, commonData_->nextOreUnitMaxNum);
 
 	// 拠点管理クラスを設定
 	unitManager_->SetHomeManager(homeManager_.get());
@@ -239,9 +248,13 @@ void GameScene::Initialize() {
 	// 鉱石のテクスチャを取得
 	int mItemTextureIndex = textureManager_->GetTexture("Mineral-0.png");
 
+	// 鉱石モデル
+	int boxModelID = modelManager_->LoadModel("BoxParticle");
+	auto boxModel = modelManager_->GetNodeModelData(boxModelID);
+
 	// ユニットの演出管理クラス(仮で作成したため消すかも)
 	unitEffectManager_ = std::make_unique<UnitEffectManager>();
-	unitEffectManager_->Initialize(drawDataManager_->GetDrawData(mItemModel.drawDataIndex), mItemTextureIndex);
+	unitEffectManager_->Initialize(drawDataManager_->GetDrawData(mItemModel.drawDataIndex), mItemTextureIndex, drawDataManager_->GetDrawData(boxModel.drawDataIndex));
 
 	// 演出管理クラスを取得
 	unitManager_->SetUnitEffect(unitEffectManager_.get());
@@ -423,6 +436,15 @@ std::unique_ptr<IScene> GameScene::Update() {
 	debugCamera_->Update();
 	camera_ = *static_cast<Camera*>(debugCamera_.get());
 
+	// マウスのスクリーン座標を取得する
+	POINT cursorPos;
+	if (GetCursorPos(&cursorPos)) {
+		// スクリーン座標をクライアント座標に変換
+		ScreenToClient(gameWindow_->GetWindow()->GetHwnd(), &cursorPos);
+		// カーソル位置をワールド座標に変換
+		DebugMousePos::screenMousePos = { static_cast<float>(cursorPos.x), static_cast<float>(cursorPos.y) };
+	}
+
 	//===========================================================
 	// 時間計測処理
 	//===========================================================
@@ -548,14 +570,6 @@ void GameScene::InGameScene() {
 	//====================================================
 	cameraController_->SetTargetPos(unitManager_->GetPlayerPosition());
 
-	// マウスのスクリーン座標を取得する
-	POINT cursorPos;
-	if (GetCursorPos(&cursorPos)) {
-		// スクリーン座標をクライアント座標に変換
-		ScreenToClient(gameWindow_->GetWindow()->GetHwnd(), &cursorPos);
-		// カーソル位置をワールド座標に変換
-		DebugMousePos::screenMousePos = { static_cast<float>(cursorPos.x), static_cast<float>(cursorPos.y) };
-	}
 	// カメラの更新処理
 	cameraController_->Update();
 
@@ -651,6 +665,10 @@ void GameScene::InGameScene() {
 
 	// 全ての当たり判定を判定
 	colliderManager_->CollisionCheckAll();
+
+
+	// 衝突判定あとの演出更新処理
+	unitEffectManager_->PostCollisionUpdate();
 }
 
 void GameScene::Draw() {
@@ -686,7 +704,7 @@ void GameScene::Draw() {
 		// ユニットを描画
 		unitManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
-		// ユニットの演出を描画(仮で作成したクラスなので消すかも)
+		// ユニットの演出を描画
 		unitEffectManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
 
 		// ユニットのHp描画
@@ -794,7 +812,7 @@ void GameScene::ApplyDebugParam() {
 	sTime_ = GameParamEditor::GetInstance()->GetValue<float>("GameTime", "s");
 
 	// 鉱石数
-	OreItemStorageNum::maxOreItemNum_ = GameParamEditor::GetInstance()->GetValue<int32_t>("OreItem", "MaxOreItem");
+	//OreItemStorageNum::maxOreItemNum_ = GameParamEditor::GetInstance()->GetValue<int32_t>("OreItem", "MaxOreItem");
 }
 
 void GameScene::LoadDebugColorMap() {

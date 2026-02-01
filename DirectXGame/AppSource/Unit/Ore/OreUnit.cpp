@@ -8,11 +8,12 @@
 #include"Item/Object/GoldOre.h"
 #include"Item/Object/OreItem.h"
 
-OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos, UnitMarkUIManager* unitMarkUIManager) {
+OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos, UnitMarkUIManager* unitMarkUIManager, UnitEffectManager* unitEffectManager) {
 	// マップデータ
 	mapChipField_ = mapChipField;
 	
 	unitMarkUIManager_ = unitMarkUIManager;
+	unitEffectManager_ = unitEffectManager;
 
 	// プレイヤー座標を取得
 	playerPos_ = playerPos;
@@ -307,7 +308,10 @@ void OreUnit::OnCollision(Collider* other) {
 			// 衝突
 			if (dot < -0.8f) {
 				// 衝突処理
-				isConflict_ = true;
+				if (!isConflict_) {
+					isConflict_ = true;
+					unitEffectManager_->AddConflict(object_->transform_.position);
+				}
 			}
 		}
 	}
