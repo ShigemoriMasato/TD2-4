@@ -4,6 +4,14 @@ void StaticObjectRender::Initialize(ModelManager* modelManager, DrawDataManager*
 	modelManager_ = modelManager;
 	drawDataManager_ = drawDataManager;
 	debugMode_ = debugMode;
+
+	directionalLights_.resize(8);
+	pointLights_.resize(32);
+
+	//初期設定
+	directionalLights_[0].color = { 1.0f,1.0f,1.0f,1.0f };
+	directionalLights_[0].direction = Vector3(0.2f, 0.5f, -1.0f).Normalize();
+	directionalLights_[0].intensity = 1.0f;
 }
 
 void StaticObjectRender::Draw(const Matrix4x4& vpMatrix, Window* window) {
@@ -13,6 +21,10 @@ void StaticObjectRender::Draw(const Matrix4x4& vpMatrix, Window* window) {
 			mat.wvp = mat.world * vpMatrix;
 		}
 	}
+
+	LightConfig lightConfig{};
+	lightConfig.directionalLightNum = static_cast<int>(directionalLights_.size());
+	lightConfig.pointLightNum = static_cast<int>(pointLights_.size());
 
 	for (auto& [modelIndex, render] : objects_) {
 		Material mat = materialData_[modelIndex];
@@ -25,7 +37,10 @@ void StaticObjectRender::Draw(const Matrix4x4& vpMatrix, Window* window) {
 		render->CopyBufferData(1, &mat, sizeof(Material));
 		
 		render->CopyBufferData(0, vsData_[modelIndex].data(), sizeof(VSData) * vsData_[modelIndex].size());
-		//todo 後でライトの情報を渡す
+		//ライトの情報を渡す
+		render->CopyBufferData(2, &lightConfig, sizeof(LightConfig));
+		render->CopyBufferData(3, directionalLights_.data(), sizeof(DirectionalLight) * directionalLights_.size());
+		render->CopyBufferData(4, pointLights_.data(), sizeof(PointLight) * pointLights_.size());
 
 		render->Draw(window);
 	}

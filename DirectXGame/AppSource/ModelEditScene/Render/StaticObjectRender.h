@@ -8,6 +8,7 @@ public:
 
 	void Initialize(ModelManager* modelManager, DrawDataManager* drawDataManager, bool debugMode = false);
 	void Draw(const Matrix4x4& vpMatrix, Window* window);
+	void DrawImGui();
 	void SetAlpha(float alpha);
 
 	void SetObjects(const std::map<int, std::vector<Transform>>& objects);
@@ -45,6 +46,8 @@ private:
 	std::map<int, std::vector<VSData>> vsData_{};
 	std::map<int, Material> materialData_{};
 	std::map<int, std::unique_ptr<RenderObject>> objects_{};
+	std::vector<DirectionalLight> directionalLights_{};
+	std::vector<PointLight> pointLights_{};
 
 	std::map<int, NodeModelData> modelDataList_{};
 
