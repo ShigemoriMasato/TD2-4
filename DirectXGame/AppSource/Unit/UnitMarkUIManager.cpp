@@ -1,5 +1,6 @@
 #include"UnitMarkUIManager.h"
 #include<numbers>
+#include <Common/DebugParam/GameParamEditor.h>
 
 void UnitMarkUIManager::Initialize(DrawData spriteDrawData, int texture, int iconTex, int playerTex) {
 
@@ -9,6 +10,11 @@ void UnitMarkUIManager::Initialize(DrawData spriteDrawData, int texture, int ico
     iconTex_ = iconTex;
 
     offsetRot_ = -std::numbers::pi_v<float> / 2.0f;
+
+#ifdef USE_IMGUI
+    RegisterDebugParam();
+#endif
+    ApplyDebugParam();
 
 	markUIList_.resize(maxNum_);
 	for (size_t i = 0; i < maxNum_; ++i) {
@@ -40,6 +46,9 @@ void UnitMarkUIManager::Initialize(DrawData spriteDrawData, int texture, int ico
 }
 
 void UnitMarkUIManager::Update() {
+#ifdef USE_IMGUI
+    ApplyDebugParam();
+#endif
 
     // UIを生成する
     ProcessClusters();
@@ -87,7 +96,7 @@ void UnitMarkUIManager::AddConflict(const Vector3& pos) {
 }
 
 void UnitMarkUIManager::SetPlayerPos(const Vector3& pos) {
-    MarkerResult marker = cameraController_->GetMarkerInfo(pos, 64.0f);
+    MarkerResult marker = cameraController_->GetMarkerInfo(pos, playerMargin_);
 
     isPlayerDraw_ = !marker.isVisible;
 
@@ -102,7 +111,7 @@ void UnitMarkUIManager::SetPlayerPos(const Vector3& pos) {
 }
 
 void UnitMarkUIManager::AddConflictMarkUI(const Vector3& pos) {
-	MarkerResult marker = cameraController_->GetMarkerInfo(pos, 96.0f);
+	MarkerResult marker = cameraController_->GetMarkerInfo(pos, conflictMargin_);
 
 	if (!marker.isVisible) {
 
@@ -195,4 +204,20 @@ void UnitMarkUIManager::ProcessClusters() {
 
         AddConflictMarkUI(finalPos);
     }
+}
+
+void UnitMarkUIManager::RegisterDebugParam() {
+    // 登録
+    GameParamEditor::GetInstance()->AddItem("MarkUI", "PlayerSize", playerSize_,0);
+    GameParamEditor::GetInstance()->AddItem("MarkUI", "PlayerMargin", playerMargin_,1);
+    GameParamEditor::GetInstance()->AddItem("MarkUI", "ConflictSize", conflictSize_,2);
+    GameParamEditor::GetInstance()->AddItem("MarkUI", "ConflictMargin", conflictMargin_,3);
+}
+
+void UnitMarkUIManager::ApplyDebugParam() {
+    // 適応
+    playerSize_ = GameParamEditor::GetInstance()->GetValue<float>("MarkUI", "PlayerSize");
+    playerMargin_ = GameParamEditor::GetInstance()->GetValue<float>("MarkUI", "PlayerMargin");
+    conflictSize_ = GameParamEditor::GetInstance()->GetValue<float>("MarkUI", "ConflictSize");  
+    conflictMargin_ = GameParamEditor::GetInstance()->GetValue<float>("MarkUI", "ConflictMargin");
 }
