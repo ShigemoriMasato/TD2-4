@@ -27,6 +27,7 @@ void StartCountUI::Initialize(const std::string& fontName, DrawData drawData, Fo
 #ifdef USE_IMGUI
 	RegisterDebugParam();
 #endif
+	RegisterDebugParam();
 	ApplyDebugParam();
 	numFontObject_->transform_.scale = { 5.0f,-5.0f,1.0f };
 }

@@ -14,6 +14,7 @@ void UnitMarkUIManager::Initialize(DrawData spriteDrawData, int texture, int ico
 #ifdef USE_IMGUI
     RegisterDebugParam();
 #endif
+    RegisterDebugParam();
     ApplyDebugParam();
 
 	markUIList_.resize(maxNum_);
