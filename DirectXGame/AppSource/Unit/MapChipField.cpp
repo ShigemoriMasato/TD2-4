@@ -166,14 +166,16 @@ bool MapChipField::IsBlockHit(MoveDir dir, const CollisionMapInfo& info) {
 	indexSet = GetMapChipIndexSetByPosition(positionsNew[corner1]);
 	blockType = GetBlockTypeByIndex(indexSet.xIndex, indexSet.zIndex);
 	blockTypeNext = GetBlockTypeByIndex(indexSet.xIndex + moveX, indexSet.zIndex + moveZ);
-	if ((blockType != TileType::Air && blockType != TileType::Road) && (blockTypeNext == TileType::Air || blockTypeNext == TileType::Road)) {
+	if ((blockType != TileType::Air && blockType != TileType::Road && blockType != TileType::Slow) &&
+		(blockTypeNext == TileType::Air || blockTypeNext == TileType::Road || blockTypeNext == TileType::Slow)) {
 		hit = true;
 	}
 	// 角2の点の判定
 	indexSet = GetMapChipIndexSetByPosition(positionsNew[corner2]);
 	blockType = GetBlockTypeByIndex(indexSet.xIndex, indexSet.zIndex);
 	blockTypeNext = GetBlockTypeByIndex(indexSet.xIndex + moveX, indexSet.zIndex + moveZ);
-	if ((blockType != TileType::Air && blockType != TileType::Road) && (blockTypeNext == TileType::Air || blockTypeNext == TileType::Road)) {
+	if ((blockType != TileType::Air && blockType != TileType::Road && blockType != TileType::Slow) &&
+		(blockTypeNext == TileType::Air || blockTypeNext == TileType::Road || blockTypeNext == TileType::Slow)) {
 		hit = true;
 	}
 
@@ -259,7 +261,7 @@ std::vector<Vector3> MapChipField::CalculatePath(const Vector3& start, const Vec
 			}
 
 			float moveCost = 0.0f;
-			if (nextTileType == TileType::Road) {
+			if (nextTileType == TileType::Road || nextTileType == TileType::Slow) {
 				// 道の移動コスト
 				moveCost = 1.0f;
 			} else {
