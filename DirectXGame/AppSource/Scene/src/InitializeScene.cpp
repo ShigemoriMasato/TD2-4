@@ -45,7 +45,7 @@ void InitializeScene::Initialize() {
 
 std::unique_ptr<IScene> InitializeScene::Update(){
 
-	return std::make_unique<ModelEditScene>();
+	//return std::make_unique<ModelEditScene>();
 	return std::make_unique<GameScene>();
 }
 
@@ -82,7 +82,7 @@ void InitializeScene::CreateDisplay() {
 		config.clientWidth = 1280;
 		config.clientHeight = 720;
 
-		uint32_t clearColor = 0x0060b0ff;
+		uint32_t clearColor = 0xffffffff;
 
 		commonData_->mainWindow = std::make_unique<GameWindow>();
 		commonData_->mainWindow->Initialize(engine_, config, clearColor);
