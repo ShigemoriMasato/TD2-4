@@ -31,6 +31,9 @@ public:
 	// 衝突演出
 	void AddConflict(const Vector3& pos);
 
+	// 煙の演出
+	void AddSmoke(const Vector3& pos);
+
 private: // パーティクル
 
 	//　オブジェクトデータ
@@ -38,15 +41,17 @@ private: // パーティクル
 
 	// パーティクルデータ
 	std::vector<ParticleData> particleDatas_;
-
-	// 描画の最大数
-	uint32_t maxNum_ = 200;
+	uint32_t conflictMaxNum_ = 400;
 
 	// 数を数える
 	int32_t index_ = 0;
 
 	float timer_ = 0.0f;
 	float coolTime_ = 0.1f;
+
+	// 煙演出
+	std::vector<ParticleData> smokeDatas_;
+	uint32_t smokeMaxNum_ = 100;
 
 private:
 
@@ -55,4 +60,9 @@ private:
 	void Create();
 
 	void Move();
+
+
+	ParticleData MakeNewSmokeData(const Vector3& pos);
+
+	void SmokeMove();
 };

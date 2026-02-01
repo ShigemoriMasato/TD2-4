@@ -44,10 +44,10 @@ public:
 
 	int texture_ = 0;
 
-private:
-
 	// 描画の最大数
 	uint32_t maxNum_ = 50;
+
+private:
 
 	//　オブジェクトデータ
 	std::unique_ptr<RenderObject> renderObject_;
