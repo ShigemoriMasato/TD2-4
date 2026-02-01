@@ -96,6 +96,9 @@ void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos, OreItem* o
 	// hpを設定
 	hp_ = maxHp_;
 
+	// 速度
+	speed_ = moveSpeed_;
+
 	// 時間をリセット
 	lifeTimer_ = 0.0f;
 	animationTimer_ = 0.0f;
@@ -157,6 +160,19 @@ void OreUnit::Update() {
 			isCoolTimeEnd_ = false;
 		}
 	}
+
+	// slow状態を確認
+	MapChipField::IndexSet i = mapChipField_->GetMapChipIndexSetByPosition(object_->transform_.position);
+	TileType type = mapChipField_->GetBlockTypeByIndex(i.xIndex,i.zIndex);
+	if (type == TileType::Slow) {
+		isSlow_ = true;
+		speed_ = slowspeed_;
+	} else {
+		isSlow_ = false;
+		speed_ = moveSpeed_;
+	}
+
+	isSlow_ = false;
 
 	// 帰宅していれば体力処理を飛ばす
 	if (state_ == State::Return) { return; }
@@ -291,7 +307,7 @@ void OreUnit::GoToUpdate() {
 		// XZ平面での距離を計算
 		float distance = std::sqrt(toTarget.x * toTarget.x + toTarget.z * toTarget.z);
 
-		object_->transform_.position += (toTarget / distance) * moveSpeed_ * FpsCount::deltaTime;
+		object_->transform_.position += (toTarget / distance) * speed_ * FpsCount::deltaTime;
 
 		// 目的地に到着して鉱石が存在していなかった場合、帰宅する
 		if (distance < 0.1f) {
@@ -474,7 +490,9 @@ void OreUnit::Move() {
 		path_.erase(path_.begin());
 	} else {
 		// 目的地に向かって移動
-		Vector3 velocity = (toTarget / distance) * moveSpeed_;
+
+
+		Vector3 velocity = (toTarget / distance) * speed_;
 		object_->transform_.position += velocity * FpsCount::deltaTime;
 	}
 }
@@ -547,13 +565,15 @@ void OreUnit::DeathAnimationUpdate() {
 
 void OreUnit::RegisterDebugParam() {
 	// 登録
-	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MoveSpeed", moveSpeed_,0);
-	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RotateSpeed", rotateSpeed_,1);
-	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MaxHp", maxHp_,2);	
-	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RiseHeight", risePosY_,3);
-	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RiseReturnTime", riseTime_, 4);
-	GameParamEditor::GetInstance()->AddItem(kGroupName_, "FallReturnTime", FallTime_, 5);
-	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MiningTime", miningTime_,6);
+	int i = 0;
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MoveSpeed", moveSpeed_,i++);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "SlowSpeed", slowspeed_, i++);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RotateSpeed", rotateSpeed_, i++);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MaxHp", maxHp_, i++);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RiseHeight", risePosY_, i++);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RiseReturnTime", riseTime_, i++);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "FallReturnTime", FallTime_, i++);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MiningTime", miningTime_, i++);
 
 	// アニメーション
 	GameParamEditor::GetInstance()->AddItem("OreUnit_Animation", "MaxJumpHeight", maxJumpHeight_,0);
@@ -568,6 +588,7 @@ void OreUnit::RegisterDebugParam() {
 void OreUnit::ApplyDebugParam() {
 	// 適応
 	moveSpeed_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "MoveSpeed");
+	slowspeed_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "SlowSpeed");
 	rotateSpeed_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "RotateSpeed");
 	maxHp_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MaxHp");
 	risePosY_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "RiseHeight");
