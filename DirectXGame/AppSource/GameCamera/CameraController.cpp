@@ -297,11 +297,14 @@ MarkerResult CameraController::GetMarkerInfo(const Vector3& targetWorldPos, floa
 		targetScreenPos.x >= margin && targetScreenPos.x <= (screenWidth - margin) &&
 		targetScreenPos.y >= margin && targetScreenPos.y <= (screenHeight - margin)) {
 		// 画面内にいる
-		result.isVisible = true; 
-	} else {
-		// 画面外にいる
-		result.isVisible = false; 
+		result.isVisible = true;
+		result.position = targetScreenPos;
+		result.rotation = 0.0f;
+		return result;
 	}
+
+	// 画面外にいる
+	result.isVisible = false;
 
 	// 中心からターゲットへの方向ベクトルを計算
 	Vector2 dir = targetScreenPos - center;
