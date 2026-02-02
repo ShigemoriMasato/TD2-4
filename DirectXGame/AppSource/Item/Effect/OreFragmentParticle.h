@@ -45,9 +45,22 @@ private: // パーティクル
 	// 数を数える
 	int32_t index_ = 0;
 
+	float minScale_ = 0.08f;
+	float maxScale_ = 0.2f;
+
 private:
 
 	ParticleData MakeNewData(const Vector3& pos);
 
 	void Move();
+
+	/// <summary>
+	/// 値を登録する
+	/// </summary>
+	void RegisterDebugParam();
+
+	/// <summary>
+	/// 値を適応する
+	/// </summary>
+	void ApplyDebugParam();
 };

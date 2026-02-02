@@ -2,6 +2,7 @@
 #include"FpsCount.h"
 #include"Utility/Easing.h"
 #include"RandomGenerator.h"
+#include <Common/DebugParam/GameParamEditor.h>
 
 void OreFragmentParticle::Initialize(DrawData drawData) {
 
@@ -15,9 +16,17 @@ void OreFragmentParticle::Initialize(DrawData drawData) {
 		particleDatas_.push_back(MakeNewData({0.0f,0.0f,0.0f}));
 		particleDatas_.back().currentTime = 1.0f;
 	}
+
+#ifdef USE_IMGUI
+	RegisterDebugParam();
+#endif
+	ApplyDebugParam();
 }
 
 void OreFragmentParticle::Update() {
+#ifdef USE_IMGUI
+	ApplyDebugParam();
+#endif
 
 	// 移動処理
 	Move();
@@ -42,7 +51,13 @@ OreFragmentParticle::ParticleData OreFragmentParticle::MakeNewData(const Vector3
 	data.textureHandle = 0;
 	data.speed = RandomGenerator::Get(1.0f, 5.0f);
 	data.rotSpeed = 12.0f;
-	data.color = { 0.9f,0.9f,0.0f,1.0f };
+
+	int i = RandomGenerator::Get(int(0), int(1));
+	if (i == 0) {
+		data.color = { 0.9f,0.9f,0.0f,1.0f };
+	} else {
+		data.color = { 0.2f,0.2f,0.2f,1.0f };
+	}
 
 	Vector3 dir = data.transform.position - pos;
 	data.velocity = dir.Normalize() * data.speed;
@@ -70,9 +85,6 @@ void OreFragmentParticle::Move() {
 			data.velocity.y = 0.8f * -data.velocity.y;
 		}
 
-		//float scale = lerp(data.startScale, 0.0f, data.currentTime, EaseType::EaseInOutCubic);
-		//data.transform.scale = Vector3(scale, scale, scale);
-
 		data.color.w = lerp(1.0f, 0.0f, data.currentTime, EaseType::EaseInOutCubic);
 
 		instancingObject_->transformDatas_[index_].color = data.color;
@@ -92,4 +104,14 @@ void OreFragmentParticle::AddParticle(const Vector3& pos) {
 			spawnCount--;
 		}
 	}
+}
+
+void OreFragmentParticle::RegisterDebugParam() {
+	GameParamEditor::GetInstance()->AddItem("OreItemFragmentParticle", "minScale", minScale_);
+	GameParamEditor::GetInstance()->AddItem("OreItemFragmentParticle", "maxScale", maxScale_);
+}
+
+void OreFragmentParticle::ApplyDebugParam() {
+	minScale_ = GameParamEditor::GetInstance()->GetValue<float>("OreItemFragmentParticle", "minScale");
+	maxScale_ = GameParamEditor::GetInstance()->GetValue<float>("OreItemFragmentParticle", "maxScale");
 }

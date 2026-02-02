@@ -18,6 +18,7 @@
 #include "Item/HomeManager.h"
 #include "UI/StartCountUI.h"
 #include "Unit/UnitMarkUIManager.h"
+#include"UI/LogUI.h"
 
 #include <Game/MiniMap/MiniMap.h>
 #include <ModelEditScene/Render/MapRender.h>
@@ -126,6 +127,9 @@ private:
 
 	// ユニットに関するマークUI
 	std::unique_ptr<UnitMarkUIManager> unitMarkUIManager_;
+
+	// ログUI
+	std::unique_ptr<LogUI> logUI_;
 
 	//================================================
 	// ゲームオーバーシーン

@@ -348,6 +348,14 @@ void GameScene::Initialize() {
 	// ユニット管理クラスに登録する
 	unitManager_->SetUnitMarkUI(unitMarkUIManager_.get());
 
+	// 衝突ログ
+	int unitConfliIndex = textureManager_->GetTexture("OreCrushNews.png");
+	int logEffectIndex = textureManager_->GetTexture("logEffect.png");
+
+	// ログUI
+	logUI_ = std::make_unique<LogUI>();
+	logUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), unitConfliIndex, logEffectIndex);
+
 	//=======================================================
 	// その他のシーンを初期化
 	//=======================================================
@@ -540,6 +548,9 @@ std::unique_ptr<IScene> GameScene::Update() {
 
 	// 開始と最後のカウントする更新処理
 	startCountUI_->Update();
+
+	// ログUIの更新処理
+	logUI_->Update();
 
 	//================================================
 	// シーンの切り替え
@@ -738,6 +749,9 @@ void GameScene::Draw() {
 
 			// 開始と終わりのカウントの描画
 			startCountUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
+
+			// ログのUIを描画
+			logUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 
 			// ポーズシーンを描画
 			pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
