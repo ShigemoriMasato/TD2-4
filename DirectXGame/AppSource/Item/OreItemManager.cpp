@@ -292,9 +292,9 @@ void OreItemManager::AddOreItem(OreType type, const Vector3& pos, const float& r
 	//PointLightの追加
 	PointLight light{};
 	light.color = ConvertColor(0xcfd942ff);
-	light.intensity = 3.5f;
-	light.radius = 2.0f;
-	light.decay = 1.5f;
+	light.intensity = 10.0f;
+	light.radius = 3.0f;
+	light.decay = 4.0f;
 	Vector3* position = oreItems_[index]->GetPosPtr();
 	int lightHandle = LightManager::GetInstance()->AddPointLight(position, light);
 	oreItems_[index]->RegistLightIndex(lightHandle);
