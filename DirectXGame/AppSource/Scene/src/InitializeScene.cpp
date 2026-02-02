@@ -7,6 +7,7 @@
 #include <imgui/imgui.h>
 #include <Utility/DataStructures.h>
 #include<Common/DebugParam/GameParamEditor.h>
+#include <LightManager.h>
 #include"RandomGenerator.h"
 
 #ifdef USE_IMGUI
@@ -39,6 +40,8 @@ void InitializeScene::Initialize() {
 
 	commonData_->nextStageIndex = 0;
 	commonData_->nextMapIndex = 0;
+
+	LightManager::GetInstance()->Load();
   
   // ランダム生成器を初期化
 	RandomGenerator::Initialize();

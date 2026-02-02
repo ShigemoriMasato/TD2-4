@@ -1,6 +1,12 @@
 #include "../SceneManager.h"
 #include "Scene/InitializeScene.h"
 #include <Common/DebugParam/GameParamEditor.h>
+#include <LightManager.h>
+
+SceneManager::~SceneManager() {
+	LightManager::GetInstance()->Finalize();
+	GameParamEditor::GetInstance()->Finalize();
+}
 
 void SceneManager::Initialize(SHEngine* engine) {
 	commonData_ = std::make_unique<CommonData>();
@@ -19,6 +25,9 @@ void SceneManager::Update() {
 }
 
 void SceneManager::Draw() {
+	//絶対よくない
+	LightManager::GetInstance()->Update();
+
 	currentScene_->Draw();
 }
 

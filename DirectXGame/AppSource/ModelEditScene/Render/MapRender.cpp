@@ -1,6 +1,7 @@
 #include "MapRender.h"
 #include "../Editor/Texture/MapTextureEditor.h"
 #include <numbers>
+#include <LightManager.h>
 
 void MapRender::Initialize(const DrawData& box) {
 	render_ = std::make_unique<RenderObject>();
@@ -8,10 +9,11 @@ void MapRender::Initialize(const DrawData& box) {
 	render_->CreateSRV(sizeof(VSData), maxSize_ * maxSize_, ShaderType::VERTEX_SHADER, "WVP");
 	render_->CreateSRV(sizeof(Vector4), maxSize_ * maxSize_, ShaderType::PIXEL_SHADER, "Color");
 	render_->CreateSRV(sizeof(int), maxSize_ * maxSize_, ShaderType::PIXEL_SHADER, "TextureIndex");
+	render_->CreateSRV(sizeof(PointLight), 256, ShaderType::PIXEL_SHADER, "PointLights");
+	render_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "PointLightNum");
 	render_->SetUseTexture(true);
 	render_->SetDrawData(box);
-
-	render_->psoConfig_.vs = "Simples.VS.hlsl";
+	render_->psoConfig_.vs = "MapRender.VS.hlsl";
 	render_->psoConfig_.ps = "MapRender.PS.hlsl";
 
 	worldMatrices_.resize(maxSize_ * maxSize_, Matrix4x4::Identity());
@@ -40,6 +42,10 @@ void MapRender::Draw(const Matrix4x4& vpMatrix, Window* window) {
 	render_->CopyBufferData(0, vsData_.data(), sizeof(VSData) * vsData_.size());
 	render_->CopyBufferData(1, colors_.data(), sizeof(Vector4) * colors_.size());
 	render_->CopyBufferData(2, textureIndices_.data(), sizeof(int) * textureIndices_.size());
+	auto pointLights = LightManager::GetInstance()->GetPointLights();
+	int pointLightNum = static_cast<int>(pointLights.size());
+	render_->CopyBufferData(3, pointLights.data(), sizeof(PointLight) * pointLights.size());
+	render_->CopyBufferData(4, &pointLightNum, sizeof(int));
 	render_->instanceNum_ = static_cast<uint32_t>(vsData_.size());
 
 	//描画

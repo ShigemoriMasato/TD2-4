@@ -5,7 +5,7 @@ class SceneManager {
 public:
 
 	SceneManager() = default;
-	~SceneManager() = default;
+	~SceneManager();
 
 	void Initialize(SHEngine* engine);
 	bool IsHasNextScene() const { return nextScene_ != nullptr; };

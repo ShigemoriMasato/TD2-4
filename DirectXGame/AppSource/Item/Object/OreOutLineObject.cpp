@@ -24,7 +24,9 @@ void OreOutLineObject::Initialize(DrawData drawData) {
 
 	// ライトを登録
 	lightDataIndex_ = renderObject_->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "TestScene::");
-	renderObject_->CopyBufferData(lightDataIndex_, &LightManager::light_, sizeof(DirectionalLight));
+
+	//カメラ座標を登録
+	renderObject_->CreateCBV(sizeof(Vector3), ShaderType::PIXEL_SHADER, "CameraPos");
 
 	transform_.scale = { 1.2f,1.2f,1.2f };
 
@@ -45,6 +47,9 @@ void OreOutLineObject::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	vsData_.WVP = worldMatrix_ * vpMatrix;
 	renderObject_->CopyBufferData(vsDataIndex_, &vsData_, sizeof(TransformationMatrix));
 	renderObject_->CopyBufferData(psDataIndex_, &material_, sizeof(Material));
+	renderObject_->CopyBufferData(lightDataIndex_, &LightManager::GetInstance()->GetDirLights()[0], sizeof(DirectionalLight));
+	Vector3 cameraPos = LightManager::GetInstance()->GetCameraPos();
+	renderObject_->CopyBufferData(lightDataIndex_ + 1, &cameraPos, sizeof(Vector3));
 
 	// 描画
 	renderObject_->Draw(window);

@@ -40,11 +40,6 @@ void SelectScene::Initialize() {
 	uiCamera_->SetProjectionMatrix(OrthographicDesc{});
 	uiCamera_->MakeMatrix();
 
-	// ライトの初期化
-	LightManager::light_.color = { 1.0f,1.0f,1.0f,1.0f };
-	LightManager::light_.direction = { 0.0f,-1.0f,0.0f };
-	LightManager::light_.intensity = 1.0f;
-
 	// 追従カメラ
 	selectCamera_ = std::make_unique<SelectCamera>();
 	selectCamera_->Initialize();
@@ -238,7 +233,6 @@ void SelectScene::Draw() {
 
 
 	Matrix4x4 vpMatrix = selectCamera_->GetVpMatrix();
-	LightManager::light_.cameraWorldPos = selectCamera_->GetCameraWorldPos();
 
 	// ステージを描画
 	for (auto& point : stagePointObjects_) {

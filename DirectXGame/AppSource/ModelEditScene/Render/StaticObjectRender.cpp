@@ -1,17 +1,10 @@
 #include "StaticObjectRender.h"
+#include <LightManager.h>
 
 void StaticObjectRender::Initialize(ModelManager* modelManager, DrawDataManager* drawDataManager, bool debugMode) {
 	modelManager_ = modelManager;
 	drawDataManager_ = drawDataManager;
 	debugMode_ = debugMode;
-
-	directionalLights_.resize(8);
-	pointLights_.resize(32);
-
-	//初期設定
-	directionalLights_[0].color = { 1.0f,1.0f,1.0f,1.0f };
-	directionalLights_[0].direction = Vector3(0.2f, 0.5f, -1.0f).Normalize();
-	directionalLights_[0].intensity = 1.0f;
 }
 
 void StaticObjectRender::Draw(const Matrix4x4& vpMatrix, Window* window) {
@@ -22,8 +15,12 @@ void StaticObjectRender::Draw(const Matrix4x4& vpMatrix, Window* window) {
 		}
 	}
 
+	auto inst = LightManager::GetInstance();
+	auto directionalLights_ = inst->GetDirLights();
+	auto pointLights_ = inst->GetPointLights();
+
 	LightConfig lightConfig{};
-	lightConfig.directionalLightNum = static_cast<int>(directionalLights_.size());
+	lightConfig.directionalLightNum = static_cast<int>(directionalLights_.size() - 1);
 	lightConfig.pointLightNum = static_cast<int>(pointLights_.size());
 
 	for (auto& [modelIndex, render] : objects_) {
@@ -35,15 +32,21 @@ void StaticObjectRender::Draw(const Matrix4x4& vpMatrix, Window* window) {
 		mat.color.w = 1.0f;
 		mat.textureIndex = modelData.materials[materialIndex].textureIndex;
 		render->CopyBufferData(1, &mat, sizeof(Material));
-		
+
 		render->CopyBufferData(0, vsData_[modelIndex].data(), sizeof(VSData) * vsData_[modelIndex].size());
 		//ライトの情報を渡す
 		render->CopyBufferData(2, &lightConfig, sizeof(LightConfig));
-		render->CopyBufferData(3, directionalLights_.data(), sizeof(DirectionalLight) * directionalLights_.size());
-		render->CopyBufferData(4, pointLights_.data(), sizeof(PointLight) * pointLights_.size());
+		render->CopyBufferData(3, &directionalLights_[1], sizeof(DirectionalLight) * lightConfig.directionalLightNum);
+		render->CopyBufferData(4, pointLights_.data(), sizeof(PointLight) * lightConfig.pointLightNum);
 
 		render->Draw(window);
 	}
+}
+
+void StaticObjectRender::DrawImGui() {
+#ifdef USE_IMGUI
+
+#endif
 }
 
 void StaticObjectRender::SetAlpha(float alpha) {

@@ -24,6 +24,9 @@ void DefaultObject::Initialize(DrawData drawData, int texture) {
 	// ライトを登録
 	lightDataIndex_ = renderObject_->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "TestScene::psData");
 
+	//カメラの座標
+	renderObject_->CreateCBV(sizeof(Vector3), ShaderType::PIXEL_SHADER, "CameraPos");
+
 	// 色を設定
 	material_.color = { 1.0f,1.0f,1.0f,1.0f };
 	material_.textureIndex = texture;
@@ -42,7 +45,9 @@ void DefaultObject::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	vsData_.WVP = worldMatrix_ * vpMatrix;
 	renderObject_->CopyBufferData(vsDataIndex_, &vsData_, sizeof(TransformationMatrix));
 	renderObject_->CopyBufferData(psDataIndex_, &material_, sizeof(Material));
-	renderObject_->CopyBufferData(lightDataIndex_, &LightManager::light_, sizeof(DirectionalLight));
+	renderObject_->CopyBufferData(lightDataIndex_, &LightManager::GetInstance()->GetDirLights()[0], sizeof(DirectionalLight));
+	Vector3 cameraPos = LightManager::GetInstance()->GetCameraPos();
+	renderObject_->CopyBufferData(lightDataIndex_ + 1, &cameraPos, sizeof(Vector3));
 
 	// 描画
 	renderObject_->Draw(window);

@@ -23,6 +23,8 @@ public:
 	// 位置
 	Vector3 GetPos() override { return object_->transform_.position; }
 
+	Vector3* GetPosPtr() override { return &object_->transform_.position; }
+
 	float GetRotY() override { return object_->transform_.rotate.y; }
 
 	// サイズ

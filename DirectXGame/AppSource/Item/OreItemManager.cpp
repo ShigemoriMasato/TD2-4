@@ -2,6 +2,7 @@
 
 // 各鉱石
 #include"Object/GoldOre.h"
+#include <LightManager.h>
 
 void OreItemManager::Initialize(DrawData spriteDrawData, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader, DrawData drawData) {
 
@@ -29,9 +30,14 @@ void OreItemManager::Update(bool isOpenMap) {
 	for (auto it = graveyard_.begin(); it != graveyard_.end(); ) {
 		// カウントダウン
 		it->second--;
+		int lightIndex = it->first->GetLightIndex();
+		auto& light = LightManager::GetInstance()->GetPointLight(lightIndex);
+		light.intensity = 3.5f / (float)(it->second);
 
 		// 待機時間が終わったら削除
 		if (it->second <= 0) {
+			// ライトを削除
+			LightManager::GetInstance()->RemovePointLight(lightIndex);
 			it = graveyard_.erase(it);
 		} else {
 			++it;
@@ -282,6 +288,16 @@ void OreItemManager::AddOreItem(OreType type, const Vector3& pos, const float& r
 
 	// フォントを登録
 	fontList_[index] = std::move(data);
+
+	//PointLightの追加
+	PointLight light{};
+	light.color = ConvertColor(0xcfd942ff);
+	light.intensity = 3.5f;
+	light.radius = 2.0f;
+	light.decay = 1.5f;
+	Vector3* position = oreItems_[index]->GetPosPtr();
+	int lightHandle = LightManager::GetInstance()->AddPointLight(position, light);
+	oreItems_[index]->RegistLightIndex(lightHandle);
 }
 
 bool OreItemManager::IsSelectOre(const Vector3 selectpos, Vector3& worldPos) {

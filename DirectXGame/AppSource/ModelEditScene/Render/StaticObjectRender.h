@@ -15,6 +15,9 @@ public:
 
 private:
 
+	void Load();
+	void Save();
+
 	struct VSData {
 		Matrix4x4 world;
 		Matrix4x4 wvp;
@@ -29,25 +32,10 @@ private:
 		int pointLightNum = 0;
 		int padding[2]{};
 	};
-	struct DirectionalLight {
-		Vector4 color;
-		Vector3 direction;
-		float intensity;
-	};
-	struct PointLight {
-		Vector4 color;
-		Vector3 position;
-		float intensity;
-		float radius;
-		float decay;
-		Vector2 pad;
-	};
 
 	std::map<int, std::vector<VSData>> vsData_{};
 	std::map<int, Material> materialData_{};
 	std::map<int, std::unique_ptr<RenderObject>> objects_{};
-	std::vector<DirectionalLight> directionalLights_{};
-	std::vector<PointLight> pointLights_{};
 
 	std::map<int, NodeModelData> modelDataList_{};
 
@@ -55,4 +43,7 @@ private:
 
 	ModelManager* modelManager_ = nullptr;
 	DrawDataManager* drawDataManager_ = nullptr;
+
+	BinaryManager binaryManager_;
+	const std::string saveFileName_ = "DirectionalLight";
 };

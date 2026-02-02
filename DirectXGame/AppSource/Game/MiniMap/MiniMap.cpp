@@ -51,7 +51,7 @@ void MiniMap::Update() {
 	screenMousePos_ = DebugMousePos::gameMousePos;
 #endif
 
-	if (Input::GetMouseButtonState()[0] && !Input::GetPreMouseButtonState()[0]) {
+	if (Input::GetMouseButtonState()[0] && !Input::GetPreMouseButtonState()[0] && DebugMousePos::isHovered) {
 		Vector2 deadZone = { 10.0f, 10.0f };
 		Vector2 min = Vector2(960, 540) + deadZone;
 		Vector2 max = Vector2(1280, 720);

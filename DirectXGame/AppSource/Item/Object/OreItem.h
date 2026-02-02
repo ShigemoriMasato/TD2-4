@@ -30,6 +30,8 @@ public:
 	// サイズ
 	virtual Vector3 GetSize() = 0;
 
+	virtual Vector3* GetPosPtr() { return nullptr; };
+
 	// 破壊されたか
 	virtual bool IsDead() = 0;
 
@@ -48,4 +50,12 @@ public:
 	virtual int32_t GetHp() = 0;
 	virtual float GetRotY() = 0;
 	virtual bool IsChangeHp() = 0;
+
+	// light系
+	void RegistLightIndex(int index) { lightIndex_ = index; }
+	int GetLightIndex() const { return lightIndex_; }
+
+private:
+
+	int lightIndex_ = -1;
 };

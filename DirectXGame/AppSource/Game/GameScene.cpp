@@ -71,11 +71,6 @@ void GameScene::Initialize() {
 	uiCamera_->SetProjectionMatrix(OrthographicDesc{});
 	uiCamera_->MakeMatrix();
 
-	// ライトの初期化
-	LightManager::light_.color = { 1.0f,1.0f,1.0f,1.0f };
-	LightManager::light_.direction = { 0.0f,-1.0f,0.0f };
-	LightManager::light_.intensity = 1.0f;
-
 	//==================================================
 	// カメラシステム
 	//==================================================
@@ -713,7 +708,7 @@ void GameScene::Draw() {
 		}
 
 		// カメラ行列
-		LightManager::light_.cameraWorldPos = cameraController_->GetCameraWorldPos();
+		LightManager::GetInstance()->SetCameraPos(cameraController_->GetCameraWorldPos());
 
 		// マップを描画
 		mapRender_->Draw(vpMatrix, gameWindow_->GetWindow());
@@ -722,7 +717,7 @@ void GameScene::Draw() {
 		staticObjectRender_->Draw(vpMatrix, gameWindow_->GetWindow());
 
 		// デバッグ用マップ描画
-		debugMapRender_->Draw(vpMatrix, colorMap_, currentMap_.currentMap.mapChipData, gameWindow_->GetWindow());
+		//debugMapRender_->Draw(vpMatrix, colorMap_, currentMap_.currentMap.mapChipData, gameWindow_->GetWindow());
 
 		// 鉱石の描画
 		oreItemManager_->Draw(gameWindow_->GetWindow(), vpMatrix);
@@ -819,6 +814,7 @@ void GameScene::Draw() {
 	miniMap_->DrawImGui();
 	gameWindow_->DrawDisplayWithImGui();
 	paramManager_->Draw();
+	LightManager::GetInstance()->DrawImGui();
 
 	// カメラのデバック情報
 	cameraController_->DebugDraw();
