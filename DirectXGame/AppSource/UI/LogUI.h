@@ -4,7 +4,7 @@
 class LogUI {
 public:
 
-	void Initialize(DrawData drawData,int confTex,int effectTex);
+	void Initialize(DrawData drawData,int confTex,int effectTex,int deathTex);
 
 	void Update();
 
@@ -12,6 +12,9 @@ public:
 
 	// 衝突ログを出す
 	void AddUnitConflictLog();
+
+	// ユニットの死亡ログを出す
+	void AddUnitDeathLog();
 
 private:
 
@@ -28,4 +31,7 @@ private:
 	std::vector<LogData> logDatas_;
 
 	float maxTime_ = 2.0f;
+
+	int conflTex_ = 0;
+	int deathTex_ = 0;
 };

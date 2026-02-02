@@ -364,10 +364,11 @@ void GameScene::Initialize() {
 	// 衝突ログ
 	int unitConfliIndex = textureManager_->GetTexture("OreCrushNews.png");
 	int logEffectIndex = textureManager_->GetTexture("logEffect.png");
+	int unitDeathIndex = textureManager_->GetTexture("OreDeathNews.png");
 
 	// ログUI
 	logUI_ = std::make_unique<LogUI>();
-	logUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), unitConfliIndex, logEffectIndex);
+	logUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), unitConfliIndex, logEffectIndex, unitDeathIndex);
 
 	// ユニット管理クラスにログUIシステムを設定
 	unitManager_->SetLogUI(logUI_.get());
