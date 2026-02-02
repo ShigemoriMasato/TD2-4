@@ -47,7 +47,7 @@ private: //postEffect
 	Blur blur_{};
 
 	//鉱石 n個 でOre一個増やす
-	int rateGoldToOre_ = 5;
+	int rateGoldToOre_ = 2;
 
 	float fadeTimer_ = 0.0f;
 	const float kFadeDuration_ = 1.0f;
