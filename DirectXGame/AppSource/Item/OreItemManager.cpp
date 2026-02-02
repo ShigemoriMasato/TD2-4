@@ -4,12 +4,13 @@
 #include"Object/GoldOre.h"
 #include <LightManager.h>
 
-void OreItemManager::Initialize(DrawData spriteDrawData, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader, DrawData drawData) {
+void OreItemManager::Initialize(DrawData spriteDrawData, DrawData hpDrawData, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader, DrawData drawData) {
 
 	fontLoader_ = fontLoader;
 	fontName_ = fontName;
 	fontDrawData_ = fontDrawData;
 	spriteDrawData_ = spriteDrawData;
+	hpDrawData_ = hpDrawData;
 
 	// メモリを確保
 	oreItems_.reserve(20);
@@ -61,15 +62,26 @@ void OreItemManager::Update(bool isOpenMap) {
 		fontList_[it->first].font->UpdateCharPositions(s, fontLoader_);
 		fontList_[it->first].font->Update();
 
+		// hp処理
+		float p = static_cast<float>(ore->GetMaxHp()) / static_cast<float>(ore->GetHp());
+		fontList_[it->first].hpSprite->transform_.scale.x = 2.0f * p;
+
 		float posZ = 0.0f;
+		float hpPosZ = 0.0f;
 		if (isOpenMap) {
 			posZ = fontList_[it->first].bgSprite->transform_.position.z;
 			fontList_[it->first].bgSprite->transform_.position.z -= 0.2f;
 			fontList_[it->first].bgSprite->transform_.rotate.x = -1.2f;
 			fontList_[it->first].font->transform_.rotate.x = -1.3f;
+
+			hpPosZ = fontList_[it->first].hpSprite->transform_.position.z;
+			fontList_[it->first].hpSprite->transform_.position.z -= 0.2f;
+			fontList_[it->first].hpSprite->transform_.rotate.x = -1.2f;
+
 		} else {
 			fontList_[it->first].bgSprite->transform_.rotate.x = -2.4f;
 			fontList_[it->first].font->transform_.rotate.x = -2.4f;
+			fontList_[it->first].hpSprite->transform_.rotate.x = -2.4f;
 		}
 
 		if (ore->GetCurrentWorkerNum() >= ore->GetMaxWorkerNum()) {
@@ -79,8 +91,11 @@ void OreItemManager::Update(bool isOpenMap) {
 		}
 
 		fontList_[it->first].bgSprite->Update();
+		fontList_[it->first].hpSprite->Update();
+
 		if (isOpenMap) {
 			fontList_[it->first].bgSprite->transform_.position.z = posZ;
+			fontList_[it->first].hpSprite->transform_.position.z = hpPosZ;
 		}
 
 		if (ore->IsDead()) {
@@ -142,6 +157,7 @@ void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 
 		// フォントを描画
 		fontList_[id].bgSprite->Draw(window, vpMatrix);
+		fontList_[id].hpSprite->Draw(window, vpMatrix);
 		fontList_[id].font->Draw(window, vpMatrix);
 	}
 
@@ -275,8 +291,7 @@ void OreItemManager::AddOreItem(OreType type, const Vector3& pos, const float& r
 	data.font->transform_.scale.y = -0.01f;
 	data.font->fontColor_ = { 0.0f,1.0f,1.0f,1.0f };
 	data.font->Update();
-
-	
+	// 背景
 	data.bgSprite = std::make_unique<DefaultObject>();
 	data.bgSprite->Initialize(spriteDrawData_, 0);
 	data.bgSprite->transform_.position = pos;
@@ -285,6 +300,15 @@ void OreItemManager::AddOreItem(OreType type, const Vector3& pos, const float& r
 	data.bgSprite->transform_.rotate.x = -2.4f;
 	data.bgSprite->material_.color = { 0.0f,0.0f,0.0f,0.8f };
 	data.bgSprite->Update();
+	// hp
+	data.hpSprite = std::make_unique<DefaultObject>();
+	data.hpSprite->Initialize(hpDrawData_, 0);
+	data.hpSprite->transform_.position = pos;
+	data.hpSprite->transform_.position += Vector3(-1.2f, 3.6f, 0.0f);
+	data.hpSprite->transform_.scale = { 2.0f,0.15f,1.0f };
+	data.hpSprite->transform_.rotate.x = -2.4f;
+	data.hpSprite->material_.color = { 0.0f,1.0f,0.0f,0.8f };
+	data.hpSprite->Update();
 
 	// フォントを登録
 	fontList_[index] = std::move(data);

@@ -14,7 +14,7 @@
 class OreItemManager {
 public:
 
-	void Initialize(DrawData spriteDrawData,const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader, DrawData drawData);
+	void Initialize(DrawData spriteDrawData, DrawData hpDrawData,const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader, DrawData drawData);
 
 	void Update(bool isOpenMap = false);
 
@@ -90,12 +90,14 @@ private: // フォント機能
 
 	struct TextData {
 		std::unique_ptr<FontObject> font;
+		std::unique_ptr<DefaultObject> hpSprite;
 		std::unique_ptr<DefaultObject> bgSprite;
 	};
 
 	FontLoader* fontLoader_ = nullptr;
 	DrawData fontDrawData_;
 	DrawData spriteDrawData_;
+	DrawData hpDrawData_;
 
 	// フォントデータ
 	std::unordered_map<int32_t, TextData> fontList_;

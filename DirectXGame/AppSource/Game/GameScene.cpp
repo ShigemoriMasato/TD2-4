@@ -189,12 +189,16 @@ void GameScene::Initialize() {
 	int boxModelID = modelManager_->LoadModel("BoxParticle");
 	auto boxModel = modelManager_->GetNodeModelData(boxModelID);
 
+	// spriteモデルを取得(アンカーポイントが違うスプライト)
+	int hpModeID = modelManager_->LoadModel(unitHpModelName);
+	auto hpMode = modelManager_->GetNodeModelData(hpModeID);
+
 	// 鉱石の管理システムを初期化
 	oreItemManager_ = std::make_unique<OreItemManager>();
 	// 描画データを設定ｓる
 	oreItemManager_->SetModle(drawDataManager_->GetDrawData(smallModel.drawDataIndex), drawDataManager_->GetDrawData(midleModel.drawDataIndex), drawDataManager_->GetDrawData(largeModel.drawDataIndex),
 		smallIndex, midleIndex, largeIndex);
-	oreItemManager_->Initialize(drawDataManager_->GetDrawData(sprModel.drawDataIndex), fontName, draw, fontLoader_, drawDataManager_->GetDrawData(boxModel.drawDataIndex));
+	oreItemManager_->Initialize(drawDataManager_->GetDrawData(sprModel.drawDataIndex), drawDataManager_->GetDrawData(hpMode.drawDataIndex), fontName, draw, fontLoader_, drawDataManager_->GetDrawData(boxModel.drawDataIndex));
 
 	// 鉱石の回収ノルマを設定
 	OreItemStorageNum::maxOreItemNum_ = currentMap_.norma;
