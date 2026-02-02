@@ -57,6 +57,9 @@ void GameScene::Initialize() {
 	// 当たり判定管理クラスを登録
 	Collider::SetColliderManager(colliderManager_.get());
 
+	//lightの初期化
+	LightManager::GetInstance()->Initialize();
+
 	auto inst = GameParamEditor::GetInstance();
 	inst->SetActiveScene("GameScene");
 	inst->CreateGroup("Test", "GameScene");
@@ -658,7 +661,6 @@ void GameScene::InGameScene() {
 	} else {
 		// 左クリックを取得
 		if ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80)) {
-
 			// クリックアニメーションを開始
 			cameraController_->StartAnimation();
 		}

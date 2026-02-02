@@ -37,6 +37,10 @@ public:
 	}
 
 	void Load() {
+		dirLights_.reserve(8);
+		pointLightActive_.reserve(256);
+		pointLights_.reserve(256);
+
 		auto values = binaryManager_.Read("LightConfig");
 		dirLights_.clear();
 		int index = 0;
@@ -47,6 +51,11 @@ public:
 			dirLight.intensity = binaryManager_.Reverse<float>(values[index++].get());
 			dirLights_.push_back(dirLight);
 		}
+	}
+
+	void Initialize() {
+		pointLightActive_.clear();
+		pointLights_.clear();
 	}
 
 	int AddPointLight(Vector3* position, PointLight pointLight) {
