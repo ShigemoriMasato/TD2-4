@@ -2,7 +2,7 @@
 #include<vector>
 #include"UI/Effect/InstancingObject.h"
 
-class ConflictParticle {
+class OreFragmentParticle {
 public:
 
 	// 1つのパーティクルがもつデータ
@@ -14,7 +14,7 @@ public:
 		float currentTime;   // 現在の時間
 		uint32_t textureHandle = 0; // 使用するテクスチャ
 
-		Vector3 rotSpeed;
+		float rotSpeed;
 		float speed;
 		float startScale;
 	};
@@ -28,11 +28,8 @@ public:
 	// 描画
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
-	// 衝突演出
-	void AddConflict(const Vector3& pos);
-
-	// 煙の演出
-	void AddSmoke(const Vector3& pos);
+	// パーティクルを追加
+	void AddParticle(const Vector3& pos);
 
 private: // パーティクル
 
@@ -41,28 +38,16 @@ private: // パーティクル
 
 	// パーティクルデータ
 	std::vector<ParticleData> particleDatas_;
-	uint32_t conflictMaxNum_ = 400;
+
+	// 描画の最大数
+	uint32_t maxNum_ = 200;
 
 	// 数を数える
 	int32_t index_ = 0;
-
-	float timer_ = 0.0f;
-	float coolTime_ = 0.1f;
-
-	// 煙演出
-	std::vector<ParticleData> smokeDatas_;
-	uint32_t smokeMaxNum_ = 100;
 
 private:
 
 	ParticleData MakeNewData(const Vector3& pos);
 
-	void Create();
-
 	void Move();
-
-
-	ParticleData MakeNewSmokeData(const Vector3& pos);
-
-	void SmokeMove();
 };

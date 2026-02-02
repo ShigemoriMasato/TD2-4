@@ -9,17 +9,20 @@
 #include"GameCommon/DefaultObject.h"
 
 #include"Unit/MapChipField.h"
+#include"Effect/OreFragmentParticle.h"
 
 class OreItemManager {
 public:
 
-	void Initialize(DrawData spriteDrawData,const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader);
+	void Initialize(DrawData spriteDrawData,const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader, DrawData drawData);
 
 	void Update();
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
 	void DrawUI();
+
+	void DrawEffect(Window* window, const Matrix4x4& vpMatrix);
 
 public:
 
@@ -79,6 +82,9 @@ private:
 	int midleTexture_ = 0;
 	DrawData largeDrawData_;
 	int largeTexture_ = 0;
+
+	// 破片パーティクル
+	std::unique_ptr<OreFragmentParticle> oreFragmentParticle_;
 
 private: // フォント機能
 

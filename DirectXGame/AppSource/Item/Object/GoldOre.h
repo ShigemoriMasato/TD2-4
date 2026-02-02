@@ -62,6 +62,7 @@ public:
 	int32_t GetMaxWorkerNum() override { return maxWorkerNum_; }
 	int32_t GetMaxHp() override { return hp_; }
 	int32_t GetHp() override { return maxHp_; }
+	bool IsChangeHp() override { return isChangeHp_; }
 
 private:
 	// オブジェクトデータ
@@ -69,6 +70,8 @@ private:
 
 	// 死亡フラグ
 	bool isDead_ = false;
+
+	bool isChangeHp_ = false;
 
 	// 体力
 	int32_t hp_ = 0;
@@ -88,6 +91,14 @@ private:
 
 	// タイプ
 	OreType type_;
+
+
+	int frame_ = 0;
+
+	float coolTimer_ = 0.0f;
+	float coolTime_ = 0.4f;
+
+	bool isHit_ = false;
 
 private: // 調整項目
 

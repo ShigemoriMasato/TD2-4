@@ -178,12 +178,16 @@ void GameScene::Initialize() {
 	auto largeModel = modelManager_->GetNodeModelData(largeModelID);
 	int largeIndex = textureManager_->GetTexture("MineralDeposite_Large-0.png");
 
+	// 演出モデル
+	int boxModelID = modelManager_->LoadModel("BoxParticle");
+	auto boxModel = modelManager_->GetNodeModelData(boxModelID);
+
 	// 鉱石の管理システムを初期化
 	oreItemManager_ = std::make_unique<OreItemManager>();
 	// 描画データを設定ｓる
 	oreItemManager_->SetModle(drawDataManager_->GetDrawData(smallModel.drawDataIndex), drawDataManager_->GetDrawData(midleModel.drawDataIndex), drawDataManager_->GetDrawData(largeModel.drawDataIndex),
 		smallIndex, midleIndex, largeIndex);
-	oreItemManager_->Initialize(drawDataManager_->GetDrawData(sprModel.drawDataIndex), fontName, draw, fontLoader_);
+	oreItemManager_->Initialize(drawDataManager_->GetDrawData(sprModel.drawDataIndex), fontName, draw, fontLoader_, drawDataManager_->GetDrawData(boxModel.drawDataIndex));
 
 	// 鉱石の回収ノルマを設定
 	OreItemStorageNum::maxOreItemNum_ = currentMap_.norma;
@@ -247,10 +251,6 @@ void GameScene::Initialize() {
 
 	// 鉱石のテクスチャを取得
 	int mItemTextureIndex = textureManager_->GetTexture("Mineral-0.png");
-
-	// 鉱石モデル
-	int boxModelID = modelManager_->LoadModel("BoxParticle");
-	auto boxModel = modelManager_->GetNodeModelData(boxModelID);
 
 	// ユニットの演出管理クラス(仮で作成したため消すかも)
 	unitEffectManager_ = std::make_unique<UnitEffectManager>();
@@ -709,6 +709,9 @@ void GameScene::Draw() {
 
 		// ユニットのHp描画
 		oreUnitHpUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+		// 鉱石の破片パーティクルを描画
+		oreItemManager_->DrawEffect(gameWindow_->GetWindow(), vpMatrix);
 
 		// マウスのクリックアニメーション
 		cameraController_->DrawAnimation(gameWindow_->GetWindow(), vpMatrix);

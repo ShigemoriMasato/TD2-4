@@ -168,6 +168,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\Game\MiniMap\MiniMap.cpp" />
     <ClCompile Include="AppSource\Game\NewMap\NewMap.cpp" />
     <ClCompile Include="AppSource\Game\SelectScene.cpp" />
+    <ClCompile Include="AppSource\Item\Effect\OreFragmentParticle.cpp" />
     <ClCompile Include="AppSource\Item\HomeManager.cpp" />
     <ClCompile Include="AppSource\Item\Object\GoldOre.cpp" />
     <ClCompile Include="AppSource\Item\Object\OreHome.cpp" />
@@ -264,6 +265,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\Game\MiniMap\MiniMap.h" />
     <ClInclude Include="AppSource\Game\NewMap\NewMap.h" />
     <ClInclude Include="AppSource\Game\SelectScene.h" />
+    <ClInclude Include="AppSource\Item\Effect\OreFragmentParticle.h" />
     <ClInclude Include="AppSource\Item\HomeManager.h" />
     <ClInclude Include="AppSource\Item\Object\GoldOre.h" />
     <ClInclude Include="AppSource\Item\Object\OreHome.h" />

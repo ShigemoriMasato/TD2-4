@@ -1,5 +1,8 @@
 #include"GoldOre.h"
 #include <Common/DebugParam/GameParamEditor.h>
+#include"FpsCount.h"
+#include"Unit/Ore/OreUnit.h"
+
 void GoldOre::Init(DrawData drawData, int texture, const Vector3& pos, OreType type, const float& rotY) {
 	
 	// オブジェクトを初期化
@@ -52,6 +55,19 @@ void GoldOre::Update() {
 	quadCollider_.topLeft = { -size_.x * 0.5f + object_->transform_.position.x, -size_.z * 0.5f + object_->transform_.position.z };
 	quadCollider_.bottomRight = { size_.x * 0.5f + object_->transform_.position.x, size_.z * 0.5f + object_->transform_.position.z };
 
+	if (isHit_) {
+		coolTimer_ += FpsCount::deltaTime / coolTime_;
+		if (coolTimer_ >= 1.0f) {
+			coolTimer_ = 0.0f;
+			isHit_ = false;
+		}
+
+		frame_++;
+		if (frame_ > 1) {
+			isChangeHp_ = false;
+		}
+	}
+
 	// 体力がないと死亡
 	if (hp_ <= 0) {
 		isDead_ = true;
@@ -67,7 +83,24 @@ void GoldOre::OnCollision(Collider* other) {
 
 	bool isUnit = CollTag::Unit == other->GetOwnTag();
 
-	if (!isUnit) { return; }
+	if (isUnit) {
+
+		OreUnit* unit = dynamic_cast<OreUnit*>(other);
+		if (unit) {
+			if (OreUnit::State::Mining == unit->GetState()) {
+				if (!isHit_) {
+					frame_ = 0;
+					isChangeHp_ = true;
+					isHit_ = true;
+				}
+			}
+		}
+	} else {
+		frame_ = 0;
+		coolTimer_ = 0.0f;
+		isHit_ = false;
+		isChangeHp_ = false;
+	}
 }
 
 void GoldOre::RegisterDebugParam() {
