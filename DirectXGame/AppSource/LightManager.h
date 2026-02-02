@@ -81,7 +81,15 @@ public:
 	//PointLightの位置更新。最後推奨
 	void Update() {
 		for (size_t i = 0; i < pointLights_.size(); ++i) {
-			pointLights_[i].position = *pointPositions_[i];
+			if (!pointLightActive_[i]) {
+				continue;
+			}
+			try {
+				pointLights_[i].position = *pointPositions_[i];
+			} catch (...) {
+				pointLightActive_[i] = false;
+				pointLights_[i].intensity = 0.0f;
+			}
 		}
 	}
 
