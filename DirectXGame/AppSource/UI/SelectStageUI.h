@@ -38,7 +38,7 @@ private:
 
 	bool isChange_ = false;
 
-	std::wstring name_ = L"Stage";
+	std::wstring name_ = L"ステージ";
 
 	// フォントの位置
 	Vector3 fontPos_ =  { 497.0f,150.0f,0.0f };

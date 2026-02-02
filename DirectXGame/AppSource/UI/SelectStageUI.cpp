@@ -9,21 +9,21 @@ void SelectStageUI::Init(DrawData drawData, const std::string& fontName, DrawDat
 
 	// 描画機能の初期化
 	spriteObject_ = std::make_unique<SpriteObject>();
-	spriteObject_->Initialize(drawData,{512.0f,64.0f});
+	spriteObject_->Initialize(drawData,{400.0f,64.0f});
 	spriteObject_->transform_.position.x = 640.0f;
 	spriteObject_->transform_.position.y = 128.0f;
 
 	// デフォルトのサイズを設定
 	defaultSize_ = spriteObject_->transform_.scale;
 
-	fontPos_.x = 640.0f - (32.0f * 5 * 0.5f);
+	fontPos_.x = 615.0f - (32.0f * 5 * 0.5f);
 
 	// テキストの初期化
 	fontObject_ = std::make_unique<FontObject>();
 	fontObject_->Initialize(fontName, name_ + std::to_wstring(SelectStageNum::num_), fontDrawData, fontLoader);
 	fontObject_->transform_.position.x = fontPos_.x;
 	fontObject_->transform_.position.y = fontPos_.y;
-	fontObject_->fontColor_ = { 1.0f,0.0f,0.0f,1.0f };
+	fontObject_->fontColor_ = { 0.0f,0.0f,0.0f,1.0f };
 }
 
 void SelectStageUI::Update() {
@@ -67,6 +67,7 @@ void SelectStageUI::Update() {
 		if (timer_ >= 1.0f) {
 			isChange_ = false;
 			isAnimation_ = false;
+			fontObject_->transform_.position.x = fontPos_.x;
 			spriteObject_->transform_.scale.x = defaultSize_.x;
 			spriteObject_->transform_.scale.y = defaultSize_.y;
 			fontObject_->transform_.scale.x = 1.0f;

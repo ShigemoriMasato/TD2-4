@@ -164,6 +164,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\Common\DebugParam\ParamManager.cpp" />
     <ClCompile Include="AppSource\GameCamera\CameraController.cpp" />
     <ClCompile Include="AppSource\GameCamera\SelectCamera.cpp" />
+    <ClCompile Include="AppSource\GameCamera\TitleCamera.cpp" />
     <ClCompile Include="AppSource\GameCommon\DefaultObject.cpp" />
     <ClCompile Include="AppSource\Game\MiniMap\MiniMap.cpp" />
     <ClCompile Include="AppSource\Game\NewMap\NewMap.cpp" />
@@ -258,6 +259,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="WWGenerator.cpp" />
     <ClInclude Include="AppSource\GameCamera\DebugMousePos.h" />
     <ClInclude Include="AppSource\GameCamera\SelectCamera.h" />
+    <ClInclude Include="AppSource\GameCamera\TitleCamera.h" />
     <ClInclude Include="AppSource\GameCommon\DefaultObject.h" />
     <ClCompile Include="AppSource\UI\PauseUI.cpp" />
     <ClInclude Include="AppSource\GameCamera\DebugMousePos.h" />

@@ -13,6 +13,8 @@
 #include"GameCommon/DefaultObject.h"
 #include"GameCamera/SelectCamera.h"
 #include"UI/FadeTransition.h"
+#include"UI/Object/SpriteObject.h"
+#include"GameCamera/TitleCamera.h"
 
 class SelectScene : public IScene {
 public:
@@ -62,6 +64,12 @@ private:
 
 	bool isPlayerAnimation_ = false;
 
+	// 洞窟に入る演出
+	bool isInPlayerAnimation_ = false;
+	float inPlayerTimer_ = 0.0f;
+	float inPlayerTime_ = 1.0f;
+	float inPlayerStartRotY_ = 0.0f;
+
 	Vector3 startPos_ = {};
 	Vector3 endPos_ = {};
 
@@ -80,6 +88,12 @@ private:
 
 	std::array<std::unique_ptr<DefaultObject>,3> stagePointObjects_;
 
+	// 洞窟描画用
+	std::array<std::unique_ptr<DefaultObject>, 3> caveObjects_;
+	
+	// 足場オブジェクト
+	std::unique_ptr<DefaultObject> floorObject_;
+
 	//==============================================
 	// UI
 	//==============================================
@@ -91,9 +105,31 @@ private:
 	// ステージ選択のロゴ
 	std::unique_ptr<SelectStageUI> selectStageUI_;
 
+	//===========================================================
+	// 
+	// タイトルシーン
+	// 
+	//===========================================================
+
+	// タイトルロゴ
+	std::unique_ptr<SpriteObject> titleSprite_;
+
+	// プレススペース
+	std::unique_ptr<SpriteObject> spaceSprite_;
+
+	float titleTimer_ = 0.0f;
+	float titleTime_ = 1.0f;
+	bool isTitle_ = true;
+
+	bool isStartTitle_ = false;
+
+	std::unique_ptr<TitleCamera> titleCamera_;
+
 private:
 
 	// ゲームの実行処理
 	void InGameScene();
 
+	// タイトルシーン
+	void TitleScene();
 };
