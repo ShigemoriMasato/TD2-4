@@ -16,7 +16,7 @@ public:
 
 	void Initialize(DrawData spriteDrawData,const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader, DrawData drawData);
 
-	void Update();
+	void Update(bool isOpenMap = false);
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 

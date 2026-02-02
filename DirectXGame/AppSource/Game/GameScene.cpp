@@ -498,6 +498,9 @@ std::unique_ptr<IScene> GameScene::Update() {
 				if (!isActiveMinMap_) {
 					// ゲームの更新処理
 					InGameScene();
+				} else {
+					// 鉱石管理の更新処理
+					oreItemManager_->Update(true);
 				}
 			}
 		}
