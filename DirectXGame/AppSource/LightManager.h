@@ -56,6 +56,7 @@ public:
 	void Initialize() {
 		pointLightActive_.clear();
 		pointLights_.clear();
+		pointPositions_.clear();
 	}
 
 	int AddPointLight(Vector3* position, PointLight pointLight) {

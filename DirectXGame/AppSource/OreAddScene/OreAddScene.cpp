@@ -18,9 +18,9 @@ void OreAddScene::Initialize() {
 	if (commonData_->isEndlessMode) {
 		stageNum = commonData_->stageCount;
 	}
-	result_->Initialize(fontName, L"Stage" + std::to_wstring(stageNum) + L" Result", drawData, fontLoader_);
+	result_->Initialize(fontName, L"Floor" + std::to_wstring(stageNum) + L" Result", drawData, fontLoader_);
 	result_->transform_.scale = { 1.5f, -1.6f, 1.0f };
-	result_->transform_.position = { 250.0f, 189.0f, 0.0f };
+	result_->transform_.position = { 340.0f, 189.0f, 0.0f };
 	result_->fontColor_ = ConvertColor(0xffffffff);
 
 	goldNumIs_ = std::make_unique<FontObject>();
