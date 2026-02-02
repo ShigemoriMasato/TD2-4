@@ -57,6 +57,9 @@ void GameScene::Initialize() {
 	// 当たり判定管理クラスを登録
 	Collider::SetColliderManager(colliderManager_.get());
 
+	//lightの初期化
+	LightManager::GetInstance()->Initialize();
+
 	auto inst = GameParamEditor::GetInstance();
 	inst->SetActiveScene("GameScene");
 	inst->CreateGroup("Test", "GameScene");
@@ -88,12 +91,20 @@ void GameScene::Initialize() {
 	//============================================
 	hasNextMap_ = true;
 	if (commonData_->isEndlessMode) {
-		currentMap_ = commonData_->newMapManager->GetEndlessMap(commonData_->nextMapIndex, commonData_->prevMapIndex);
+		currentMap_ = commonData_->newMapManager->GetEndlessMap(commonData_->stageCount, commonData_->prevMapIndex);
+
+		if (commonData_->stageCount == 0) {
+			commonData_->oreNum = currentMap_.initOreNum;
+		}
 
 		commonData_->stageCount++;
 		commonData_->prevMapIndex = currentMap_.currentMapID;
 	} else {
 		currentMap_ = commonData_->newMapManager->GetStageMap(commonData_->nextStageIndex, commonData_->nextMapIndex);
+
+		if (commonData_->nextMapIndex == 0) {
+			commonData_->oreNum = currentMap_.initOreNum;
+		}
 		
 		if (currentMap_.currentMapID != commonData_->nextMapIndex){
 			Logger logger = getLogger("GameScene");
@@ -655,7 +666,6 @@ void GameScene::InGameScene() {
 	} else {
 		// 左クリックを取得
 		if ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80)) {
-
 			// クリックアニメーションを開始
 			cameraController_->StartAnimation();
 		}
@@ -722,7 +732,7 @@ void GameScene::Draw() {
 		staticObjectRender_->Draw(vpMatrix, gameWindow_->GetWindow());
 
 		// デバッグ用マップ描画
-		//debugMapRender_->Draw(vpMatrix, colorMap_, currentMap_.currentMap.mapChipData, gameWindow_->GetWindow());
+		debugMapRender_->Draw(vpMatrix, colorMap_, currentMap_.currentMap.mapChipData, gameWindow_->GetWindow());
 
 		// 鉱石の描画
 		oreItemManager_->Draw(gameWindow_->GetWindow(), vpMatrix);

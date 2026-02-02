@@ -98,7 +98,7 @@ void StaticObjectRender::SetObjects(const std::map<int, std::vector<Transform>>&
 	}
 
 	for (auto& [modelIndex, render] : objects_) {
-
+		
 		if (render->instanceNum_ != 0xffffffff) {
 			//描画数だけ合わせる
 			render->instanceNum_ = static_cast<int>(vsData_[modelIndex].size());
@@ -124,6 +124,30 @@ void StaticObjectRender::SetObjects(const std::map<int, std::vector<Transform>>&
 		render->psoConfig_.vs = "Model/Obj.VS.hlsl";
 		render->psoConfig_.ps = "Model/Obj.PS.hlsl";
 		render->SetUseTexture(true);
+
+	}
+}
+
+void StaticObjectRender::GenerateWW(const std::vector<std::vector<TileType>>& mapdata) {
+	std::map<int, std::vector<Transform>> objects;
+
+	for (int i = 0; i < int(mapdata.size()); ++i) {
+		for (int j = 0; j < int(mapdata[i].size()); ++j) {
+
+			if (mapdata[i][j] == TileType::Wall) {
+				//==============
+				//壁を配置
+				//==============
+				Transform& trans = objects[0].emplace_back();
+				//座標計算
+				trans.position = { float(j), 0.0f, float(i) };
+			}
+
+		}
+	}
+
+	auto& render = objects_[0];
+	if (!render) {
 
 	}
 }

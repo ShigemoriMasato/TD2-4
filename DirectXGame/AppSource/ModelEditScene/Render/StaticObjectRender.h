@@ -2,6 +2,7 @@
 #include <Render/RenderObject.h>
 #include <Assets/Model/ModelManager.h>
 #include <Render/DrawDataManager.h>
+#include <Game/NewMap/NewMap.h>
 
 class StaticObjectRender {
 public:
@@ -12,6 +13,8 @@ public:
 	void SetAlpha(float alpha);
 
 	void SetObjects(const std::map<int, std::vector<Transform>>& objects);
+
+	void GenerateWW(const std::vector<std::vector<TileType>>& mapdata);
 
 private:
 

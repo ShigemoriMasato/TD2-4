@@ -34,6 +34,8 @@ void CameraController::Initialize(Input* input, DrawData drawData, int texture) 
 	edit->CreateGroup("Camera", "GameScene");
 	edit->AddItem("Camera", "InitBackDist", initBackDist_, 1);
 	edit->AddItem("Camera", "FollowSpeed", followSpeed_, 2);
+	edit->AddItem("Camera", "Min", dirMin_, 3);
+	edit->AddItem("Camera", "Max", dirMax_, 4);
 	initBackDist_ = edit->GetValue<float>("Camera", "InitBackDist");
 
 	backDist_ = initBackDist_;
@@ -45,6 +47,8 @@ void CameraController::Update() {
 	auto edit = GameParamEditor::GetInstance();
 	initBackDist_ = edit->GetValue<float>("Camera", "InitBackDist");
 	followSpeed_ = edit->GetValue<float>("Camera", "FollowSpeed");
+	dirMin_ = edit->GetValue<float>("Camera", "Min");
+	dirMax_ = edit->GetValue<float>("Camera", "Max");
 
 	if (isFollow_) {
 		
@@ -105,14 +109,18 @@ void CameraController::Update() {
 		backDist_ += speed * FpsCount::deltaTime;
 	}
 
+	if (dirMin_ > dirMax_) {
+		std::swap(dirMin_, dirMax_);
+	}
+
 	// カメラの移動範囲を制限する
 	position_.x = std::clamp(position_.x,0.0f, mapMaxSize_.x * 1.5f);
 	position_.y = 0.0f;
 	position_.z = std::clamp(position_.z, -3.0f, mapMaxSize_.y * 0.8f);
 
 	// カメラの喀出を制限(カメラの見える範囲は固定になると思うのでいらないかも)
-	backDist_ = std::clamp(backDist_, -100.0f, -10.0f);
-	targetBackDist_ = std::clamp(targetBackDist_, -100.0f, -10.0f);
+	backDist_ = std::clamp(backDist_, dirMin_, dirMax_);
+	targetBackDist_ = std::clamp(targetBackDist_, dirMin_, dirMax_);
 
 	// カメラの更新処理
 	MakeMatrix();

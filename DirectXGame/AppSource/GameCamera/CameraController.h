@@ -93,6 +93,9 @@ private:
 	bool preClicked_ = false;
 	float deadZone_ = 10.0f;
 
+	float dirMax_ = -10.0f;
+	float dirMin_ = -100.0f;
+
 	// なぜかカメラのワールド行列がないので追加
 	Matrix4x4 worldMatrix_;
 
