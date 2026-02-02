@@ -88,12 +88,20 @@ void GameScene::Initialize() {
 	//============================================
 	hasNextMap_ = true;
 	if (commonData_->isEndlessMode) {
-		currentMap_ = commonData_->newMapManager->GetEndlessMap(commonData_->nextMapIndex, commonData_->prevMapIndex);
+		currentMap_ = commonData_->newMapManager->GetEndlessMap(commonData_->stageCount, commonData_->prevMapIndex);
+
+		if (commonData_->stageCount == 0) {
+			commonData_->oreNum = currentMap_.initOreNum;
+		}
 
 		commonData_->stageCount++;
 		commonData_->prevMapIndex = currentMap_.currentMapID;
 	} else {
 		currentMap_ = commonData_->newMapManager->GetStageMap(commonData_->nextStageIndex, commonData_->nextMapIndex);
+
+		if (commonData_->nextMapIndex == 0) {
+			commonData_->oreNum = currentMap_.initOreNum;
+		}
 		
 		if (currentMap_.currentMapID != commonData_->nextMapIndex){
 			Logger logger = getLogger("GameScene");
