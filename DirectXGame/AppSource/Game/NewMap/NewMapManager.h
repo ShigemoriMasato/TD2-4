@@ -26,6 +26,8 @@ public:
 	//テクスチャIDからパスへの対応表
 	std::map<int, std::string> GetTextureMap() { return textureMap_; };
 
+	int GetWallIndex();
+
 private:
 
 	void LoadTexturePaths();

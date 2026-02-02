@@ -83,6 +83,10 @@ CurrentStageConfig NewMapManager::GetEndlessMap(int stageCount, int prevMap) {
 	return config;
 }
 
+int NewMapManager::GetWallIndex() {
+	return modelMap_[0].first;
+}
+
 void NewMapManager::LoadTexturePaths() {
 	auto values = binaryManager_.Read(saveFileNameTexturePath_);
 	if (values.empty()) {

@@ -4,22 +4,33 @@
 #include <Render/DrawDataManager.h>
 #include <Game/NewMap/NewMap.h>
 
+using float2 = Vector2;
+using float3 = Vector3;
+using float4x4 = Matrix4x4;
+
 class StaticObjectRender {
 public:
+
+	~StaticObjectRender() {
+		SaveWaveData();
+	};
 
 	void Initialize(ModelManager* modelManager, DrawDataManager* drawDataManager, bool debugMode = false);
 	void Draw(const Matrix4x4& vpMatrix, Window* window);
 	void DrawImGui();
 	void SetAlpha(float alpha);
 
+	void SetCurrentStage(int stage) { currentStage_ = stage; }
+
 	void SetObjects(const std::map<int, std::vector<Transform>>& objects);
 
-	void GenerateWW(const std::vector<std::vector<TileType>>& mapdata);
+	void SetWallIndex(int index) { wallIndex_ = index; }
 
 private:
 
 	void Load();
 	void Save();
+	void SaveWaveData();
 
 	struct VSData {
 		Matrix4x4 world;
@@ -49,4 +60,27 @@ private:
 
 	BinaryManager binaryManager_;
 	const std::string saveFileName_ = "DirectionalLight";
+	const std::string waveFileName_ = "WaveData";
+
+	int wallIndex_ = 0;
+
+	struct Wave {
+		float2 direction;
+		float amplitude;
+		float wavelength;
+		float speed;
+		float3 pad;
+	};
+
+	struct WaveVS {
+		float4x4 world;
+		float4x4 vp;
+		float3 cameraPos;
+		float time;
+		int waveCount;
+		float3 pad;
+		Wave waves[8];
+	};
+	std::vector<WaveVS> waveData_{};
+	int currentStage_;
 };

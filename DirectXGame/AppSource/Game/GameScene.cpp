@@ -148,6 +148,7 @@ void GameScene::Initialize() {
 	//装飾用オブジェクトの描画機能を初期化
 	staticObjectRender_ = std::make_unique<StaticObjectRender>();
 	staticObjectRender_->Initialize(modelManager_, drawDataManager_, false);
+	staticObjectRender_->SetWallIndex(commonData_->newMapManager->GetWallIndex());
 	staticObjectRender_->SetObjects(currentMap_.currentMap.decorations);
 
 	//ColorMap作成

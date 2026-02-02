@@ -63,6 +63,8 @@ std::unique_ptr<IScene> ModelEditScene::Update() {
 	input_->Update();
 	cameraController_->Update();
 
+	staticObjectRender_->SetWallIndex(decorationEditor_->GetWallIndex());
+
 	//カーソル座標
 	Vector3 freeCursor = cameraController_->GetWorldPos();
 	Vector2 gridCursor = GetPositionWithGrid(freeCursor + Vector3(0.5f, 0.0f, 0.5f), 1.0f, { 0.0f,0.0f });
@@ -175,6 +177,10 @@ void ModelEditScene::Draw() {
 		currentStage_++;
 	}
 
+	if (ImGui::Button("Gen")) {
+		decorationEditor_->GenerateWW(typeEditor_->GetCurrentMapChipData());
+	}
+
 	if (ImGui::Button("Save")) {
 		typeEditor_->Save();
 		textureEditor_->TextureSave();
@@ -187,6 +193,7 @@ void ModelEditScene::Draw() {
 	typeEditor_->DrawImGui();
 	textureEditor_->DrawImGui();
 	decorationEditor_->DrawImGui();
+	staticObjectRender_->DrawImGui();
 	int map = stageEditor_->DrawImGui();
 	if (map != -1) {
 		stageChanged_ = true;

@@ -152,6 +152,20 @@ void MapDecorationEditor::DrawImGui() {
 
 	ImGui::End();
 
+	ImGui::Begin("Wall");
+
+	static char buffer[256] = "";
+	ImGui::InputText("File Name", buffer, sizeof(buffer));
+	if (ImGui::Button("Load")) {
+		int modelIndex = modelManager_->LoadModel(".Deco/" + std::string(buffer));
+		if (modelIndex != 1) {
+			modelIDMap_[modelIndex] = 0;
+			modelList_[0] = { std::string(buffer), modelList_[0].second };
+		}
+	}
+
+	ImGui::End();
+
 #endif // USE_IMGUI
 
 }
@@ -187,6 +201,33 @@ void MapDecorationEditor::SetCurrentMap(int mapID) {
 		decorations_.resize(currentMapID_ + 1);
 	}
 	editingTransformIndex_ = -1;
+}
+
+void MapDecorationEditor::GenerateWW(std::vector<std::vector<TileType>> mapData) {
+	int height = static_cast<int>(mapData.size());
+	int width = static_cast<int>(mapData[0].size());
+
+	int index = 0;
+	for (const auto& [modelID, modelInfo] : modelList_) {
+		if (modelID == 0) {
+			index = modelManager_->LoadModel(".Deco/" + modelInfo.first);
+			break;
+		}
+	}
+
+	decorations_[currentMapID_][index].clear();
+
+	for (int i = 0; i < height; ++i) {
+		for (int j = 0; j < width; ++j) {
+			if (mapData[i][j] == TileType::Wall) {
+				Transform transform;
+				transform.position = Vector3(static_cast<float>(j), 0.0f, static_cast<float>(i));
+				transform.rotate = Vector3(0.0f, 0.0f, 0.0f);
+				transform.scale = Vector3(1.0f, 1.0f, 1.0f);
+				decorations_[currentMapID_][index].push_back(transform);
+			}
+		}
+	}
 }
 
 void MapDecorationEditor::DecoDataLoad() {
@@ -270,4 +311,13 @@ void MapDecorationEditor::ModelListLoad() {
 		modelList_[oldestID] = { file, Vector3(1.0f, 1.0f, 1.0f) };
 		modelIDMap_[modelIndex] = oldestID;
 	}
+}
+
+int MapDecorationEditor::GetWallIndex() const {
+	for (const auto& [modelID, modelInfo] : modelList_) {
+		if (modelID == 0) {
+			return modelManager_->LoadModel(".Deco/" + modelInfo.first);
+		}
+	}
+	return 0;
 }

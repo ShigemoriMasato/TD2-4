@@ -18,6 +18,13 @@ cbuffer CBPerObject : register(b0)
     Wave waves[8];
 };
 
+struct Position
+{
+    float3 localPos;
+    float pad;
+};
+StructuredBuffer<Position> positions : register(t0);
+
 struct VSInput
 {
     float4 pos : POSITION0;
@@ -27,11 +34,10 @@ struct VSInput
 
 struct VSOutput
 {
-    float4 posH : SV_POSITION;
-    float3 worldPos : TEXCOORD0;
-    float3 normal : NORMAL;
-    float2 uv : TEXCOORD1;
-    float3 viewDir : TEXCOORD2;
+    float4 position : SV_POSITION;
+    float2 texCoord : TEXCOORD0;
+    float3 normal : NORMAL0;
+    float3 worldPos : WORLDPOS0;
 };
 
 float kFromWavelength(float wavelength)
@@ -39,10 +45,11 @@ float kFromWavelength(float wavelength)
     return 2.0 * 3.14159265 / wavelength;
 }
 
-VSOutput main(VSInput input)
+VSOutput main(VSInput input, uint id : SV_InstanceID)
 {
     VSOutput o;
-    float3 pos = mul(input.pos, world).xyz; // pos.y is baseline (0)
+    //scale調整用
+    float3 pos = positions[id].localPos;
     float3 displaced = pos;
     float3 tangent = float3(1, 0, 0);
     float3 bitangent = float3(0, 0, 1);
@@ -53,6 +60,9 @@ VSOutput main(VSInput input)
 
     for (int i = 0; i < waveCount; ++i)
     {
+        if(waves[i].amplitude == 0.0f)
+            continue;
+        
         float2 D = normalize(waves[i].direction);
         float A = waves[i].amplitude;
         float L = waves[i].wavelength;
@@ -69,6 +79,7 @@ VSOutput main(VSInput input)
         displaced.z += D.y * (A * cosP);
         displaced.y += A * sinP;
 
+        //ここまじでわからん
         // partial derivatives for normal
         // ∂p/∂x and ∂p/∂z contributions
         // from derivation:
@@ -83,13 +94,14 @@ VSOutput main(VSInput input)
 
     // compute normal from cross product of partials
     float3 normal = normalize(cross(dPos_dz, dPos_dx)); // note order
-    pos = displaced;
-    o.worldPos = pos;
-    o.normal = mul((float3x3) world, normal); // transform normal correctly
-    o.uv = input.uv;
-    float4 viewPos = mul(float4(pos, 1), vp);
-    o.viewDir = normalize(cameraPos - pos);
-
-    o.posH = mul(float4(pos, 1), vp);
+    pos = mul(input.pos.xyz, (float3x3) world) + positions[id].localPos;
+    displaced.y = max(displaced.y, 0.5f);
+    pos.y *= displaced.y;
+    pos.y = max(pos.y, 0.0f);
+    
+    o.worldPos = pos.xyz;
+    o.normal = normal; // transform normal correctly
+    o.texCoord = input.uv;
+    o.position = mul(float4(o.worldPos, 1.0f), vp);
     return o;
 }

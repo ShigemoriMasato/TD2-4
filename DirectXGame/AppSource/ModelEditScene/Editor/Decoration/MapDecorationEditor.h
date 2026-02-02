@@ -1,5 +1,6 @@
 #pragma once
 #include <Assets/Model/ModelManager.h>
+#include <Game/NewMap/NewMap.h>
 
 class MapDecorationEditor {
 public:
@@ -19,6 +20,10 @@ public:
 	void NonEdit() { editing_ = false; }
 
 	const std::map<int, std::vector<Transform>>& GetDecorations() { return decorations_[currentMapID_]; }
+
+
+	void GenerateWW(std::vector<std::vector<TileType>> mapData);
+	int GetWallIndex() const;
 
 private:
 
