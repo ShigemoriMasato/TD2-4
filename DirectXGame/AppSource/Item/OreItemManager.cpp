@@ -3,7 +3,7 @@
 // 各鉱石
 #include"Object/GoldOre.h"
 
-void OreItemManager::Initialize(DrawData spriteDrawData, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader) {
+void OreItemManager::Initialize(DrawData spriteDrawData, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader, DrawData drawData) {
 
 	fontLoader_ = fontLoader;
 	fontName_ = fontName;
@@ -17,6 +17,10 @@ void OreItemManager::Initialize(DrawData spriteDrawData, const std::string& font
 	// アウトライン描画用
 	oreOutLineObject_ = std::make_unique<OreOutLineObject>();
 	oreOutLineObject_->Initialize(smallDrawData_);
+
+	// 破片パーティクルの初期化
+	oreFragmentParticle_ = std::make_unique<OreFragmentParticle>();
+	oreFragmentParticle_->Initialize(drawData);
 }
 
 void OreItemManager::Update() {
@@ -40,6 +44,11 @@ void OreItemManager::Update() {
 
 		// 更新処理
 		ore->Update();
+
+		// 破片パーティクルを追加
+		if (ore->IsChangeHp()) {
+			oreFragmentParticle_->AddParticle(ore->GetPos());
+		}
 
 		// フォントを更新する
 		std::wstring s = std::to_wstring(ore->GetCurrentWorkerNum()) + L"/" + std::to_wstring(ore->GetMaxWorkerNum());
@@ -97,6 +106,10 @@ void OreItemManager::Update() {
 			break;
 		}
 	}
+
+
+	// 演出の更新処理
+	oreFragmentParticle_->Update();
 }
 
 void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
@@ -114,6 +127,12 @@ void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	if (selectId_ != -1 && oreItems_.size() > 0) {
 		oreOutLineObject_->Draw(window, vpMatrix);
 	}
+
+}
+
+void OreItemManager::DrawEffect(Window* window, const Matrix4x4& vpMatrix) {
+	// 演出を描画
+	oreFragmentParticle_->Draw(window, vpMatrix);
 }
 
 void OreItemManager::DrawUI() {
