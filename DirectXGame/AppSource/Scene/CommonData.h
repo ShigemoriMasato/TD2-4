@@ -28,4 +28,7 @@ struct CommonData {
 	int32_t nextOreUnitMaxNum = 20;
 
 	int postEffectDrawDataIndex = -1;
+
+	// タイトルシーンを受けたか判断する
+	bool isTitle_ = false;
 };

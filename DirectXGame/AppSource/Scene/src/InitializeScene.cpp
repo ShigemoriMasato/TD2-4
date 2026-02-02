@@ -50,7 +50,7 @@ void InitializeScene::Initialize() {
 std::unique_ptr<IScene> InitializeScene::Update(){
 	//return std::make_unique<OreAddScene>();
 	//return std::make_unique<ModelEditScene>();
-	return std::make_unique<GameScene>();
+	return std::make_unique<SelectScene>();
 }
 
 void InitializeScene::Draw() {
