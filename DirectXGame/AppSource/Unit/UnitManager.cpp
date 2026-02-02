@@ -84,6 +84,10 @@ void UnitManager::Update() {
 				freeIndices_.push_back(id);
 				activeCount_--;
 			} else if (unit->IsDead()) {
+
+				// 死亡ログを出す
+				logUI_->AddUnitDeathLog();
+
 				// 再利用リストに追加
 				freeIndices_.push_back(id);
 				activeCount_--;

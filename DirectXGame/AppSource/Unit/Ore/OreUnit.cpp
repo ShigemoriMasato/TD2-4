@@ -93,6 +93,7 @@ void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos, OreItem* o
 	isToDeliver_ = false;
 	isDeathAnimation_ = false;
 	isEndDeathAnimation_ = false;
+	isConflict_ = false;
 
 	// 最初は衝突判定を無効にする
 	isCoolTimeEnd_ = true;
@@ -224,7 +225,9 @@ void OreUnit::Update() {
 		if (isEndDeathAnimation_) {
 			if (!isDead_) {
 				// 登録されている労働者を減らす
-				oreItem_->RemoveWorker();
+				if (oreItem_) {
+					oreItem_->RemoveWorker();
+				}	
 			}
 			isDead_ = true;
 		}
