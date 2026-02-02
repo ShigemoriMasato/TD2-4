@@ -102,6 +102,8 @@ PSOutput main(PSInput input)
     float4 textureColor = textures[textureIndex].Sample(gSampler, input.texCoord);
     float4 baseColor = materialColor * textureColor;
     
+    output.color = baseColor / 4.0f;
+    
     if(baseColor.a < 0.1f)
     {
         discard;

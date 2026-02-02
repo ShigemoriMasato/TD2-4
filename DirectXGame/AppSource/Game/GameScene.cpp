@@ -717,7 +717,7 @@ void GameScene::Draw() {
 		staticObjectRender_->Draw(vpMatrix, gameWindow_->GetWindow());
 
 		// デバッグ用マップ描画
-		//debugMapRender_->Draw(vpMatrix, colorMap_, currentMap_.currentMap.mapChipData, gameWindow_->GetWindow());
+		debugMapRender_->Draw(vpMatrix, colorMap_, currentMap_.currentMap.mapChipData, gameWindow_->GetWindow());
 
 		// 鉱石の描画
 		oreItemManager_->Draw(gameWindow_->GetWindow(), vpMatrix);

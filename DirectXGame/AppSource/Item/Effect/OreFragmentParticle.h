@@ -40,7 +40,7 @@ private: // パーティクル
 	std::vector<ParticleData> particleDatas_;
 
 	// 描画の最大数
-	uint32_t maxNum_ = 200;
+	uint32_t maxNum_ = 400;
 
 	// 数を数える
 	int32_t index_ = 0;
