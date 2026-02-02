@@ -141,7 +141,6 @@ void SelectScene::InGameScene() {
 		if (!selectStageUI_->IsAnimation() && !isPlayerAnimation_) {
 			if (selectStageNum_ > 1) {
 				selectStageNum_ -= 1;
-				SelectStageNum::num_ = selectStageNum_;
 				selectStageUI_->SetAnimation();
 				// プレイヤー関係
 				isPlayerAnimation_ = true;
@@ -159,7 +158,6 @@ void SelectScene::InGameScene() {
 		if (!selectStageUI_->IsAnimation() && !isPlayerAnimation_) {
 			if (selectStageNum_ < maxStageNum_) {
 				selectStageNum_ += 1;
-				SelectStageNum::num_ = selectStageNum_;
 				selectStageUI_->SetAnimation();
 				// プレイヤー関係
 				isPlayerAnimation_ = true;
@@ -175,6 +173,8 @@ void SelectScene::InGameScene() {
 
 	// 決定
 	if (key[Key::Decision]) {
+		commonData_->nextStageIndex = selectStageNum_ - 1;
+		commonData_->nextMapIndex = 0;
 		isSceneChange_ = true;
 	}
 

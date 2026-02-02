@@ -36,9 +36,9 @@ GameScene::~GameScene() {
 	isGameOverScene_ = false;
 
 	// ゲームシーンで取得した鉱石の数
-	commonData_->oreItemCurrentNum = OreItemStorageNum::currentOreItemNum_;
+	commonData_->goldNum = OreItemStorageNum::currentOreItemNum_;
 	// ゲームシーンで残っているおれ
-	commonData_->oreUnitCurrentNum = unitManager_->GetMaxOreCount();
+	commonData_->oreNum = unitManager_->GetMaxOreCount();
 
 	OreItemStorageNum::currentOreItemNum_ = 0;
 }
@@ -240,7 +240,7 @@ void GameScene::Initialize() {
 	unitManager_->Initalize(mapChipField_.get(),
 		drawDataManager_->GetDrawData(playerModel.drawDataIndex), playerTextureIndex,
 		drawDataManager_->GetDrawData(oreModel.drawDataIndex), oreTextureIndex,
-		commonData_->keyManager.get(), playerInitPos, commonData_->nextOreUnitMaxNum);
+		commonData_->keyManager.get(), playerInitPos, commonData_->oreNum);
 
 	// 拠点管理クラスを設定
 	unitManager_->SetHomeManager(homeManager_.get());
@@ -466,6 +466,16 @@ std::unique_ptr<IScene> GameScene::Update() {
 		isTimerSet_ = true;
 	}
 
+	//? ==============================================================
+	//?  スタートカウントの時、カメラをプレイヤーの位置に設定する
+	//? ==============================================================
+
+	if (!startCountUI_->isStartAnimeEnd() && startCountUI_->isStart_) {
+		cameraController_->SetTargetPos(unitManager_->GetPlayerPosition());
+		// カメラの更新処理
+		cameraController_->Update();
+	}
+
 	//=============================================================
 	// シーン遷移、シーンの管理
 	//=============================================================
@@ -558,7 +568,12 @@ std::unique_ptr<IScene> GameScene::Update() {
 
 	// 切り替える
 	if (isSceneChange_) {
+
 		if (isRetry_) {
+
+			if (isGameOverScene_) {
+				return std::make_unique<SelectScene>();
+			}
 
 			//即席フェードアウト処理
 			static float timer = 0.0f;
