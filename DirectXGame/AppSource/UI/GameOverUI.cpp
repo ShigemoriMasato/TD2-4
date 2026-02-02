@@ -29,7 +29,7 @@ void GameOverUI::Initialize(DrawData drawData, KeyManager* keyManager, const std
 	selectFontObject_ = std::make_unique<FontObject>();
 	selectFontObject_->Initialize(fontName, L"SelectStage", fontDrawData, fontLoader);
 	selectFontObject_->transform_.position.x = 640.0f - (static_cast<float>(selectFontObject_->GetTextSize()) * 32.0f * 0.5f);
-	selectFontObject_->transform_.position.y = 560.0f;
+	selectFontObject_->transform_.position.y = (560.0f + 415.0f) / 2.0f;
 
 	retryFontObject_->fontColor_ = {1.0f,1.0f,1.0f,0.0f};
 	selectFontObject_->fontColor_ = { 0.5f,0.5f,0.5f,0.0f };
@@ -75,7 +75,7 @@ void GameOverUI::Draw(Window* window, const Matrix4x4& vpMatrix) {
 
 	gameOverFontObject_->Draw(window, vpMatrix);
 
-	retryFontObject_->Draw(window, vpMatrix);
+	//retryFontObject_->Draw(window, vpMatrix);
 
 	selectFontObject_->Draw(window, vpMatrix);
 }
@@ -96,6 +96,10 @@ void GameOverUI::InUpdate() {
 		retryFontObject_->fontColor_ = { 0.5f,0.5f,0.5f,1.0f };
 		selectFontObject_->fontColor_ = { 1.0f,1.0f,1.0f,1.0f };
 	}
+
+	selectNum_ = 1;
+	retryFontObject_->fontColor_ = { 0.5f,0.5f,0.5f,1.0f };
+	selectFontObject_->fontColor_ = { 1.0f,1.0f,1.0f,1.0f };
 
 	// 決定
 	if (key[Key::Decision]) {
