@@ -3,15 +3,20 @@
 #include"Common/KeyConfig/KeyManager.h"
 #include"Object/FontObject.h"
 #include <functional>
+#include<array>
 
 class PauseUI {
 public:
 
-	void Initialize(DrawData drawData,uint32_t texture, KeyManager* keyManager, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader);
+	void Initialize(DrawData drawData,uint32_t texture, KeyManager* keyManager,
+		const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader,
+		int baTex,int guidTex,int selTex);
 
 	void Update();
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
+
+	void DrawGuideUI(Window* window, const Matrix4x4& vpMatrix);
 
 public:
 
@@ -31,7 +36,14 @@ private:
 	float startBgPosY_ = 1080.0f;
 	float endBgPosY_ = 360.0f;
 
-	bool inAnimation_ = true;
+	// アニメーションの判断
+	bool isAnimation_ = false;
+
+	// ポーズシーンの開閉
+	bool isOpenPause_ = false;
+
+	// 説明を描画
+	bool isGuideOpen_ = false;
 
 	// テキスト
 	std::unique_ptr<FontObject> gameOverFontObject_;
@@ -44,12 +56,23 @@ private:
 
 	bool isDraw_ = false;
 
+	// 選択画像
+	std::array<std::unique_ptr<SpriteObject>,3> selectSpriteObject_;
+
+	// 操作ガイドUI
+	std::unique_ptr<SpriteObject> guideSprite_;
+
 private: // 調整項目
 
-	float maxTime_ = 1.0f;
+	float maxTime_ = 0.5f;
 
 private:
 
 	void InUpdate();
+
+	// 最初のアニメーション
+	void StartAnimation();
+	// 最後のアニメーション
+	void EndAnimation();
 
 };
