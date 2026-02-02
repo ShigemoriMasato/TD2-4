@@ -38,7 +38,7 @@ void InitializeScene::Initialize() {
 	// テクスチャを全てロード
 	textureManager_->LoadAllTextures();
 
-	commonData_->nextStageIndex = 0;
+	commonData_->nextStageIndex = 1;
 	commonData_->nextMapIndex = 0;
 
 	LightManager::GetInstance()->Load();
