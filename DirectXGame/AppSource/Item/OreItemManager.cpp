@@ -23,7 +23,7 @@ void OreItemManager::Initialize(DrawData spriteDrawData, const std::string& font
 	oreFragmentParticle_->Initialize(drawData);
 }
 
-void OreItemManager::Update() {
+void OreItemManager::Update(bool isOpenMap) {
 
 	// 鉱石を削除
 	for (auto it = graveyard_.begin(); it != graveyard_.end(); ) {
@@ -55,10 +55,26 @@ void OreItemManager::Update() {
 		fontList_[it->first].font->UpdateCharPositions(s, fontLoader_);
 		fontList_[it->first].font->Update();
 
+		float posZ = 0.0f;
+		if (isOpenMap) {
+			posZ = fontList_[it->first].bgSprite->transform_.position.z;
+			fontList_[it->first].bgSprite->transform_.position.z -= 0.2f;
+			fontList_[it->first].bgSprite->transform_.rotate.x = -1.2f;
+			fontList_[it->first].font->transform_.rotate.x = -1.3f;
+		} else {
+			fontList_[it->first].bgSprite->transform_.rotate.x = -2.4f;
+			fontList_[it->first].font->transform_.rotate.x = -2.4f;
+		}
+
 		if (ore->GetCurrentWorkerNum() >= ore->GetMaxWorkerNum()) {
 			fontList_[it->first].font->fontColor_ = { 0.8f,0.0f,0.0f,1.0f };
 		} else {
 			fontList_[it->first].font->fontColor_ = { 0.0f,1.0f,1.0f,1.0f };
+		}
+
+		fontList_[it->first].bgSprite->Update();
+		if (isOpenMap) {
+			fontList_[it->first].bgSprite->transform_.position.z = posZ;
 		}
 
 		if (ore->IsDead()) {
