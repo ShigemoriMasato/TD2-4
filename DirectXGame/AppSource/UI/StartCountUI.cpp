@@ -5,13 +5,13 @@
 #include"TimeLimit.h"
 #include<numbers>
 
-void StartCountUI::Initialize(const std::string& fontName, DrawData drawData, FontLoader* fontLoader) {
+void StartCountUI::Initialize(const std::string& fontName, DrawData drawData, FontLoader* fontLoader, int florNum) {
 
 	fontLoader_ = fontLoader;
 
 	// 開始ウェーブ文字
 	waveFontObject_ = std::make_unique<FontObject>();
-	waveFontObject_->Initialize(fontName,L"Wave1", drawData, fontLoader);
+	waveFontObject_->Initialize(fontName,L"フロア" + std::to_wstring(florNum), drawData, fontLoader);
 	waveFontObject_->fontColor_ = {0.0f,1.0f,0.4980f,1.0f};
 
 	// スタート時フォント

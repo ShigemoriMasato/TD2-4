@@ -2,7 +2,7 @@
 #include"Item/OreItemStorageNum.h"
 #include <Common/DebugParam/GameParamEditor.h>
 
-void GameUIManager::Initialize(DrawData spriteData, int starTexture, int lineTexture, int oreIcon, int itemIcon,const std::string& fontName, DrawData fontData, FontLoader* fontLoader) {
+void GameUIManager::Initialize(DrawData spriteData, int starTexture, int lineTexture, int oreIcon, int itemIcon,const std::string& fontName, DrawData fontData, FontLoader* fontLoader, int florNum) {
 	fontLoader_ = fontLoader;
 
 	// ユニットの数UI
@@ -51,7 +51,7 @@ void GameUIManager::Initialize(DrawData spriteData, int starTexture, int lineTex
 	itemIconSpriteObject_->Update();
 
 	floorFontObject_ = std::make_unique<FontObject>();
-	floorFontObject_->Initialize(fontName, L"Wave1", fontData, fontLoader);
+	floorFontObject_->Initialize(fontName, L"フロア" + std::to_wstring(florNum), fontData, fontLoader);
 
 	quotaFontObject_ = std::make_unique<FontObject>();
 	quotaFontObject_->Initialize(fontName, L"ノルマ", fontData, fontLoader);

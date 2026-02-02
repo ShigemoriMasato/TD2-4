@@ -2,6 +2,7 @@
 #include"GameCommon/DefaultObject.h"
 #include<vector>
 #include"Unit/Effect/ConflictParticle.h"
+#include<functional>
 
 class UnitEffectManager {
 public:
@@ -36,6 +37,8 @@ public:
 		unitParticle_->AddSmoke(pos);
 	}
 
+	void SetCollBack(std::function<void()> cb) { onCollBack_ = std::move(cb); }
+
 private:
 	DrawData oreItemData_;
 	int oreItemTexture_;
@@ -53,6 +56,12 @@ private:
 	std::vector<Vector3> conflictPosList_;
 	// 一つにまとめる距離
 	float mergeThreshold_ = 5.0f;
+
+	// クリックコールバック
+	std::function<void()> onCollBack_ = nullptr;
+
+	bool isLog_ = false;
+	float timer_ = 0.0f;
 
 private:
 

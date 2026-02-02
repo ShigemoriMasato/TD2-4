@@ -130,6 +130,7 @@ private:
 	float timer_ = 0.0f;
 	float lifeTimer_ = 0.0f;
 	float animationTimer_ = 0.0f;
+	float deathAnimationTimer_ = 0.0f;
 
 	// 円の当たり判定
 	Circle circleCollider_;

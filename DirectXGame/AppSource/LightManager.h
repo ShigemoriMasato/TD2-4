@@ -81,6 +81,7 @@ public:
 			return;
 		}
 		pointLightActive_[index] = false;
+		pointLights_[index].intensity = 0.0f;
 	}
 
 	void DrawImGui() {

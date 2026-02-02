@@ -9,7 +9,7 @@
 class GameUIManager {
 public:
 
-	void Initialize(DrawData spriteData,int starTexture,int lineTexture,int oreIcon,int itemIcon,const std::string& fontName, DrawData fontData, FontLoader* fontLoader);
+	void Initialize(DrawData spriteData,int starTexture,int lineTexture,int oreIcon,int itemIcon,const std::string& fontName, DrawData fontData, FontLoader* fontLoader,int florNum);
 
 	void Update(const int32_t& unitNum,const int32_t& maxUnitNum);
 

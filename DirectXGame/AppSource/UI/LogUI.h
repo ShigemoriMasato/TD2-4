@@ -27,5 +27,5 @@ private:
 
 	std::vector<LogData> logDatas_;
 
-	float maxTime_ = 1.0f;
+	float maxTime_ = 2.0f;
 };

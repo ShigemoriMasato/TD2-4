@@ -6,6 +6,7 @@
 #include"Unit/Player/PlayerUnit.h"
 #include"Unit/Ore/OreUnit.h"
 
+#include"UI/LogUI.h"
 #include"UI/OreUnitHPUI.h"
 #include"UnitEffectManager.h"
 
@@ -86,19 +87,30 @@ public:
 
 	Vector3 GetPlayerPosition() { return *playerUnit_->GetPos(); }
 
-private:
+	// ログシステムを取得
+	void SetLogUI(LogUI* logUI) {
+		logUI_ = logUI;
 
+		unitEffectManager_->SetCollBack([this]() {
+			logUI_->AddUnitConflictLog();
+		});
+	}
+
+private:
 	// マップ
 	MapChipField* mapChipField_ = nullptr;
-
+	// ユニットのHp表示
 	OreUnitHPUI* oreUnitHPUI_ = nullptr;
+	// ユニットの演出表示
 	UnitEffectManager* unitEffectManager_ = nullptr;
-
 	// 拠点管理クラス
 	HomeManager* HomeManager_ = nullptr;
-
 	// ユニットマークUI
 	UnitMarkUIManager* unitMarkUIManager_ = nullptr;
+	// ログを出力するクラス
+	LogUI* logUI_ = nullptr;
+
+private:
 
 	// おれの描画データ
 	DrawData oreDrawData_;

@@ -292,7 +292,9 @@ void GameScene::Initialize() {
 
 	// ゲームのUI管理クラス
 	gameUIManager_ = std::make_unique<GameUIManager>();
-	gameUIManager_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), starTextureIndex, lineTextureIndex, oreiTextureIndex,oreItemTextureIndex, fontName, drawData, fontLoader_);
+	gameUIManager_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), starTextureIndex, lineTextureIndex, oreiTextureIndex,oreItemTextureIndex,
+		fontName, drawData, fontLoader_,
+		commonData_->nextMapIndex);
 
 	// spriteモデルを取得(アンカーポイントが違うスプライト)
 	int uModelID = modelManager_->LoadModel(unitHpModelName);
@@ -314,7 +316,7 @@ void GameScene::Initialize() {
 
 	// 最初と最後のカウントをするUI
 	startCountUI_ = std::make_unique<StartCountUI>();
-	startCountUI_->Initialize(fontName, drawData, fontLoader_);
+	startCountUI_->Initialize(fontName, drawData, fontLoader_, commonData_->nextMapIndex);
 	startCountUI_->isStart_ = true;
 
 	// ミニマップ操作時の時間操作処理
@@ -350,6 +352,9 @@ void GameScene::Initialize() {
 	// ログUI
 	logUI_ = std::make_unique<LogUI>();
 	logUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), unitConfliIndex, logEffectIndex);
+
+	// ユニット管理クラスにログUIシステムを設定
+	unitManager_->SetLogUI(logUI_.get());
 
 	//=======================================================
 	// その他のシーンを初期化

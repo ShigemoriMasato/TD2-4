@@ -94,6 +94,10 @@ void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos, OreItem* o
 	isDeathAnimation_ = false;
 	isEndDeathAnimation_ = false;
 
+	// 最初は衝突判定を無効にする
+	isCoolTimeEnd_ = true;
+	conflictCoolTimer_ = 0.0f;
+
 	// hpを設定
 	hp_ = maxHp_;
 
@@ -103,6 +107,7 @@ void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos, OreItem* o
 	// 時間をリセット
 	lifeTimer_ = 0.0f;
 	animationTimer_ = 0.0f;
+	deathAnimationTimer_ = 0.0f;
 
 	// 状態を設定
 	state_ = State::GoTo;
@@ -309,7 +314,7 @@ void OreUnit::OnCollision(Collider* other) {
 			float dot = MyMath::dot(oreUnit->GetDir(),dir_);
 
 			// 衝突
-			if (dot < -0.8f) {
+			if (dot < -0.9f) {
 				// 衝突処理
 				if (!isConflict_) {
 					isConflict_ = true;
@@ -576,11 +581,11 @@ void OreUnit::MoveAnimationUpdate() {
 
 void OreUnit::DeathAnimationUpdate() {
 
-	animationTimer_ += FpsCount::deltaTime / deathAnimationTime_;
+	deathAnimationTimer_ += FpsCount::deltaTime / deathAnimationTime_;
 
-	object_->transform_.rotate.z = lerp(0.0f, std::numbers::pi_v<float> / 2.0f, animationTimer_, EaseType::EaseInOutCubic);
+	object_->transform_.rotate.z = lerp(0.0f, std::numbers::pi_v<float> / 2.0f, deathAnimationTimer_, EaseType::EaseInOutCubic);
 
-	if (animationTimer_ >= 1.0f) {
+	if (deathAnimationTimer_ >= 1.0f) {
 		object_->transform_.rotate.z = std::numbers::pi_v<float> / 2.0f;
 		isEndDeathAnimation_ = true;
 	}

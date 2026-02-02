@@ -1,4 +1,5 @@
 #include"UnitEffectManager.h"
+#include"FpsCount.h"
 
 void UnitEffectManager::Initialize(DrawData oreItemData, int oreItemTexture, DrawData boxData) {
 
@@ -22,6 +23,15 @@ void UnitEffectManager::Initialize(DrawData oreItemData, int oreItemTexture, Dra
 
 void UnitEffectManager::Update() {
 
+    if (isLog_) {
+        timer_ += FpsCount::deltaTime / 0.5f;
+
+        if (timer_ >= 1.0f) {
+            timer_ = 0.0f;
+            isLog_ = false;
+        }
+    }
+
 	// 更新処理
 	for (int32_t i = 0; i < index_+1; ++i) {
 		oreItemObjects_[i]->Update();
@@ -32,6 +42,14 @@ void UnitEffectManager::PostCollisionUpdate() {
     // 衝突位置を取得
     ProcessClusters();
 
+    // 衝突している時
+    if (!isLog_) {
+        if (!conflictPosList_.empty()) {
+            onCollBack_();
+            isLog_ = true;
+        }
+    }
+    
     // 演出の更新処理
     unitParticle_->Update();
 }

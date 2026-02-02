@@ -114,28 +114,38 @@ void PlayerUnit::ProcessMoveInput() {
 	// 操作
 	auto key = keyManager_->GetKeyStates();
 
+	Vector3 moveDir = { 0,0,0 };
+
 	if (key[Key::Up]) {
 		velocity_.z = speed_ * FpsCount::deltaTime;
-		dir_ = { 0.0f,0.0f,1.0f };
+		//dir_ = { 0.0f,0.0f,1.0f };
+		moveDir.z = 1.0f;
 		isMove_ = true;
 	}
 
 	if (key[Key::Down]) {
 		velocity_.z = -speed_ * FpsCount::deltaTime;
-		dir_ = { 0.0f,0.0f,-1.0f };
+		//dir_ = { 0.0f,0.0f,-1.0f };
+		moveDir.z = -1.0f;
 		isMove_ = true;
 	}
 
 	if (key[Key::Left]) {
 		velocity_.x = -speed_ * FpsCount::deltaTime;
-		dir_ = { -1.0f,0.0f,0.0f };
+		//dir_ = { -1.0f,0.0f,0.0f };
+		moveDir.x = -1.0f;
 		isMove_ = true;
 	}
 
 	if (key[Key::Right]) {
 		velocity_.x = speed_ * FpsCount::deltaTime;
-		dir_ = { 1.0f,0.0f,0.0f };
+		//dir_ = { 1.0f,0.0f,0.0f };
+		moveDir.x = 1.0f;
 		isMove_ = true;
+	}
+
+	if (moveDir != Vector3(0,0,0)) {
+		dir_ = moveDir;
 	}
 
 	if (!isAnimation_ && isMove_) {
