@@ -171,6 +171,8 @@ void InitializeScene::SetupKeyManager() {
 
 	keyManager->SetKey(Key::Decision, DIK_SPACE, KeyState::Trigger);
 
+	keyManager->SetKey(Key::DecisionPause, DIK_TAB, KeyState::Trigger);
+
 	//================================================================================
 
 	keyManager->SetKey(Key::HardDrop, DIK_W, KeyState::Trigger);

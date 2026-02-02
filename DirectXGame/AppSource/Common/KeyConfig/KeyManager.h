@@ -23,6 +23,7 @@ enum class Key {
 	Hold,
 
 	Decision,
+	DecisionPause,
 
 	// 回転系 -===========
 

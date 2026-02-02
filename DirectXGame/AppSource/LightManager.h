@@ -105,46 +105,6 @@ public:
 	void DrawImGui() {
 #ifdef USE_IMGUI
 
-		ImGui::Begin("Light Manager");
-		ImGui::BeginChild("Directional Light Number Select", { 100, 0 });
-
-		for (int i = 0; i < 8; ++i) {
-			if (ImGui::Button(std::to_string(i).c_str())) {
-				editingDirLightIndex_ = i;
-			}
-			if(i % 3 != 2) {
-				ImGui::SameLine();
-			}
-		}
-
-		ImGui::EndChild();
-
-		ImGui::SameLine();
-
-		DirectionalLight& editLight = dirLights_[editingDirLightIndex_];
-		ImGui::BeginChild("Directional Light Edit");
-		ImGui::Text("Editing Directional Light %d", editingDirLightIndex_);
-		ImGui::DragFloat3("Direction", &editLight.direction.x, 0.1f, -1.0f, 1.0f);
-		ImGui::DragFloat("Intensity", &editLight.intensity, 0.1f, 0.0f, 10.0f);
-		ImGui::ColorEdit4("Color", &editLight.color.x);
-		ImGui::EndChild();
-		ImGui::End();
-
-		editLight.direction = editLight.direction.Normalize();
-
-
-		ImGui::Begin("PointLightTest");
-
-		static Vector3 testPos = { 0.0f, 0.0f, 0.0f };
-		static int pointLightIndex = AddPointLight(&testPos, PointLight{});
-
-		ImGui::DragFloat3("PointLight Position", &testPos.x, 0.1f);
-		ImGui::DragFloat("PointLight Intensity", &pointLights_[pointLightIndex].intensity, 0.1f, 0.0f, 10.0f);
-		ImGui::DragFloat("PointLight Radius", &pointLights_[pointLightIndex].radius, 0.1f, 0.1f, 100.0f);
-		ImGui::DragFloat("PointLight Decay", &pointLights_[pointLightIndex].decay, 0.1f, 0.0f, 10.0f);
-		ImGui::ColorEdit4("PointLight Color", &pointLights_[pointLightIndex].color.x);
-
-		ImGui::End();
 #endif
 	}
 

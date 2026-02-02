@@ -416,9 +416,15 @@ void GameScene::InitializeOtherScene() {
 	// 操作説明のテクスチャを取得
 	int guidTextureIndex = textureManager_->GetTexture("TutrialImage.png");
 
+	int pBackIndex = textureManager_->GetTexture("Pause_Back.png");
+	int pPlayIndex = textureManager_->GetTexture("Pause_HowToPlay.png");
+	int pSeleIndex = textureManager_->GetTexture("Pause_Select.png");
+	
 	// ポーズシーンUIの初期化
 	pauseUI_ = std::make_unique<PauseUI>();
-	pauseUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), static_cast<int32_t>(guidTextureIndex), commonData_->keyManager.get(), fontName, drawData, fontLoader_);
+	pauseUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), static_cast<int32_t>(guidTextureIndex), commonData_->keyManager.get(),
+		fontName, drawData, fontLoader_,
+		pBackIndex, pPlayIndex, pSeleIndex);
 	// リトライ
 	pauseUI_->SetOnRetryClicked([this]() {
 		isPauseScene_ = !isPauseScene_;
@@ -432,7 +438,9 @@ void GameScene::InitializeOtherScene() {
 	// 選択
 	pauseUI_->SetOnSelectClicked([this]() {
 		isPauseScene_ = true;
-		});
+		isSceneChange_ = true;
+		isRetry_ = false;
+	});
 }
 
 std::unique_ptr<IScene> GameScene::Update() {
@@ -785,8 +793,11 @@ void GameScene::Draw() {
 			// ゲームのUIを描画
 			gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix2d, !miniMap_->PleasePose());
 
+			// 操作UIを表示
+			pauseUI_->DrawGuideUI(gameWindow_->GetWindow(), vpMatrix2d);
+
 			// ポーズシーンを描画
-			pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
+			//pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 
 			// ゲームオーバーシーンの描画処理
 			if (isGameOverScene_) {
