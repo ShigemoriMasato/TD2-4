@@ -7,8 +7,8 @@
 void OreFragmentParticle::Initialize(DrawData drawData) {
 
 	instancingObject_ = std::make_unique<InstancingObject>();
-	instancingObject_->Initialize(drawData);
 	instancingObject_->maxNum_ = maxNum_;
+	instancingObject_->Initialize(drawData);
 
 	// ワールド行列の初期化
 	particleDatas_.reserve(maxNum_);
