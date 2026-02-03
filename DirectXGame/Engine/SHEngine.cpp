@@ -3,6 +3,7 @@
 #include <Screen/DualDisplay.h>
 #include <Render/RenderObject.h>
 #include <imgui/imgui.h>
+#include"Assets/Audio/AudioManager.h"
 
 #pragma comment(lib, "Dbghelp.lib")
 
@@ -58,6 +59,10 @@ SHEngine::SHEngine() {
 }
 
 SHEngine::~SHEngine() {
+
+	// 音声の終了処理
+	AudioManager::GetInstance().Finalize();
+
 	fenceManager_->Finalize();
 	if (imGuiActive_) {
 		imGuiForEngine_->Finalize();

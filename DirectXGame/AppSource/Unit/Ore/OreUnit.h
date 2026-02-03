@@ -37,7 +37,7 @@ public:
 
 public:
 
-	OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos, UnitMarkUIManager* unitMarkUIManager, UnitEffectManager* unitEffectManager);
+	OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos, UnitMarkUIManager* unitMarkUIManager, UnitEffectManager* unitEffectManager,int32_t damagePram);
 
 	/// <summary>
 	/// 初期化
@@ -170,6 +170,9 @@ private:
 	// ユニットグループId
 	uint32_t unitGroupId_ = 0;
 
+	// ダメー字パラメータ
+	int32_t damageParam_ = 0;
+
 private: // 調整項目
 
 	// ダメージを食らう間隔
@@ -209,6 +212,10 @@ private: // 調整項目
 
 	// 死亡演出
 	float deathAnimationTime_ = 1.5f;
+
+	// ダメージパーセント
+	float damagePer_ = 0.15f;
+
 private:
 
 	// 移動経路を求める

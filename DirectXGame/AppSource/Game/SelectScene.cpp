@@ -203,7 +203,7 @@ std::unique_ptr<IScene> SelectScene::Update() {
 		} else {
 			// インゲームの更新処理
 			InGameScene();
-		}	
+		}
 	}
 
 	// シーンを切り替える
@@ -265,6 +265,13 @@ void SelectScene::InGameScene() {
 			commonData_->nextMapIndex = 0;
 			isInPlayerAnimation_ = true;
 			inPlayerStartRotY_ = playerObject_->transform_.rotate.y;
+
+			//EndlessModeのセット
+			if (selectStageNum_ == 3) {
+				commonData_->isEndlessMode = true;
+				commonData_->stageCount = 0;
+				commonData_->goldNum = 0;
+			}
 		}
 	}
 

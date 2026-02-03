@@ -9,7 +9,20 @@
 #endif
 
 void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData, int pIndex, DrawData oreDrawData, int oIndex, KeyManager* keyManager, Vector3 playerInitPos, int32_t maxOreNum,
-	DrawData spriteDrawData,int unitTex,int playerTex) {
+	DrawData spriteDrawData,int unitTex,int playerTex, int32_t mapNum) {
+
+	// ステージがエンドレスの場合、
+	if (mapNum >= 0) {
+		dagageParam_ = mapNum / 2;
+
+		// 上限設定
+		if (dagageParam_ >= 6) {
+			dagageParam_ = 6;
+		}
+	} else {
+		dagageParam_ = -1;
+	}
+
 	// マップデータを取得
 	mapChipField_ = mapChipField;
 
@@ -53,6 +66,7 @@ void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData,
 	// 値の登録
 	RegisterDebugParam();
 #endif
+	ApplyDebugParam();
 	// 値の適応
 	//maxCurrentOreCount_ = GameParamEditor::GetInstance()->GetValue<int32_t>(kGroupName_, "MaxOreCount");
 }
@@ -231,7 +245,7 @@ void UnitManager::AddOreUnit(const Vector3& targetPos, OreItem* oreItem,uint32_t
 		unit->second->Init(homePos, targetPos, oreItem, groupId);
 	} else {
 		// 新しく登録
-		std::unique_ptr<OreUnit> oreUnit = std::make_unique<OreUnit>(mapChipField_, oreDrawData_, oreTexIndex_, playerUnit_->GetPos(), unitMarkUIManager_, unitEffectManager_);
+		std::unique_ptr<OreUnit> oreUnit = std::make_unique<OreUnit>(mapChipField_, oreDrawData_, oreTexIndex_, playerUnit_->GetPos(), unitMarkUIManager_, unitEffectManager_, dagageParam_);
 		oreUnit->Init(homePos, targetPos, oreItem, groupId);
 
 		oreUnits_[index] = std::move(oreUnit);

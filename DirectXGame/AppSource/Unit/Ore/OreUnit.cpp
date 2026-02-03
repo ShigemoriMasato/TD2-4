@@ -7,8 +7,13 @@
 #include"Item/OreItemStorageNum.h"
 #include"Item/Object/GoldOre.h"
 #include"Item/Object/OreItem.h"
+#include <TimeTracker.h>
 
-OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos, UnitMarkUIManager* unitMarkUIManager, UnitEffectManager* unitEffectManager) {
+OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos, UnitMarkUIManager* unitMarkUIManager, UnitEffectManager* unitEffectManager, int32_t damagePram) {
+
+	// ダメージパラメータ
+	damageParam_ = damagePram;
+
 	// マップデータ
 	mapChipField_ = mapChipField;
 	
@@ -275,7 +280,10 @@ void OreUnit::OnCollision(Collider* other) {
 		// プレイヤーに触れれば帰宅する
 		if (isActive_ && !isToDeliver_) {
 			// 鉱石を収納する
-			OreItemStorageNum::currentOreItemNum_ += 1;
+			if (TimeLimit::totalSeconds > 0) {
+				OreItemStorageNum::currentOreItemNum_ += 1;
+			}
+
 			isToDeliver_ = true;
 			// 納品したら帰宅する
 			stateRequest_ = State::Return;
@@ -334,6 +342,12 @@ void OreUnit::OnCollision(Collider* other) {
 				if (!isConflict_) {
 					isConflict_ = true;
 					unitEffectManager_->AddConflict(object_->transform_.position);
+
+					// ダメージを与える
+					if (damageParam_ > 0) {
+						int32_t per = static_cast<int32_t>(static_cast<float>(maxHp_) * (damagePer_ * static_cast<float>(damageParam_)));
+						hp_ -= per;
+					}
 				}
 			}
 		}
@@ -617,6 +631,7 @@ void OreUnit::RegisterDebugParam() {
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RiseReturnTime", riseTime_, i++);
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "FallReturnTime", FallTime_, i++);
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MiningTime", miningTime_, i++);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "DamagePer", damagePer_, i++);
 
 	// アニメーション
 	GameParamEditor::GetInstance()->AddItem("OreUnit_Animation", "MaxJumpHeight", maxJumpHeight_,0);
@@ -638,6 +653,7 @@ void OreUnit::ApplyDebugParam() {
 	riseTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "RiseReturnTime");
 	FallTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "FallReturnTime");
 	miningTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "MiningTime");
+	damagePer_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "DamagePer");
 
 	// アニメーション
 	maxJumpHeight_ = GameParamEditor::GetInstance()->GetValue<float>("OreUnit_Animation", "MaxJumpHeight");

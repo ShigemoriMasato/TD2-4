@@ -51,6 +51,14 @@ CurrentStageConfig NewMapManager::GetEndlessMap(int stageCount, int prevMap) {
 		}
 	}
 
+	if (maps.empty()) {
+		for(int i = 0; i < int(newMapData_.size()); ++i) {
+			if (i != prevMap) {
+				maps.push_back(i);
+			}
+		}
+	}
+
 	int factID = rand() % int(maps.size());
 	CurrentStageConfig config;
 
@@ -79,7 +87,9 @@ CurrentStageConfig NewMapManager::GetEndlessMap(int stageCount, int prevMap) {
 	config.norma = int(minNorma + (maxNorma - minNorma) * t * 0.6f);  // 20で約50になるよう調整
 	config.initOreNum = 10;
 	config.currentMapID = maps[factID];
+	int dir = rand() % 4;
 	config.currentMap = newMapData_[maps[factID]];
+	config.currentMap.Rotate(Direction(dir));
 	return config;
 }
 

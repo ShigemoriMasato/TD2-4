@@ -42,9 +42,11 @@ void StartCountUI::Update() {
 		StartAnimation();
 	}
 	
+	// 終了カウントアニメーション
 	if (TimeLimit::totalSeconds <= 10) {
 	
 		if (preTime_ != TimeLimit::totalSeconds) {
+
 			if (!isEndCountAnimation_) {
 				numFontObject_->UpdateCharPositions(std::to_wstring(TimeLimit::totalSeconds), fontLoader_);
 				isEndCountAnimation_ = true;

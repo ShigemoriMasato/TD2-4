@@ -9,6 +9,7 @@
 #include<Common/DebugParam/GameParamEditor.h>
 #include <LightManager.h>
 #include"RandomGenerator.h"
+#include"Assets/Audio/AudioManager.h"
 
 #ifdef USE_IMGUI
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -45,11 +46,17 @@ void InitializeScene::Initialize() {
   
   // ランダム生成器を初期化
 	RandomGenerator::Initialize();
+
+	// 音声シーンを初期化
+	AudioManager::GetInstance().Initialize();
+	// 音声データを全て読み込む
+	AudioManager::GetInstance().LoadAllAudio();
 }
 
 std::unique_ptr<IScene> InitializeScene::Update(){
 	//return std::make_unique<OreAddScene>();
 	//return std::make_unique<ModelEditScene>();
+	return std::make_unique<SelectScene>();
 	return std::make_unique<GameScene>();
 }
 
