@@ -73,7 +73,7 @@ Logger getLogger(const std::string& name, uint32_t flag) {
 	spdlog::register_logger(logger);
 
 #ifdef SH_DEBUG
-	logger->set_level(spdlog::level::debug);
+	logger->set_level(spdlog::level::info);
 	logger->flush_on(spdlog::level::warn);
 #endif
 #ifdef SH_DEVELOP
