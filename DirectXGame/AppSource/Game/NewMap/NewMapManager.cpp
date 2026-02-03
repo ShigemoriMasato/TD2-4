@@ -51,6 +51,14 @@ CurrentStageConfig NewMapManager::GetEndlessMap(int stageCount, int prevMap) {
 		}
 	}
 
+	if (maps.empty()) {
+		for(int i = 0; i < int(newMapData_.size()); ++i) {
+			if (i != prevMap) {
+				maps.push_back(i);
+			}
+		}
+	}
+
 	int factID = rand() % int(maps.size());
 	CurrentStageConfig config;
 

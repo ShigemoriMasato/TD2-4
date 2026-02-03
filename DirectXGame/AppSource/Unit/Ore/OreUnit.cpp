@@ -7,6 +7,7 @@
 #include"Item/OreItemStorageNum.h"
 #include"Item/Object/GoldOre.h"
 #include"Item/Object/OreItem.h"
+#include <TimeTracker.h>
 
 OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos, UnitMarkUIManager* unitMarkUIManager, UnitEffectManager* unitEffectManager, int32_t damagePram) {
 
@@ -279,7 +280,10 @@ void OreUnit::OnCollision(Collider* other) {
 		// プレイヤーに触れれば帰宅する
 		if (isActive_ && !isToDeliver_) {
 			// 鉱石を収納する
-			OreItemStorageNum::currentOreItemNum_ += 1;
+			if (TimeLimit::totalSeconds > 0) {
+				OreItemStorageNum::currentOreItemNum_ += 1;
+			}
+
 			isToDeliver_ = true;
 			// 納品したら帰宅する
 			stateRequest_ = State::Return;
