@@ -8,7 +8,8 @@
 #include <imgui/imgui.h>
 #endif
 
-void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData, int pIndex, DrawData oreDrawData, int oIndex, KeyManager* keyManager, Vector3 playerInitPos, int32_t maxOreNum) {
+void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData, int pIndex, DrawData oreDrawData, int oIndex, KeyManager* keyManager, Vector3 playerInitPos, int32_t maxOreNum,
+	DrawData spriteDrawData,int unitTex,int playerTex) {
 	// マップデータを取得
 	mapChipField_ = mapChipField;
 
@@ -28,6 +29,25 @@ void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData,
 
 	// おれのメモリを確保
 	oreUnits_.reserve(maxOreCount_);
+
+	// ミニマップのユニットのアイコン描画
+	unitIconObjects_.resize(100);
+	for (size_t i = 0; i < 100; ++i) {
+		unitIconObjects_[i] = std::make_unique<SpriteObject>();
+		unitIconObjects_[i]->Initialize(spriteDrawData, { 64.0f,64.0f });
+		unitIconObjects_[i]->transform_.position = { -128.0f,0.0f,0.0f };
+		unitIconObjects_[i]->color_ = { 1.0f,1.0f,1.0f,1.0f };
+		unitIconObjects_[i]->SetTexture(unitTex);
+		unitIconObjects_[i]->Update();
+	}
+
+	// ミニマップのプレイヤーアイコンの初期化
+	playerIconObjects_ = std::make_unique<SpriteObject>();
+	playerIconObjects_->Initialize(spriteDrawData, { 96.0f,96.0f });
+	playerIconObjects_->transform_.position = { -128.0f,0.0f,0.0f };
+	playerIconObjects_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+	playerIconObjects_->SetTexture(playerTex);
+	playerIconObjects_->Update();
 
 #ifdef USE_IMGUI
 	// 値の登録
@@ -61,12 +81,19 @@ void UnitManager::Update() {
 	// プレイヤー位置を設定
 	unitMarkUIManager_->SetPlayerPos(*playerUnit_->GetPos());
 
+	// ミニマップ用の座標をクリア
+	unitPosList_.clear();
+	unitIconIndex_ = -1;
+
 	// おれユニットの更新処理
 	for (auto& [id, unit] : oreUnits_) {
 		// 生きている場合は更新
 		if (unit->IsActive() && !unit->IsDead()) {
 			// ユニットの更新処理
 			unit->Update();
+
+			// ユニットの位置を設定
+			unitPosList_.push_back(unit->GetPos());
 
 			// HPを追加
 			if (unit->GetState() != OreUnit::State::Return) {
@@ -102,6 +129,16 @@ void UnitManager::Update() {
 
 	// ユニットのマーク処理を更新
 	unitMarkUIManager_->Update();
+
+
+	// ユニットのアイコンを作成
+	ProcessClusters();
+
+	// プレイヤーアイコンの作成
+	MarkerResult marker = miniMap_->GetMarkerInfo(*playerUnit_->GetPos(), 36.0f);
+	playerIconObjects_->transform_.position = Vector3(marker.position.x, marker.position.y,0.0f);
+	playerIconObjects_->Update();
+
 }
 
 void UnitManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
@@ -127,6 +164,17 @@ void UnitManager::DrawUI() {
 	ImGui::Text("ActiveNum : %d", activeCount_);
 	ImGui::End();
 #endif
+}
+
+void UnitManager::DrawIcon(Window* window, const Matrix4x4& vpMatrix) {
+
+	// プレイヤーアイコンの描画
+	playerIconObjects_->Draw(window, vpMatrix);
+
+	// ミニマップ用のユニットアイコン
+	for (size_t i = 0; i <= unitIconIndex_; ++i) {
+		unitIconObjects_[i]->Draw(window, vpMatrix);
+	}
 }
 
 void UnitManager::RegisterUnit(const Vector3& targetPos, const int32_t& spawnNum, const int32_t& excessNum, OreItem* oreItem) {
@@ -235,6 +283,69 @@ Vector3 UnitManager::GetNearHomePos(const Vector3& targetPos) {
 	}
 
 	return nearPos;
+}
+
+void UnitManager::ProcessClusters() {
+	// 飛ばす
+	if (unitPosList_.empty()) { return; }
+
+	std::vector<Cluster> clusters;
+
+	float thresholdSq = 3.0f * 3.0f;
+
+	for (const auto& pos : unitPosList_) {
+		bool merged = false;
+
+		// 既存のクラスタに近いかチェック
+		for (auto& cluster : clusters) {
+			// 現在のクラスタの平均位置を計算
+			Vector3 currentCenter = {
+				cluster.positionSum.x / cluster.count,
+				cluster.positionSum.y / cluster.count,
+				cluster.positionSum.z / cluster.count
+			};
+
+			// 距離チェック
+			Vector3 diff = {
+				pos.x - currentCenter.x,
+				pos.y - currentCenter.y,
+				pos.z - currentCenter.z
+			};
+
+			if (LengthSq(diff) <= thresholdSq) {
+				// 近いのでグループに加算
+				cluster.positionSum.x += pos.x;
+				cluster.positionSum.y += pos.y;
+				cluster.positionSum.z += pos.z;
+				cluster.count++;
+				merged = true;
+				break;
+			}
+		}
+
+		// どのグループにも属さない場合は新規作成
+		if (!merged) {
+			Cluster newCluster;
+			newCluster.positionSum = pos;
+			newCluster.count = 1;
+			clusters.push_back(newCluster);
+		}
+	}
+
+	// UIの生成
+	for (const auto& cluster : clusters) {
+		Vector3 finalPos = {
+			cluster.positionSum.x / cluster.count,
+			cluster.positionSum.y / cluster.count,
+			cluster.positionSum.z / cluster.count
+		};
+
+		// アイコンを追加
+		unitIconIndex_++;
+		MarkerResult marker = miniMap_->GetMarkerInfo(finalPos, 36.0f);
+		unitIconObjects_[unitIconIndex_]->transform_.position = Vector3(marker.position.x, marker.position.y,0.0f);
+		unitIconObjects_[unitIconIndex_]->Update();
+	}
 }
 
 void UnitManager::RegisterDebugParam() {

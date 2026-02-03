@@ -231,6 +231,10 @@ void GameScene::Initialize() {
 	homeManager_ = std::make_unique<HomeManager>();
 	homeManager_->Initialize(drawDataManager_->GetDrawData(homeModel.drawDataIndex), homeIndex, mapChipField_->GetHomePos());
 
+	// 拠点のミニマップアイコン追加
+	int homeIconIndex = textureManager_->GetTexture("OreBaseMapIcon_02.png");
+	homeManager_->SetMinMapPos(miniMap_.get(), drawDataManager_->GetDrawData(spritModel.drawDataIndex), homeIconIndex);
+
 	//============================================================================
 	// ユニットシステム
 	//============================================================================
@@ -249,12 +253,20 @@ void GameScene::Initialize() {
 	// おれのテクスチャを取得
 	int oreTextureIndex = textureManager_->GetTexture("untitled-0.png");
 
+	// アイコン表示
+	int oreMapIconIndex = textureManager_->GetTexture("OreMapIcon.png");
+	int playerMapIconIndex = textureManager_->GetTexture("PlayerMapIcon.png");
+
 	// ユニットの管理クラス
 	unitManager_ = std::make_unique<UnitManager>();
 	unitManager_->Initalize(mapChipField_.get(),
 		drawDataManager_->GetDrawData(playerModel.drawDataIndex), playerTextureIndex,
 		drawDataManager_->GetDrawData(oreModel.drawDataIndex), oreTextureIndex,
-		commonData_->keyManager.get(), playerInitPos, commonData_->oreNum);
+		commonData_->keyManager.get(), playerInitPos, commonData_->oreNum,
+		drawDataManager_->GetDrawData(spritModel.drawDataIndex), oreMapIconIndex, playerMapIconIndex);
+
+	// ミニマップを設定
+	unitManager_->SetMinMap(miniMap_.get());
 
 	// 拠点管理クラスを設定
 	unitManager_->SetHomeManager(homeManager_.get());
@@ -770,7 +782,9 @@ void GameScene::Draw() {
 		oreItemManager_->DrawEffect(gameWindow_->GetWindow(), vpMatrix);
 
 		// マウスのクリックアニメーション
-		cameraController_->DrawAnimation(gameWindow_->GetWindow(), vpMatrix);
+		if (!isActiveMinMap_) {
+			cameraController_->DrawAnimation(gameWindow_->GetWindow(), vpMatrix);
+		}
 
 		Matrix4x4 vpMatrix2d;
 
@@ -800,6 +814,14 @@ void GameScene::Draw() {
 
 			// ゲームのUIを描画
 			gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix2d, !miniMap_->PleasePose());
+
+			// ミニマップ
+			if (miniMap_->PleasePose()) {
+				// 拠点アイコン
+				homeManager_->DrawIcon(gameWindow_->GetWindow(), vpMatrix2d);
+				// ユニットアイコンを描画
+				unitManager_->DrawIcon(gameWindow_->GetWindow(), vpMatrix2d);
+			}
 
 			// 操作UIを表示
 			pauseUI_->DrawGuideUI(gameWindow_->GetWindow(), vpMatrix2d);
