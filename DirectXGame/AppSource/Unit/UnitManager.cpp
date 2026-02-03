@@ -95,10 +95,6 @@ void UnitManager::Update() {
 	// プレイヤー位置を設定
 	unitMarkUIManager_->SetPlayerPos(*playerUnit_->GetPos());
 
-	// ミニマップ用の座標をクリア
-	unitPosList_.clear();
-	unitIconIndex_ = -1;
-
 	// おれユニットの更新処理
 	for (auto& [id, unit] : oreUnits_) {
 		// 生きている場合は更新
@@ -143,16 +139,42 @@ void UnitManager::Update() {
 
 	// ユニットのマーク処理を更新
 	unitMarkUIManager_->Update();
+}
 
+void UnitManager::MiniMapUpdate() {
+	// ユニットマーククラスのリセット
+	unitMarkUIManager_->Reset();
+
+	// ミニマップ用の座標をクリア
+	unitPosList_.clear();
+	unitIconIndex_ = -1;
+
+	// おれユニットの更新処理
+	for (auto& [id, unit] : oreUnits_) {
+		// 生きている場合は更新
+		if (unit->IsActive() && !unit->IsDead()) {
+		
+			// ユニットの更新処理
+			unit->Update();
+			// HPを追加
+			if (unit->GetState() != OreUnit::State::Return) {
+
+				// ユニットの位置を設定
+				unitPosList_.push_back(unit->GetPos());
+			}
+		}
+	}
 
 	// ユニットのアイコンを作成
 	ProcessClusters();
 
 	// プレイヤーアイコンの作成
 	MarkerResult marker = miniMap_->GetMarkerInfo(*playerUnit_->GetPos(), 36.0f);
-	playerIconObjects_->transform_.position = Vector3(marker.position.x, marker.position.y,0.0f);
+	playerIconObjects_->transform_.position = Vector3(marker.position.x, marker.position.y, 0.0f);
 	playerIconObjects_->Update();
 
+	// ユニットのマーク処理を更新
+	unitMarkUIManager_->Update(false);
 }
 
 void UnitManager::Draw(Window* window, const Matrix4x4& vpMatrix) {

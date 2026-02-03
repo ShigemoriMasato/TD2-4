@@ -42,6 +42,8 @@ public:
 
 	void Update();
 
+	void MiniMapUpdate();
+
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
 	void DrawUI();
