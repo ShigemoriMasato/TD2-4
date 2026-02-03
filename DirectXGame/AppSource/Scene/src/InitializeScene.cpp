@@ -4,6 +4,7 @@
 #include <ModelEditScene/ModelEditScene.h>
 #include<Game/SelectScene.h>
 #include <OreAddScene/OreAddScene.h>
+#include <ResultScene/ResultScene.h>
 #include <imgui/imgui.h>
 #include <Utility/DataStructures.h>
 #include<Common/DebugParam/GameParamEditor.h>
