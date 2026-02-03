@@ -172,8 +172,10 @@ void UnitManager::DrawIcon(Window* window, const Matrix4x4& vpMatrix) {
 	playerIconObjects_->Draw(window, vpMatrix);
 
 	// ミニマップ用のユニットアイコン
-	for (size_t i = 0; i <= unitIconIndex_; ++i) {
-		unitIconObjects_[i]->Draw(window, vpMatrix);
+	if (unitIconIndex_ != -1) {
+		for (size_t i = 0; i <= unitIconIndex_; ++i) {
+			unitIconObjects_[i]->Draw(window, vpMatrix);
+		}
 	}
 }
 
