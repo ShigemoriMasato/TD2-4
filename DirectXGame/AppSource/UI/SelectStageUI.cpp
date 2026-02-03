@@ -49,9 +49,15 @@ void SelectStageUI::Update() {
 			if (!isChange_) {
 				isChange_ = true;
 
-				// ステージ番号を切り替え
-				std::wstring s = name_ + std::to_wstring(SelectStageNum::num_);
-				fontObject_->UpdateCharPositions(s, fontLoader_);
+				if (SelectStageNum::num_ >= 3) {
+					// ステージ番号を切り替え
+					std::wstring s = L"エンドレス";
+					fontObject_->UpdateCharPositions(s, fontLoader_);
+				} else {
+					// ステージ番号を切り替え
+					std::wstring s = name_ + std::to_wstring(SelectStageNum::num_);
+					fontObject_->UpdateCharPositions(s, fontLoader_);
+				}
 			}
 
 			float localT = (timer_ - 0.5f) / 0.5f;

@@ -173,6 +173,11 @@ private:
 	// ダメー字パラメータ
 	int32_t damageParam_ = 0;
 
+	/// 音声
+
+	// 納品音声
+	uint32_t deliverSH_ = 0;
+
 private: // 調整項目
 
 	// ダメージを食らう間隔

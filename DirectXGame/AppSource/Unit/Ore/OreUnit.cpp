@@ -3,6 +3,7 @@
 #include <Common/DebugParam/GameParamEditor.h>
 #include"Utility/Easing.h"
 #include"Utility/MyMath.h"
+#include"Assets/Audio/AudioManager.h"
 
 #include"Item/OreItemStorageNum.h"
 #include"Item/Object/GoldOre.h"
@@ -71,6 +72,9 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vec
 
 	// 当たり判定の初期化
 	Initialize();
+
+	// 音声を取得
+	deliverSH_ = AudioManager::GetInstance().GetHandleByName("GetOreItem.mp3");
 
 	// 値の登録
 	RegisterDebugParam();
@@ -282,6 +286,9 @@ void OreUnit::OnCollision(Collider* other) {
 			// 鉱石を収納する
 			if (TimeLimit::totalSeconds > 0) {
 				OreItemStorageNum::currentOreItemNum_ += 1;
+
+				// 回収音声
+				AudioManager::GetInstance().Play(deliverSH_, 0.5f, false);
 			}
 
 			isToDeliver_ = true;

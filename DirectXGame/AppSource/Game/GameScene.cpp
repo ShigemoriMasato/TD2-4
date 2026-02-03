@@ -45,6 +45,11 @@ GameScene::~GameScene() {
 	commonData_->oreNum = unitManager_->GetMaxOreCount();
 
 	OreItemStorageNum::currentOreItemNum_ = 0;
+
+	// BGMを止める
+	if (AudioManager::GetInstance().IsPlay(gameBGMSH_)) {
+		AudioManager::GetInstance().Stop(gameBGMSH_);
+	}
 }
 
 void GameScene::Initialize() {
@@ -61,9 +66,16 @@ void GameScene::Initialize() {
 	// 当たり判定管理クラスを登録
 	Collider::SetColliderManager(colliderManager_.get());
 
-	// 音声のテスト
-	//uint32_t i = AudioManager::GetInstance().GetHandleByName("GameBGM.mp3");
-	//AudioManager::GetInstance().Play(i, 0.5f, true);
+	// BGMを発生
+	gameBGMSH_ = AudioManager::GetInstance().GetHandleByName("GameBGM.mp3");
+	AudioManager::GetInstance().Play(gameBGMSH_, 0.5f, true);
+
+	// タイムアップ音声
+	timeUpSH_ = AudioManager::GetInstance().GetHandleByName("Finish.mp3");
+	// クリア音声
+	clearSH_ = AudioManager::GetInstance().GetHandleByName("NormaClear.mp3");
+	// ユニットを鉱石に配置出来ない時
+	oreRejectedSH_ = AudioManager::GetInstance().GetHandleByName("OreRejected.mp3");
 
 	auto inst = GameParamEditor::GetInstance();
 	inst->SetActiveScene("GameScene");
@@ -581,11 +593,23 @@ std::unique_ptr<IScene> GameScene::Update() {
 	// 時間切れ
 	if (timeTracker_->isFinishd()) {
 
+		// タイマーの終了音声を再生
+		if (!isPlayTimeUpSH_) {
+			isPlayTimeUpSH_ = true;
+			AudioManager::GetInstance().Play(timeUpSH_, 0.5f, false);
+		}
+
 		// 鉱石が目標数納品を達成するか、鉱石がなくなればクリア
 		if (OreItemStorageNum::currentOreItemNum_ >= OreItemStorageNum::maxOreItemNum_ ||
 			oreItemManager_->GetCurrentOreItemNum() <= 0) {
 
 			isGameClear_ = true;
+
+			// クリア音声を再生
+			if (!isPlayClearSH_) {
+				isPlayClearSH_ = true;
+				AudioManager::GetInstance().Play(clearSH_, 0.5f, false);
+			}
 
 		} else {
 
@@ -692,6 +716,12 @@ void GameScene::InGameScene() {
 	// ユニットの選択処理
 	//==============================================================
 
+	auto PlayReject = [this]() {
+		if (!AudioManager::GetInstance().IsPlay(oreRejectedSH_)) {
+			AudioManager::GetInstance().Play(oreRejectedSH_, 0.5f, false);
+		}
+	};
+
 	// マウスの位置に鉱石が存在していればユニットを動かす
 	Vector3 oreWorldPos = {};
 	if (oreItemManager_->IsSelectOre(cameraController_->GetWorldPos(), oreWorldPos)) {
@@ -723,6 +753,10 @@ void GameScene::InGameScene() {
 						for (int i = 0; i < spawnNum; ++i) {
 							selectedOreItem->AddWorker();
 						}
+
+						if (spawnNum <= 0) {
+							PlayReject();
+						}
 					} else {
 						if (spawnNum >= deltaNum * -1.0f) {
 							// おれを追加
@@ -733,9 +767,16 @@ void GameScene::InGameScene() {
 							for (int i = 0; i < actualSpawnCount; ++i) {
 								selectedOreItem->AddWorker();
 							}
+							if (actualSpawnCount <= 0) {
+								PlayReject();
+							}
 						}
 					}
+				} else {
+					PlayReject();
 				}
+			} else {
+				PlayReject();
 			}
 		}
 	} else {

@@ -7,6 +7,7 @@
 #include"LightManager.h"
 #include"SelectStageNum.h"
 #include <Game/GameScene.h>
+#include"Assets/Audio/AudioManager.h"
 
 namespace {
 	//Minimap確認用
@@ -17,6 +18,13 @@ namespace {
 	std::string playerModelName = "Player";
 
 	std::string spriteModelName = "Sprite";
+}
+
+SelectScene::~SelectScene() {
+	// BGMを止める
+	if (AudioManager::GetInstance().IsPlay(selectSH_)) {
+		AudioManager::GetInstance().Stop(selectSH_);
+	}
 }
 
 void SelectScene::Initialize() {
@@ -35,6 +43,15 @@ void SelectScene::Initialize() {
 	postEffectConfig_.origin = display_;
 	postEffectConfig_.jobs_ = 0;
 
+	// BGMを発生
+	selectSH_ = AudioManager::GetInstance().GetHandleByName("SelectBGM.mp3");
+	AudioManager::GetInstance().Play(selectSH_, 0.5f, true);
+
+	// 決定音を取得
+	decideSH_ = AudioManager::GetInstance().GetHandleByName("Decide.mp3");
+
+	SelectStageNum::num_ = 1;
+
 	// UIカメラを設定
 	uiCamera_ = std::make_unique<Camera>();
 	uiCamera_->SetProjectionMatrix(OrthographicDesc{});
@@ -43,20 +60,6 @@ void SelectScene::Initialize() {
 	// 追従カメラ
 	selectCamera_ = std::make_unique<SelectCamera>();
 	selectCamera_->Initialize();
-
-	// プレイヤーモデルを取得
-	int playerModelID = modelManager_->LoadModel(playerModelName);
-	auto playerModel = modelManager_->GetNodeModelData(playerModelID);
-	
-	// プレイヤーのテクスチャを取得
-	int playerTextureIndex = textureManager_->GetTexture("Player.png");
-
-	// プレイヤーの描画オブジェクト
-	playerObject_ = std::make_unique<PlayerUnitObject>();
-	playerObject_->Initialize(drawDataManager_->GetDrawData(playerModel.drawDataIndex), playerTextureIndex);
-	playerObject_->transform_.position = { 0.0f,-1.0f,-0.5f };
-	playerObject_->transform_.rotate.y = std::numbers::pi_v<float> / 2;
-	currentDir_ = 1.0f;
 
 	// spriteモデルを取得
 	int spriteModelID = modelManager_->LoadModel(spriteModelName);
@@ -129,6 +132,20 @@ void SelectScene::Initialize() {
 	floorObject_->material_.color = { 1.0f,1.0f,1.0f,1.0f };
 	floorObject_->material_.isActive = true;
 	floorObject_->Update();
+
+	// プレイヤーモデルを取得
+	int playerModelID = modelManager_->LoadModel(playerModelName);
+	auto playerModel = modelManager_->GetNodeModelData(playerModelID);
+
+	// プレイヤーのテクスチャを取得
+	int playerTextureIndex = textureManager_->GetTexture("Player.png");
+
+	// プレイヤーの描画オブジェクト
+	playerObject_ = std::make_unique<PlayerUnitObject>();
+	playerObject_->Initialize(drawDataManager_->GetDrawData(playerModel.drawDataIndex), playerTextureIndex);
+	playerObject_->transform_.position = { 0.0f,-1.0f,-0.5f };
+	playerObject_->transform_.rotate.y = std::numbers::pi_v<float> / 2;
+	currentDir_ = 1.0f;
 
 	/// シーン遷移の処理
 	fadeTransition_ = std::make_unique<FadeTransition>();
@@ -261,6 +278,12 @@ void SelectScene::InGameScene() {
 
 		// 決定
 		if (key[Key::Decision]) {
+
+			// 決定音を鳴らす
+			if (!AudioManager::GetInstance().IsPlay(decideSH_)) {
+				AudioManager::GetInstance().Play(decideSH_, 0.5f, false);
+			}
+
 			commonData_->nextStageIndex = selectStageNum_ - 1;
 			commonData_->nextMapIndex = 0;
 			isInPlayerAnimation_ = true;
@@ -357,6 +380,11 @@ void SelectScene::TitleScene() {
 
 	if (key[Key::Decision]) {
 		isStartTitle_ = true;
+
+		// 決定音を鳴らす
+		if (!AudioManager::GetInstance().IsPlay(decideSH_)) {
+			AudioManager::GetInstance().Play(decideSH_, 0.5f, false);
+		}
 	}
 
 	if (!isStartTitle_) { return; }

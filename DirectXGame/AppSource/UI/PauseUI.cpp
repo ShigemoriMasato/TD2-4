@@ -1,6 +1,7 @@
 #include"PauseUI.h"
 #include"Utility/Easing.h"
 #include"FpsCount.h"
+#include"Assets/Audio/AudioManager.h"
 
 void PauseUI::Initialize(DrawData drawData, uint32_t texture, KeyManager* keyManager,
 	const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader,
@@ -49,6 +50,13 @@ void PauseUI::Initialize(DrawData drawData, uint32_t texture, KeyManager* keyMan
 	guideSprite_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	guideSprite_->SetTexture(texture);
 	guideSprite_->Update();
+
+
+	/// 音声
+
+	// 決定音を取得
+	decideSH_ = AudioManager::GetInstance().GetHandleByName("Decide.mp3");
+
 }
 
 void PauseUI::Update() {
@@ -139,6 +147,10 @@ void PauseUI::InUpdate() {
 	if (isOpenPause_) {
 
 		if (key[Key::Decision]) {
+
+			if (!AudioManager::GetInstance().IsPlay(decideSH_)) {
+				AudioManager::GetInstance().Play(decideSH_, 0.5f, false);
+			}
 			timer_ = 0.0f;
 
 			// 決定
@@ -157,6 +169,9 @@ void PauseUI::InUpdate() {
 			}
 
 		}else if (key[Key::DecisionPause]) {
+			if (!AudioManager::GetInstance().IsPlay(decideSH_)) {
+				AudioManager::GetInstance().Play(decideSH_, 0.5f, false);
+			}
 		    // tabで元にモデル
 			onRetryClicked_();
 			isAnimation_ = true;
@@ -169,6 +184,9 @@ void PauseUI::InUpdate() {
 	} else {
 		// 決定
 		if (key[Key::DecisionPause]) {
+			if (!AudioManager::GetInstance().IsPlay(decideSH_)) {
+				AudioManager::GetInstance().Play(decideSH_, 0.5f, false);
+			}
 			timer_ = 0.0f;
 			onRetryClicked_();
 			isAnimation_ = true;
