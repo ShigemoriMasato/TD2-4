@@ -338,6 +338,12 @@ void OreUnit::OnCollision(Collider* other) {
 				if (!isConflict_) {
 					isConflict_ = true;
 					unitEffectManager_->AddConflict(object_->transform_.position);
+
+					// ダメージを与える
+					if (damageParam_ > 0) {
+						int32_t per = static_cast<int32_t>(static_cast<float>(maxHp_) * (damagePer_ * static_cast<float>(damageParam_)));
+						hp_ -= per;
+					}
 				}
 			}
 		}
@@ -621,6 +627,7 @@ void OreUnit::RegisterDebugParam() {
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "RiseReturnTime", riseTime_, i++);
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "FallReturnTime", FallTime_, i++);
 	GameParamEditor::GetInstance()->AddItem(kGroupName_, "MiningTime", miningTime_, i++);
+	GameParamEditor::GetInstance()->AddItem(kGroupName_, "DamagePer", damagePer_, i++);
 
 	// アニメーション
 	GameParamEditor::GetInstance()->AddItem("OreUnit_Animation", "MaxJumpHeight", maxJumpHeight_,0);
@@ -642,6 +649,7 @@ void OreUnit::ApplyDebugParam() {
 	riseTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "RiseReturnTime");
 	FallTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "FallReturnTime");
 	miningTime_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "MiningTime");
+	damagePer_ = GameParamEditor::GetInstance()->GetValue<float>(kGroupName_, "DamagePer");
 
 	// アニメーション
 	maxJumpHeight_ = GameParamEditor::GetInstance()->GetValue<float>("OreUnit_Animation", "MaxJumpHeight");
