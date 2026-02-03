@@ -14,6 +14,13 @@ void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData,
 	// ステージがエンドレスの場合、
 	if (mapNum >= 0) {
 		dagageParam_ = mapNum / 2;
+
+		// 上限設定
+		if (dagageParam_ >= 6) {
+			dagageParam_ = 6;
+		}
+	} else {
+		dagageParam_ = -1;
 	}
 
 	// マップデータを取得
