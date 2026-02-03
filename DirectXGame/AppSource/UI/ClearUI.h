@@ -4,14 +4,22 @@
 #include"Object/FontObject.h"
 #include <functional>
 
+#include"UI/Effect/QuotaClearEffectUI.h"
+#include"UI/Effect/ConfettiEffectUI.h"
+
 class ClearUI {
 public:
 
-	void Initialize(DrawData drawData, KeyManager* keyManager, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader, bool hasNextMap);
+	void Initialize(DrawData drawData, KeyManager* keyManager, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader, bool hasNextMap,int florTex,int starTex);
 
 	void Update();
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
+
+	// クリアシーンの開始を宣言する
+	void Start(const bool& isStart) {
+		isClearStart_ = isStart;
+	}
 
 public:
 
@@ -25,22 +33,28 @@ private:
 	// 背景画像
 	std::unique_ptr<SpriteObject> bgSpriteObject_;
 
+	// フロアクリア
+	std::unique_ptr<SpriteObject> florClearSpriteObject_;
+	std::unique_ptr<SpriteObject> effectFlorClearSpriteObject_;
+	Vector2 clearTextSize_ = { 360.0f,128.0f };
+
+	bool isClearStart_ = false;
+
 	float timer_ = 0.0f;
 
 	// 背景の移動処理
 	float startBgPosY_ = 1080.0f;
 	float endBgPosY_ = 360.0f;
 
-	bool inAnimation_ = true;
-
-	// テキスト
-	std::unique_ptr<FontObject> clearFontObject_;
+	bool isAnimation_ = true;
 
 	// リトライ
 	std::unique_ptr<FontObject> retryFontObject_;
+	Vector3 retryPos_;
 
 	// ステージ選択へ
 	std::unique_ptr<FontObject> selectFontObject_;
+	Vector3 selectPos_;
 
 	// クリックコールバック
 	std::function<void()> onRetryClicked_ = nullptr;
@@ -49,6 +63,13 @@ private:
 	// 選択番号
 	int selectNum_ = 0;
 
+	// キラキラエフェクト
+	std::unique_ptr<QuotaClearEffectUI> quotaClearEffectUI_;
+
+	// 吹雪演出
+	std::unique_ptr<ConfettiEffectUI> lertconfettiEffectUI_;
+	std::unique_ptr<ConfettiEffectUI> rightconfettiEffectUI_;
+
 private: // 調整項目
 
 	float maxTime_ = 1.0f;
@@ -56,5 +77,8 @@ private: // 調整項目
 private:
 
 	void InUpdate();
+
+	// スタートアニメーション
+	void StartAnimation();
 
 };

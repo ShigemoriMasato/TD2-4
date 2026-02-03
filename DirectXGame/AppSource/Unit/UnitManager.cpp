@@ -106,12 +106,12 @@ void UnitManager::Update() {
 			// ユニットの更新処理
 			unit->Update();
 
-			// ユニットの位置を設定
-			unitPosList_.push_back(unit->GetPos());
-
 			// HPを追加
 			if (unit->GetState() != OreUnit::State::Return) {
 				oreUnitHPUI_->Add(unit->GetPos() + Vector3(0.0f, 2.0f, 0.0f), unit->GetHp(), unit->GetMaxHp());
+
+				// ユニットの位置を設定
+				unitPosList_.push_back(unit->GetPos());
 			}
 
 			// 回収中は鉱石を持たせる
