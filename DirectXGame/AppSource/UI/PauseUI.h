@@ -62,6 +62,11 @@ private:
 	// 操作ガイドUI
 	std::unique_ptr<SpriteObject> guideSprite_;
 
+	/// 音声
+
+	// 決定音
+	uint32_t decideSH_ = 0;
+
 private: // 調整項目
 
 	float maxTime_ = 0.5f;
