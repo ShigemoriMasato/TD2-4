@@ -367,6 +367,9 @@ void GameScene::Initialize() {
 		if (miniMap_->PleasePose()) {
 			timeTracker_->EndMeasureTimes();
 			isActiveMinMap_ = true;
+
+			// アイコン用にユニット位置を更新する
+			unitManager_->MiniMapUpdate();
 		} else {
 			timeTracker_->StartMeasureTimes();
 			isActiveMinMap_ = false;
@@ -377,13 +380,15 @@ void GameScene::Initialize() {
 	int arrowIndex = textureManager_->GetTexture("Arrow.png");
 	int alertIndex = textureManager_->GetTexture("AlertIcon.png");
 	int playerIconIndex = textureManager_->GetTexture("PlayerIcon.png");
+	int outlineIconIndex = textureManager_->GetTexture("AlertIcon_02.png");
 
 	// ユニットのUI管理
 	unitMarkUIManager_ = std::make_unique<UnitMarkUIManager>();
-	unitMarkUIManager_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), arrowIndex, alertIndex, playerIconIndex);
-
+	unitMarkUIManager_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), arrowIndex, alertIndex, playerIconIndex, outlineIconIndex);
 	// カメラを設定
 	unitMarkUIManager_->SetCamera(cameraController_.get());
+	// ミニマップを設定
+	unitMarkUIManager_->SetMinMap(miniMap_.get());
 
 	// ユニット管理クラスに登録する
 	unitManager_->SetUnitMarkUI(unitMarkUIManager_.get());
@@ -829,7 +834,9 @@ void GameScene::Draw() {
 			miniMap_->Draw(gameWindow_->GetWindow());
 
 			// ユニットのUIマークを描画
-			unitMarkUIManager_->DrawUI(gameWindow_->GetWindow(), vpMatrix2d);
+			if (!miniMap_->PleasePose()) {
+				unitMarkUIManager_->DrawUI(gameWindow_->GetWindow(), vpMatrix2d);
+			}
 
 			// 開始と終わりのカウントの描画
 			startCountUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
@@ -846,6 +853,9 @@ void GameScene::Draw() {
 				homeManager_->DrawIcon(gameWindow_->GetWindow(), vpMatrix2d);
 				// ユニットアイコンを描画
 				unitManager_->DrawIcon(gameWindow_->GetWindow(), vpMatrix2d);
+
+				// 衝突位置アイコンを描画
+				unitMarkUIManager_->DrawUI(gameWindow_->GetWindow(), vpMatrix2d);
 			} else {
 				// ゲームのUIを描画
 				gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix2d, !miniMap_->PleasePose());
