@@ -6,6 +6,8 @@
 #include <Render/RenderObject.h>
 #include <functional>
 
+#include"GameCamera/MarkResult.h"
+
 class MiniMap {
 public:
 
@@ -22,6 +24,14 @@ public:
 
 	// クリックした時の時間の制御
 	void SetOnClicked(std::function<void()> cb) { onClicked_ = std::move(cb); }
+
+	/// <summary>
+	/// 3D空間の座標をスクリーン座標に変換する
+	/// </summary>
+	/// <param name="worldPos">変換したいワールド座標</param>
+	/// <returns>x,y:スクリーン座標, z:カメラ前方への距離(w)</returns>
+	Vector3 WorldToScreen(const Vector3& worldPos) const;
+	MarkerResult GetMarkerInfo(const Vector3& targetWorldPos, float margin, float screenWidth = 1280.0f, float screenHeight = 720.0f);
 
 private:
 

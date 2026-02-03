@@ -53,3 +53,26 @@ void HomeManager::SetAnimation(const Vector3& pos) {
 		}
 	}
 }
+
+void HomeManager::SetMinMapPos(MiniMap* miniMap, const DrawData& spreteDrawData, int texture) {
+
+	iconObjects_.resize(homeList_.size());
+
+	for (size_t i = 0; i < homeList_.size(); ++i) {
+		iconObjects_[i] = std::make_unique<SpriteObject>();
+		iconObjects_[i]->Initialize(spreteDrawData, { 128.0f,128.0f });
+		MarkerResult marker = miniMap->GetMarkerInfo(homeList_[i]->homeObject_->transform_.position, 36.0f);
+		iconObjects_[i]->transform_.position = { marker.position.x,marker.position.y,0.0f };
+		iconObjects_[i]->color_ = { 1.0f,1.0f,1.0f,1.0f };
+		iconObjects_[i]->SetTexture(texture);
+		iconObjects_[i]->Update();
+	}
+}
+
+void HomeManager::DrawIcon(Window* window, const Matrix4x4& vpMatrix) {
+
+	// アイコンを描画
+	for (auto& icon : iconObjects_) {
+		icon->Draw(window, vpMatrix);
+	}
+}

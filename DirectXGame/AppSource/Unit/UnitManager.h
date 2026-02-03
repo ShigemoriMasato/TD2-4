@@ -14,6 +14,8 @@
 
 #include"UnitMarkUIManager.h"
 
+#include"Game/MiniMap/MiniMap.h"
+
 class OreItem;
 
 class UnitManager {
@@ -28,15 +30,24 @@ public:
 		uint32_t groupId_ = 0; // グループId
 	};
 
+	struct Cluster {
+		Vector3 positionSum; // 位置の合計
+		int count;           // まとめた数
+	};
+
 public:
 
-	void Initalize(MapChipField* mapChipField, DrawData playerDrawData,int pIndex, DrawData oreDrawData,int oIndex, KeyManager* keyManager, Vector3 playerInitPos,int32_t maxOreNum);
+	void Initalize(MapChipField* mapChipField, DrawData playerDrawData,int pIndex, DrawData oreDrawData,int oIndex, KeyManager* keyManager, Vector3 playerInitPos,int32_t maxOreNum,
+		DrawData spriteDrawData, int unitTex, int playerTex);
 
 	void Update();
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
 	void DrawUI();
+
+	// ミニマップ用にアイコンを描画
+	void DrawIcon(Window* window, const Matrix4x4& vpMatrix);
 
 	/// <summary>
 	/// ユニットを出動させる
@@ -97,6 +108,11 @@ public:
 		});
 	}
 
+	// ミニマップを作成
+	void SetMinMap(MiniMap* miniMap) {
+		miniMap_ = miniMap;
+	}
+
 private:
 	// マップ
 	MapChipField* mapChipField_ = nullptr;
@@ -110,6 +126,9 @@ private:
 	UnitMarkUIManager* unitMarkUIManager_ = nullptr;
 	// ログを出力するクラス
 	LogUI* logUI_ = nullptr;
+
+	// ミニマップ
+	MiniMap* miniMap_ = nullptr;
 
 private:
 
@@ -149,6 +168,14 @@ private:
 	// デバック用
 	std::string kGroupName_ = "UnitManager";
 
+	// ユニットアイコン
+	std::vector<std::unique_ptr<SpriteObject>> unitIconObjects_;
+	std::vector<Vector3> unitPosList_;
+	int32_t unitIconIndex_ = -1;
+
+	// プレイヤーアイコン
+	std::unique_ptr<SpriteObject> playerIconObjects_;
+
 private: // 調整項目
 
 	// 出現させるユニットの数
@@ -172,6 +199,9 @@ private:
 
 	// 一番近い出現位置を求める
 	Vector3 GetNearHomePos(const Vector3& targetPos);
+
+	// 位置をまとめる
+	void ProcessClusters();
 
 private:
 
