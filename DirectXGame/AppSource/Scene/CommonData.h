@@ -25,14 +25,16 @@ struct CommonData {
 	int goldNum = 200;
 	int oreNum = 100;
 
-	// 次のシーンのおれユニットの数
-	int32_t nextOreUnitMaxNum = 20;
+	//今までのやつ
+	int maxOreNum = 0;
+	int killOreNum = 0;
+	int maxGoldNum = 0;
+	std::vector<std::pair<int, int>> stageNorma_{};
+	std::vector<int> maxGoldNum_{};
+	int currentGoldNum_{};
 
 	int postEffectDrawDataIndex = -1;
 
 	// タイトルシーンを受けたか判断する
 	bool isTitle_ = false;
-
-	std::vector<int> maxGoldNum_{};
-	int currentGoldNum_{};
 };

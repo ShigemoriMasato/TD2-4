@@ -29,6 +29,15 @@ RasterizerShelf::RasterizerShelf() {
     backframeDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
     rasterizerDescs_[int(RasterizerID::Back)] = backframeDesc;
+
+    //RasterizerStateの設定
+    D3D12_RASTERIZER_DESC cullNoneDesc{};
+    //表を表示しない
+    cullNoneDesc.CullMode = D3D12_CULL_MODE_NONE;
+    //三角形の中を塗りつぶす
+    cullNoneDesc.FillMode = D3D12_FILL_MODE_SOLID;
+
+    rasterizerDescs_[int(RasterizerID::CullNone)] = cullNoneDesc;
 }
 
 RasterizerShelf::~RasterizerShelf() {

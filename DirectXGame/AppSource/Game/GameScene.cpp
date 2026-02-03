@@ -125,6 +125,9 @@ void GameScene::Initialize() {
 
 	commonData_->norma = currentMap_.norma;
 
+	//ここでOreの情報を更新しておく
+	commonData_->maxOreNum = std::max(commonData_->maxOreNum, currentMap_.initOreNum);
+
 	Vector3 playerInitPos = GetPlayerInitPosition();
 
 	// マップデータ解釈機能を初期化
@@ -529,11 +532,6 @@ std::unique_ptr<IScene> GameScene::Update() {
 		//以下シーン切り替えについて
 		if (hasNextMap_) {
 
-			//Goldについての保存
-			commonData_->currentGoldNum_ += OreItemStorageNum::maxOreItemNum_;
-			commonData_->goldNum = OreItemStorageNum::currentOreItemNum_;
-			commonData_->oreNum = unitManager_->GetOreCount();
-
 			return std::make_unique<OreAddScene>();
 
 		} else {
@@ -565,10 +563,12 @@ std::unique_ptr<IScene> GameScene::Update() {
 			oreItemManager_->GetCurrentOreItemNum() <= 0) {
 
 			isGameClear_ = true;
+			SaveGameData();
 
 		} else {
 
 			isGameOver_ = true;
+			SaveGameData();
 
 		}
 	}
@@ -577,6 +577,7 @@ std::unique_ptr<IScene> GameScene::Update() {
 	if (unitManager_->GetMaxOreCount() <= 0) {
 		// ゲームオーバーシーンに移動
 		isGameOver_ = true;
+		SaveGameData();
 	}
 
 	return nullptr;
@@ -652,7 +653,7 @@ void GameScene::CommonUpdate() {
 	cameraController_->SetTargetPos(unitManager_->GetPlayerPosition());
 	// カメラの更新処理
 	cameraController_->Update();
-
+	 
 
 	// ミニマップの更新処理
 	miniMap_->Update();
@@ -988,4 +989,22 @@ Vector3 GameScene::GetPlayerInitPosition() {
 	}
 
 	return { 3.0f,0.0f,3.0f };
+}
+
+void GameScene::SaveGameData() {
+
+	//合計の集計
+	commonData_->currentGoldNum_ += OreItemStorageNum::maxOreItemNum_;
+	//最大値の更新
+	commonData_->maxGoldNum = std::max(commonData_->maxGoldNum, OreItemStorageNum::maxOreItemNum_);
+	//ノルマと獲得数の保存
+	commonData_->stageNorma_.push_back(std::make_pair(OreItemStorageNum::currentOreItemNum_, currentMap_.norma));
+	//殺したOreの数
+	commonData_->killOreNum += commonData_->oreNum - unitManager_->GetOreCount();
+
+	//OreAddで使う、ゲームシーンで取得した鉱石の数
+	commonData_->goldNum = OreItemStorageNum::currentOreItemNum_;
+	//OreAddで使う、ゲームシーンで残っているOre
+	commonData_->oreNum = unitManager_->GetOreCount();
+
 }

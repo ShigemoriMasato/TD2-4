@@ -215,4 +215,9 @@ private:
 	/// </summary>
 	/// <returns>初期位置</returns>
 	Vector3 GetPlayerInitPosition();
+
+	/// <summary>
+	/// ランキング等のデータを保存する
+	/// </summary>
+	void SaveGameData();
 };
