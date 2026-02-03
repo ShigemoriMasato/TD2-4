@@ -257,13 +257,20 @@ void GameScene::Initialize() {
 	int oreMapIconIndex = textureManager_->GetTexture("OreMapIcon.png");
 	int playerMapIconIndex = textureManager_->GetTexture("PlayerMapIcon.png");
 
+	// ステージの番号を取得する
+	int32_t sn = -1;
+	if (commonData_->nextStageIndex >= 3) {
+		sn = commonData_->nextMapIndex;
+	}
+
 	// ユニットの管理クラス
 	unitManager_ = std::make_unique<UnitManager>();
 	unitManager_->Initalize(mapChipField_.get(),
 		drawDataManager_->GetDrawData(playerModel.drawDataIndex), playerTextureIndex,
 		drawDataManager_->GetDrawData(oreModel.drawDataIndex), oreTextureIndex,
 		commonData_->keyManager.get(), playerInitPos, commonData_->oreNum,
-		drawDataManager_->GetDrawData(spritModel.drawDataIndex), oreMapIconIndex, playerMapIconIndex);
+		drawDataManager_->GetDrawData(spritModel.drawDataIndex), oreMapIconIndex, playerMapIconIndex,
+		sn);
 
 	// ミニマップを設定
 	unitManager_->SetMinMap(miniMap_.get());
