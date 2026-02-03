@@ -4,7 +4,7 @@
 #include"Object/GoldOre.h"
 #include <LightManager.h>
 
-void OreItemManager::Initialize(DrawData spriteDrawData, DrawData hpDrawData, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader, DrawData drawData) {
+void OreItemManager::Initialize(DrawData spriteDrawData, DrawData hpDrawData, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader, DrawData drawData, int stageNum) {
 
 	fontLoader_ = fontLoader;
 	fontName_ = fontName;
@@ -23,6 +23,10 @@ void OreItemManager::Initialize(DrawData spriteDrawData, DrawData hpDrawData, co
 	// 破片パーティクルの初期化
 	oreFragmentParticle_ = std::make_unique<OreFragmentParticle>();
 	oreFragmentParticle_->Initialize(drawData);
+
+	if (stageNum >= 1) {
+		isLargeScale_ = true;
+	}
 }
 
 void OreItemManager::Update(bool isOpenMap) {
@@ -60,42 +64,61 @@ void OreItemManager::Update(bool isOpenMap) {
 		// フォントを更新する
 		std::wstring s = std::to_wstring(ore->GetCurrentWorkerNum()) + L"/" + std::to_wstring(ore->GetMaxWorkerNum());
 		fontList_[it->first].font->UpdateCharPositions(s, fontLoader_);
-		fontList_[it->first].font->Update();
 
 		// hp処理
 		float p = static_cast<float>(ore->GetMaxHp()) / static_cast<float>(ore->GetHp());
-		fontList_[it->first].hpSprite->transform_.scale.x = 2.0f * p;
+		if (isOpenMap && isLargeScale_) {
+			fontList_[it->first].hpSprite->transform_.scale.x = 5.0f * p;
+			fontList_[it->first].font->transform_.scale = Vector3(0.01f, -0.01f, 1.0f) * 3.0f;
+			fontList_[it->first].font->transform_.position = fontList_[it->first].fontPos + Vector3(-1.0f, 0.0f, 0.0f);
+		} else {
+			fontList_[it->first].hpSprite->transform_.scale.x = 2.0f * p;
+			fontList_[it->first].font->transform_.scale = Vector3(0.01f, -0.01f, 1.0f);
+			fontList_[it->first].font->transform_.position = fontList_[it->first].fontPos;
+		}
 
 		float posZ = 0.0f;
-		float hpPosZ = 0.0f;
+		Vector3 hpPosZ = { 0,0,0 };
 		if (isOpenMap) {
 			posZ = fontList_[it->first].bgSprite->transform_.position.z;
 			fontList_[it->first].bgSprite->transform_.position.z -= 0.2f;
 			fontList_[it->first].bgSprite->transform_.rotate.x = -1.2f;
 			fontList_[it->first].font->transform_.rotate.x = -1.3f;
 
-			hpPosZ = fontList_[it->first].hpSprite->transform_.position.z;
-			fontList_[it->first].hpSprite->transform_.position.z -= 0.2f;
+			hpPosZ = fontList_[it->first].hpSprite->transform_.position;
+			fontList_[it->first].hpSprite->transform_.position.z -= 1.0f;
+			fontList_[it->first].hpSprite->transform_.position.y += 1.0f;
+			fontList_[it->first].hpSprite->transform_.position.x += -1.5f;
 			fontList_[it->first].hpSprite->transform_.rotate.x = -1.2f;
 
+			if (isLargeScale_) {
+				fontList_[it->first].bgSprite->transform_.scale *= 3.0f;
+			}
 		} else {
 			fontList_[it->first].bgSprite->transform_.rotate.x = -2.4f;
 			fontList_[it->first].font->transform_.rotate.x = -2.4f;
 			fontList_[it->first].hpSprite->transform_.rotate.x = -2.4f;
 		}
 
+		// 満員なら文字の色を変える
 		if (ore->GetCurrentWorkerNum() >= ore->GetMaxWorkerNum()) {
 			fontList_[it->first].font->fontColor_ = { 0.8f,0.0f,0.0f,1.0f };
 		} else {
 			fontList_[it->first].font->fontColor_ = { 0.0f,1.0f,1.0f,1.0f };
 		}
 
+		// 更新処理
+		fontList_[it->first].font->Update();
 		fontList_[it->first].bgSprite->Update();
 		fontList_[it->first].hpSprite->Update();
 
 		if (isOpenMap) {
 			fontList_[it->first].bgSprite->transform_.position.z = posZ;
-			fontList_[it->first].hpSprite->transform_.position.z = hpPosZ;
+			fontList_[it->first].hpSprite->transform_.position = hpPosZ;
+
+			if (isLargeScale_) {
+				fontList_[it->first].bgSprite->transform_.scale = { 2.0f,1.0f,1.0f };
+			}
 		}
 
 		if (ore->IsDead()) {
@@ -287,10 +310,12 @@ void OreItemManager::AddOreItem(OreType type, const Vector3& pos, const float& r
 	data.font->transform_.position.x -= 0.8f;
 	data.font->transform_.position.y += 4.0f;
 	data.font->transform_.rotate.x = -2.4f;
-	data.font->transform_.scale.x = 0.01f;
-	data.font->transform_.scale.y = -0.01f;
+	data.font->transform_.scale = Vector3(0.01f, -0.01f,1.0f);
 	data.font->fontColor_ = { 0.0f,1.0f,1.0f,1.0f };
 	data.font->Update();
+
+	data.fontPos = data.font->transform_.position;
+
 	// 背景
 	data.bgSprite = std::make_unique<DefaultObject>();
 	data.bgSprite->Initialize(spriteDrawData_, 0);

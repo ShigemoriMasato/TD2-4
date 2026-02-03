@@ -198,7 +198,9 @@ void GameScene::Initialize() {
 	// 描画データを設定ｓる
 	oreItemManager_->SetModle(drawDataManager_->GetDrawData(smallModel.drawDataIndex), drawDataManager_->GetDrawData(midleModel.drawDataIndex), drawDataManager_->GetDrawData(largeModel.drawDataIndex),
 		smallIndex, midleIndex, largeIndex);
-	oreItemManager_->Initialize(drawDataManager_->GetDrawData(sprModel.drawDataIndex), drawDataManager_->GetDrawData(hpMode.drawDataIndex), fontName, draw, fontLoader_, drawDataManager_->GetDrawData(boxModel.drawDataIndex));
+	oreItemManager_->Initialize(drawDataManager_->GetDrawData(sprModel.drawDataIndex), drawDataManager_->GetDrawData(hpMode.drawDataIndex), 
+		fontName, draw, fontLoader_, drawDataManager_->GetDrawData(boxModel.drawDataIndex),
+		commonData_->nextStageIndex);
 
 	// 鉱石の回収ノルマを設定
 	OreItemStorageNum::maxOreItemNum_ = currentMap_.norma;
