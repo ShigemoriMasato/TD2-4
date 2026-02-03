@@ -65,6 +65,9 @@ void OreAddScene::Initialize() {
 	postEffectConfig_.window = commonData_->mainWindow->GetWindow();
 	postEffectConfig_.origin = commonData_->display.get();
 
+	fukidashi_ = std::make_unique<RenderObject>();
+
+
 	fade_.color = { 0.0f, 0.0f, 0.0f };
 	fade_.alpha = 1.0f;
 }

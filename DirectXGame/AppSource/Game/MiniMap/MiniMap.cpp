@@ -4,7 +4,19 @@
 #include <Input/Input.h>
 #include <Common/DebugParam/GameParamEditor.h>
 
+namespace {
+	void Log(Matrix4x4& mat, Logger logger) {
+		for (int i = 0; i < 4; ++i) {
+			float* tmp = mat.m[i];
+			logger->info("{} : {}, {}, {}, {}", i, tmp[0], tmp[1], tmp[2], tmp[3]);
+		}
+	}
+}
+
 void MiniMap::Initialize(int mapWidth, int mapHeight, TextureManager* textureManager, const DrawData& plane, const DrawData& visionField) {
+	auto logger = getLogger("Minimap");
+
+
 	// カメラの初期化
 	camera_ = std::make_unique<Camera>();
 	camera_->SetProjectionMatrix(PerspectiveFovDesc());
@@ -15,8 +27,19 @@ void MiniMap::Initialize(int mapWidth, int mapHeight, TextureManager* textureMan
 	dist = std::max(mapWidth, mapHeight) * 0.5f / std::tan(0.45f / 2.0f);
 	transform_.position = { mapWidth / 2.0f - 0.5f, 0.0f, mapHeight / 2.0f - 0.5f };
 	Vector3 cameraPos = transform_.position + Vector3{ 0.0f, dist * distRatio_, 0.0f };
-	camera_->SetTransform(Matrix::MakeAffineMatrix({1.0f, 1.0f, 1.0f}, transform_.rotate, { cameraPos }));
+	camera_->SetTransform(Matrix::MakeAffineMatrix({1.0f, 1.0f, 1.0f}, transform_.rotate, { cameraPos }).Inverse());
 	camera_->MakeMatrix();
+
+	logger->info("Positoin: {}, {}, {}", cameraPos.x, cameraPos.y, cameraPos.z);
+	logger->info("Scale: {}, {}, {}", transform_.scale.x, transform_.scale.y, transform_.scale.z);
+
+	Matrix4x4 transformMatrix = camera_->GetTransformMatrix();
+	logger->info("TransformMatrix");
+	Log(transformMatrix, logger);
+
+	Matrix4x4 vpMat = camera_->GetVPMatrix();
+	Log(vpMat, logger);
+
 	// デュアルディスプレイの初期化
 	display_ = std::make_unique<DualDisplay>("MiniMapDisplay");
 	int textureHandle1 = textureManager->CreateWindowTexture(1280, 720, 0x88ffaaff);
@@ -68,6 +91,10 @@ void MiniMap::Update() {
 		// コールバック関数
 		onClicked_();
 	}
+
+	Vector3 cameraPos = transform_.position + Vector3{ 0.0f, dist * distRatio_, 0.0f };
+	camera_->SetTransform(Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, { cameraPos }).Inverse());
+	camera_->MakeMatrix();
 
 	auto key = Input::GetKeyState();
 	auto prekey = Input::GetPreKeyState();

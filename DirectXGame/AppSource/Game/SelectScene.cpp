@@ -438,10 +438,11 @@ void SelectScene::Draw() {
 
 	selectCamera_->DrawImGui();
 
+#ifdef USE_IMGUI
 	ImGui::Begin("Titel");
 	ImGui::DragFloat3("pos", &floorObject_->transform_.position.x, 0.1f);
 	ImGui::DragFloat3("size", &floorObject_->transform_.scale.x, 0.1f);
 	ImGui::End();
-
+#endif
 	engine_->ImGuiDraw();
 }

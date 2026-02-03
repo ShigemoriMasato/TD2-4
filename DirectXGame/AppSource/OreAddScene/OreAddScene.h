@@ -39,6 +39,8 @@ private: //font
 	std::unique_ptr<FontObject> slashNumGold_ = nullptr;
 	std::unique_ptr<FontObject> slashNumOre_ = nullptr;
 
+	std::unique_ptr<RenderObject> fukidashi_ = nullptr;
+
 private: //postEffect
 
 	std::unique_ptr<PostEffect> postEffect_ = nullptr;
