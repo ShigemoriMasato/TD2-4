@@ -54,7 +54,7 @@ void SelectScene::Initialize() {
 	// プレイヤーの描画オブジェクト
 	playerObject_ = std::make_unique<PlayerUnitObject>();
 	playerObject_->Initialize(drawDataManager_->GetDrawData(playerModel.drawDataIndex), playerTextureIndex);
-	playerObject_->transform_.position = { 0.0f,0.0f,-0.5f };
+	playerObject_->transform_.position = { 0.0f,-1.0f,-0.5f };
 	playerObject_->transform_.rotate.y = std::numbers::pi_v<float> / 2;
 	currentDir_ = 1.0f;
 
@@ -232,7 +232,7 @@ void SelectScene::InGameScene() {
 					isPlayerAnimation_ = true;
 					startPos_ = playerObject_->transform_.position;
 					endPos_ = stagePointObjects_[selectStageNum_ - 1]->transform_.position;
-					endPos_.y = 0.0f;
+					endPos_.y = -1.0f;
 					selectDir_ = -1.0f;
 					startRotY_ = playerObject_->transform_.rotate.y;
 					endRotY_ = -std::numbers::pi_v<float> / 2;
@@ -249,7 +249,7 @@ void SelectScene::InGameScene() {
 					isPlayerAnimation_ = true;
 					startPos_ = playerObject_->transform_.position;
 					endPos_ = stagePointObjects_[selectStageNum_ - 1]->transform_.position;
-					endPos_.y = 0.0f;
+					endPos_.y = -1.0f;
 					selectDir_ = 1.0f;
 					startRotY_ = playerObject_->transform_.rotate.y;
 					endRotY_ = std::numbers::pi_v<float> / 2;
