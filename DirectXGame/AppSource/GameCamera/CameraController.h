@@ -3,19 +3,14 @@
 #include"Input/Input.h"
 
 #include"GameCommon/DefaultObject.h"
-
-struct MarkerResult {
-	Vector2 position; // 画面上の描画位置
-	float rotation;   // マーカーの回転角度（ラジアン）
-	bool isVisible;   // 画面内にいるかどうか（画面内なら表示しない、などの判定用）
-};
+#include"MarkResult.h"
 
 class CameraController : public Camera {
 public:
 
 	void Initialize(Input* input, DrawData drawData, int texture);
 
-	void Update();
+	void Update(bool isDebug = false);
 
 	void DebugDraw();
 
@@ -85,6 +80,8 @@ private:
 	float backDist_ = -40.0f;
 	float targetBackDist_ = -40.0f;
 	float initBackDist_ = 0.0f;
+	const float normalEaseSpeed_ = 10.0f;
+	float easeSpeed_ = 10.0f;
 
 	Input* input_ = nullptr;
 	//クリックした瞬間のマウス座標
@@ -120,6 +117,11 @@ private:
 private://追従カメラ
 	Vector3 targetPos_ = {};
 	float followSpeed_ = 5.0f;
+
+	bool initialize_ = false;
+	int initializeFrame_ = 0;
+
+	float initializeSpeed_ = 3.0f;
 
 private:
 

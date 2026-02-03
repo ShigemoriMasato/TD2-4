@@ -9,7 +9,8 @@ struct CommonData {
 	std::unique_ptr<GameWindow> mainWindow;
 	std::unique_ptr<KeyManager> keyManager;
 	std::unique_ptr<NewMapManager> newMapManager;
-	bool exeFinished_ = false;
+	bool requireExeFinished = false;
+	bool exeFinished = true;
 
 	int nextStageIndex = -1;
 	uint32_t nextMapIndex = 0;
@@ -31,4 +32,6 @@ struct CommonData {
 
 	// タイトルシーンを受けたか判断する
 	bool isTitle_ = false;
+
+	std::vector<int> maxGoldNum_{};
 };

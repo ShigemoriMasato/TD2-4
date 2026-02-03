@@ -46,7 +46,7 @@ public:
 	/// <param name="drawData">描画データ</param>
 	/// <param name="apearPos">出現位置</param>
 	/// <param name="targetPos">目標位置</param>
-	void Init(const Vector3& apearPos,const Vector3& targetPos, OreItem* oreItem);
+	void Init(const Vector3& apearPos,const Vector3& targetPos, OreItem* oreItem,uint32_t unitGroupId);
 
 	void Update();
 
@@ -75,6 +75,9 @@ public:
 
 	// 衝突判定
 	bool IsConflict() const { return isConflict_; }
+
+	// ユニットグループIdを取得
+	uint32_t UnitGroupId() const { return unitGroupId_; }
 
 private:
 	// マップデータ
@@ -163,6 +166,9 @@ private:
 	float slowAnimaitonTimer_ = 0.0f;
 	float slowAnimaitonTime_ = 1.0f;
 	float speed_ = 0.0f;
+
+	// ユニットグループId
+	uint32_t unitGroupId_ = 0;
 
 private: // 調整項目
 

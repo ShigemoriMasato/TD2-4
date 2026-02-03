@@ -85,7 +85,6 @@ private:
 	// 位置をまとめる
 	void ProcessClusters();
 
-
 	/// <summary>
 	/// 値を登録する
 	/// </summary>

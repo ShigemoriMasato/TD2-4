@@ -11,11 +11,15 @@ void Number::Initialize(const std::string& fontName, DrawData drawData, FontLoad
 
 void Number::Update(float deltaTime) {
 	float totalScale = 1.0f;
-	for (auto& order : scalingOrders_) {
-		order.scaleT_ += deltaTime * 4.0f;
-		totalScale += lerp_RoundTrip(0.0f, 0.2f, order.scaleT_, EaseType::EaseOutCubic);
+	for (size_t i = 0; i < scalingOrders_.size(); ++i) {
+		scalingOrders_[i].scaleT_ += deltaTime * 4.0f;
+		totalScale += lerp_RoundTrip(0.0f, maxScale_ / 10.0f, scalingOrders_[i].scaleT_, EaseType::EaseOutCubic);
+		if (scalingOrders_[i].scaleT_ >= 1.0f) {
+			scalingOrders_.erase(scalingOrders_.begin() + i);
+			--i;
+		}
 	}
-	totalScale = std::clamp(totalScale, 1.0f, 2.0f);
+	totalScale = std::clamp(totalScale, 1.0f, maxScale_);
 	uint32_t color = lerpColor(defaultColor_, highColor_, (totalScale - 1), EaseType::EaseOutCubic);
 	fontObject_->fontColor_ = ConvertColor(color);
 	scale_ = totalScale;
@@ -23,7 +27,7 @@ void Number::Update(float deltaTime) {
 	fontObject_->transform_ = transform_;
 	fontObject_->transform_.scale *= scale_;
 	std::wstring number = std::to_wstring(currentNumber_);
-	fontObject_->SetText(number);
+	fontObject_->SetText(offset_ + number);
 
 	fontObject_->Update();
 
@@ -35,6 +39,10 @@ void Number::Update(float deltaTime) {
 
 void Number::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	fontObject_->Draw(window, vpMatrix);
+}
+
+void Number::SetOffset(std::wstring offset) {
+	offset_ = offset;
 }
 
 void Number::SetNumber(int number) {

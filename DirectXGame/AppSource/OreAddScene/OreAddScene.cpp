@@ -66,10 +66,27 @@ void OreAddScene::Initialize() {
 	postEffectConfig_.origin = commonData_->display.get();
 
 	fukidashi_ = std::make_unique<RenderObject>();
-
+	fukidashi_->SetDrawData(drawData);
+	fukidashi_->CreateSRV(sizeof(Matrix4x4) * 2, 2, ShaderType::VERTEX_SHADER, "wvpMat");
+	fukidashi_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "textureIndex");
+	fukidashi_->SetUseTexture(true);
+	fukidashi_->psoConfig_.vs = "Simples.VS.hlsl";
+	fukidashi_->psoConfig_.ps = "PostEffect/Simple.PS.hlsl";
+	fukidashi_->psoConfig_.rasterizerID = RasterizerID::Back;
+	fukidashi_->instanceNum_ = 2;
+	fkdsTextureIndex_ = textureManager_->LoadTexture("fukidashi.png");
+	fukidashiTransforms_.resize(2);
 
 	fade_.color = { 0.0f, 0.0f, 0.0f };
 	fade_.alpha = 1.0f;
+
+	addNum_ = std::make_unique<Number>();
+	addNum_->Initialize(fontName, drawData, fontLoader_);
+	addNum_->SetOffset(L"+");
+	addNum_->SetColor(0x000000ff, 0xffff30ff);
+	addNum_->SetMaxScale(1.4f);
+
+	Load();
 }
 
 std::unique_ptr<IScene> OreAddScene::Update() {
@@ -108,8 +125,12 @@ std::unique_ptr<IScene> OreAddScene::Update() {
 
 	fade_.alpha = 1.0f - (fadeTimer_ / kFadeDuration_);
 
+	addNum_->SetNumber(oreAddNum_);
+	addNum_->SetTransform(addNumTransform_);
+
 	oreNum_->Update(deltaTime);
 	goldNum_->Update(deltaTime);
+	addNum_->Update(deltaTime);
 
 	return std::unique_ptr<IScene>();
 }
@@ -132,6 +153,15 @@ void OreAddScene::Draw() {
 	goldNumIs_->Draw(wind, vpMat);
 	goldNum_->Draw(wind, vpMat);
 	slashNumGold_->Draw(wind, vpMat);
+	Matrix4x4 mat[4];
+	for (int i = 0; i < 4; i += 2) {
+		mat[i] = Matrix::MakeAffineMatrix(fukidashiTransforms_[i / 2].scale, fukidashiTransforms_[i / 2].rotate, fukidashiTransforms_[i / 2].position);
+		mat[i + 1] = vpMat;
+	}
+	fukidashi_->CopyBufferData(0, mat, sizeof(Matrix4x4) * 4);
+	fukidashi_->CopyBufferData(1, &fkdsTextureIndex_, sizeof(int));
+	fukidashi_->Draw(wind);
+	addNum_->Draw(wind, vpMat);
 
 	display->PostDraw(window->GetCommandObject());
 
@@ -164,6 +194,18 @@ void OreAddScene::Draw() {
 	ImGui::DragFloat3("goldNumIsScale", &goldNumIs_->transform_.scale.x, 0.1f);
 	ImGui::ColorEdit4("goldNumIsColor", &goldNumIs_->fontColor_.x);
 
+	for (int i = 0; i < 1; ++i) {
+		ImGui::PushID(i);
+		ImGui::DragFloat3("Scale", &fukidashiTransforms_[i].scale.x, 0.1f);
+		ImGui::DragFloat3("Rotate", &fukidashiTransforms_[i].rotate.x, 0.1f);
+		ImGui::DragFloat3("Position", &fukidashiTransforms_[i].position.x, 1.0f);
+		ImGui::PopID();
+	}
+
+	ImGui::DragFloat3("addNumScale", &addNumTransform_.scale.x, 0.1f);
+	ImGui::DragFloat3("addNumRotate", &addNumTransform_.rotate.x, 0.1f);
+	ImGui::DragFloat3("addNumPosition", &addNumTransform_.position.x, 1.0f);
+
 	ImGui::End();
 
 	//ImGuiの最終処理
@@ -194,6 +236,7 @@ bool OreAddScene::OreAdd(float deltaTime) {
 
 	goldNum_->SetNumber(goldNum);
 	oreNum_->SetNumber(oreNum);
+	oreAddNum_ = oreNum - commonData_->oreNum;
 
 	if (t >= 1.0f) {
 		commonData_->goldNum = commonData_->norma;
@@ -205,4 +248,32 @@ bool OreAddScene::OreAdd(float deltaTime) {
 	}
 
 	return false;
+}
+
+void OreAddScene::Save() {
+	for (int i = 0; i < 1; ++i) {
+		binaryManager_.RegisterOutput(fukidashiTransforms_[i].scale);
+		binaryManager_.RegisterOutput(fukidashiTransforms_[i].rotate);
+		binaryManager_.RegisterOutput(fukidashiTransforms_[i].position);
+	}
+	binaryManager_.RegisterOutput(addNumTransform_.scale);
+	binaryManager_.RegisterOutput(addNumTransform_.rotate);
+	binaryManager_.RegisterOutput(addNumTransform_.position);
+	binaryManager_.Write("OreAdd");
+}
+
+void OreAddScene::Load() {
+	auto values = binaryManager_.Read("OreAdd");
+	int index = 0;
+	if (values.empty()) {
+		return;
+	}
+	for (int i = 0; i < 1; ++i) {
+		fukidashiTransforms_[i].scale = BinaryManager::Reverse<Vector3>(values[index++].get());
+		fukidashiTransforms_[i].rotate = BinaryManager::Reverse<Vector3>(values[index++].get());
+		fukidashiTransforms_[i].position = BinaryManager::Reverse<Vector3>(values[index++].get());
+	}
+	addNumTransform_.scale = binaryManager_.Reverse<Vector3>(values[index++].get());
+	addNumTransform_.rotate = binaryManager_.Reverse<Vector3>(values[index++].get());
+	addNumTransform_.position = binaryManager_.Reverse<Vector3>(values[index++].get());
 }

@@ -40,9 +40,32 @@ void CameraController::Initialize(Input* input, DrawData drawData, int texture) 
 
 	backDist_ = initBackDist_;
 	targetBackDist_ = initBackDist_;
+
+	initialize_ = false;
+	initializeFrame_ = 0;
 }
 
-void CameraController::Update() {
+void CameraController::Update(bool isDebug) {
+
+	easeSpeed_ = normalEaseSpeed_;
+
+	if (initializeFrame_ == 0) {
+		position_ = targetPos_;
+	}
+
+	//しばらく0で固定する
+	if (initializeFrame_ < 120) {
+		initializeFrame_++;
+		backDist_ = 0.0f;
+	}
+
+	if (initializeFrame_ < 150) {
+		easeSpeed_ = initializeSpeed_;
+	}
+
+	if (isDebug) {
+		easeSpeed_ = normalEaseSpeed_ * 2.0f;
+	}
 
 	auto edit = GameParamEditor::GetInstance();
 	initBackDist_ = edit->GetValue<float>("Camera", "InitBackDist");
@@ -105,7 +128,7 @@ void CameraController::Update() {
 	if (std::abs(diff) < 0.5f * FpsCount::deltaTime) {
 		backDist_ = targetBackDist_;
 	} else {
-		float speed = -diff * 10.0f;
+		float speed = -diff * easeSpeed_;
 		backDist_ += speed * FpsCount::deltaTime;
 	}
 

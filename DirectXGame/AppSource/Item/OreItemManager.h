@@ -14,7 +14,7 @@
 class OreItemManager {
 public:
 
-	void Initialize(DrawData spriteDrawData, DrawData hpDrawData,const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader, DrawData drawData);
+	void Initialize(DrawData spriteDrawData, DrawData hpDrawData,const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader, DrawData drawData,int stageNum);
 
 	void Update(bool isOpenMap = false);
 
@@ -86,12 +86,15 @@ private:
 	// 破片パーティクル
 	std::unique_ptr<OreFragmentParticle> oreFragmentParticle_;
 
+	bool isLargeScale_ = false;
+
 private: // フォント機能
 
 	struct TextData {
 		std::unique_ptr<FontObject> font;
 		std::unique_ptr<DefaultObject> hpSprite;
 		std::unique_ptr<DefaultObject> bgSprite;
+		Vector3 fontPos = { 0,0,0 };
 	};
 
 	FontLoader* fontLoader_ = nullptr;

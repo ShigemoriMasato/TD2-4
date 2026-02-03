@@ -26,11 +26,12 @@ void ModelEditScene::Initialize() {
 	cameraController_->Initialize(input_, drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(0).drawDataIndex),0);
 
 	mcRender_ = std::make_unique<DebugMCRender>();
-	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(0).drawDataIndex);
+	int modelIndex = modelManager_->LoadModel("Ground");
+	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(modelIndex).drawDataIndex);
 	mcRender_->Initialize(drawData);
 
 	mapRender_ = std::make_unique<MapRender>();
-	mapRender_->Initialize(drawData);
+	mapRender_->Initialize(drawData, 0);
 
 	typeEditor_ = std::make_unique<MapTypeEditor>();
 	typeEditor_->Initialize(input_);
@@ -61,7 +62,7 @@ std::unique_ptr<IScene> ModelEditScene::Update() {
 	FpsCount::deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 
 	input_->Update();
-	cameraController_->Update();
+	cameraController_->Update(true);
 
 	staticObjectRender_->SetWallIndex(decorationEditor_->GetWallIndex());
 
@@ -143,7 +144,7 @@ void ModelEditScene::Draw() {
 
 	display.PreDraw(window.GetCommandObject(), true);
 	mapRender_->Draw(vpMatrix, window.GetWindow());
-	mcRender_->Draw(vpMatrix, typeEditor_->GetColorMap(), typeEditor_->GetCurrentMapChipData(), window.GetWindow());
+	//mcRender_->Draw(vpMatrix, typeEditor_->GetColorMap(), typeEditor_->GetCurrentMapChipData(), window.GetWindow());
 	staticObjectRender_->Draw(vpMatrix, window.GetWindow());
 	display.PostDraw(window.GetCommandObject());
 

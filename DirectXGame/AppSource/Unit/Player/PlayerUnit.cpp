@@ -23,6 +23,8 @@ void PlayerUnit::Init(MapChipField* mapChipField, DrawData drawData, int pIndex,
 
 	// 初期位置を設定
 	object_->transform_.position = pos;
+	object_->transform_.rotate.y = std::numbers::pi_v<float>;
+	dir_ = { 0,0,-1 };
 
 	// 当たり判定の設定
 	circleCollider_.center = object_->transform_.position;

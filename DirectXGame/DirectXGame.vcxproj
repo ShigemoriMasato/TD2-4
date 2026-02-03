@@ -258,6 +258,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\UI\Number.cpp" />
     <ClCompile Include="WWGenerator.cpp" />
     <ClInclude Include="AppSource\GameCamera\DebugMousePos.h" />
+    <ClInclude Include="AppSource\GameCamera\MarkResult.h" />
     <ClInclude Include="AppSource\GameCamera\SelectCamera.h" />
     <ClInclude Include="AppSource\GameCamera\TitleCamera.h" />
     <ClInclude Include="AppSource\GameCommon\DefaultObject.h" />

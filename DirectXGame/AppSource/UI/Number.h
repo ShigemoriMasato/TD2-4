@@ -8,10 +8,13 @@ public:
 	void Update(float deltaTime);
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
+	void SetOffset(std::wstring offset);
 	void SetNumber(int number);
 	void SetTransform(const Transform& transform) { transform_ = transform; }
 
 	void SetColor(uint32_t defaultColor, uint32_t highColor) { defaultColor_ = defaultColor, highColor_ = highColor; };
+
+	void SetMaxScale(float maxScale) { maxScale_ = maxScale; }
 
 	Transform transform_{};
 private:
@@ -28,4 +31,7 @@ private:
 
 	uint32_t defaultColor_ = 0xffffffff;
 	uint32_t highColor_ = 0xffffffff;
+
+	std::wstring offset_ = L"";
+	float maxScale_ = 2.0f;
 };

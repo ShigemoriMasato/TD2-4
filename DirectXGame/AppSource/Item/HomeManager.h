@@ -2,6 +2,9 @@
 #include<vector>
 #include"Object/OreHome.h"
 
+#include"Game/MiniMap/MiniMap.h"
+#include"UI/Object/SpriteObject.h"
+
 class HomeManager {
 public:
 
@@ -10,6 +13,8 @@ public:
 	void Update();
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
+
+	void DrawIcon(Window* window, const Matrix4x4& vpMatrix);
 
 	/// <summary>
 	/// 拠点の追加
@@ -24,6 +29,12 @@ public:
 	/// <param name="pos"></param>
 	void SetAnimation(const Vector3& pos);
 
+	/// <summary>
+	/// ミニマップ上での描画
+	/// </summary>
+	/// <param name="miniMap"></param>
+	void SetMinMapPos(MiniMap* miniMap, const DrawData& spreteDrawData, int texture);
+
 private:
 
 	DrawData drawData_;
@@ -31,4 +42,6 @@ private:
 
 	// 拠点の存在するリスト
 	std::vector<std::unique_ptr<OreHome>> homeList_;
+
+	std::vector<std::unique_ptr<SpriteObject>> iconObjects_;
 };

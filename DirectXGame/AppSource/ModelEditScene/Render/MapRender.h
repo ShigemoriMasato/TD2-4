@@ -6,7 +6,7 @@ struct ChipData;
 class MapRender {
 public:
 
-	void Initialize(const DrawData& box);
+	void Initialize(const DrawData& box, int textureIndex);
 	void Update();
 	void Draw(const Matrix4x4& vpMatrix, Window* window);
 
@@ -27,4 +27,6 @@ private:
 
 	float alpha_ = 1.0f;
 	const int maxSize_ = 128;
+
+	int textureIndex_ = 0;
 };

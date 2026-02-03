@@ -74,7 +74,7 @@ void TestScene::Initialize() {
 
 	mapRender_ = std::make_unique<MapRender>();
 	drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(0).drawDataIndex);
-	mapRender_->Initialize(drawData);
+	mapRender_->Initialize(drawData, 0);
 	mapRender_->SetConfig(currentMap_.renderData);
 	debugMCRender_ = std::make_unique<DebugMCRender>();
 	debugMCRender_->Initialize(drawData);

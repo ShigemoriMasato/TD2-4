@@ -15,6 +15,8 @@ public:
 
 	CommonData* GetCommonData() const { return commonData_.get(); }
 
+	bool IsExeFinished() const { return commonData_->exeFinished; }
+
 private:
 
 	SHEngine* engine_;
