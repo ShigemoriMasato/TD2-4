@@ -94,8 +94,24 @@ void ClearUI::Update() {
 	if (isAnimation_) {
 		quotaClearEffectUI_->isLoop_ = false;
 
-		// スタートアニメーション
-		StartAnimation();
+		if (isEnd_) {
+			// エンドアニメーション
+			timer_ += FpsCount::deltaTime / 1.0f;
+			if (timer_ >= 1.0f) {
+
+				if (selectNum_ == 0) {
+					// やり直す
+					onRetryClicked_();
+				} else {
+					// ステージ選択へ
+					onSelectClicked_();
+				}
+			}
+		} else {
+			// スタートアニメーション
+			StartAnimation();
+		}
+	
 	} else {
 		InUpdate();
 		quotaClearEffectUI_->isLoop_ = true;
@@ -163,13 +179,8 @@ void ClearUI::InUpdate() {
 	// 決定
 	if (key[Key::Decision]) {
 
-		if (selectNum_ == 0) {
-			// やり直す
-			onRetryClicked_();
-		} else {
-			// ステージ選択へ
-			onSelectClicked_();
-		}
+		timer_ = 0.0f;
+		isEnd_ = true;
 	}
 }
 
@@ -245,3 +256,4 @@ void ClearUI::StartAnimation() {
 		selectFontObject_->transform_.position.x = selectPos_.x;
 	}
 }
+
