@@ -45,6 +45,7 @@ private: // パーティクル
 	// パーティクルデータ
 	std::vector<ParticleData> particleDatas_;
 	uint32_t conflictMaxNum_ = 400;
+	uint32_t conflictEmitIndex_ = 0;
 
 	// 数を数える
 	int32_t index_ = 0;
@@ -55,10 +56,12 @@ private: // パーティクル
 	// 煙演出
 	std::vector<ParticleData> smokeDatas_;
 	uint32_t smokeMaxNum_ = 100;
+	uint32_t smokeEmitIndex_ = 0;
 
 	// 泥の演出
 	std::vector<ParticleData> dirtDatas_;
-	uint32_t dirtMaxNum_ = 200;
+	uint32_t dirtMaxNum_ = 300;
+	uint32_t dirtEmitIndex_ = 0;
 
 private:
 

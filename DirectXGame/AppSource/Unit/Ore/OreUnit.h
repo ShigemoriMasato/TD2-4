@@ -160,6 +160,8 @@ private:
 	bool isEndDeathAnimation_ = false;
 
 	bool isSlow_ = false;
+	float slowAnimaitonTimer_ = 0.0f;
+	float slowAnimaitonTime_ = 1.0f;
 	float speed_ = 0.0f;
 
 private: // 調整項目

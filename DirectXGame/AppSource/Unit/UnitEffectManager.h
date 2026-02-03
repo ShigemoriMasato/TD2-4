@@ -37,6 +37,11 @@ public:
 		unitParticle_->AddSmoke(pos);
 	}
 
+	// 泥の演出を追加
+	void AddDirt(const Vector3& pos) {
+		unitParticle_->AddDirt(pos);
+	}
+
 	void SetCollBack(std::function<void()> cb) { onCollBack_ = std::move(cb); }
 
 private:

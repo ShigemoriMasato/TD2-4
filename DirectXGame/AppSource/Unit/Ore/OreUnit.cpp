@@ -190,6 +190,14 @@ void OreUnit::Update() {
 	if (type == TileType::Slow) {
 		isSlow_ = true;
 		speed_ = slowspeed_;
+
+		slowAnimaitonTimer_ += FpsCount::deltaTime / slowAnimaitonTime_;
+		if (slowAnimaitonTimer_ >= 1.0f) {
+			slowAnimaitonTimer_ = 0.0f;
+
+			// 泥の演出を追加する
+			unitEffectManager_->AddDirt(object_->transform_.position);
+		}
 	} else {
 		isSlow_ = false;
 		speed_ = moveSpeed_;

@@ -117,13 +117,19 @@ void ConflictParticle::Move() {
 }
 
 void ConflictParticle::AddConflict(const Vector3& pos) {
-
 	uint32_t spawnCount = 5;
-	for (uint32_t i = 0; i < conflictMaxNum_ && spawnCount > 0; ++i) {
-		if (particleDatas_[i].currentTime >= 1.0f) {
-			particleDatas_[i] = MakeNewData(pos);
+	uint32_t checkedCount = 0;
+	while (spawnCount > 0 && checkedCount < conflictMaxNum_) {
+		ParticleData& data = particleDatas_[conflictEmitIndex_];
+		// 再利用可能なら生成
+		if (data.currentTime >= 1.0f) {
+			data = MakeNewData(pos);
 			spawnCount--;
 		}
+		// インデックスを次に進める
+		conflictEmitIndex_ = (conflictEmitIndex_ + 1) % conflictMaxNum_;
+		// チェック回数を加算
+		checkedCount++;
 	}
 }
 
@@ -174,21 +180,25 @@ void ConflictParticle::SmokeMove() {
 }
 
 void ConflictParticle::AddSmoke(const Vector3& pos) {
-
 	uint32_t spawnCount = 5;
-	for (uint32_t i = 0; i < smokeMaxNum_ && spawnCount > 0; ++i) {
-		if (smokeDatas_[i].currentTime >= 1.0f) {
-			smokeDatas_[i] = MakeNewSmokeData(pos);
+	uint32_t checkedCount = 0;
+	while (spawnCount > 0 && checkedCount < smokeMaxNum_) {
+		ParticleData& data = smokeDatas_[smokeEmitIndex_];
+
+		if (data.currentTime >= 1.0f) {
+			data = MakeNewSmokeData(pos);
 			spawnCount--;
 		}
+		smokeEmitIndex_ = (smokeEmitIndex_ + 1) % smokeMaxNum_;
+		checkedCount++;
 	}
 }
 
 ConflictParticle::ParticleData ConflictParticle::MakeNewDirtData(const Vector3& pos) {
 	ParticleData data;
 
-	data.transform.position = pos + Vector3(RandomGenerator::Get(-0.4f, 0.4f), RandomGenerator::Get(0.4f, 1.0f), RandomGenerator::Get(-0.4f, 0.4f));
-	float scale = RandomGenerator::Get(0.2f, 0.5f);
+	data.transform.position = pos + Vector3(RandomGenerator::Get(-0.3f, 0.3f), RandomGenerator::Get(0.1f, 0.2f), RandomGenerator::Get(-0.3f, 0.3f));
+	float scale = RandomGenerator::Get(0.05f, 0.2f);
 	data.transform.scale = Vector3(scale, scale, scale);
 	data.startScale = scale;
 	data.transform.rotate = RandomGenerator::GetVector3(0.0f, 6.4f);
@@ -197,11 +207,15 @@ ConflictParticle::ParticleData ConflictParticle::MakeNewDirtData(const Vector3& 
 	data.textureHandle = 0;
 	data.speed = RandomGenerator::Get(0.8f, 1.5f);
 	data.rotSpeed = RandomGenerator::GetVector3(-6.4f, 6.4f);
-	data.color = { 1.0f,1.0f,1.0f,1.0f };
+	if (RandomGenerator::Get(0, 1) == 0) {
+		data.color = { 0.184f, 0.309f, 0.309f,1.0f };
+	} else {
+		data.color = { 0.1f, 0.1f, 0.1f,1.0f };
+	}
 
 	Vector3 dir = data.transform.position - pos;
-	dir.y *= -1.0f;
-	data.velocity = -dir.Normalize() * data.speed;
+	data.velocity = dir.Normalize() * data.speed;
+	data.velocity.y = dir.y * data.speed * 0.5f;
 	return data;
 }
 
@@ -216,12 +230,11 @@ void ConflictParticle::DirtMove() {
 		data.currentTime += FpsCount::deltaTime / data.lifeTime;
 
 		// 移動
+		data.velocity.y -= 10.0f * FpsCount::deltaTime;
 		data.transform.position += data.velocity * FpsCount::deltaTime;
 
 		float scale = lerp(data.startScale, 0.0f, data.currentTime, EaseType::EaseInOutCubic);
 		data.transform.scale = { scale ,scale ,scale };
-
-		data.transform.rotate += data.rotSpeed * FpsCount::deltaTime;
 
 		instancingObject_->transformDatas_[index_].color = data.color;
 		instancingObject_->transformDatas_[index_].textureHandle = data.textureHandle;
@@ -233,10 +246,15 @@ void ConflictParticle::DirtMove() {
 void ConflictParticle::AddDirt(const Vector3& pos) {
 
 	uint32_t spawnCount = 5;
-	for (uint32_t i = 0; i < dirtMaxNum_ && spawnCount > 0; ++i) {
-		if (dirtDatas_[i].currentTime >= 1.0f) {
-			dirtDatas_[i] = MakeNewSmokeData(pos);
+	uint32_t checkedCount = 0;
+	while (spawnCount > 0 && checkedCount < dirtMaxNum_) {
+		ParticleData& data = dirtDatas_[dirtEmitIndex_];
+
+		if (data.currentTime >= 1.0f) {
+			data = MakeNewDirtData(pos);
 			spawnCount--;
 		}
+		dirtEmitIndex_ = (dirtEmitIndex_ + 1) % dirtMaxNum_;
+		checkedCount++;
 	}
 }
