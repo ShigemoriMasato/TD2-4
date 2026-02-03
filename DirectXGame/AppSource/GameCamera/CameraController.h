@@ -15,7 +15,7 @@ public:
 
 	void Initialize(Input* input, DrawData drawData, int texture);
 
-	void Update();
+	void Update(bool isDebug = false);
 
 	void DebugDraw();
 

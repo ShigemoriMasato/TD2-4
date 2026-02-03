@@ -3,7 +3,7 @@
 #include <numbers>
 #include <LightManager.h>
 
-void MapRender::Initialize(const DrawData& box) {
+void MapRender::Initialize(const DrawData& box, int texture) {
 	render_ = std::make_unique<RenderObject>();
 	render_->Initialize();
 	render_->CreateSRV(sizeof(VSData), maxSize_ * maxSize_, ShaderType::VERTEX_SHADER, "WVP");
@@ -37,6 +37,8 @@ void MapRender::Draw(const Matrix4x4& vpMatrix, Window* window) {
 	for (auto& data : vsData_) {
 		data.vp = vpMatrix;
 	}
+
+	std::fill(textureIndices_.begin(), textureIndices_.end(), textureIndex_);
 
 	//コピー
 	render_->CopyBufferData(0, vsData_.data(), sizeof(VSData) * vsData_.size());

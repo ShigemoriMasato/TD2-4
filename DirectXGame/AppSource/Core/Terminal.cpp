@@ -35,11 +35,9 @@ void Terminal::Run() {
 }
 
 bool Terminal::IsLoop() {
-	bool engineMessage = engine_->IsLoop();
+	if (sceneManager_->IsExeFinished()) {
+		return engine_->IsLoop();
+	}
 
-	//================================================
-	//! アプリケーション側の条件を追加する
-	//================================================
-
-	return engineMessage;
+	return false;
 }

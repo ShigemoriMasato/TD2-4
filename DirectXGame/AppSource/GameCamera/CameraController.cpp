@@ -45,7 +45,7 @@ void CameraController::Initialize(Input* input, DrawData drawData, int texture) 
 	initializeFrame_ = 0;
 }
 
-void CameraController::Update() {
+void CameraController::Update(bool isDebug) {
 
 	easeSpeed_ = normalEaseSpeed_;
 
@@ -61,6 +61,10 @@ void CameraController::Update() {
 
 	if (initializeFrame_ < 150) {
 		easeSpeed_ = initializeSpeed_;
+	}
+
+	if (isDebug) {
+		easeSpeed_ = normalEaseSpeed_ * 2.0f;
 	}
 
 	auto edit = GameParamEditor::GetInstance();

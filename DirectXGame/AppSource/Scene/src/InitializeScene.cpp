@@ -77,7 +77,7 @@ void InitializeScene::CreateDisplay() {
 			case WM_DESTROY:
 				PostQuitMessage(0);
 				//WindowsProcが通っているかの確認用
-				cd->exeFinished_ = true;
+				cd->requireExeFinished = true;
 				return 0;
 			}
 			return DefWindowProc(hwnd, msg, wparam, lparam);

@@ -133,11 +133,12 @@ void GameScene::Initialize() {
 
 
 	// Cubeモデルを取得
-	auto wallModel = modelManager_->GetNodeModelData(0);
+	auto wallModel = modelManager_->GetNodeModelData(modelManager_->LoadModel("Ground"));
 
 	// マップの描画機能を初期化
 	mapRender_ = std::make_unique<MapRender>();
-	mapRender_->Initialize(drawDataManager_->GetDrawData(wallModel.drawDataIndex));
+	int textureIndex = wallModel.materials[wallModel.materialIndex[0]].textureIndex;
+	mapRender_->Initialize(drawDataManager_->GetDrawData(wallModel.drawDataIndex), textureIndex);
 	mapRender_->SetConfig(currentMap_.currentMap.renderData);
 
 	//Debug用マップ描画の初期化
@@ -748,7 +749,7 @@ void GameScene::Draw() {
 		staticObjectRender_->Draw(vpMatrix, gameWindow_->GetWindow());
 
 		// デバッグ用マップ描画
-		debugMapRender_->Draw(vpMatrix, colorMap_, currentMap_.currentMap.mapChipData, gameWindow_->GetWindow());
+		//debugMapRender_->Draw(vpMatrix, colorMap_, currentMap_.currentMap.mapChipData, gameWindow_->GetWindow());
 
 		// 鉱石の描画
 		oreItemManager_->Draw(gameWindow_->GetWindow(), vpMatrix);

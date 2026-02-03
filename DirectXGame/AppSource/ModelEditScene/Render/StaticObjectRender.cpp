@@ -78,7 +78,7 @@ void StaticObjectRender::Draw(const Matrix4x4& vpMatrix, Window* window) {
 			localPos.push_back(pos);
 		}
 
-		waveData_[currentStage_].world = Matrix::MakeScaleMatrix({ 0.99f, 1.0f, 0.99f });
+		waveData_[currentStage_].world = Matrix::MakeScaleMatrix({ 0.999f, 1.0f, 0.999f });
 		waveData_[currentStage_].vp = vpMatrix;
 		waveData_[currentStage_].cameraPos = { 0.0f, 0.0f, 0.0f };
 		waveData_[currentStage_].waveCount = 8;
@@ -196,7 +196,7 @@ void StaticObjectRender::SetObjects(const std::map<int, std::vector<Transform>>&
 
 		int generateNum = static_cast<int>(vsData_[modelIndex].size());
 		if (debugMode_) {
-			generateNum = 128;
+			generateNum = 256;
 		}
 
 		NodeModelData modelData = modelManager_->GetNodeModelData(modelIndex);
