@@ -85,6 +85,8 @@ private:
 	float backDist_ = -40.0f;
 	float targetBackDist_ = -40.0f;
 	float initBackDist_ = 0.0f;
+	const float normalEaseSpeed_ = 10.0f;
+	float easeSpeed_ = 10.0f;
 
 	Input* input_ = nullptr;
 	//クリックした瞬間のマウス座標
@@ -120,6 +122,11 @@ private:
 private://追従カメラ
 	Vector3 targetPos_ = {};
 	float followSpeed_ = 5.0f;
+
+	bool initialize_ = false;
+	int initializeFrame_ = 0;
+
+	float initializeSpeed_ = 3.0f;
 
 private:
 

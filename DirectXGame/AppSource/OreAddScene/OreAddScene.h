@@ -9,7 +9,7 @@ class OreAddScene : public IScene {
 public:
 
 	OreAddScene() = default;
-	~OreAddScene() override = default;
+	~OreAddScene() override { Save(); };
 
 	void Initialize() override;
 	std::unique_ptr<IScene> Update() override;
@@ -19,6 +19,9 @@ private:
 
 	bool Wait(float deltaTime, float targetTime);
 	bool OreAdd(float deltaTime);
+
+	void Save();
+	void Load();
 
 private: //Camera
 
@@ -40,6 +43,10 @@ private: //font
 	std::unique_ptr<FontObject> slashNumOre_ = nullptr;
 
 	std::unique_ptr<RenderObject> fukidashi_ = nullptr;
+	std::vector<Transform> fukidashiTransforms_{};
+	int fkdsTextureIndex_ = 0;
+	std::unique_ptr<Number> addNum_ = nullptr;
+	Transform addNumTransform_{};
 
 private: //postEffect
 
@@ -53,4 +60,8 @@ private: //postEffect
 
 	float fadeTimer_ = 0.0f;
 	const float kFadeDuration_ = 1.0f;
+
+	int oreAddNum_ = 0;
+
+	BinaryManager binaryManager_;
 };
