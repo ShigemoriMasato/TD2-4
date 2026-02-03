@@ -512,6 +512,9 @@ std::unique_ptr<IScene> GameScene::Update() {
 	} else {
 		if (!isPauseScene_ && startCountUI_->isStartAnimeEnd()) {
 
+			// ミニマップの更新処理
+			miniMap_->Update();
+
 			if (!isActiveMinMap_) {
 				// ゲームの更新処理
 				InGameScene();
@@ -666,9 +669,6 @@ void GameScene::CommonUpdate() {
 	// カメラの更新処理
 	cameraController_->Update();
 
-
-	// ミニマップの更新処理
-	miniMap_->Update();
 }
 
 
