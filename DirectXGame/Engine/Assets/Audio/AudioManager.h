@@ -1,107 +1,177 @@
-#pragma once
-#include "Data/AudioData.h"
-#include <memory>
+#include<xaudio2.h>
+#include<fstream>
 #include <wrl.h>
-#include <map>
+#include<vector>
+#include <unordered_map>
 
 #include <mfapi.h>
 #include <mfidl.h>
 #include <mfreadwrite.h>
 
-/**
- * @class AudioManager
- * @brief オーディオシステム全体を管理するマネージャークラス
- * 
- * XAudio2を使用してWAVやMP3などの音声ファイルの読み込み、再生、停止を管理する。
- * 複数の音声データとその再生状態を一元管理し、音量調整機能も提供する。
- */
 class AudioManager {
 public:
 
-	~AudioManager();
+	// シングルトンインスタンスの取得
+	static AudioManager& GetInstance();
 
-	void Finalize() { delete this; }
+	// コピーコンストラクタと代入演算子を無効化（シングルトン保証のため）
+	AudioManager(const AudioManager&) = delete;
+	AudioManager& operator=(const AudioManager&) = delete;
 
-	AudioManager* GetInstance() {
-		static AudioManager* instance = new AudioManager();
-		return instance;
-	}
+	// 拡張子の種類
+	enum Type {
+		MP3,
+		WAV,
+	};
 
-	/**
-	 * @brief オーディオシステムの初期化
-	 * 
-	 * XAudio2エンジンとマスタリングボイスを作成し、オーディオシステムを使用可能にする。
-	 */
+	// チャンクヘッダ
+	struct ChunkHeader {
+		char id[4];   // チャンク毎のID
+		int32_t size; // チャンクサイズ
+	};
+
+	// RIFFヘッダチャンク
+	struct RiffHeader {
+		ChunkHeader chunk; // RIFF
+		char type[4];  // WAVE
+	};
+
+	// FMTチャンク
+	struct FormatChunk {
+		ChunkHeader chunk; // fmt
+		WAVEFORMATEX fmt;  // 波形フォーマット
+	};
+
+	// 音声データ
+	struct SoundData {
+		// 波形フォーマット
+		WAVEFORMATEX wfex;
+		// バッファの先頭アドレス
+		BYTE* pBuffer;
+		// バッファのサイズ
+		unsigned int bufferSize;
+		// 音声データの名前
+		std::string name;
+		// 拡張子の種類
+		Type type;
+	};
+
+public:
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	void Initialize();
 
-	/**
-	 * @brief 音声ファイルの読み込み
-	 * 
-	 * 指定されたファイルパスから音声データ(mp3, wav)を読み込み、指定されたIDで管理する。
-	 * 
-	 * @param filepath ファイルパス(Assets/Audio/からの相対パス)
-	 * @param id 音声データを識別するための一意なID
-	 */
-	void Load(std::filesystem::path filepath, uint32_t id);
+	/// <summary>
+	/// 終了処理
+	/// </summary>
+	void Finalize();
 
-	/**
-	 * @brief 音声の再生
-	 * 
-	 * 指定された音声ハンドルの音声を再生する。
-	 * 
-	 * @param soundHandle 読み込み済みの音声データのハンドル
-	 * @param isLoop ループ再生するかどうか
-	 * @return 再生ハンドル。再生終了またはStop呼び出し時に破棄される
-	 */
-	uint32_t Play(uint32_t soundHandle, bool isLoop);
+public:
 
-	/**
-	 * @brief 音量の変更
-	 * 
-	 * @param soundHandle 対象の音声ハンドル
-	 * @param volume 音量(初期値1.0f)
-	 */
-	void SetVolume(uint32_t soundHandle, float volume);
+	/// <summary>
+	/// 全ての音声データを読み込む
+	/// </summary>
+	void LoadAllAudio();
 
-	/**
-	 * @brief 再生中かどうかを確認
-	 * 
-	 * @param playHandle 再生ハンドル
-	 * @return 再生中の場合true
-	 */
-	bool IsPlay(uint32_t playHandle);
+	/// <summary>
+	/// 音声データを登録する
+	/// </summary>
+	/// <param name="fileName"></param>
+	void RegisterAudio(const std::string& fileName);
 
-	/**
-	 * @brief 再生の停止
-	 * 
-	 * 再生を停止し、再生ハンドルを破棄する。
-	 * 再度再生する場合は最初から再生される。
-	 * 
-	 * @param playHandle 再生ハンドル
-	 */
-	void Stop(uint32_t playHandle);
+	/// <summary>
+	/// 音声をロード
+	/// </summary>
+	/// <param name="fileName"></param>
+	/// <returns></returns>
+	uint32_t Load(const std::string& fileName);
 
-	/**
-	 * @brief オーディオデータの取得
-	 * 
-	 * @param id 音声データのID
-	 * @return 音声データへのポインタ
-	 */
-	AudioData* GetAudioData(uint32_t id);
+	/// <summary>
+	/// 名前からハンドルを取得
+	/// </summary>
+	/// <param name="name"></param>
+	/// <returns></returns>
+	uint32_t GetHandleByName(const std::string& name) const;
+
+	/// <summary>
+	/// 音声を再生
+	/// </summary>
+	/// <param name="soundHandle"></param>
+	void Play(uint32_t soundHandle, float volume, bool isloop);
+
+	/// <summary>
+	/// 音声を止める
+	/// </summary>
+	/// <param name="soundHandle"></param>
+	void Stop(const uint32_t& soundHandle);
+
+	/// <summary>
+	/// 再生中か
+	/// </summary>
+	/// <param name="soundHandle"></param>
+	/// <returns></returns>
+	bool IsPlay(const uint32_t& soundHandle);
+
+	/// <summary>
+	/// 全ての音声を止める
+	/// </summary>
+	void StopAll();
 
 private:
-
 	AudioManager() = default;
+	~AudioManager() = default;
 
-	/// @brief XAudio2のインスタンス
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;
-	/// @brief マスタリングボイス(最終的な音声出力を制御)
 	IXAudio2MasteringVoice* masterVoice_;
 
-	/// @brief 音声データのマップ(ID -> AudioData)
-	std::map<uint32_t, std::unique_ptr<AudioData>> audioData_{};
+	// s
+	std::vector<SoundData> soundData_;
 
-	/// @brief 音声ファイルのベースパス
-	const std::string basePath = "Assets/Audio/";
+	// 音声データのハンドルを保存する
+	std::unordered_map<std::string, uint32_t> nameToHandles_;
+
+	// 再生中の音声を保存
+	std::unordered_map<uint32_t, IXAudio2SourceVoice*> activeVoices_;
+
+private:
+	/// <summary>
+	/// .wav音声を再生
+	/// </summary>
+	/// <param name="xAudio2"></param>
+	/// <param name="soundData"></param>
+	void SoundPlayWave(const uint32_t& soundHandle, bool isloop);
+
+	/// <summary>
+	/// .mp3音声を再生
+	/// </summary>
+	/// <param name="soundData"></param>
+	void SoundPlayMp3(const uint32_t& soundHandle, bool isloop);
+
+	/// <summary>
+	/// .wavファイルの読み込み
+	/// </summary>
+	/// <param name="filename"></param>
+	/// <returns></returns>
+	SoundData SoundLoadWave(const std::string& filename);
+
+	/// <summary>
+	/// .mp3ファイルの読み込み
+	/// </summary>
+	/// <param name="path"></param>
+	/// <returns></returns>
+	SoundData SoundLoadMp3(const std::wstring path);
+
+	/// <summary>
+	/// 音声データの解放
+	/// </summary>
+	void SoundUnload();
+
+	/// <summary>
+	/// ファイルの名前を取得する
+	/// </summary>
+	/// <param name="fullPath"></param>
+	/// <returns></returns>
+	std::string GetFileName(const std::string& fullPath);
 };
-

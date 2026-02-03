@@ -7,6 +7,7 @@
 #include <Utility/Easing.h>
 #include<Game/SelectScene.h>
 #include <OreAddScene/OreAddScene.h>
+#include"Assets/Audio/AudioManager.h"
 
 namespace {
 	//MiniMap確認用
@@ -59,6 +60,10 @@ void GameScene::Initialize() {
 	colliderManager_ = std::make_unique<ColliderManager>();
 	// 当たり判定管理クラスを登録
 	Collider::SetColliderManager(colliderManager_.get());
+
+	// 音声のテスト
+	//uint32_t i = AudioManager::GetInstance().GetHandleByName("GameBGM.mp3");
+	//AudioManager::GetInstance().Play(i, 0.5f, true);
 
 	auto inst = GameParamEditor::GetInstance();
 	inst->SetActiveScene("GameScene");
@@ -500,6 +505,8 @@ std::unique_ptr<IScene> GameScene::Update() {
 			pauseUI_->Update();
 		}
 	}
+
+	clearUI_->Update();
 
 	//====================================================
 	// ゲームシーンから遷移するときの処理

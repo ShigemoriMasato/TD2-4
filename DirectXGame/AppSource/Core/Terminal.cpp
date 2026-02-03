@@ -32,6 +32,8 @@ void Terminal::Run() {
 		}
 
 	}
+
+
 }
 
 bool Terminal::IsLoop() {

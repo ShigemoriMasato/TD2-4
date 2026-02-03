@@ -203,7 +203,7 @@ std::unique_ptr<IScene> SelectScene::Update() {
 		} else {
 			// インゲームの更新処理
 			InGameScene();
-		}	
+		}
 	}
 
 	// シーンを切り替える
