@@ -73,7 +73,10 @@ OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vec
 	ApplyDebugParam();
 }
 
-void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos, OreItem* oreItem) {
+void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos, OreItem* oreItem, uint32_t unitGroupId) {
+
+	// ユニットIdを取得
+	unitGroupId_ = unitGroupId;
 
 	// 取得する鉱石
 	oreItem_ = oreItem;
@@ -319,6 +322,7 @@ void OreUnit::OnCollision(Collider* other) {
 		if (oreUnit) {
 
 			// 既に衝突していたら早期リターン
+			if (oreUnit->UnitGroupId() == unitGroupId_) { return; }
 			if (oreUnit->GetState() == State::Mining || oreUnit->GetState() == State::Return) { return; }
 
 			// 内積を取得する
