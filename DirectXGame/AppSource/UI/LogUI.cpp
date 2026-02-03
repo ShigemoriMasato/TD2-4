@@ -1,7 +1,6 @@
 #include"LogUI.h"
 #include"Utility/Easing.h"
 #include"FpsCount.h"
-//#include"Utility/Easing.h"
 
 void LogUI::Initialize(DrawData drawData, int confTex, int effectTex, int deathTex) {
 
@@ -29,58 +28,68 @@ void LogUI::Initialize(DrawData drawData, int confTex, int effectTex, int deathT
 
 void LogUI::Update() {
 
-	// ログの更新処理
-	for (auto& log : logDatas_) {
-		if (!log.isActive_) {
-			continue;
-		}
+	// アニメーションの更新処理
+	for (auto it = activeLogList_.begin(); it != activeLogList_.end(); ) {
+		LogData* log = *it;
 
-		if (log.inAnimation) {
+		if (log->inAnimation) {
+			log->timer_ += FpsCount::deltaTime / maxTime_;
 
-			log.timer_ += FpsCount::deltaTime / maxTime_;
-
-			if (log.timer_ <= 0.5f) {
-
-			}else if (log.timer_ <= 0.8f) {
-				float localT = (log.timer_ - 0.5f) / 0.3f;
-				log.effectObject_->transform_.position.x = lerp(-128.0f, 360.0f, localT, EaseType::EaseInCubic);
-				log.effectObject_->transform_.scale.x = lerp(128.0f, 96.0f, localT, EaseType::EaseInCubic);
-				log.effectObject_->color_.w = lerp(1.0f, 0.2f, localT, EaseType::EaseOutCubic);
-			} else if (log.timer_ <= 1.0f) {
-				float localT = (log.timer_ - 0.8f) / 0.2f;
-				log.effectObject_->color_.w = lerp(0.2f, 0.0f, localT, EaseType::EaseOutCubic);
-				log.effectObject_->transform_.scale.x = lerp(96.0f, 0.0f, localT, EaseType::EaseInCubic);
+			if (log->timer_ <= 0.5f) {
+				float localT = log->timer_ / 0.5f;
+				log->spriteObject_->transform_.position.x = lerp(-360.0f, 220.0f, localT, EaseType::EaseInCubic);
+			} else if (log->timer_ <= 0.8f) {
+				float localT = (log->timer_ - 0.5f) / 0.3f;
+				log->effectObject_->transform_.position.x = lerp(-128.0f, 360.0f, localT, EaseType::EaseInCubic);
+				log->effectObject_->transform_.scale.x = lerp(128.0f, 96.0f, localT, EaseType::EaseInCubic);
+				log->effectObject_->color_.w = lerp(1.0f, 0.2f, localT, EaseType::EaseOutCubic);
+			} else if (log->timer_ <= 1.0f) {
+				float localT = (log->timer_ - 0.8f) / 0.2f;
+				log->effectObject_->color_.w = lerp(0.2f, 0.0f, localT, EaseType::EaseOutCubic);
+				log->effectObject_->transform_.scale.x = lerp(96.0f, 0.0f, localT, EaseType::EaseInCubic);
 			}
 
-			if (log.timer_ <= 0.5f) {
-				float localT = log.timer_ / 0.5f;
-				log.spriteObject_->transform_.position.x = lerp(-360.0f, 220.0f, localT, EaseType::EaseInCubic);
+			if (log->timer_ >= 1.0f) {
+				log->timer_ = 0.0f;
+				log->effectObject_->color_.w = 0.0f;
+				log->inAnimation = false;
 			}
 
-			if (log.timer_ >= 1.0f) {
-				log.timer_ = 0.0f;
-				log.effectObject_->color_.w = 0.0f;
-				log.inAnimation = false;
-			}
 		} else {
+			log->timer_ += FpsCount::deltaTime / 2.0f;
 
-			log.timer_ += FpsCount::deltaTime / 2.0f;
-
-			if (log.timer_ >= 0.5f) {
-				float localT = (log.timer_ - 0.5f) / 0.5f;
-				log.spriteObject_->color_.w = lerp(1.0f, 0.0f, localT, EaseType::EaseOutCubic);
+			if (log->timer_ >= 0.5f) {
+				float localT = (log->timer_ - 0.5f) / 0.5f;
+				log->spriteObject_->color_.w = lerp(1.0f, 0.0f, localT, EaseType::EaseOutCubic);
 			}
 
-			if (log.timer_ >= 1.0f) {
-				log.spriteObject_->color_.w = 1.0f;
-				log.isActive_ = false;
+			if (log->timer_ >= 1.0f) {
+				log->spriteObject_->color_.w = 1.0f;
+				log->isActive_ = false;
+
+				// リストから削除
+				it = activeLogList_.erase(it);
+				continue;
 			}
 		}
 
-		log.effectObject_->Update();
-		log.spriteObject_->Update();
+		log->effectObject_->Update();
+		log->spriteObject_->Update();
+
+		// 次の要素へ
+		++it;
 	}
 
+	// ログの位置を整列する
+	int index = 0;
+	const float kStepY = 150.0f;
+	const float kBaseY = 500.0f;
+	for (LogData* log : activeLogList_) {
+		float targetY = kBaseY - (index * kStepY);
+		log->spriteObject_->transform_.position.y = targetY;
+		log->effectObject_->transform_.position.y = targetY;
+		index++;
+	}
 }
 
 void LogUI::Draw(Window* window, const Matrix4x4& vpMatrix) {
@@ -96,19 +105,7 @@ void LogUI::Draw(Window* window, const Matrix4x4& vpMatrix) {
 }
 
 void LogUI::AddUnitConflictLog() {
-
-	// ログ1つ分の高さ＋隙間
-	const float kStepY = 150.0f;
-
-	// 表示中のログをすべて上にずらす
-	for (auto& log : logDatas_) {
-		if (log.isActive_) {
-			log.spriteObject_->transform_.position.y -= kStepY;
-			log.effectObject_->transform_.position.y -= kStepY;
-		}
-	}
-
-	// 新しいログを定位置（Y=500）に出現させる
+	// 衝突ログを出現させる
 	for (auto& log : logDatas_) {
 		if (log.isActive_) {
 			continue;
@@ -118,32 +115,23 @@ void LogUI::AddUnitConflictLog() {
 		log.inAnimation = true;
 		log.timer_ = 0.0f;
 
-		log.spriteObject_->transform_.position.y = 500.0f;
+		float startY = 500.0f - (activeLogList_.size() * 150.0f);
+		log.spriteObject_->transform_.position.y = startY;
 		log.spriteObject_->SetTexture(conflTex_);
-		log.effectObject_->transform_.position.y = 500.0f;
+		log.effectObject_->transform_.position.y = startY;
 
-		// エフェクト等の初期化
 		log.effectObject_->color_.w = 1.0f;
 		log.effectObject_->transform_.position.x = -128.0f;
 		log.effectObject_->Update();
+		// 最新を追加
+		activeLogList_.push_back(&log);
 		break;
 	}
 }
 
 void LogUI::AddUnitDeathLog() {
 
-	// ログ1つ分の高さ＋隙間
-	const float kStepY = 150.0f;
-
-	// 表示中のログをすべて上にずらす
-	for (auto& log : logDatas_) {
-		if (log.isActive_) {
-			log.spriteObject_->transform_.position.y -= kStepY;
-			log.effectObject_->transform_.position.y -= kStepY;
-		}
-	}
-
-	// 新しいログを定位置（Y=500）に出現させる
+	// 死亡ログを出現させる
 	for (auto& log : logDatas_) {
 		if (log.isActive_) {
 			continue;
@@ -153,14 +141,16 @@ void LogUI::AddUnitDeathLog() {
 		log.inAnimation = true;
 		log.timer_ = 0.0f;
 
-		log.spriteObject_->transform_.position.y = 500.0f;
+		float startY = 500.0f - (activeLogList_.size() * 150.0f);
+		log.spriteObject_->transform_.position.y = startY;
 		log.spriteObject_->SetTexture(deathTex_);
-		log.effectObject_->transform_.position.y = 500.0f;
+		log.effectObject_->transform_.position.y = startY;
 
-		// エフェクト等の初期化
 		log.effectObject_->color_.w = 1.0f;
 		log.effectObject_->transform_.position.x = -128.0f;
 		log.effectObject_->Update();
+		// 最新を追加
+		activeLogList_.push_back(&log);
 		break;
 	}
 }
