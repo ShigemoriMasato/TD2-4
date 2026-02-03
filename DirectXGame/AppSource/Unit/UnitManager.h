@@ -25,6 +25,7 @@ public:
 		uint32_t currentNum = 0; // 現在の出現数
 		Vector3 pos = {}; // 出現位置
 		OreItem* oreItem_ = nullptr;
+		uint32_t groupId_ = 0; // グループId
 	};
 
 public:
@@ -142,6 +143,9 @@ private:
 	SpawnData spawnData_;
 	float spawnTimer_ = 0.0f;
 
+	// グループIdを取得
+	uint32_t nextGroupIndex_ = 0;
+
 	// デバック用
 	std::string kGroupName_ = "UnitManager";
 
@@ -164,7 +168,7 @@ private:
 	/// ユニットを追加
 	/// </summary>
 	/// <param name="targetPos">移動する位置</param>
-	void AddOreUnit(const Vector3& targetPos, OreItem* oreItem);
+	void AddOreUnit(const Vector3& targetPos, OreItem* oreItem, uint32_t groupId);
 
 	// 一番近い出現位置を求める
 	Vector3 GetNearHomePos(const Vector3& targetPos);

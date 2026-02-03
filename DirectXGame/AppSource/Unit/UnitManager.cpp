@@ -141,6 +141,7 @@ void UnitManager::RegisterUnit(const Vector3& targetPos, const int32_t& spawnNum
 	data.spawnNum = spawnNum + excessNum;
 	data.pos = targetPos;
 	data.oreItem_ = oreItem;
+	data.groupId_ = nextGroupIndex_++;
 
 	// ユニットのアクティブカウントを加算
 	activeCount_ += data.spawnNum;
@@ -149,7 +150,7 @@ void UnitManager::RegisterUnit(const Vector3& targetPos, const int32_t& spawnNum
 	spawnList_.push_back(data);
 }
 
-void UnitManager::AddOreUnit(const Vector3& targetPos, OreItem* oreItem) {
+void UnitManager::AddOreUnit(const Vector3& targetPos, OreItem* oreItem,uint32_t groupId) {
 
 	// 出現位置を求める
 	Vector3 homePos = GetNearHomePos(targetPos);
@@ -177,11 +178,11 @@ void UnitManager::AddOreUnit(const Vector3& targetPos, OreItem* oreItem) {
 			assert(false && "Not found Unit");
 		}
 		// 初期化
-		unit->second->Init(homePos, targetPos, oreItem);
+		unit->second->Init(homePos, targetPos, oreItem, groupId);
 	} else {
 		// 新しく登録
 		std::unique_ptr<OreUnit> oreUnit = std::make_unique<OreUnit>(mapChipField_, oreDrawData_, oreTexIndex_, playerUnit_->GetPos(), unitMarkUIManager_, unitEffectManager_);
-		oreUnit->Init(homePos, targetPos, oreItem);
+		oreUnit->Init(homePos, targetPos, oreItem, groupId);
 
 		oreUnits_[index] = std::move(oreUnit);
 	}
@@ -206,7 +207,7 @@ void UnitManager::UnitSpawn() {
 		spawnTimer_ += FpsCount::deltaTime / spawnTime_;
 
 		if (spawnTimer_ >= 1.0f) {
-			AddOreUnit(spawnData_.pos,spawnData_.oreItem_);
+			AddOreUnit(spawnData_.pos,spawnData_.oreItem_, spawnData_.groupId_);
 			spawnData_.currentNum++;
 			spawnTimer_ = 0.0f;
 		}
