@@ -24,6 +24,7 @@
 #include <ModelEditScene/Render/MapRender.h>
 #include <ModelEditScene/Render/DebugMCRender.h>
 #include <ModelEditScene/Render/StaticObjectRender.h>
+#include <GameOver/GameOverTask.h>
 
 #include "GameCamera/CameraController.h"
 
@@ -137,6 +138,8 @@ private:
 
 	// ゲームオーバーUI
 	std::unique_ptr<GameOverUI> gameOverUI_;
+
+	std::unique_ptr<GameOverTask> gameOverTask_;
 
 	// ゲームオーバーシーン
 	bool isGameOver_ = false;
