@@ -258,7 +258,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\ModelEditScene\Editor\Stage\StageEditor.cpp" />
     <ClCompile Include="AppSource\OreAddScene\OreAddScene.cpp" />
     <ClCompile Include="AppSource\UI\Number.cpp" />
-    <ClCompile Include="WWGenerator.cpp" />
     <ClInclude Include="AppSource\UI\Effect\ConfettiEffectUI.h" />
     <ClInclude Include="AppSource\GameOver\GameOverTask.h" />
     <ClInclude Include="Engine\Assets\Audio\AudioManager.h" />

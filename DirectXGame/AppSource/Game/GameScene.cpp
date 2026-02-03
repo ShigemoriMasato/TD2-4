@@ -463,6 +463,9 @@ void GameScene::InitializeOtherScene() {
 
 		});
 
+	// シーン遷移で仕様するアルファ値を取得
+	clearUI_->SetSceneColor(&fade_.alpha);
+
 	// 操作説明のテクスチャを取得
 	int guidTextureIndex = textureManager_->GetTexture("TutrialImage.png");
 
@@ -562,9 +565,7 @@ std::unique_ptr<IScene> GameScene::Update() {
 
 	}
 
-	clearUI_->Update();
-
-	return nullptr;
+	//clearUI_->Update();
 
 	//====================================================
 	// クリア、ゲームオーバーの判定処理

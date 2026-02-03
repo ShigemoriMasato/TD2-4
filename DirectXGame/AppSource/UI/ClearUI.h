@@ -21,6 +21,11 @@ public:
 		isClearStart_ = isStart;
 	}
 
+	// シーン遷移で仕様する色を取得する
+	void SetSceneColor(float* fadealpha) {
+		fadealpha_ = fadealpha;
+	}
+
 public:
 
 	void SetOnRetryClicked(std::function<void()> cb) { onRetryClicked_ = std::move(cb); }
@@ -39,6 +44,7 @@ private:
 	Vector2 clearTextSize_ = { 360.0f,128.0f };
 
 	bool isClearStart_ = false;
+	bool isEnd_ = false;
 
 	float timer_ = 0.0f;
 
@@ -70,6 +76,9 @@ private:
 	std::unique_ptr<ConfettiEffectUI> lertconfettiEffectUI_;
 	std::unique_ptr<ConfettiEffectUI> rightconfettiEffectUI_;
 
+	// シーン遷移で仕様する色
+	float* fadealpha_ = nullptr;
+
 private: // 調整項目
 
 	float maxTime_ = 1.0f;
@@ -80,5 +89,8 @@ private:
 
 	// スタートアニメーション
 	void StartAnimation();
+
+	// 終了アニメーション
+	void EndAnimation();
 
 };
