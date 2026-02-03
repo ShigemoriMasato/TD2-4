@@ -35,34 +35,46 @@ void LogUI::Update() {
 			continue;
 		}
 
-		log.timer_ += FpsCount::deltaTime / maxTime_;
+		if (log.inAnimation) {
 
-		if (log.timer_ <= 0.8f) {
-			float localT = (log.timer_ - 0.5f) / 0.3f;
-			log.effectObject_->transform_.position.x = lerp(-64.0f, 340.0f, localT, EaseType::EaseInCubic);
-			log.effectObject_->transform_.scale.x = lerp(128.0f, 96.0f, localT, EaseType::EaseInCubic);
-			log.effectObject_->color_.w = lerp(1.0f, 0.2f, localT, EaseType::EaseOutCubic);
-		} else if(log.timer_ <= 1.0f) {
-			float localT = (log.timer_ - 0.8f) / 0.2f;
-			log.effectObject_->color_.w = lerp(0.2f, 0.0f, localT, EaseType::EaseOutCubic);
-			log.effectObject_->transform_.scale.x = lerp(96.0f, 0.0f, localT, EaseType::EaseInCubic);
-		}
+			log.timer_ += FpsCount::deltaTime / maxTime_;
 
-		if (log.timer_ <= 0.5f) {
-			float localT = log.timer_ / 0.5f;
-			log.spriteObject_->transform_.position.x = lerp(-360.0f,200.0f, localT, EaseType::EaseInCubic);
-		} else if (log.timer_ <= 0.8f) {
+			if (log.timer_ <= 0.5f) {
 
+			}else if (log.timer_ <= 0.8f) {
+				float localT = (log.timer_ - 0.5f) / 0.3f;
+				log.effectObject_->transform_.position.x = lerp(-128.0f, 360.0f, localT, EaseType::EaseInCubic);
+				log.effectObject_->transform_.scale.x = lerp(128.0f, 96.0f, localT, EaseType::EaseInCubic);
+				log.effectObject_->color_.w = lerp(1.0f, 0.2f, localT, EaseType::EaseOutCubic);
+			} else if (log.timer_ <= 1.0f) {
+				float localT = (log.timer_ - 0.8f) / 0.2f;
+				log.effectObject_->color_.w = lerp(0.2f, 0.0f, localT, EaseType::EaseOutCubic);
+				log.effectObject_->transform_.scale.x = lerp(96.0f, 0.0f, localT, EaseType::EaseInCubic);
+			}
+
+			if (log.timer_ <= 0.5f) {
+				float localT = log.timer_ / 0.5f;
+				log.spriteObject_->transform_.position.x = lerp(-360.0f, 220.0f, localT, EaseType::EaseInCubic);
+			}
+
+			if (log.timer_ >= 1.0f) {
+				log.timer_ = 0.0f;
+				log.effectObject_->color_.w = 0.0f;
+				log.inAnimation = false;
+			}
 		} else {
-			float localT = (log.timer_ - 0.8f) / 0.2f;
-			log.spriteObject_->color_.w = lerp(1.0f, 0.0f, localT, EaseType::EaseOutCubic);
-		}
 
-		if (log.timer_ >= 1.0f) {
-			log.timer_ = 0.0f;
-			log.isActive_ = false;
-			log.spriteObject_->color_.w = 1.0f;
-			log.effectObject_->color_.w = 0.0f;
+			log.timer_ += FpsCount::deltaTime / 2.0f;
+
+			if (log.timer_ >= 0.5f) {
+				float localT = (log.timer_ - 0.5f) / 0.5f;
+				log.spriteObject_->color_.w = lerp(1.0f, 0.0f, localT, EaseType::EaseOutCubic);
+			}
+
+			if (log.timer_ >= 1.0f) {
+				log.spriteObject_->color_.w = 1.0f;
+				log.isActive_ = false;
+			}
 		}
 
 		log.effectObject_->Update();
@@ -103,6 +115,8 @@ void LogUI::AddUnitConflictLog() {
 		}
 
 		log.isActive_ = true;
+		log.inAnimation = true;
+		log.timer_ = 0.0f;
 
 		log.spriteObject_->transform_.position.y = 500.0f;
 		log.spriteObject_->SetTexture(conflTex_);
@@ -136,6 +150,8 @@ void LogUI::AddUnitDeathLog() {
 		}
 
 		log.isActive_ = true;
+		log.inAnimation = true;
+		log.timer_ = 0.0f;
 
 		log.spriteObject_->transform_.position.y = 500.0f;
 		log.spriteObject_->SetTexture(deathTex_);

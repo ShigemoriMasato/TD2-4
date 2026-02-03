@@ -34,6 +34,9 @@ public:
 	// 煙の演出
 	void AddSmoke(const Vector3& pos);
 
+	// 泥の演出
+	void AddDirt(const Vector3& pos);
+
 private: // パーティクル
 
 	//　オブジェクトデータ
@@ -53,16 +56,22 @@ private: // パーティクル
 	std::vector<ParticleData> smokeDatas_;
 	uint32_t smokeMaxNum_ = 100;
 
+	// 泥の演出
+	std::vector<ParticleData> dirtDatas_;
+	uint32_t dirtMaxNum_ = 200;
+
 private:
 
+	// 衝突
 	ParticleData MakeNewData(const Vector3& pos);
-
 	void Create();
-
 	void Move();
 
-
+	// 煙のパーティクル
 	ParticleData MakeNewSmokeData(const Vector3& pos);
-
 	void SmokeMove();
+
+	// 泥のパーティクル
+	ParticleData MakeNewDirtData(const Vector3& pos);
+	void DirtMove();
 };

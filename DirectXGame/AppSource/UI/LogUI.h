@@ -1,5 +1,6 @@
 #pragma once
 #include"Object/SpriteObject.h"
+#include <list>
 
 class LogUI {
 public:
@@ -24,13 +25,18 @@ private:
 
 		bool isActive_ = false;
 		float timer_ = 0.0f;
+
+		bool inAnimation = false;
 	};
 
 private:
 
 	std::vector<LogData> logDatas_;
 
-	float maxTime_ = 2.0f;
+	// ログの古い順番を確認する
+	std::list<LogData*> activeLogList_;
+
+	float maxTime_ = 1.2f;
 
 	int conflTex_ = 0;
 	int deathTex_ = 0;
