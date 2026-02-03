@@ -8,7 +8,11 @@
 #include"Item/Object/GoldOre.h"
 #include"Item/Object/OreItem.h"
 
-OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos, UnitMarkUIManager* unitMarkUIManager, UnitEffectManager* unitEffectManager) {
+OreUnit::OreUnit(MapChipField* mapChipField, DrawData drawData, int texture, Vector3* playerPos, UnitMarkUIManager* unitMarkUIManager, UnitEffectManager* unitEffectManager, int32_t damagePram) {
+
+	// ダメージパラメータ
+	damageParam_ = damagePram;
+
 	// マップデータ
 	mapChipField_ = mapChipField;
 	

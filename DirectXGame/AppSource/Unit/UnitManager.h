@@ -38,7 +38,7 @@ public:
 public:
 
 	void Initalize(MapChipField* mapChipField, DrawData playerDrawData,int pIndex, DrawData oreDrawData,int oIndex, KeyManager* keyManager, Vector3 playerInitPos,int32_t maxOreNum,
-		DrawData spriteDrawData, int unitTex, int playerTex);
+		DrawData spriteDrawData, int unitTex, int playerTex,int32_t mapNum);
 
 	void Update();
 
@@ -175,6 +175,8 @@ private:
 
 	// プレイヤーアイコン
 	std::unique_ptr<SpriteObject> playerIconObjects_;
+
+	int32_t dagageParam_ = 0;
 
 private: // 調整項目
 
