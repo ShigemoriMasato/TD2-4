@@ -140,6 +140,9 @@ private:
 	// ユニットを配置出来ない時
 	uint32_t oreRejectedSH_ = 0;
 
+	// ユニットの出撃音
+	uint32_t oreGoSH_ = 0;
+
 	// タイムアップ音声
 	uint32_t timeUpSH_ = 0;
 	bool isPlayTimeUpSH_ = false;

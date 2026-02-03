@@ -76,6 +76,8 @@ void GameScene::Initialize() {
 	clearSH_ = AudioManager::GetInstance().GetHandleByName("NormaClear.mp3");
 	// ユニットを鉱石に配置出来ない時
 	oreRejectedSH_ = AudioManager::GetInstance().GetHandleByName("OreRejected.mp3");
+	// ユニットの出撃音
+	oreGoSH_ = AudioManager::GetInstance().GetHandleByName("Ore_Instructions.mp3");
 
 	auto inst = GameParamEditor::GetInstance();
 	inst->SetActiveScene("GameScene");
@@ -722,6 +724,12 @@ void GameScene::InGameScene() {
 		}
 	};
 
+	auto PlayGo = [this]() {
+		if (!AudioManager::GetInstance().IsPlay(oreGoSH_)) {
+			AudioManager::GetInstance().Play(oreGoSH_, 0.5f, false);
+		}
+		};
+
 	// マウスの位置に鉱石が存在していればユニットを動かす
 	Vector3 oreWorldPos = {};
 	if (oreItemManager_->IsSelectOre(cameraController_->GetWorldPos(), oreWorldPos)) {
@@ -756,6 +764,8 @@ void GameScene::InGameScene() {
 
 						if (spawnNum <= 0) {
 							PlayReject();
+						} else {
+							PlayGo();
 						}
 					} else {
 						if (spawnNum >= deltaNum * -1.0f) {
@@ -769,6 +779,8 @@ void GameScene::InGameScene() {
 							}
 							if (actualSpawnCount <= 0) {
 								PlayReject();
+							} else {
+								PlayGo();
 							}
 						}
 					}
