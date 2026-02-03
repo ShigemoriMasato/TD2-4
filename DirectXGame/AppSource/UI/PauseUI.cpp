@@ -44,7 +44,7 @@ void PauseUI::Initialize(DrawData drawData, uint32_t texture, KeyManager* keyMan
 
 	// 操作UI
 	guideSprite_ = std::make_unique<SpriteObject>();
-	guideSprite_->Initialize(drawData, { 960,540.0f });
+	guideSprite_->Initialize(drawData, { 1280,720.0f });
 	guideSprite_->transform_.position = { 640.0f,360.0f,0.0f };
 	guideSprite_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	guideSprite_->SetTexture(texture);
