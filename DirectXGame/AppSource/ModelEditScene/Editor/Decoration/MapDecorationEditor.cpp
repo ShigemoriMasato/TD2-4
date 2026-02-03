@@ -62,7 +62,7 @@ void MapDecorationEditor::Update() {
 		isHold_ = true;
 	}
 
-	if (isHold_) {
+	if (isHold_ && editingTransformIndex_ != -1) {
 		Transform& transform = decorations_[currentMapID_][currentModelIndex_][editingTransformIndex_];
 		transform.position.x = cursorPos_.x - cursorOffset_.x;
 		transform.position.z = cursorPos_.y - cursorOffset_.y;

@@ -405,6 +405,13 @@ void GameScene::Initialize() {
 	//=======================================================
 	InitializeOtherScene();
 
+	gameOverTask_ = std::make_unique<GameOverTask>();
+	int modelIndex = modelManager_->LoadModel("GameOverTie");
+	auto modelData = modelManager_->GetNodeModelData(modelIndex);
+	textureIndex = textureManager_->GetTexture("GameOver_Tie1.png");
+	gameOverTask_->Initialize(drawDataManager_->GetDrawData(modelData.drawDataIndex),
+		textureIndex, &fade_.alpha);
+
 	// 最初に一度だけ更新処理を呼ぶ
 	InGameScene();
 }
@@ -521,9 +528,9 @@ std::unique_ptr<IScene> GameScene::Update() {
 	// ゲームシーンから遷移するときの処理
 	//====================================================
 	if (isGameOver_) {
-
-		return std::make_unique<SelectScene>();
-
+		if (gameOverTask_->Update(FpsCount::deltaTime)) {
+			return std::make_unique<SelectScene>();
+		}
 	}
 
 	if (isGameClear_) {
@@ -851,8 +858,7 @@ void GameScene::Draw() {
 
 			// ゲームオーバーシーンの描画処理
 			if (isGameOver_) {
-				// UIの更新処理
-				gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
+				gameOverTask_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 			}
 
 			// クリアシーンの描画処理
@@ -894,6 +900,7 @@ void GameScene::Draw() {
 	gameWindow_->DrawDisplayWithImGui();
 	paramManager_->Draw();
 	LightManager::GetInstance()->DrawImGui();
+	gameOverTask_->DrawImGui();
 
 	// カメラのデバック情報
 	cameraController_->DebugDraw();
@@ -903,6 +910,7 @@ void GameScene::Draw() {
 
 	// 鉱石
 	oreItemManager_->DrawUI();
+
 
 	engine_->ImGuiDraw();
 }
