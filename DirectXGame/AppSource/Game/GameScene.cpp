@@ -431,18 +431,29 @@ void GameScene::InitializeOtherScene() {
 		isRetry_ = false;
 		});
 
+	// フロアクリアのテクスチャを取得
+	int florClerTexIndex = textureManager_->GetTexture("FloorClear.png");
+	// 星の画像
+	int starTextureIndex = textureManager_->GetTexture("star.png");
+
 	// クリアUIの初期化
 	clearUI_ = std::make_unique<ClearUI>();
-	clearUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), commonData_->keyManager.get(), fontName, drawData, fontLoader_, hasNextMap_);
+	clearUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), commonData_->keyManager.get(), fontName, drawData, fontLoader_, hasNextMap_, florClerTexIndex, starTextureIndex);
 	// リトライ
 	clearUI_->SetOnRetryClicked([this]() {
-		isSceneChange_ = true;
-		isRetry_ = true;
+		/*isSceneChange_ = true;
+		isRetry_ = true;*/
+
+		hasNextMap_ = true;
+
 		});
 	// 選択
 	clearUI_->SetOnSelectClicked([this]() {
-		isSceneChange_ = true;
-		isRetry_ = false;
+		/*isSceneChange_ = true;
+		isRetry_ = false;*/
+
+		hasNextMap_ = false;
+
 		});
 
 	// 操作説明のテクスチャを取得
@@ -506,8 +517,6 @@ std::unique_ptr<IScene> GameScene::Update() {
 		}
 	}
 
-	clearUI_->Update();
-
 	//====================================================
 	// ゲームシーンから遷移するときの処理
 	//====================================================
@@ -546,6 +555,9 @@ std::unique_ptr<IScene> GameScene::Update() {
 
 	}
 
+	clearUI_->Update();
+
+	return nullptr;
 
 	//====================================================
 	// クリア、ゲームオーバーの判定処理
@@ -820,15 +832,15 @@ void GameScene::Draw() {
 			// ポーズシーンを描画
 			pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 
-			// ゲームのUIを描画
-			gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix2d, !miniMap_->PleasePose());
-
 			// ミニマップ
 			if (miniMap_->PleasePose()) {
 				// 拠点アイコン
 				homeManager_->DrawIcon(gameWindow_->GetWindow(), vpMatrix2d);
 				// ユニットアイコンを描画
 				unitManager_->DrawIcon(gameWindow_->GetWindow(), vpMatrix2d);
+			} else {
+				// ゲームのUIを描画
+				gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix2d, !miniMap_->PleasePose());
 			}
 
 			// 操作UIを表示
@@ -845,9 +857,11 @@ void GameScene::Draw() {
 
 			// クリアシーンの描画処理
 			if (isGameClear_) {
-				// クリアシーンの更新処理
-				clearUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
+			
 			}
+
+			// クリアシーンの更新処理
+			clearUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 
 			// シーン遷移の描画
 			fadeTransition_->Draw(gameWindow_->GetWindow(), vpMatrix2d);

@@ -2,7 +2,7 @@
 #include"InstancingObject.h"
 #include<vector>
 
-class QuotaClearEffectUI {
+class ConfettiEffectUI {
 public:
 
 	// 1つのパーティクルがもつデータ
@@ -15,6 +15,7 @@ public:
 		uint32_t textureHandle = 0; // 使用するテクスチャ
 
 		float startScale;
+		Vector3 rotateVelocity;
 	};
 
 	// 初期化
@@ -30,7 +31,7 @@ public:
 
 	Vector3 pos_;
 
-	Vector2 range_ = { 100.0f,50.0f };
+	Vector2 range_ = { 10.0f,10.0f };
 
 	bool isLoop_ = false;
 

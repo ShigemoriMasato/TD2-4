@@ -38,7 +38,7 @@ void QuotaClearEffectUI::Draw(Window* window, const Matrix4x4& vpMatrix) {
 QuotaClearEffectUI::ParticleData QuotaClearEffectUI::MakeNewData(){
 	ParticleData data;
 	
-	data.transform.position = pos_ + Vector3(RandomGenerator::Get(-100.0f, 100.0f), RandomGenerator::Get(-50.0f, 50.0f),0.0f);
+	data.transform.position = pos_ + Vector3(RandomGenerator::Get(-range_.x, range_.x), RandomGenerator::Get(-range_.y, range_.y),0.0f);
 	float scale = RandomGenerator::Get(8.0f, 30.0f);
 	data.transform.scale = Vector3(scale, scale, 1.0f);
 	data.startScale = scale;
