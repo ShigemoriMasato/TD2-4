@@ -2,6 +2,7 @@
 #include"Object/SpriteObject.h"
 #include"Common/KeyConfig/KeyManager.h"
 #include"Object/FontObject.h"
+#include"UI/Number.h"
 #include <functional>
 
 class GameOverUI {
@@ -12,6 +13,8 @@ public:
 	void Update();
 
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
+
+	void SetCurrentScore(int score) { score_ = score; }
 
 public:
 
@@ -46,7 +49,12 @@ private:
 	std::function<void()> onRetryClicked_ = nullptr;
 	std::function<void()> onSelectClicked_ = nullptr;
 
+	// スコア
+	std::unique_ptr<Number> scoreNumber_ = nullptr;
+
 	int selectNum_ = 0;
+
+	int score_ = 0;
 
 private: // 調整項目
 

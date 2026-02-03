@@ -139,7 +139,7 @@ private:
 	std::unique_ptr<GameOverUI> gameOverUI_;
 
 	// ゲームオーバーシーン
-	bool isGameOverScene_ = false;
+	bool isGameOver_ = false;
 
 	//================================================
 	// クリアシーン
@@ -149,7 +149,7 @@ private:
 	std::unique_ptr<ClearUI> clearUI_;
 
 	// クリアシーンを判断
-	bool isClearScene_ = false;
+	bool isGameClear_ = false;
 
 	//================================================
 	// ポーズシーン
@@ -177,6 +177,9 @@ private: // デバックの調整項目
 	int32_t maxOreItemNum_ = 20;
 
 private:
+
+	// 恒常的な更新処理
+	void CommonUpdate();
 
 	// ゲームの実行処理
 	void InGameScene();

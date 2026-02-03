@@ -35,8 +35,8 @@ GameScene::~GameScene() {
 	LightManager::GetInstance()->Initialize();
 
 	isSceneChange_ = false;
-	isClearScene_ = false;
-	isGameOverScene_ = false;
+	isGameClear_ = false;
+	isGameOver_ = false;
 
 	// ゲームシーンで取得した鉱石の数
 	commonData_->goldNum = OreItemStorageNum::currentOreItemNum_;
@@ -105,8 +105,8 @@ void GameScene::Initialize() {
 		if (commonData_->nextMapIndex == 0) {
 			commonData_->oreNum = currentMap_.initOreNum;
 		}
-		
-		if (currentMap_.currentMapID != commonData_->nextMapIndex){
+
+		if (currentMap_.currentMapID != commonData_->nextMapIndex) {
 			Logger logger = getLogger("GameScene");
 			logger->info("MapDataError: Stage {} Map {}", commonData_->nextStageIndex, commonData_->nextMapIndex);
 		}
@@ -199,7 +199,7 @@ void GameScene::Initialize() {
 	// 描画データを設定ｓる
 	oreItemManager_->SetModle(drawDataManager_->GetDrawData(smallModel.drawDataIndex), drawDataManager_->GetDrawData(midleModel.drawDataIndex), drawDataManager_->GetDrawData(largeModel.drawDataIndex),
 		smallIndex, midleIndex, largeIndex);
-	oreItemManager_->Initialize(drawDataManager_->GetDrawData(sprModel.drawDataIndex), drawDataManager_->GetDrawData(hpMode.drawDataIndex), 
+	oreItemManager_->Initialize(drawDataManager_->GetDrawData(sprModel.drawDataIndex), drawDataManager_->GetDrawData(hpMode.drawDataIndex),
 		fontName, draw, fontLoader_, drawDataManager_->GetDrawData(boxModel.drawDataIndex),
 		commonData_->nextStageIndex);
 
@@ -295,7 +295,7 @@ void GameScene::Initialize() {
 	postEffectConfig_.window = gameWindow_->GetWindow();
 	postEffectConfig_.origin = display_;
 	postEffectConfig_.jobs_ = UINT(PostEffectJob::Fade);
-	
+
 	fade_.alpha = 0.0f;
 	fade_.color = { 0.0f,0.0f,0.0f };
 
@@ -323,7 +323,7 @@ void GameScene::Initialize() {
 
 	// ゲームのUI管理クラス
 	gameUIManager_ = std::make_unique<GameUIManager>();
-	gameUIManager_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), starTextureIndex, lineTextureIndex, oreiTextureIndex,oreItemTextureIndex,
+	gameUIManager_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), starTextureIndex, lineTextureIndex, oreiTextureIndex, oreItemTextureIndex,
 		fontName, drawData, fontLoader_,
 		commonData_->nextMapIndex);
 
@@ -439,7 +439,7 @@ void GameScene::InitializeOtherScene() {
 	int pBackIndex = textureManager_->GetTexture("Pause_Back.png");
 	int pPlayIndex = textureManager_->GetTexture("Pause_HowToPlay.png");
 	int pSeleIndex = textureManager_->GetTexture("Pause_Select.png");
-	
+
 	// ポーズシーンUIの初期化
 	pauseUI_ = std::make_unique<PauseUI>();
 	pauseUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), static_cast<int32_t>(guidTextureIndex), commonData_->keyManager.get(),
@@ -460,15 +460,116 @@ void GameScene::InitializeOtherScene() {
 		isPauseScene_ = true;
 		isSceneChange_ = true;
 		isRetry_ = false;
-	});
+		});
 }
 
 std::unique_ptr<IScene> GameScene::Update() {
+	//! ====================================================
+	//! 更新処理まとめ
+	//! ====================================================
+
+	//いつでもやる共通の更新処理
+	CommonUpdate();
+
+	if (fadeTransition_->IsAnimation()) {
+		
+		// ゲーム開始時の遷移処理
+		fadeTransition_->Update();
+
+	} else {
+		if (!isPauseScene_ && startCountUI_->isStartAnimeEnd()) {
+
+			if (!isActiveMinMap_) {
+				// ゲームの更新処理
+				InGameScene();
+			}
+
+			// 鉱石管理の更新処理
+			oreItemManager_->Update(isActiveMinMap_);
+		}
+
+		if (!isGameOver_ && !isGameClear_ && startCountUI_->isStartAnimeEnd()) {
+			// ポーズシーンの更新処理
+			pauseUI_->Update();
+		}
+	}
+
+	//====================================================
+	// ゲームシーンから遷移するときの処理
+	//====================================================
+	if (isGameOver_) {
+
+		return std::make_unique<SelectScene>();
+
+	}
+
+	if (isGameClear_) {
+
+		//以下シーン切り替えについて
+		if (hasNextMap_) {
+
+			//Goldについての保存
+			commonData_->currentGoldNum_ += OreItemStorageNum::maxOreItemNum_;
+			commonData_->goldNum = OreItemStorageNum::currentOreItemNum_;
+			commonData_->oreNum = unitManager_->GetOreCount();
+
+			return std::make_unique<OreAddScene>();
+
+		} else {
+
+			//最大点数の更新
+			auto& scores = commonData_->maxGoldNum_;
+			int currentStage = commonData_->nextStageIndex;
+			if (scores.size() <= currentStage) {
+				scores.resize(currentStage + 1, 0);
+			}
+			scores[currentStage] = std::max(scores[currentStage], commonData_->currentGoldNum_);
+
+
+			//終了処理(とりあえずの仮置き)
+			return std::make_unique<SelectScene>();
+		}
+
+	}
+
+
+	//====================================================
+	// クリア、ゲームオーバーの判定処理
+	//====================================================
+	// 時間切れ
+	if (timeTracker_->isFinishd()) {
+
+		// 鉱石が目標数納品を達成するか、鉱石がなくなればクリア
+		if (OreItemStorageNum::currentOreItemNum_ >= OreItemStorageNum::maxOreItemNum_ ||
+			oreItemManager_->GetCurrentOreItemNum() <= 0) {
+
+			isGameClear_ = true;
+
+		} else {
+
+			isGameOver_ = true;
+
+		}
+	}
+
+	// 出撃出来るユニットがいなくなったらゲームオーバー
+	if (unitManager_->GetMaxOreCount() <= 0) {
+		// ゲームオーバーシーンに移動
+		isGameOver_ = true;
+	}
+
+	return nullptr;
+}
+
+
+
+void GameScene::CommonUpdate() {
 #ifdef USE_IMGUI
 	// 値の適応
 	ApplyDebugParam();
 #endif
 
+#pragma region 外部入力系の情報受け取り
 	// Δタイムを取得する
 	FpsCount::deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 
@@ -492,81 +593,16 @@ std::unique_ptr<IScene> GameScene::Update() {
 		// カーソル位置をワールド座標に変換
 		DebugMousePos::screenMousePos = { static_cast<float>(cursorPos.x), static_cast<float>(cursorPos.y) };
 	}
+#pragma endregion
 
 	//===========================================================
 	// 時間計測処理
 	//===========================================================
-
-	// Δタイムを取得する
-	FpsCount::deltaTime = engine_->GetFPSObserver()->GetDeltatime();
-
 	// スタートアニメーションが終わった時、計測をスタートする
 	if (!isTimerSet_ && startCountUI_->isStartAnimeEnd()) {
 		timeTracker_->StartMeasureTimes();
 		isTimerSet_ = true;
 	}
-
-	//? ==============================================================
-	//?  スタートカウントの時、カメラをプレイヤーの位置に設定する
-	//? ==============================================================
-
-	if (!startCountUI_->isStartAnimeEnd() && startCountUI_->isStart_) {
-		cameraController_->SetTargetPos(unitManager_->GetPlayerPosition());
-		// カメラの更新処理
-		cameraController_->Update();
-	}
-
-	//=============================================================
-	// シーン遷移、シーンの管理
-	//=============================================================
-
-	// 演出が終わったので次のシーンに切り替える
-	if (fadeTransition_->IsFinished()) {
-
-	}
-
-	if (fadeTransition_->IsAnimation()) {
-
-		// シーン遷移
-		fadeTransition_->Update();
-	} else {
-
-		if (!isGameOverScene_ && !isClearScene_ && startCountUI_->isStartAnimeEnd()) {
-			// ポーズシーンの更新処理
-			pauseUI_->Update();
-		}
-
-		if (isGameOverScene_ || isClearScene_) {
-
-			if (isClearScene_) {
-				// クリアシーンの更新処理
-				clearUI_->Update();
-			} else {
-				// ゲームオーバーの更新処理
-				gameOverUI_->Update();
-			}
-		} else {
-			if (!isPauseScene_ && startCountUI_->isStartAnimeEnd()) {
-
-				//====================================================
-				// ミニマップの更新処理
-				//====================================================
-				miniMap_->Update();
-
-				if (!isActiveMinMap_) {
-					// ゲームの更新処理
-					InGameScene();
-				} else {
-					// 鉱石管理の更新処理
-					oreItemManager_->Update(true);
-				}
-			}
-		}
-	}
-
-	//====================================================
-	// 時間の更新処理
-	//====================================================
 
 	// 前の時間を取得
 	gameUIManager_->SetPreTime(TimeLimit::totalSeconds);
@@ -575,19 +611,6 @@ std::unique_ptr<IScene> GameScene::Update() {
 	// 時間を更新
 	timeTracker_->Update();
 
-	// 時間切れになれば
-	if (timeTracker_->isFinishd()) {
-
-		// 鉱石が目標数納品を達成するか、鉱石がなくなればクリア
-		if (OreItemStorageNum::currentOreItemNum_ >= OreItemStorageNum::maxOreItemNum_ ||
-			oreItemManager_->GetCurrentOreItemNum() <= 0) {
-			// クリアシーンに移動
-			isClearScene_ = true;
-		} else {
-			// ゲームオーバーシーンに移動
-			isGameOverScene_ = true;
-		}
-	}
 
 	//================================================
 	// UIの更新処理
@@ -602,35 +625,19 @@ std::unique_ptr<IScene> GameScene::Update() {
 	// ログUIの更新処理
 	logUI_->Update();
 
-	//================================================
-	// シーンの切り替え
-	//================================================
+	// ==============================================================
+	//  カメラの更新処理
+	// ==============================================================
+	cameraController_->SetTargetPos(unitManager_->GetPlayerPosition());
+	// カメラの更新処理
+	cameraController_->Update();
 
-	// 切り替える
-	if (isSceneChange_) {
 
-		if (isRetry_) {
-
-			if (isGameOverScene_) {
-				return std::make_unique<SelectScene>();
-			}
-
-			//即席フェードアウト処理
-			static float timer = 0.0f;
-			timer += FpsCount::deltaTime;
-			fade_.alpha = std::min(timer, 1.0f);
-
-			if (timer >= 1.5f) {
-				timer = 0.0f;
-				return std::make_unique<OreAddScene>();
-			}
-		} else {
-			return std::make_unique<SelectScene>();
-		}
-	}
-
-	return nullptr;
+	// ミニマップの更新処理
+	miniMap_->Update();
 }
+
+
 
 void GameScene::InGameScene() {
 
@@ -700,13 +707,6 @@ void GameScene::InGameScene() {
 		}
 	}
 
-	//=====================================================
-	// 鉱石の更新処理
-	//=====================================================
-
-	// 鉱石管理の更新処理
-	oreItemManager_->Update();
-
 	//===================================================
 	// 拠点の更新処理
 	//===================================================
@@ -720,12 +720,6 @@ void GameScene::InGameScene() {
 
 	// ユニットの更新処理
 	unitManager_->Update();
-
-	// 出撃出来るユニットがいなくなったらゲームオーバー
-	if (unitManager_->GetMaxOreCount() <= 0) {
-		// ゲームオーバーシーンに移動
-		isGameOverScene_ = true;
-	}
 
 	//============================================
 	// 当たり判定
@@ -830,13 +824,13 @@ void GameScene::Draw() {
 			//pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 
 			// ゲームオーバーシーンの描画処理
-			if (isGameOverScene_) {
+			if (isGameOver_) {
 				// UIの更新処理
 				gameOverUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 			}
 
 			// クリアシーンの描画処理
-			if (isClearScene_) {
+			if (isGameClear_) {
 				// クリアシーンの更新処理
 				clearUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 			}

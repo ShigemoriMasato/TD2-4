@@ -29,13 +29,24 @@ void GameOverUI::Initialize(DrawData drawData, KeyManager* keyManager, const std
 	selectFontObject_ = std::make_unique<FontObject>();
 	selectFontObject_->Initialize(fontName, L"SelectStage", fontDrawData, fontLoader);
 	selectFontObject_->transform_.position.x = 640.0f - (static_cast<float>(selectFontObject_->GetTextSize()) * 32.0f * 0.5f);
-	selectFontObject_->transform_.position.y = (560.0f + 415.0f) / 2.0f;
+	selectFontObject_->transform_.position.y = 560.0f;
 
 	retryFontObject_->fontColor_ = {1.0f,1.0f,1.0f,0.0f};
 	selectFontObject_->fontColor_ = { 0.5f,0.5f,0.5f,0.0f };
+
+	scoreNumber_ = std::make_unique<Number>();
+	scoreNumber_->Initialize(fontName, fontDrawData, fontLoader);
+	scoreNumber_->SetOffset(L"Score: ");
+	scoreNumber_->SetColor(0x88888800, 0x88888800);
+	scoreNumber_->SetMaxScale(1.0f);
+	scoreNumber_->transform_.position = { 430.0f, 320.0f, 0.0f };
+	scoreNumber_->transform_.scale = { 0.8f, -0.8f, 1.0f };
 }
 
 void GameOverUI::Update() {
+	scoreNumber_->SetNumber(score_);
+	scoreNumber_->Update(FpsCount::deltaTime);
+
 	if (inAnimation_) {
 		timer_ += FpsCount::deltaTime / maxTime_;
 
@@ -50,6 +61,7 @@ void GameOverUI::Update() {
 			gameOverFontObject_->fontColor_.w = alpha;
 			retryFontObject_->fontColor_.w = alpha;
 			selectFontObject_->fontColor_.w = alpha;
+			scoreNumber_->SetColor(ConvertColor(Vector4({ 0.5f, 0.5f, 0.5f, alpha })), ConvertColor(Vector4({ 0.5f, 0.5f, 0.5f, alpha })));
 		}
 
 		if (timer_ >= 1.0f) {
@@ -78,6 +90,8 @@ void GameOverUI::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	//retryFontObject_->Draw(window, vpMatrix);
 
 	selectFontObject_->Draw(window, vpMatrix);
+
+	scoreNumber_->Draw(window, vpMatrix);
 }
 
 void GameOverUI::InUpdate() {

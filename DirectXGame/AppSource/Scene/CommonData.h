@@ -34,4 +34,5 @@ struct CommonData {
 	bool isTitle_ = false;
 
 	std::vector<int> maxGoldNum_{};
+	int currentGoldNum_{};
 };
