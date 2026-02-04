@@ -63,7 +63,7 @@ void CounterUI::Update(int32_t curNum, int32_t maxNum) {
 
 	float maxTextSize = (maxnumFontObject_->transform_.scale.x * 64.0f) * 0.5f;
 	maxnumFontObject_->transform_.position = pos_;
-	maxnumFontObject_->transform_.position.x = fontObject_->transform_.position.x + offsetX + textSize_*0.4f;
+	maxnumFontObject_->transform_.position.x = fontObject_->transform_.position.x + offsetX + textSize_ * 0.4f;
 	maxnumFontObject_->transform_.position.y = pos_.y - maxTextSize;
 }
 

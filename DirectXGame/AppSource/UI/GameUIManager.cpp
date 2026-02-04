@@ -84,6 +84,15 @@ void GameUIManager::Update(const int32_t& unitNum, const int32_t& maxUnitNum) {
 	// ユニットの数を更新
 	unitCounterUI_->Update(unitNum, maxUnitNum);
 
+	// ユニットの残り数によって色を変更
+	if (unitNum <= 0) {
+		unitCounterUI_->fontObject_->fontColor_ = { 0.8f,0.0f,0.0f,1.0f };
+	} else if(unitNum <= 5) {
+		unitCounterUI_->fontObject_->fontColor_ = { 0.8f,1.0f,0.0f,1.0f };
+	} else {
+		unitCounterUI_->fontObject_->fontColor_ = { 1.0f,1.0f,1.0f,1.0f };
+	}
+
 	// 鉱石の数を更新
 	oreItemUI_->Update(OreItemStorageNum::currentOreItemNum_, OreItemStorageNum::maxOreItemNum_);
 
@@ -239,4 +248,6 @@ void GameUIManager::ApplyDebugParam() {
 	// icon
 	oreIconSpriteObject_->Update();
 	itemIconSpriteObject_->Update();
+
+	oreItemUI_->Update(0,20);
 }

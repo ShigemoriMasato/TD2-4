@@ -791,6 +791,8 @@ void GameScene::InGameScene() {
 				}
 			} else {
 				PlayReject();
+				// これ以上配置することが出来ない時、演出を実行
+				gameUIManager_->StartAnimation();
 			}
 		}
 	} else {
