@@ -91,10 +91,6 @@ void OreAddScene::Initialize() {
 	bool reset = commonData_->stageCount == 1;
 	difficulty_->Initialize(modelManager_, drawDataManager_, fontLoader_, reset);
 
-
-	commonData_->isEndlessMode = true;
-	commonData_->stageCount = 2;
-
 	Load();
 }
 
