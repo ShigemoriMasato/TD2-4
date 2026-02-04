@@ -38,7 +38,7 @@ VSOutput main(VSInput input, uint instanceId : SV_InstanceID, uint vertexID : SV
     StringUV g = gUVs[instanceId];
 
     // ===== サイズ復元 =====
-    float2 glyphSizePx = (g.uv1 - g.uv0) * gAtlasSize;
+    float2 glyphSizePx = (g.uv1 - g.uv0) * gAtlasSize / 2.0f;
 
     // ===== Xオフセット計算（簡易）=====
     float penX = 0.0;

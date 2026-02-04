@@ -381,7 +381,7 @@ void GameScene::Initialize() {
 
 	// 最初と最後のカウントをするUI
 	startCountUI_ = std::make_unique<StartCountUI>();
-	startCountUI_->Initialize(fontName, drawData, fontLoader_, commonData_->stageCount, "Kuramubon.otf");
+	startCountUI_->Initialize(fontName, drawData, fontLoader_, commonData_->nextMapIndex, "RampartOne-Regular.ttf");
 	startCountUI_->isStart_ = true;
 
 	// ミニマップ操作時の時間操作処理
@@ -932,25 +932,28 @@ void GameScene::Draw() {
 			// ログのUIを描画
 			logUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 
-			// ポーズシーンを描画
-			pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
+			if (startCountUI_->isStartAnimeEnd() ){
 
-			// ミニマップ
-			if (miniMap_->PleasePose()) {
-				// 拠点アイコン
-				homeManager_->DrawIcon(gameWindow_->GetWindow(), vpMatrix2d);
-				// ユニットアイコンを描画
-				unitManager_->DrawIcon(gameWindow_->GetWindow(), vpMatrix2d);
+				// ポーズシーンを描画
+				pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);
 
-				// 衝突位置アイコンを描画
-				unitMarkUIManager_->DrawUI(gameWindow_->GetWindow(), vpMatrix2d);
-			} else {
-				// ゲームのUIを描画
-				gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix2d, !miniMap_->PleasePose());
+				// ミニマップ
+				if (miniMap_->PleasePose()) {
+					// 拠点アイコン
+					homeManager_->DrawIcon(gameWindow_->GetWindow(), vpMatrix2d);
+					// ユニットアイコンを描画
+						unitManager_->DrawIcon(gameWindow_->GetWindow(), vpMatrix2d);
+
+						// 衝突位置アイコンを描画
+						unitMarkUIManager_->DrawUI(gameWindow_->GetWindow(), vpMatrix2d);
+				} else {
+					// ゲームのUIを描画
+					gameUIManager_->Draw(gameWindow_->GetWindow(), vpMatrix2d, !miniMap_->PleasePose());
+				}
+
+				// 操作UIを表示
+				pauseUI_->DrawGuideUI(gameWindow_->GetWindow(), vpMatrix2d);
 			}
-
-			// 操作UIを表示
-			pauseUI_->DrawGuideUI(gameWindow_->GetWindow(), vpMatrix2d);
 
 			// ポーズシーンを描画
 			//pauseUI_->Draw(gameWindow_->GetWindow(), vpMatrix2d);

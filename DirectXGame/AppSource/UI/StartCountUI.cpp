@@ -4,6 +4,7 @@
 #include <Common/DebugParam/GameParamEditor.h>
 #include"TimeLimit.h"
 #include<numbers>
+#include"Assets/Audio/AudioManager.h"
 
 void StartCountUI::Initialize(const std::string& fontName, DrawData drawData, FontLoader* fontLoader, int florNum, const std::string& fontName1) {
 
@@ -23,6 +24,11 @@ void StartCountUI::Initialize(const std::string& fontName, DrawData drawData, Fo
 	numFontObject_ = std::make_unique<FontObject>();
 	numFontObject_->Initialize(fontName, L"9", drawData, fontLoader);
 	numFontObject_->fontColor_ = { 0.0f,1.0f,0.4980f,0.8f };
+
+	readySH_ = AudioManager::GetInstance().GetHandleByName("Ready.mp3");
+	startSH_ = AudioManager::GetInstance().GetHandleByName("Start.mp3");
+
+	isPlayReady_ = false;
 
 #ifdef USE_IMGUI
 	RegisterDebugParam();
@@ -90,9 +96,14 @@ void StartCountUI::StartAnimation() {
 	timer_ += FpsCount::deltaTime / startTime_;
 
 	if (timer_ <= 0.5f) {
+		if (!isPlayReady_) {
+			isPlayReady_ = true;
+			AudioManager::GetInstance().Play(readySH_, 0.5f, false);
+		}
+
 		float localT = timer_ / 0.5f;
 
-		startFontObject_->transform_.position.x = lerp(1280.0f, 444.0f, localT, EaseType::EaseOutBack);
+		startFontObject_->transform_.position.x = lerp(1280.0f, 420.0f, localT, EaseType::EaseOutBack);
 
 	} else if(timer_ <= 0.8f) {
 		float localT = (timer_ - 0.5f) / 0.3f;
@@ -107,11 +118,13 @@ void StartCountUI::StartAnimation() {
 			startFontObject_->fontColor_.w = 1.0f;
 			waveFontObject_->fontColor_.w = 0.0f;
 			isChange_ = true;
+
+			AudioManager::GetInstance().Play(startSH_, 0.5f, false);
 		}
 
 		float localT = (timer_ - 0.8f) / 0.1f;
 
-		float width = lerp(4.0f, 2.0f, localT, EaseType::EaseOutCubic);
+		float width = lerp(5.0f, 3.0f, localT, EaseType::EaseOutCubic);
 		startFontObject_->transform_.scale.x = width;
 		startFontObject_->transform_.scale.y = -width;
 

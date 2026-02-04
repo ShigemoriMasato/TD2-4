@@ -16,7 +16,7 @@ public:
 	/// </summary>
 	/// <param name="fontName">フォント名</param>
 	/// <param name="text">描画したい文字</param>
-	void Initialize(const std::string& fontName, const std::wstring& text, DrawData drawData, FontLoader* fontLoader);
+	void Initialize(const std::string& fontName, const std::wstring& text, DrawData drawData, FontLoader* fontLoader, int size = 64);
 
 	/// <summary>
 	/// 更新処理
@@ -86,4 +86,7 @@ private:
 
 	Vector2 anchor_;
 	Vector2 offset_{};
+
+
+	const int fontSize = 128;
 };

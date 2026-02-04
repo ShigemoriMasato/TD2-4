@@ -60,7 +60,7 @@ void HomeManager::SetMinMapPos(MiniMap* miniMap, const DrawData& spreteDrawData,
 
 	for (size_t i = 0; i < homeList_.size(); ++i) {
 		iconObjects_[i] = std::make_unique<SpriteObject>();
-		iconObjects_[i]->Initialize(spreteDrawData, { 128.0f,128.0f });
+		iconObjects_[i]->Initialize(spreteDrawData, { 80.0f,80.0f });
 		MarkerResult marker = miniMap->GetMarkerInfo(homeList_[i]->homeObject_->transform_.position, 36.0f);
 		iconObjects_[i]->transform_.position = { marker.position.x,marker.position.y,0.0f };
 		iconObjects_[i]->color_ = { 1.0f,1.0f,1.0f,1.0f };

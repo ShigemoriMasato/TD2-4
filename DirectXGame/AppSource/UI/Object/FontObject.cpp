@@ -1,7 +1,7 @@
 #include "FontObject.h"
 #include <Utility/Matrix.h>
 
-void FontObject::Initialize(const std::string& fontName, const std::wstring& text, DrawData drawData, FontLoader* fontLoader) {
+void FontObject::Initialize(const std::string& fontName, const std::wstring& text, DrawData drawData, FontLoader* fontLoader, int size) {
 	fontName_ = fontName;
 	text_ = text;
 
@@ -24,7 +24,7 @@ void FontObject::Initialize(const std::string& fontName, const std::wstring& tex
 	renderObject_->SetUseTexture(true);
 
 	// フォントの読み込み
-	textureIndex_ = fontLoader->Load(fontName_);
+	textureIndex_ = fontLoader->Load(fontName_, fontSize);
 
 	// 文字位置情報の予約
 	charPositions_.reserve(256);
@@ -37,7 +37,7 @@ void FontObject::Initialize(const std::string& fontName, const std::wstring& tex
 	// 描画するテキストを登録
 	charPositions_.clear();
 	for (const wchar_t& c : text_) {
-		CharPosition charPos = fontLoader->GetCharPosition(fontName_, c, 64);
+		CharPosition charPos = fontLoader->GetCharPosition(fontName_, c, fontSize);
 		charPositions_.push_back(charPos);
 	}
 
@@ -93,7 +93,7 @@ void FontObject::UpdateCharPositions(const std::wstring& text,FontLoader* fontLo
 
 	// テキストを更新
 	for (const wchar_t& c : text_) {
-		CharPosition charPos = fontLoader->GetCharPosition(fontName_, c, 64);
+		CharPosition charPos = fontLoader->GetCharPosition(fontName_, c, fontSize);
 		charPositions_.push_back(charPos);
 	}
 }
@@ -110,7 +110,7 @@ void FontObject::UpdateCharPositionsAndFont(const std::string& fontName, const s
 
 	// テキストを更新
 	for (const wchar_t& c : text_) {
-		CharPosition charPos = fontLoader->GetCharPosition(fontName_, c, 64);
+		CharPosition charPos = fontLoader->GetCharPosition(fontName_, c, fontSize);
 		charPositions_.push_back(charPos);
 	}
 }
