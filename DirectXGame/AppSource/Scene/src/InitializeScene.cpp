@@ -42,6 +42,7 @@ void InitializeScene::Initialize() {
 
 	commonData_->nextStageIndex = 1;
 	commonData_->nextMapIndex = 0;
+	commonData_->prevMapIndex = 2;
 
 	LightManager::GetInstance()->Load();
   
@@ -118,6 +119,16 @@ void InitializeScene::CreateDisplay() {
 		commonData_->mainWindow->AddDisplay(textureIndex, "Main Display", 1280 / 2, 720 / 2);
 	}
 
+	{
+		auto& minidisp = commonData_->miniMapDisplay;
+		minidisp = std::make_unique<DualDisplay>("MiniMapDisplay");
+		uint32_t clearColor = 0x000105ff;
+		int textureIndex = textureManager_->CreateWindowTexture(256, 256, clearColor);
+		int textureIndex2 = textureManager_->CreateWindowTexture(256, 256, clearColor);
+		auto textureData = textureManager_->GetTextureData(textureIndex);
+		auto textureData2 = textureManager_->GetTextureData(textureIndex2);
+		minidisp->Initialize(textureData, textureData2);
+	}
 }
 
 void InitializeScene::EngineSetup() {

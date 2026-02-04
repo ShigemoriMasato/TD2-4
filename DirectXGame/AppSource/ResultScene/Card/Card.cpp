@@ -72,6 +72,7 @@ bool Card::Update(float deltaTime, const Matrix4x4& parentMatrix) {
 void Card::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	//背景
 	Matrix4x4 cbMat = Matrix::MakeAffineMatrix(cbTransform_.scale, cbTransform_.rotate, cbTransform_.position) * parentMatrix_ * vpMatrix;
+	cbMat.m[2][2] = 1.0f; //Z軸固定
 	cardBack_->CopyBufferData(0, &cbMat, sizeof(Matrix4x4));
 	cardBack_->CopyBufferData(1, &cbTextureIndex_, sizeof(int));
 	cardBack_->Draw(window);
