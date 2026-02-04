@@ -968,6 +968,17 @@ void GameScene::Draw() {
 	gameWindow_->PreDraw(true);
 #endif
 
+#ifdef USE_IMGUI
+
+	ImGui::Begin("ScoreDebug");
+
+	ImGui::Text("MaxOre: %d, KillOre: %d", commonData_->maxOreNum, commonData_->killOreNum);
+	ImGui::Text("GetOre: %d", commonData_->getOreNum);
+	ImGui::Text("SumGold: %d, MaxGold: %d", commonData_->sumGoldNum_, commonData_->maxGoldNum);
+
+	ImGui::End();
+	
+#endif
 
 	//ImGui
 	miniMap_->DrawImGui();

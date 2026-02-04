@@ -45,7 +45,7 @@ bool CardManager::Update(float deltaTime) {
 	if (timer >= 0.4f) {
 		timer = 0.0f;
 		auto score = scores_.begin();
-		AddCard(score->first, score->second);
+		AddCard(score->second, score->first);
 		scores_.erase(score);
 	}
 
