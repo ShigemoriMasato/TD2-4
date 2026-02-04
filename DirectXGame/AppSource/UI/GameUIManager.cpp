@@ -1,6 +1,9 @@
 #include"GameUIManager.h"
 #include"Item/OreItemStorageNum.h"
 #include <Common/DebugParam/GameParamEditor.h>
+#include"TimeLimit.h"
+#include"FpsCount.h"
+#include"Utility/Easing.h"
 
 void GameUIManager::Initialize(DrawData spriteData, int starTexture, int lineTexture, int oreIcon, int itemIcon,const std::string& fontName, DrawData fontData, FontLoader* fontLoader, int florNum) {
 	fontLoader_ = fontLoader;
@@ -81,6 +84,15 @@ void GameUIManager::Update(const int32_t& unitNum, const int32_t& maxUnitNum) {
 	// ユニットの数を更新
 	unitCounterUI_->Update(unitNum, maxUnitNum);
 
+	// ユニットの残り数によって色を変更
+	if (unitNum <= 0) {
+		unitCounterUI_->fontObject_->fontColor_ = { 0.8f,0.0f,0.0f,1.0f };
+	} else if(unitNum <= 5) {
+		unitCounterUI_->fontObject_->fontColor_ = { 0.8f,1.0f,0.0f,1.0f };
+	} else {
+		unitCounterUI_->fontObject_->fontColor_ = { 1.0f,1.0f,1.0f,1.0f };
+	}
+
 	// 鉱石の数を更新
 	oreItemUI_->Update(OreItemStorageNum::currentOreItemNum_, OreItemStorageNum::maxOreItemNum_);
 
@@ -92,11 +104,38 @@ void GameUIManager::Update(const int32_t& unitNum, const int32_t& maxUnitNum) {
 		quotaFontObject_->transform_.position.x = 834.0f;
 		quotaClearEffectUI_->isLoop_ = true;
 
+		upSpriteObject_->color_ = bgColor_;
+
 		// 回収演出
 		if (oreItemUI_->IsNumChanged()) {
 			collectEffectUI_->StartAnimation();
 		}
+	} else {
+
+		// ノルマを達成せずに、30秒経過
+		if (TimeLimit::totalSeconds <= 30) {
+
+			alertTImer_ += FpsCount::deltaTime;
+
+			if (alertTImer_ <= 0.5f) {
+				float localT = alertTImer_ / 0.5f;
+
+				upSpriteObject_->color_ = lerp(bgColor_, Vector4(0.8f,0.0f,0.0f,1.0f), localT, EaseType::EaseInCubic);
+
+			} else {
+				float localT = (alertTImer_ - 0.5f) / 0.5f;
+				upSpriteObject_->color_ = lerp(Vector4(0.8f, 0.0f, 0.0f, 1.0f), bgColor_, localT, EaseType::EaseOutCubic);
+			}
+
+			if (alertTImer_ >= 1.0f) {
+				alertTImer_ = 0.0f;
+				upSpriteObject_->color_ = bgColor_;
+			}
+		}
 	}
+
+	upSpriteObject_->Update();
+
 
 	// 時間表示UIを更新
 	timerUI_->Update();
@@ -209,4 +248,6 @@ void GameUIManager::ApplyDebugParam() {
 	// icon
 	oreIconSpriteObject_->Update();
 	itemIconSpriteObject_->Update();
+
+	oreItemUI_->Update(0,20);
 }

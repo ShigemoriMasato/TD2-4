@@ -2,12 +2,13 @@
 #include<numbers>
 #include <Common/DebugParam/GameParamEditor.h>
 
-void UnitMarkUIManager::Initialize(DrawData spriteDrawData, int texture, int iconTex, int playerTex) {
+void UnitMarkUIManager::Initialize(DrawData spriteDrawData, int texture, int iconTex, int playerTex, int outLineIconTex) {
 
 	spriteDrawData_ = spriteDrawData;
 
     arrowTex_ = texture;
     iconTex_ = iconTex;
+    outLineIconTex_ = outLineIconTex;
 
     offsetRot_ = -std::numbers::pi_v<float> / 2.0f;
 
@@ -46,10 +47,11 @@ void UnitMarkUIManager::Initialize(DrawData spriteDrawData, int texture, int ico
     playerMarkUI_.iconObject_->SetTexture(playerTex);
 }
 
-void UnitMarkUIManager::Update() {
+void UnitMarkUIManager::Update(bool isCamera) {
 #ifdef USE_IMGUI
     ApplyDebugParam();
 #endif
+    isCamera_ = isCamera;
 
     // UIを生成する
     ProcessClusters();
@@ -112,7 +114,12 @@ void UnitMarkUIManager::SetPlayerPos(const Vector3& pos) {
 }
 
 void UnitMarkUIManager::AddConflictMarkUI(const Vector3& pos) {
-	MarkerResult marker = cameraController_->GetMarkerInfo(pos, conflictMargin_);
+    MarkerResult marker{};
+    if (isCamera_) {
+        marker = cameraController_->GetMarkerInfo(pos, conflictMargin_);
+    } else {
+        marker = miniMap_->GetMarkerInfo(pos, conflictMargin_);
+    }
 
     activeIndex_++;
 
@@ -123,7 +130,20 @@ void UnitMarkUIManager::AddConflictMarkUI(const Vector3& pos) {
             markUIList_[activeIndex_].arrowObject_->transform_.rotate.z = marker.rotation + offsetRot_;
             // icon
             markUIList_[activeIndex_].iconObject_->transform_.position.x = marker.position.x;
-            markUIList_[activeIndex_].iconObject_->transform_.position.y = marker.position.y + conflictOffsetY_;
+            markUIList_[activeIndex_].iconObject_->transform_.position.y = marker.position.y;
+            if (isCamera_) {
+                markUIList_[activeIndex_].iconObject_->transform_.position.y += conflictOffsetY_;
+                // テクスチャを設定
+                markUIList_[activeIndex_].iconObject_->SetTexture(iconTex_);
+
+                markUIList_[activeIndex_].iconObject_->transform_.scale.x = conflictSize_;
+                markUIList_[activeIndex_].iconObject_->transform_.scale.y = conflictSize_;
+            } else {
+                markUIList_[activeIndex_].iconObject_->transform_.scale.x = 128.0f;
+                markUIList_[activeIndex_].iconObject_->transform_.scale.y = 128.0f;
+                // テクスチャを設定
+                markUIList_[activeIndex_].iconObject_->SetTexture(outLineIconTex_);
+            }
         } else {
             MarkUI mark;
             mark.arrowObject_ = std::make_unique<SpriteObject>();
@@ -137,7 +157,20 @@ void UnitMarkUIManager::AddConflictMarkUI(const Vector3& pos) {
             mark.iconObject_->Initialize(spriteDrawData_, { conflictSize_,conflictSize_ });
             mark.iconObject_->transform_.position = { marker.position.x,marker.position.y,0.0f };
             mark.iconObject_->color_ = { 1.0f,1.0f,1.0f,1.0f };
-            mark.iconObject_->SetTexture(iconTex_);
+
+            if (isCamera_) {
+                 mark.iconObject_->transform_.position.y += conflictOffsetY_;
+                // テクスチャを設定
+                 mark.iconObject_->SetTexture(iconTex_);
+
+                 mark.iconObject_->transform_.scale.x = conflictSize_;
+                 mark.iconObject_->transform_.scale.y = conflictSize_;
+            } else {
+                 mark.iconObject_->transform_.scale.x = 128.0f;
+                 mark.iconObject_->transform_.scale.y = 128.0f;
+                // テクスチャを設定
+                 mark.iconObject_->SetTexture(outLineIconTex_);
+            }
 
             // マークUIを登録する
             markUIList_.push_back(std::move(mark));

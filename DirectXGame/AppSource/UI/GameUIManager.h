@@ -22,6 +22,10 @@ public:
 		timerUI_->SetPreTime(time);
 	}
 
+	void StartAnimation() {
+		unitCounterUI_->Start();
+	}
+
 private:
 
 	// フォントロード
@@ -58,6 +62,8 @@ private:
 
 	// 収集演出
 	std::unique_ptr<CollectEffectUI> collectEffectUI_;
+
+	float alertTImer_ = 0.0f;
 
 private:
 

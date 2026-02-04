@@ -40,4 +40,12 @@ private:
 
 	int conflTex_ = 0;
 	int deathTex_ = 0;
+
+	/// 音声
+
+	// 衝突通知
+	uint32_t conflictSH_ = 0;
+
+	// 死亡時の通知
+	uint32_t deathSH_ = 0;
 };
