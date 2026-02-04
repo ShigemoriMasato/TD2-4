@@ -160,11 +160,15 @@ void SelectScene::Initialize() {
 	// 
 	//=================================================================
 
+	// タイトルロゴ
+	int titleLogIndex = textureManager_->GetTexture("Pebble_01.png");
+
 	// タイトルロゴを描画
 	titleSprite_ = std::make_unique<SpriteObject>();
-	titleSprite_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), { 400.0f,128.0f });
+	titleSprite_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), { 400.0f,256.0f });
 	titleSprite_->transform_.position = { 640.0f,280.0f,0.0f };
 	titleSprite_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+	titleSprite_->SetTexture(titleLogIndex);
 	titleSprite_->Update();
 
 	// プレススペース
@@ -387,6 +391,9 @@ void SelectScene::TitleScene() {
 		}
 	}
 
+	// カメラの更新処理
+	//titleCamera_->Update();
+
 	if (!isStartTitle_) { return; }
 
 	titleTimer_ += FpsCount::deltaTime / titleTime_;
@@ -472,6 +479,8 @@ void SelectScene::Draw() {
 	paramManager_->Draw();
 
 	selectCamera_->DrawImGui();
+
+	//titleCamera_->DebugDraw();
 
 #ifdef USE_IMGUI
 	ImGui::Begin("Titel");
