@@ -114,7 +114,10 @@ private:
 	std::unique_ptr<SpriteObject> decisSprite_;
 
 	std::unique_ptr<SpriteObject> leSprite_;
+	bool isLeftAnimation_ = false;
+
 	std::unique_ptr<SpriteObject> riSprite_;
+	bool isRightAnimation_ = false;
 
 	//===========================================================
 	// 

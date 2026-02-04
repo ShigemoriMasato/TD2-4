@@ -2,6 +2,16 @@
 #include <Common/DebugParam/GameParamEditor.h>
 #include"FpsCount.h"
 #include"Unit/Ore/OreUnit.h"
+#include"Unit/Ore/OreUnit.h"
+
+GoldOre::~GoldOre() {
+	for (OreUnit* unit : linkedUnits_) {
+		if (unit) {
+			// ここでのポインタをnullにさせる
+			unit->NotifyOreDespawn();
+		}
+	}
+}
 
 void GoldOre::Init(DrawData drawData, int texture, const Vector3& pos, OreType type, const float& rotY) {
 	

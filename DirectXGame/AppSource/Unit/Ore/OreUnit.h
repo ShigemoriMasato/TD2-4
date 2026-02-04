@@ -55,6 +55,11 @@ public:
 	// 当たり判定
 	void OnCollision(Collider* other) override;
 
+	// oreItem側から削除を受け取る
+	void NotifyOreDespawn() {
+		oreItem_ = nullptr;
+	}
+
 public:
 
 	// 死亡フラグを取得

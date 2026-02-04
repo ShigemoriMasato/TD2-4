@@ -3,9 +3,12 @@
 
 #include"OreItem.h"
 #include"OreObject.h"
+#include <vector>
+#include <algorithm>
 
 class GoldOre : public OreItem,public Collider {
 public:
+	~GoldOre() override;
 
 	void Init(DrawData drawData,int texture, const Vector3& pos, OreType type,const float& rotY);
 
@@ -59,6 +62,20 @@ public:
 		}
 	}
 
+	// 登録処理
+	void RegisterUnit(OreUnit* unit) override {
+		if (unit) {
+			linkedUnits_.push_back(unit);
+		}
+	}
+
+	// 解除処理
+	void UnregisterUnit(OreUnit* unit) override {
+		// リストから削除
+		auto it = std::remove(linkedUnits_.begin(), linkedUnits_.end(), unit);
+		linkedUnits_.erase(it, linkedUnits_.end());
+	}
+
 	// デバック情報
 	int32_t GetCurrentWorkerNum() override { return currentWorkerNum_; }
 	int32_t GetMaxWorkerNum() override { return maxWorkerNum_; }
@@ -101,6 +118,9 @@ private:
 	float coolTime_ = 0.4f;
 
 	bool isHit_ = false;
+
+	// 自分を参照しているUnitのリスト
+	std::vector<OreUnit*> linkedUnits_;
 
 private: // 調整項目
 

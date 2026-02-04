@@ -198,8 +198,8 @@ void SelectScene::Initialize() {
 	int leIndex = textureManager_->GetTexture("Select_A.png");
 	int riIndex = textureManager_->GetTexture("Select_D.png");
 	decisSprite_ = std::make_unique<SpriteObject>();
-	decisSprite_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), { 256.0f * 0.8f,64.0f });
-	decisSprite_->transform_.position = { 1080.0f,640.0f,0.0f };
+	decisSprite_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), { 256.0f * 0.9f,64.0f * 1.2f });
+	decisSprite_->transform_.position = { 640.0f,640.0f,0.0f };
 	decisSprite_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	decisSprite_->SetTexture(spIndex);
 	decisSprite_->Update();
@@ -210,6 +210,7 @@ void SelectScene::Initialize() {
 	leSprite_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	leSprite_->SetTexture(leIndex);
 	leSprite_->Update();
+	isLeftAnimation_ = false;
 
 	riSprite_ = std::make_unique<SpriteObject>();
 	riSprite_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), { 128.0f,128.0f });
@@ -217,6 +218,7 @@ void SelectScene::Initialize() {
 	riSprite_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	riSprite_->SetTexture(riIndex);
 	riSprite_->Update();
+	isRightAnimation_ = false;
 
 	// おれモデルを取得
 	int oreModelID = modelManager_->LoadModel("Ore");
@@ -432,12 +434,34 @@ void SelectScene::InGameScene() {
 				}
 			}
 
+			// UIのアニメーションを追加
+			if (isLeftAnimation_) {
+				if (timer_ <= 0.5f) {
+					float localT = timer_ / 0.5f;
+
+				} else {
+					float localT = (timer_ - 0.5f) / 0.5f;
+
+				}
+			}
+
+			if(isRightAnimation_) {
+				if (timer_ <= 0.5f) {
+					float localT = timer_ / 0.5f;
+
+				} else {
+					float localT = (timer_ - 0.5f) / 0.5f;
+				}
+			}
+
 			// 移動
 			playerObject_->transform_.position = lerp(startPos_, endPos_, timer_, EaseType::EaseInOutCubic);
 
 			velocity = playerObject_->transform_.position - prePos;
 
 			if (timer_ >= 1.0f) {
+				isLeftAnimation_ = false;
+				isRightAnimation_ = false;
 				currentDir_ = selectDir_;
 				timer_ = 0.0f;
 				isPlayerAnimation_ = false;

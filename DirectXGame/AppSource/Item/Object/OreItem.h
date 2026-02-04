@@ -11,6 +11,8 @@ enum class OreType {
 	MaxCount // 数
 };
 
+class OreUnit;
+
 class OreItem {
 public:
 	virtual ~OreItem() = default;
@@ -54,6 +56,9 @@ public:
 	// light系
 	void RegistLightIndex(int index) { lightIndex_ = index; }
 	int GetLightIndex() const { return lightIndex_; }
+
+	virtual void RegisterUnit(OreUnit* unit) = 0;
+	virtual void UnregisterUnit(OreUnit* unit) = 0;
 
 private:
 
