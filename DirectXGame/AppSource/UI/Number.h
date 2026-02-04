@@ -8,6 +8,8 @@ public:
 	void Update(float deltaTime);
 	void Draw(Window* window, const Matrix4x4& vpMatrix);
 
+	void LeftAlign(bool flug) { leftAlign_ = flug; };
+
 	void SetOffset(std::wstring offset);
 	void SetNumber(int number);
 	void SetTransform(const Transform& transform) { transform_ = transform; }
@@ -34,4 +36,6 @@ private:
 
 	std::wstring offset_ = L"";
 	float maxScale_ = 2.0f;
+
+	bool leftAlign_ = false;
 };

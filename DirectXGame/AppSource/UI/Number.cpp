@@ -34,6 +34,9 @@ void Number::Update(float deltaTime) {
 	int digitCount = int(number.length());
 	// 右揃え
 	int advance = 41; // 文字間隔
+	if (leftAlign_) {
+		advance = 0;
+	}
 	fontObject_->transform_.position.x = transform_.position.x - (advance * (digitCount - 1) * transform_.scale.x) / 2.0f;
 }
 

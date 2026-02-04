@@ -1,4 +1,6 @@
 #include"OreItemManager.h"
+#include"FpsCount.h"
+#include"RandomGenerator.h"
 
 // 各鉱石
 #include"Object/GoldOre.h"
@@ -28,8 +30,27 @@ void OreItemManager::Initialize(DrawData spriteDrawData, DrawData hpDrawData, co
 	oreBreakParticle_ = std::make_unique<OreBreakParticle>();
 	oreBreakParticle_->Initialize(drawData);
 
+	// 泥のパーティクル
+	dirtMoveParticle_ = std::make_unique<DirtMoveParticle>();
+	dirtMoveParticle_->Initialize(drawData);
+
 	if (stageNum >= 1) {
 		isLargeScale_ = true;
+	}
+}
+
+void OreItemManager::SetDirtParticleEmit() {
+
+	// 泥のある位置を取得
+	std::vector<Vector3> dirtposList = MapChipField_->GetDirtPosList();
+
+	// 位置を設定
+	for (size_t i = 0; i < dirtposList.size(); ++i) {
+		DirtData data;
+		data.pos = dirtposList[i];
+		data.timer_ = 0.0f;
+		data.maxTime_ = RandomGenerator::Get(1.0f,2.0f);
+		dirtDataList_.push_back(data);
 	}
 }
 
@@ -180,6 +201,24 @@ void OreItemManager::Update(bool isOpenMap) {
 
 	// 演出の更新
 	oreBreakParticle_->Update();
+
+	// 泥の演出を追加
+	if (!dirtDataList_.empty()) {
+
+		// 位置を追加
+		for (auto& dirtPos : dirtDataList_) {
+
+			dirtPos.timer_ += FpsCount::deltaTime / dirtPos.maxTime_;
+
+			if (dirtPos.timer_ >= 1.0f) {
+				dirtPos.timer_ = 0.0f;
+				dirtMoveParticle_->AddParticle(dirtPos.pos);
+			}
+		}
+
+		// 更新処理
+		dirtMoveParticle_->Update();
+	}
 }
 
 void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
@@ -199,6 +238,10 @@ void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 		oreOutLineObject_->Draw(window, vpMatrix);
 	}
 
+	// 泥のパーティクル
+	if (!dirtDataList_.empty()) {
+		dirtMoveParticle_->Draw(window, vpMatrix);
+	}
 }
 
 void OreItemManager::DrawEffect(Window* window, const Matrix4x4& vpMatrix) {

@@ -57,4 +57,20 @@ namespace {
 void NewMap::Rotate(Direction dir) {
 	mapChipData = rot(mapChipData, dir);
 	renderData = rot(renderData, dir);
+
+	if (dir == Direction::Back) {
+		Vector2 middle = { float(mapChipData[0].size()) / 2.0f, float(mapChipData.size()) / 2.0f };
+		for (auto& [modelIndex, transforms] : decorations) {
+			for (auto& trans : transforms) {
+				// 中心を原点に移動
+				Vector3 pos = trans.position - Vector3(middle.x, 0.0f, middle.y);
+				pos = Vector3(-pos.x, pos.y, -pos.z);
+				// 再び元
+				trans.position = pos + Vector3(middle.x, 0.0f, middle.y) - Vector3(1.0f, 0.0f, 1.0f);
+
+				//回転
+				trans.rotate.y += 3.14159f;
+			}
+		}
+	}
 }

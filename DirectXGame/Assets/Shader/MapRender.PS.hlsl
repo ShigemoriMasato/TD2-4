@@ -42,6 +42,7 @@ PSOutput main(PSInput input)
     int textureIndex = textureIndices[input.instanceID].index;
     color = gTexture[textureIndex].Sample(gSampler, input.texcoord) * color;
     output.color = color / 4.0f;
+    output.color.a = 1.0f;
     
     for (int i = 0; i < pointLightNum; i++)
     {

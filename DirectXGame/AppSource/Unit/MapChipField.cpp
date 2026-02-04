@@ -69,6 +69,19 @@ void MapChipField::SetDebugMapData() {
 	//data_[6][5] = TileType::Wall;
 }
 
+std::vector<Vector3> MapChipField::GetDirtPosList() {
+	std::vector<Vector3> dirtPosList;
+
+	for (int32_t z = 0; z < kNumBlockVirtical; ++z) {
+		for (int32_t x = 0; x < kNumBlockHorizontal; ++x) {
+			if (data_[z][x] == TileType::Slow) {
+				dirtPosList.push_back(GetMapChipPositionByIndex(x, z));
+			}
+		}
+	}
+	return dirtPosList;
+}
+
 TileType MapChipField::GetBlockTypeByIndex(int32_t xIndex, int32_t zIndex) const {
 
 	// 範囲外を指定されたら空白を返す

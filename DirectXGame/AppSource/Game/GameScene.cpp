@@ -61,6 +61,9 @@ void GameScene::Initialize() {
 	//パラメーター管理の初期化
 	paramManager_ = std::make_unique<ParamManager>();
 
+	//lightの初期化
+	LightManager::GetInstance()->Initialize();
+
 	//　当たり判定管理クラスを初期化
 	colliderManager_ = std::make_unique<ColliderManager>();
 	// 当たり判定管理クラスを登録
@@ -138,6 +141,9 @@ void GameScene::Initialize() {
 	}
 
 	commonData_->norma = currentMap_.norma;
+
+	//ここでOreの情報を更新しておく
+	commonData_->maxOreNum = std::max(commonData_->maxOreNum, currentMap_.initOreNum);
 
 	Vector3 playerInitPos = GetPlayerInitPosition();
 
@@ -227,6 +233,7 @@ void GameScene::Initialize() {
 
 	// マップシステムを取得
 	oreItemManager_->SetMapChipField(mapChipField_.get());
+	oreItemManager_->SetDirtParticleEmit();
 
 	//鉱床の配置
 	PutGold();
@@ -565,11 +572,6 @@ std::unique_ptr<IScene> GameScene::Update() {
 		//以下シーン切り替えについて
 		if (hasNextMap_) {
 
-			//Goldについての保存
-			commonData_->currentGoldNum_ += OreItemStorageNum::maxOreItemNum_;
-			commonData_->goldNum = OreItemStorageNum::currentOreItemNum_;
-			commonData_->oreNum = unitManager_->GetOreCount();
-
 			return std::make_unique<OreAddScene>();
 
 		} else {
@@ -608,6 +610,7 @@ std::unique_ptr<IScene> GameScene::Update() {
 			oreItemManager_->GetCurrentOreItemNum() <= 0) {
 
 			isGameClear_ = true;
+			SaveGameData();
 
 			// クリア音声を再生
 			if (!isPlayClearSH_) {
@@ -618,6 +621,7 @@ std::unique_ptr<IScene> GameScene::Update() {
 		} else {
 
 			isGameOver_ = true;
+			SaveGameData();
 
 		}
 	}
@@ -626,6 +630,7 @@ std::unique_ptr<IScene> GameScene::Update() {
 	if (unitManager_->GetMaxOreCount() <= 0) {
 		// ゲームオーバーシーンに移動
 		isGameOver_ = true;
+		SaveGameData();
 	}
 
 	return nullptr;
@@ -1070,4 +1075,22 @@ Vector3 GameScene::GetPlayerInitPosition() {
 	}
 
 	return { 3.0f,0.0f,3.0f };
+}
+
+void GameScene::SaveGameData() {
+
+	//合計の集計
+	commonData_->currentGoldNum_ += OreItemStorageNum::maxOreItemNum_;
+	//最大値の更新
+	commonData_->maxGoldNum = std::max(commonData_->maxGoldNum, OreItemStorageNum::maxOreItemNum_);
+	//ノルマと獲得数の保存
+	commonData_->stageNorma_.push_back(std::make_pair(OreItemStorageNum::currentOreItemNum_, currentMap_.norma));
+	//殺したOreの数
+	commonData_->killOreNum += commonData_->oreNum - unitManager_->GetOreCount();
+
+	//OreAddで使う、ゲームシーンで取得した鉱石の数
+	commonData_->goldNum = OreItemStorageNum::currentOreItemNum_;
+	//OreAddで使う、ゲームシーンで残っているOre
+	commonData_->oreNum = unitManager_->GetOreCount();
+
 }

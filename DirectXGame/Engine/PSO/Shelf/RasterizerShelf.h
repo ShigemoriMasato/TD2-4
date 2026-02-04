@@ -11,6 +11,7 @@ enum class RasterizerID : uint8_t {
 	Fill,       ///< 塗りつぶしモード(通常)
 	Wireframe,  ///< ワイヤーフレームモード(デバッグ用)
 	Back,       ///< 背面を描画する
+	CullNone,   ///< カリングなし
 
 	Count       ///< ラスタライザーモードの総数
 };
