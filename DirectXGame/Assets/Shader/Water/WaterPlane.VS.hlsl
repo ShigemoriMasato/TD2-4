@@ -97,7 +97,6 @@ VSOutput main(VSInput input, uint id : SV_InstanceID)
     pos = mul(input.pos.xyz, (float3x3) world) + positions[id].localPos;
     displaced.y = max(displaced.y, 0.5f);
     pos.y *= displaced.y;
-    pos.y = max(pos.y, 0.0f);
     
     o.worldPos = pos.xyz;
     o.normal = normal; // transform normal correctly

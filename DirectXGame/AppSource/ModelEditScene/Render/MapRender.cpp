@@ -38,8 +38,6 @@ void MapRender::Draw(const Matrix4x4& vpMatrix, Window* window) {
 		data.vp = vpMatrix;
 	}
 
-	std::fill(textureIndices_.begin(), textureIndices_.end(), textureIndex_);
-
 	//コピー
 	render_->CopyBufferData(0, vsData_.data(), sizeof(VSData) * vsData_.size());
 	render_->CopyBufferData(1, colors_.data(), sizeof(Vector4) * colors_.size());
@@ -62,7 +60,7 @@ void MapRender::SetConfig(const std::vector<std::vector<ChipData>>& textureIndic
 			VSData data;
 			Matrix4x4 rotateMatrix;
 			rotateMatrix = Matrix::MakeRotationYMatrix(static_cast<float>((static_cast<int>(textureIndices[i][j].direction) + 1) * (std::numbers::pi_v<float> / 2.0f)));
-			data.world = rotateMatrix * worldMatrices_[i * maxSize_ + j];
+			data.world = rotateMatrix * worldMatrices_[i * maxSize_ + j] * Matrix::MakeTranslationMatrix({0.0f, 0.5f, 0.0f});
 			vsData_.push_back(data);
 			textureIndices_.push_back(textureIndices[i][j].textureIndex);
 		}

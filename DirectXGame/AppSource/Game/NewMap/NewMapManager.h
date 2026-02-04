@@ -3,6 +3,7 @@
 #include "NewMap.h"
 #include <map>
 #include <Assets/Model/ModelManager.h>
+#include <Assets/Texture/TextureManager.h>
 #include <ModelEditScene/Editor/Stage/StageEditor.h>
 
 struct CurrentStageConfig {
@@ -15,16 +16,13 @@ struct CurrentStageConfig {
 class NewMapManager {
 public:
 
-	void Initialize(ModelManager* modelManager);
+	void Initialize(ModelManager* modelManager, TextureManager* textureManager);
 
 	//TileType、描画時のTextureIDとDirectionのセット(現在mapIDでしか判別してない)
 	NewMap GetMapData(int stageNum) { return newMapData_[stageNum]; };
 
 	CurrentStageConfig GetStageMap(int stage, int map);
 	CurrentStageConfig GetEndlessMap(int stageCount, int prevMap);
-
-	//テクスチャIDからパスへの対応表
-	std::map<int, std::string> GetTextureMap() { return textureMap_; };
 
 	int GetWallIndex();
 
@@ -38,7 +36,8 @@ private:
 
 	std::vector<NewMap> newMapData_{};
 
-	std::map<int, std::string> textureMap_{};
+	//ID -> index
+	std::map<int, int> textureMap_{};
 	//ID -> [Index, path]
 	std::map<int, std::pair<int, std::string>> modelMap_{};
 	std::vector<StageData> stageData_{};
@@ -53,4 +52,5 @@ private:
 	BinaryManager binaryManager_;
 
 	ModelManager* modelManager_ = nullptr;
+	TextureManager* textureManager_ = nullptr;
 };

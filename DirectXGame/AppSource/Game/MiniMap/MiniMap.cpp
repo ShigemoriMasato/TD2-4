@@ -42,8 +42,8 @@ void MiniMap::Initialize(int mapWidth, int mapHeight, TextureManager* textureMan
 
 	// デュアルディスプレイの初期化
 	display_ = std::make_unique<DualDisplay>("MiniMapDisplay");
-	int textureHandle1 = textureManager->CreateWindowTexture(1280, 720, 0x88ffaaff);
-	int textureHandle2 = textureManager->CreateWindowTexture(1280, 720, 0x88ffaaff);
+	int textureHandle1 = textureManager->CreateWindowTexture(1280, 720, 0x000000ff);
+	int textureHandle2 = textureManager->CreateWindowTexture(1280, 720, 0x000000ff);
 	display_->Initialize(textureManager->GetTextureData(textureHandle1), textureManager->GetTextureData(textureHandle2));
 
 	miniMapRender_ = std::make_unique<RenderObject>();

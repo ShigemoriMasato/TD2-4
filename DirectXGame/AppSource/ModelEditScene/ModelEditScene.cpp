@@ -26,8 +26,7 @@ void ModelEditScene::Initialize() {
 	cameraController_->Initialize(input_, drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(0).drawDataIndex),0);
 
 	mcRender_ = std::make_unique<DebugMCRender>();
-	int modelIndex = modelManager_->LoadModel("Ground");
-	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(modelIndex).drawDataIndex);
+	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(0).drawDataIndex);
 	mcRender_->Initialize(drawData);
 
 	mapRender_ = std::make_unique<MapRender>();
@@ -144,7 +143,7 @@ void ModelEditScene::Draw() {
 
 	display.PreDraw(window.GetCommandObject(), true);
 	mapRender_->Draw(vpMatrix, window.GetWindow());
-	//mcRender_->Draw(vpMatrix, typeEditor_->GetColorMap(), typeEditor_->GetCurrentMapChipData(), window.GetWindow());
+	mcRender_->Draw(vpMatrix, typeEditor_->GetColorMap(), typeEditor_->GetCurrentMapChipData(), window.GetWindow());
 	staticObjectRender_->Draw(vpMatrix, window.GetWindow());
 	display.PostDraw(window.GetCommandObject());
 

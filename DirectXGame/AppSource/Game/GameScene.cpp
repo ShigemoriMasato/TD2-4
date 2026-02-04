@@ -138,7 +138,7 @@ void GameScene::Initialize() {
 
 
 	// Cubeモデルを取得
-	auto wallModel = modelManager_->GetNodeModelData(modelManager_->LoadModel("Ground"));
+	auto wallModel = modelManager_->GetNodeModelData(0);
 
 	// マップの描画機能を初期化
 	mapRender_ = std::make_unique<MapRender>();
