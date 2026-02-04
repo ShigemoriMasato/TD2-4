@@ -8,6 +8,7 @@
 #include"SelectStageNum.h"
 #include <Game/GameScene.h>
 #include"Assets/Audio/AudioManager.h"
+#include"RandomGenerator.h"
 
 namespace {
 	//Minimap確認用
@@ -81,7 +82,7 @@ void SelectScene::Initialize() {
 	for (int i = 0; i < stagePointObjects_.size(); ++i) {
 		stagePointObjects_[i] = std::make_unique<DefaultObject>();
 		stagePointObjects_[i]->Initialize(drawDataManager_->GetDrawData(stageModel.drawDataIndex),0);
-		stagePointObjects_[i]->transform_.position = { i * 6.0f,-1.5f,0.0f };
+		stagePointObjects_[i]->transform_.position = { i * 6.0f,-1.8f,0.0f };
 		stagePointObjects_[i]->transform_.scale = { 1.5f,0.2f,1.5f };
 		stagePointObjects_[i]->material_.color = { 1.0f,0.0f,0.0f,1.0f };
 		stagePointObjects_[i]->Update();
@@ -112,7 +113,7 @@ void SelectScene::Initialize() {
 		} else {
 			caveObjects_[i]->Initialize(drawDataManager_->GetDrawData(cave3Model.drawDataIndex), cave3Index);
 		}
-		caveObjects_[i]->transform_.position = { i * 6.0f - 1.0f,3.0f,2.5f };
+		caveObjects_[i]->transform_.position = { i * 6.0f - 1.0f,3.0f,5.5f };
 		caveObjects_[i]->transform_.scale = { 1.0f,1.0f,1.0f };
 		caveObjects_[i]->material_.color = { 1.0f,1.0f,1.0f,1.0f };
 		caveObjects_[i]->material_.isActive = true;
@@ -145,7 +146,7 @@ void SelectScene::Initialize() {
 	// プレイヤーの描画オブジェクト
 	playerObject_ = std::make_unique<PlayerUnitObject>();
 	playerObject_->Initialize(drawDataManager_->GetDrawData(playerModel.drawDataIndex), playerTextureIndex);
-	playerObject_->transform_.position = { 0.0f,-1.0f,-0.5f };
+	playerObject_->transform_.position = { 0.0f,-1.4f,0.0f };
 	playerObject_->transform_.rotate.y = std::numbers::pi_v<float> / 2;
 	currentDir_ = 1.0f;
 
@@ -167,8 +168,8 @@ void SelectScene::Initialize() {
 
 	// タイトルロゴを描画
 	titleSprite_ = std::make_unique<SpriteObject>();
-	titleSprite_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), { 400.0f,256.0f });
-	titleSprite_->transform_.position = { 640.0f,280.0f,0.0f };
+	titleSprite_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), { 400.0f * 1.5f,256.0f* 1.5f });
+	titleSprite_->transform_.position = { 640.0f,250.0f,0.0f };
 	titleSprite_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	titleSprite_->SetTexture(titleLogIndex);
 	titleSprite_->Update();
@@ -183,6 +184,44 @@ void SelectScene::Initialize() {
 	// タイトルカメラ
 	titleCamera_ = std::make_unique<TitleCamera>();
 	titleCamera_->Initialize();
+
+	// おれモデルを取得
+	int oreModelID = modelManager_->LoadModel("Ore");
+	auto oreModel = modelManager_->GetNodeModelData(oreModelID);
+
+	// おれのテクスチャを取得
+	int oreTextureIndex = textureManager_->GetTexture("untitled-0.png");
+
+	// 鉱石モデル
+	int mItemModelID = modelManager_->LoadModel("MineralItem");
+	auto mItemModel = modelManager_->GetNodeModelData(mItemModelID);
+
+	// 鉱石のテクスチャを取得
+	int mItemTextureIndex = textureManager_->GetTexture("Mineral-0.png");
+
+	// 演出
+	unitEffectDatas_.resize(10);
+	for (size_t i = 0; i < 10; ++i) {
+		// ユニット
+		unitEffectDatas_[i].unitObject = std::make_unique<DefaultObject>();
+		unitEffectDatas_[i].unitObject->Initialize(drawDataManager_->GetDrawData(oreModel.drawDataIndex), oreTextureIndex);
+		unitEffectDatas_[i].unitObject->transform_.position = { 0.0f,-1.0f,-5.0f };
+		unitEffectDatas_[i].unitObject->transform_.scale = { 1.0f,1.0f,1.0f };
+		unitEffectDatas_[i].unitObject->material_.color = { 1.0f,1.0f,1.0f,1.0f };
+		unitEffectDatas_[i].unitObject->material_.isActive = true;
+		unitEffectDatas_[i].unitObject->Update();
+		// アイテム
+		unitEffectDatas_[i].itemObject = std::make_unique<DefaultObject>();
+		unitEffectDatas_[i].itemObject->Initialize(drawDataManager_->GetDrawData(mItemModel.drawDataIndex), mItemTextureIndex);
+		unitEffectDatas_[i].itemObject->transform_.position = { 0.0f,0.0f,-6.0f };
+		unitEffectDatas_[i].itemObject->transform_.scale = { 1.0f,1.0f,1.0f };
+		unitEffectDatas_[i].itemObject->material_.color = { 1.0f,1.0f,1.0f,1.0f };
+		unitEffectDatas_[i].itemObject->material_.isActive = true;
+		unitEffectDatas_[i].itemObject->Update();
+
+		unitEffectDatas_[i].isActive_ = false;
+		unitEffectDatas_[i].timer_ = 0.0f;
+	}
 
 	if (commonData_->isTitle_) {
 		isTitle_ = false;
@@ -227,6 +266,9 @@ std::unique_ptr<IScene> SelectScene::Update() {
 			// インゲームの更新処理
 			InGameScene();
 		}
+
+		// ユニットアニメーションの更新処理
+		unitUpdate();
 	}
 
 	// シーンを切り替える
@@ -255,7 +297,7 @@ void SelectScene::InGameScene() {
 					isPlayerAnimation_ = true;
 					startPos_ = playerObject_->transform_.position;
 					endPos_ = stagePointObjects_[selectStageNum_ - 1]->transform_.position;
-					endPos_.y = -1.0f;
+					endPos_.y = -1.4f;
 					selectDir_ = -1.0f;
 					startRotY_ = playerObject_->transform_.rotate.y;
 					endRotY_ = -std::numbers::pi_v<float> / 2;
@@ -272,7 +314,7 @@ void SelectScene::InGameScene() {
 					isPlayerAnimation_ = true;
 					startPos_ = playerObject_->transform_.position;
 					endPos_ = stagePointObjects_[selectStageNum_ - 1]->transform_.position;
-					endPos_.y = -1.0f;
+					endPos_.y = -1.4f;
 					selectDir_ = 1.0f;
 					startRotY_ = playerObject_->transform_.rotate.y;
 					endRotY_ = std::numbers::pi_v<float> / 2;
@@ -292,13 +334,13 @@ void SelectScene::InGameScene() {
 
 			commonData_->nextStageIndex = selectStageNum_ - 1;
 			commonData_->nextMapIndex = 0;
+			commonData_->stageCount = 0;
 			isInPlayerAnimation_ = true;
 			inPlayerStartRotY_ = playerObject_->transform_.rotate.y;
 
 			//EndlessModeのセット
 			if (selectStageNum_ == 3) {
 				commonData_->isEndlessMode = true;
-				commonData_->stageCount = 0;
 				commonData_->goldNum = 0;
 			}
 		}
@@ -322,7 +364,7 @@ void SelectScene::InGameScene() {
 		}
 
 		// 移動
-		playerObject_->transform_.position.z = lerp(-0.5f, 4.0f, inPlayerTimer_, EaseType::EaseInOutCubic);
+		playerObject_->transform_.position.z = lerp(-0.5f, 8.0f, inPlayerTimer_, EaseType::EaseInOutCubic);
 
 		if (inPlayerTimer_ >= 1.0f) {
 			isSceneChange_ = true;
@@ -394,7 +436,7 @@ void SelectScene::TitleScene() {
 	}
 
 	// カメラの更新処理
-	titleCamera_->Update();
+	//titleCamera_->Update();
 
 	if (!isStartTitle_) { return; }
 
@@ -402,7 +444,7 @@ void SelectScene::TitleScene() {
 
 	// 移動
 	if (titleTimer_ <= 1.0f) {
-		titleSprite_->transform_.position.y = lerp(280.0f, -360.0f, titleTimer_, EaseType::EaseInOutCubic);
+		titleSprite_->transform_.position.y = lerp(250.0f, -360.0f, titleTimer_, EaseType::EaseInOutCubic);
 	}
 
 	if (titleTimer_ <= 0.5f) {
@@ -421,6 +463,85 @@ void SelectScene::TitleScene() {
 
 		if (!titleCamera_->IsAnimation()) {
 			isTitle_ = false;
+		}
+	}
+}
+
+void SelectScene::unitUpdate() {
+
+	//=================================================
+	// 発射処理
+	//=================================================
+
+	coolTimer_ += FpsCount::deltaTime / coolTime_;
+
+	if (coolTimer_ >= 1.0f) {
+		coolTimer_ = 0.0f;
+
+		coolTime_ = RandomGenerator::Get(0.5f, 1.2f);
+
+		for (auto& data : unitEffectDatas_) {
+			if (!data.isActive_) {
+				data.isActive_ = true;
+				data.timer_ = 0.0f;
+				break;
+			}
+		}
+	}
+
+	//==================================================
+	// 移動処理
+	//==================================================
+
+	float maxJumpHeight_ = 0.8f;
+	float maxWidth_ = 1.2f;
+	float minWidth_ = 0.8f;
+	float maxHeight_ = 1.2f;
+	float minHeight_ = 0.8f;
+
+	for (auto& data : unitEffectDatas_) {
+		if (data.isActive_) {
+
+			data.timer_ += FpsCount::deltaTime / 5.0f;
+
+			// 移動
+			data.unitObject->transform_.position.x = lerp(-15.0f, 20.0f, data.timer_, EaseType::Linear);
+		
+			// アニメーション
+			data.animationTimer_ += FpsCount::deltaTime / 0.6f;
+			if (data.animationTimer_ <= 0.5f) {
+				float localT = data.animationTimer_ / 0.5f;
+				data.unitObject->transform_.position.y = lerp(-1.0f, maxJumpHeight_, localT, EaseType::EaseInOutCubic);
+
+				// スケール
+				float width = lerp(maxWidth_, minWidth_, localT, EaseType::EaseInOutCubic);
+				data.unitObject->transform_.scale.x = width;
+				data.unitObject->transform_.scale.z = width;
+				data.unitObject->transform_.scale.y = lerp(minHeight_, maxHeight_, localT, EaseType::EaseInOutCubic);
+			} else {
+				float localT = (data.animationTimer_ - 0.5f) / 0.5f;
+				data.unitObject->transform_.position.y = lerp(maxJumpHeight_, -1.0f, localT, EaseType::EaseInCubic);
+				// スケール
+				float width = lerp(minWidth_, maxWidth_, localT, EaseType::EaseInOutCubic);
+				data.unitObject->transform_.scale.x = width;
+				data.unitObject->transform_.scale.z = width;
+				data.unitObject->transform_.scale.y = lerp(maxHeight_, minHeight_, localT, EaseType::EaseInOutCubic);
+			}
+
+			if (data.animationTimer_ >= 1.0f) {
+				data.animationTimer_ = 0.0f;
+			}
+
+			// 鉱石を移動
+			data.itemObject->transform_.position = data.unitObject->transform_.position + Vector3(0, 0.7f, 0);
+
+			if (data.timer_ >= 1.0f) {
+				data.isActive_ = false;
+			}
+
+			// 更新処理
+			data.unitObject->Update();
+			data.itemObject->Update();
 		}
 	}
 }
@@ -444,6 +565,14 @@ void SelectScene::Draw() {
 	// 洞窟を描画
 	for (int i = 0; i < caveObjects_.size(); ++i) {
 		caveObjects_[i]->Draw(gameWindow_->GetWindow(), vpMatrix);
+	}
+
+	// ユニットを描画
+	for (auto& data : unitEffectDatas_) {
+		if (data.isActive_) {
+			data.unitObject->Draw(gameWindow_->GetWindow(), vpMatrix);
+			data.itemObject->Draw(gameWindow_->GetWindow(), vpMatrix);
+		}
 	}
 
 	// プレイヤーの描画
@@ -480,9 +609,9 @@ void SelectScene::Draw() {
 	gameWindow_->DrawDisplayWithImGui();
 	paramManager_->Draw();
 
-	//selectCamera_->DrawImGui();
+	selectCamera_->DrawImGui();
 
-	titleCamera_->DebugDraw();
+	//titleCamera_->DebugDraw();
 
 #ifdef USE_IMGUI
 	ImGui::Begin("Titel");

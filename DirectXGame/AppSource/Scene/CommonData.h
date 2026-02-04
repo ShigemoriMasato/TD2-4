@@ -12,6 +12,8 @@ struct CommonData {
 	bool requireExeFinished = false;
 	bool exeFinished = true;
 
+	std::unique_ptr<DualDisplay> miniMapDisplay;
+
 	int nextStageIndex = -1;
 	uint32_t nextMapIndex = 0;
 	//EndlessMode用
@@ -28,10 +30,12 @@ struct CommonData {
 	//今までのやつ
 	int maxOreNum = 0;
 	int killOreNum = 0;
+	int getOreNum = 0;
 	int maxGoldNum = 0;
-	std::vector<std::pair<int, int>> stageNorma_{};
-	std::vector<int> maxGoldNum_{};
-	int currentGoldNum_{};
+	std::vector<std::pair<int, int>> normaAndScore_{};
+	std::vector<int> goldNumRanking_{};
+	//今までの合計Gold数
+	int sumGoldNum_{};
 
 	int postEffectDrawDataIndex = -1;
 

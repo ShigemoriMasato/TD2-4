@@ -35,6 +35,7 @@ void PostEffect::Initialize(TextureManager* textureManager, DrawData drawData) {
 		postEffectObject->Initialize();
 		postEffectObject->psoConfig_.vs = "PostEffect/PostEffect.VS.hlsl";
 		postEffectObject->psoConfig_.ps = "PostEffect/" + psPath + ".PS.hlsl";
+		postEffectObject->psoConfig_.rootConfig.samplers = uint32_t(SamplerID::ClampClamp_MinMagNearest);
 		postEffectObject->SetUseTexture(true);
 		postEffectObject->SetDrawData(drawData);
 		postEffectObject->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "PostEffect::SourceTexture");
@@ -43,12 +44,14 @@ void PostEffect::Initialize(TextureManager* textureManager, DrawData drawData) {
 		};
 
 	createPostEffectObject(PostEffectJob::None, "Simple");
-	createPostEffectObject(PostEffectJob::Blur, "Blur");
+	createPostEffectObject(PostEffectJob::BlurV, "BlurVert");
+	createPostEffectObject(PostEffectJob::BlurH, "BlurHori");
 	createPostEffectObject(PostEffectJob::Fade, "Fade");
 	createPostEffectObject(PostEffectJob::Glitch, "Glitch");
 	createPostEffectObject(PostEffectJob::GrayScale, "GrayScale");
 	createPostEffectObject(PostEffectJob::GridTransition, "GridTransition");
 	createPostEffectObject(PostEffectJob::SlowMotion, "SlowMotion");
+	createPostEffectObject(PostEffectJob::HeavyBlur, "Blur");
 }
 
 void PostEffect::Draw(const PostEffectConfig& config) {

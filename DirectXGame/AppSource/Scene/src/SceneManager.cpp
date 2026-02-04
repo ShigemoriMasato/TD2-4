@@ -4,7 +4,7 @@
 #include <LightManager.h>
 
 SceneManager::~SceneManager() {
-	auto& scores = commonData_->maxGoldNum_;
+	auto& scores = commonData_->goldNumRanking_;
 	if (!scores.empty()) {
 		int allGold = 0;
 		BinaryManager binaryManager;
@@ -34,13 +34,13 @@ void SceneManager::Initialize(SHEngine* engine) {
 		int allScore = 0;
 		while (index < values.size() - 1) {
 			int score = BinaryManager::Reverse<int>(values[index++].get());
-			commonData_->maxGoldNum_.push_back(score);
+			commonData_->goldNumRanking_.push_back(score);
 			allScore += score;
 		}
 		int safeNumber = BinaryManager::Reverse<int>(values[index++].get());
-		if (safeNumber != allScore / commonData_->maxGoldNum_.size()) {
+		if (safeNumber != allScore / commonData_->goldNumRanking_.size()) {
 			getLogger("Game")->error("Score data corrupted. Resetting scores.");
-			commonData_->maxGoldNum_.clear();
+			commonData_->goldNumRanking_.clear();
 		}
 	}
 }

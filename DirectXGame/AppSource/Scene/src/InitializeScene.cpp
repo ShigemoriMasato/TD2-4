@@ -42,9 +42,6 @@ void InitializeScene::Initialize() {
 
 	//commonData_->nextStageIndex = commonData_->stageCount;
 	commonData_->nextMapIndex = 0;
-	//commonData_->isEndlessMode = true;
-	//commonData_->stageCount = 5;
-	//commonData_->prevMapIndex = -1;
 
 	LightManager::GetInstance()->Load();
   
@@ -61,7 +58,7 @@ std::unique_ptr<IScene> InitializeScene::Update(){
 	//return std::make_unique<OreAddScene>();
 	//return std::make_unique<ModelEditScene>();
 	return std::make_unique<SelectScene>();
-	return std::make_unique<GameScene>();
+	//return std::make_unique<GameScene>();
 }
 
 void InitializeScene::Draw() {
@@ -120,6 +117,16 @@ void InitializeScene::CreateDisplay() {
 		commonData_->mainWindow->AddDisplay(textureIndex, "Main Display", 1280 / 2, 720 / 2);
 	}
 
+	{
+		auto& minidisp = commonData_->miniMapDisplay;
+		minidisp = std::make_unique<DualDisplay>("MiniMapDisplay");
+		uint32_t clearColor = 0x000105ff;
+		int textureIndex = textureManager_->CreateWindowTexture(256, 256, clearColor);
+		int textureIndex2 = textureManager_->CreateWindowTexture(256, 256, clearColor);
+		auto textureData = textureManager_->GetTextureData(textureIndex);
+		auto textureData2 = textureManager_->GetTextureData(textureIndex2);
+		minidisp->Initialize(textureData, textureData2);
+	}
 }
 
 void InitializeScene::EngineSetup() {

@@ -11,8 +11,8 @@
 class MiniMap {
 public:
 
-	void Initialize(int mapWidth, int mapHeight, TextureManager* textureManager, const DrawData& plane, const DrawData& visionFrame);
-	void Update();
+	void Initialize(int mapWidth, int mapHeight, DualDisplay* disp, const DrawData& plane, const DrawData& visionFrame, TextureManager* textureManager);
+	void Update(bool debug = false);
 	Camera* PreDraw(Window* window);
 	void PostDraw(Window* window, const Matrix4x4& vpMatrix, Vector3 playerPosition, float range);
 	void Draw(Window* window);
@@ -36,7 +36,7 @@ public:
 private:
 
 	std::unique_ptr<Camera> camera_ = nullptr;
-	std::unique_ptr<DualDisplay> display_ = nullptr;
+	DualDisplay* display_ = nullptr;
 	int vfModelsTextureIndex_ = -1;
 	Transform transform_{};
 

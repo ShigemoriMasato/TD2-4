@@ -4,6 +4,13 @@
 struct Blur {
 	float intensity = 0.0f; // ブラー強度
 	float kernelSize = 0.0f; // カーネルサイズ
+	int radius = 0;
+	float pad;
+};
+
+struct HeavyBlur {
+	float intensity = 0.0f; // ヘビーブラー強度
+	float kernelSize = 1;         // ブラーのパス数
 };
 
 struct Grayscale {

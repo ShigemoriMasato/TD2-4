@@ -9,7 +9,7 @@ void SelectStageUI::Init(DrawData drawData, const std::string& fontName, DrawDat
 
 	// 描画機能の初期化
 	spriteObject_ = std::make_unique<SpriteObject>();
-	spriteObject_->Initialize(drawData,{500.0f,140.0f});
+	spriteObject_->Initialize(drawData,{500.0f*1.2f,140.0f*1.2f});
 	spriteObject_->transform_.position.x = 640.0f;
 	spriteObject_->transform_.position.y = 128.0f;
 	spriteObject_->SetTexture(tex);

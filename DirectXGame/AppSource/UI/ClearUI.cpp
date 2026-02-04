@@ -32,25 +32,6 @@ void ClearUI::Initialize(DrawData drawData, KeyManager* keyManager, const std::s
 	effectFlorClearSpriteObject_->SetTexture(florTex);
 	effectFlorClearSpriteObject_->Update();
 
-	if (hasNextMap) {
-		retryFontObject_ = std::make_unique<FontObject>();
-		retryFontObject_->Initialize(fontName, L"Next", fontDrawData, fontLoader);
-		retryFontObject_->transform_.position.x = 640.0f - (static_cast<float>(retryFontObject_->GetTextSize()) * 32.0f * 0.5f);
-		retryFontObject_->transform_.position.y = 415.0f + 60.0f;
-		retryPos_ = retryFontObject_->transform_.position;
-	}
-
-	selectFontObject_ = std::make_unique<FontObject>();
-	selectFontObject_->Initialize(fontName, L"SelectStage", fontDrawData, fontLoader);
-	selectFontObject_->transform_.position.x = 640.0f - (static_cast<float>(selectFontObject_->GetTextSize()) * 32.0f * 0.5f);
-	selectFontObject_->transform_.position.y = 560.0f + 60.0f;
-	selectPos_ = selectFontObject_->transform_.position;
-
-	if (hasNextMap) {
-		retryFontObject_->fontColor_ = { 1.0f,1.0f,1.0f,1.0f };
-	}
-	selectFontObject_->fontColor_ = { 0.5f,0.5f,0.5f,1.0f };
-
 	// キラキラエフェクトを描画
 	quotaClearEffectUI_ = std::make_unique<QuotaClearEffectUI>();
 	quotaClearEffectUI_->Initialize(drawData, starTex);
@@ -83,10 +64,7 @@ void ClearUI::Initialize(DrawData drawData, KeyManager* keyManager, const std::s
 	// 背景画像の更新処理
 	bgSpriteObject_->Update();
 
-	if (hasNextMap) {
-		retryFontObject_->Update();
-	}
-	selectFontObject_->Update();
+	quotaClearEffectUI_->isLoop_ = false;
 }
 
 void ClearUI::Update() {
@@ -94,30 +72,29 @@ void ClearUI::Update() {
 	if (!isClearStart_) { return; }
 
 	if (isAnimation_) {
-		quotaClearEffectUI_->isLoop_ = false;
-
+		
 		if (isEnd_) {
 			// エンドアニメーション
 			timer_ += FpsCount::deltaTime / 1.0f;
-			if (timer_ >= 1.0f) {
 
-				if (selectNum_ == 0) {
-					// やり直す
-					onRetryClicked_();
-				} else {
-					// ステージ選択へ
-					onSelectClicked_();
-				}
+			*fadealpha_ = lerp(0.0f, 1.0f, timer_, EaseType::EaseInCubic);
+
+			if (timer_ >= 1.0f) {
+				isClearAnimationEnd_ = true;
+				//if (selectNum_ == 0) {
+				//	// やり直す
+				//	onRetryClicked_();
+				//} else {
+				//	// ステージ選択へ
+				//	onSelectClicked_();
+				//}
 			}
 		} else {
 			// スタートアニメーション
 			StartAnimation();
 		}
 	
-	} else {
-		InUpdate();
-		quotaClearEffectUI_->isLoop_ = true;
-	}
+	} 
 
 	// 演出の更新処理
 	quotaClearEffectUI_->Update();
@@ -130,8 +107,6 @@ void ClearUI::Update() {
 	// 背景画像の更新処理
 	bgSpriteObject_->Update();
 
-	retryFontObject_->Update();
-	selectFontObject_->Update();
 }
 
 void ClearUI::Draw(Window* window, const Matrix4x4& vpMatrix) {
@@ -149,34 +124,17 @@ void ClearUI::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	lertconfettiEffectUI_->Draw(window, vpMatrix);
 	rightconfettiEffectUI_->Draw(window, vpMatrix);
 
-	if (retryFontObject_) {
-		retryFontObject_->Draw(window, vpMatrix);
-	}
-
-	selectFontObject_->Draw(window, vpMatrix);
+	//if (retryFontObject_) {
+	//	retryFontObject_->Draw(window, vpMatrix);
+	//}
+	//
+	//selectFontObject_->Draw(window, vpMatrix);
 }
 
 void ClearUI::InUpdate() {
 
 	// 操作
 	auto key = keyManager_->GetKeyStates();
-
-	if (retryFontObject_) {
-		if (key[Key::UpTri]) {
-			selectNum_ = 0;
-			retryFontObject_->fontColor_ = { 1.0f,1.0f,1.0f,1.0f };
-			selectFontObject_->fontColor_ = { 0.5f,0.5f,0.5f,1.0f };
-		}
-
-		if (key[Key::DownTri]) {
-			selectNum_ = 1;
-			retryFontObject_->fontColor_ = { 0.5f,0.5f,0.5f,1.0f };
-			selectFontObject_->fontColor_ = { 1.0f,1.0f,1.0f,1.0f };
-		}
-	} else {
-		selectNum_ = 1;
-		selectFontObject_->fontColor_ = { 1.0f,1.0f,1.0f,1.0f };
-	}
 
 	// 決定
 	if (key[Key::Decision]) {
@@ -237,25 +195,25 @@ void ClearUI::StartAnimation() {
 
 	}else if (timer_ <= 0.9f) {
 		float localT = (timer_ - 0.7f) / 0.2f;
-		retryFontObject_->transform_.position.x = lerp(1500.0f, retryPos_.x, localT, EaseType::EaseInCubic);
 	}
 
 	if (timer_ <= 0.8f) {
 
 	} else if (timer_ <= 1.0f) {
-		float localT = (timer_ - 0.8f) / 0.2f;
-		selectFontObject_->transform_.position.x = lerp(-200.0f, selectPos_.x, localT, EaseType::EaseInCubic);
 	}
 
 	// 終了
 	if (timer_ >= 1.0f) {
+		timer_ = 0.0f;
 		isAnimation_ = false;
 		effectFlorClearSpriteObject_->color_.w = 0.0f;
 		effectFlorClearSpriteObject_->transform_.scale.x = clearTextSize_.x;
 		effectFlorClearSpriteObject_->transform_.scale.y = clearTextSize_.y;
 
-		retryFontObject_->transform_.position.x = retryPos_.x;
-		selectFontObject_->transform_.position.x = selectPos_.x;
+		quotaClearEffectUI_->isLoop_ = true;
+
+		isEnd_ = true;
+		isAnimation_ = true;
 	}
 }
 
