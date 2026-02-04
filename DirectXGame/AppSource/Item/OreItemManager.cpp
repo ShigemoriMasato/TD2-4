@@ -364,7 +364,8 @@ void OreItemManager::AddOreItem(OreType type, const Vector3& pos, const float& r
 	data.font->Initialize(fontName_, L"00/00", fontDrawData_, fontLoader_);
 	data.font->transform_.position = pos;
 	data.font->transform_.position.x -= 0.8f;
-	data.font->transform_.position.y += 4.0f;
+	data.font->transform_.position.y += 3.5f;
+	data.font->transform_.position.z += 0.4f;
 	data.font->transform_.rotate.x = -2.4f;
 	data.font->transform_.scale = Vector3(0.01f, -0.01f,1.0f);
 	data.font->fontColor_ = { 0.0f,1.0f,1.0f,1.0f };
