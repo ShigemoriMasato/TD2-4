@@ -13,9 +13,8 @@ namespace {
 	}
 }
 
-void MiniMap::Initialize(int mapWidth, int mapHeight, TextureManager* textureManager, const DrawData& plane, const DrawData& visionField) {
+void MiniMap::Initialize(int mapWidth, int mapHeight, DualDisplay* disp, const DrawData& plane, const DrawData& visionField, TextureManager* textureManager) {
 	auto logger = getLogger("Minimap");
-
 
 	// カメラの初期化
 	camera_ = std::make_unique<Camera>();
@@ -40,11 +39,7 @@ void MiniMap::Initialize(int mapWidth, int mapHeight, TextureManager* textureMan
 	Matrix4x4 vpMat = camera_->GetVPMatrix();
 	Log(vpMat, logger);
 
-	// デュアルディスプレイの初期化
-	display_ = std::make_unique<DualDisplay>("MiniMapDisplay");
-	int textureHandle1 = textureManager->CreateWindowTexture(1280, 720, 0x000000ff);
-	int textureHandle2 = textureManager->CreateWindowTexture(1280, 720, 0x000000ff);
-	display_->Initialize(textureManager->GetTextureData(textureHandle1), textureManager->GetTextureData(textureHandle2));
+	display_ = disp;
 
 	miniMapRender_ = std::make_unique<RenderObject>();
 	miniMapRender_->Initialize();

@@ -12,6 +12,8 @@ struct CommonData {
 	bool requireExeFinished = false;
 	bool exeFinished = true;
 
+	std::unique_ptr<DualDisplay> miniMapDisplay;
+
 	int nextStageIndex = -1;
 	uint32_t nextMapIndex = 0;
 	//EndlessMode用

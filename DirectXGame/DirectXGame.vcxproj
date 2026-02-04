@@ -266,6 +266,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\Item\Effect\OreBreakParticle.h" />
     <ClInclude Include="AppSource\UI\Effect\ConfettiEffectUI.h" />
     <ClCompile Include="AppSource\ResultScene\ResultScene.cpp" />
+    <ClCompile Include="AppSource\ResultScene\Total\TotalManager.cpp" />
     <ClInclude Include="AppSource\GameOver\GameOverTask.h" />
     <ClInclude Include="AppSource\ResultScene\Card\Card.h" />
     <ClInclude Include="AppSource\ResultScene\Card\CardManager.h" />
@@ -348,6 +349,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\OreAddScene\OreAddScene.h" />
     <ClInclude Include="AppSource\UI\Number.h" />
     <ClInclude Include="AppSource\ResultScene\ResultScene.h" />
+    <ClInclude Include="AppSource\ResultScene\Total\TotalManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSource\Common\DebugParam\GameParamEditor.h" />

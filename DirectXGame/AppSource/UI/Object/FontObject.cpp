@@ -51,6 +51,16 @@ void FontObject::Update() {
 		isDirty_ = false;
 	}
 
+	float length = 0.0f;
+	float height = 0.0f;
+	for (int i = 0; i < charPositions_.size(); ++i) {
+		length += charPositions_[i].advanceX;
+		height = std::max(height, charPositions_[i].bearingY - charPositions_[i].descender);
+	}
+
+	// アンカーポイントに基づいて位置を調整
+	offset_.x = -length * anchor_.x;
+	offset_.y = height * anchor_.y;
 }
 
 void FontObject::Draw(Window* window, const Matrix4x4& vpMatrix) {
@@ -59,7 +69,7 @@ void FontObject::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	}
 
 	// ワールド行列の計算
-	matrices_[0] = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
+	matrices_[0] = Matrix::MakeTranslationMatrix(Vector3(offset_)) * Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 	matrices_[1] = vpMatrix;
 
 	// バッファにデータをコピー

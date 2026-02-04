@@ -120,7 +120,6 @@ void GameScene::Initialize() {
 		}
 
 		commonData_->stageCount++;
-		commonData_->prevMapIndex = currentMap_.currentMapID;
 	} else {
 		currentMap_ = commonData_->newMapManager->GetStageMap(commonData_->nextStageIndex, commonData_->nextMapIndex);
 
@@ -139,6 +138,7 @@ void GameScene::Initialize() {
 			hasNextMap_ = false;
 		}
 	}
+	commonData_->prevMapIndex = currentMap_.currentMapID;
 
 	commonData_->norma = currentMap_.norma;
 
@@ -185,7 +185,7 @@ void GameScene::Initialize() {
 	DrawData planeData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
 	DrawData visionFrame = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(modelManager_->LoadModel("VisionFrame")).drawDataIndex);
 	miniMap_->Initialize((int)currentMap_.currentMap.mapChipData[0].size(), (int)currentMap_.currentMap.mapChipData.size(),
-		textureManager_, planeData, visionFrame);
+		commonData_->miniMapDisplay.get(), planeData, visionFrame, textureManager_);
 
 	//================================================================
 	// 鉱石システム

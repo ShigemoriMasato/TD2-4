@@ -66,7 +66,7 @@ void NewMap::Rotate(Direction dir) {
 				Vector3 pos = trans.position - Vector3(middle.x, 0.0f, middle.y);
 				pos = Vector3(-pos.x, pos.y, -pos.z);
 				// 再び元
-				trans.position = pos + Vector3(middle.x, 0.0f, middle.y) - Vector3(1.0f, 0.0f, 1.0f);
+				trans.position = pos + Vector3(middle.x, 0.0f, middle.y);
 
 				//回転
 				trans.rotate.y += 3.14159f;

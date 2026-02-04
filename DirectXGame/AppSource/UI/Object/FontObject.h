@@ -50,6 +50,9 @@ public:
 	// テキストの数
 	int32_t GetTextSize() { return static_cast<int32_t>(charPositions_.size()); }
 
+	//0..左上、1...右下
+	void AnchorPoint(Vector2 anchor) { anchor_ = anchor; };
+
 public:
 
 	// トランスフォーム
@@ -80,4 +83,7 @@ private:
 	bool isDirty_ = true;	
 
 	FontLoader* fontLoader_ = nullptr;
+
+	Vector2 anchor_;
+	Vector2 offset_{};
 };
