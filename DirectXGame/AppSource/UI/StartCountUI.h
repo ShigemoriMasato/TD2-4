@@ -47,6 +47,11 @@ private:
 
 	float rotZ_ = 0.0f;
 
+	uint32_t readySH_ = 0;
+	uint32_t startSH_ = 0;
+
+	bool isPlayReady_ = false;
+
 private:
 
 	void StartAnimation();
