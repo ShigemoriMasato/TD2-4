@@ -24,6 +24,7 @@
 #include <ModelEditScene/Render/MapRender.h>
 #include <ModelEditScene/Render/DebugMCRender.h>
 #include <ModelEditScene/Render/StaticObjectRender.h>
+#include <GameOver/GameOverTask.h>
 
 #include "GameCamera/CameraController.h"
 
@@ -76,6 +77,9 @@ private:
 
 	// 遷移の処理
 	std::unique_ptr<FadeTransition> fadeTransition_;
+
+	// ゲームのBGMハンドル
+	uint32_t gameBGMSH_ = 0;
 
 	//=====================================================
 	// インゲーム
@@ -131,12 +135,26 @@ private:
 	// ログUI
 	std::unique_ptr<LogUI> logUI_;
 
+	/// 音声処理
+
+	// ユニットを配置出来ない時
+	uint32_t oreRejectedSH_ = 0;
+
+	// ユニットの出撃音
+	uint32_t oreGoSH_ = 0;
+
+	// タイムアップ音声
+	uint32_t timeUpSH_ = 0;
+	bool isPlayTimeUpSH_ = false;
+
 	//================================================
 	// ゲームオーバーシーン
 	//================================================
 
 	// ゲームオーバーUI
 	std::unique_ptr<GameOverUI> gameOverUI_;
+
+	std::unique_ptr<GameOverTask> gameOverTask_;
 
 	// ゲームオーバーシーン
 	bool isGameOver_ = false;
@@ -150,6 +168,10 @@ private:
 
 	// クリアシーンを判断
 	bool isGameClear_ = false;
+
+	// クリア音声
+	uint32_t clearSH_ = 0;
+	bool isPlayClearSH_ = false;
 
 	//================================================
 	// ポーズシーン

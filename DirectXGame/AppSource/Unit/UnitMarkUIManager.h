@@ -2,6 +2,7 @@
 #include<vector>
 #include"GameCamera/CameraController.h"
 #include"UI/Object/SpriteObject.h"
+#include"Game/MiniMap/MiniMap.h"
 
 struct MarkUI {
 	std::unique_ptr<SpriteObject> iconObject_;
@@ -18,9 +19,9 @@ public:
 public:
 
 
-	void Initialize(DrawData spriteDrawData, int texture,int iconTex,int playerTex);
+	void Initialize(DrawData spriteDrawData, int texture,int iconTex,int playerTex,int outLineIconTex);
 
-	void Update();
+	void Update(bool isCamera = true);
 
 	void DrawUI(Window* window, const Matrix4x4& vpMatrix);
 
@@ -40,15 +41,26 @@ public:
 	// プレイヤーの位置を設定
 	void SetPlayerPos(const Vector3& pos);
 
+	// ミニマップを作成
+	void SetMinMap(MiniMap* miniMap) {
+		miniMap_ = miniMap;
+	}
+
 private:
 	// カメラクラス
 	CameraController* cameraController_ = nullptr;
+
+	// ミニマップ
+	MiniMap* miniMap_ = nullptr;
+
+	bool isCamera_ = true;
 
 	// 描画データ
 	DrawData spriteDrawData_;
 
 	int arrowTex_ = 0;
 	int iconTex_ = 0;
+	int outLineIconTex_ = 0;
 
 	// 衝突位置を取得
 	std::vector<Vector3> conflictPosList_;

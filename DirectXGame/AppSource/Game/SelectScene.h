@@ -19,6 +19,8 @@
 class SelectScene : public IScene {
 public:
 
+	~SelectScene();
+
 	void Initialize() override;
 	std::unique_ptr<IScene> Update() override;
 	void Draw() override;
@@ -41,6 +43,9 @@ private:
 
 	// シーン切り替え
 	bool isSceneChange_ = false;
+
+	// BGMハンドル
+	uint32_t selectSH_ = 0;
 
 	//=================================
 	// カメラ
@@ -124,6 +129,16 @@ private:
 	bool isStartTitle_ = false;
 
 	std::unique_ptr<TitleCamera> titleCamera_;
+
+	//======================================================
+	//
+	// 音声
+	//
+	//======================================================
+
+	// 決定音
+	uint32_t decideSH_ = 0;
+
 
 private:
 

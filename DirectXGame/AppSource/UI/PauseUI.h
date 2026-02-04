@@ -10,7 +10,7 @@ public:
 
 	void Initialize(DrawData drawData,uint32_t texture, KeyManager* keyManager,
 		const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader,
-		int baTex,int guidTex,int selTex);
+		int baTex,int guidTex,int selTex,int log);
 
 	void Update();
 
@@ -61,6 +61,14 @@ private:
 
 	// 操作ガイドUI
 	std::unique_ptr<SpriteObject> guideSprite_;
+
+	// ポーズロゴ
+	std::unique_ptr<SpriteObject> logSprite_;
+
+	/// 音声
+
+	// 決定音
+	uint32_t decideSH_ = 0;
 
 private: // 調整項目
 

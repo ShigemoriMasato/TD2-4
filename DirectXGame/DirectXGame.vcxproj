@@ -157,6 +157,8 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AppSource\UI\Effect\ConfettiEffectUI.cpp" />
+    <ClCompile Include="AppSource\GameOver\GameOverTask.cpp" />
     <ClCompile Include="Engine\Assets\Audio\AudioManager.cpp" />
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
     <ClCompile Include="AppSource\Common\DebugParam\GameParamEditor.cpp" />
@@ -256,7 +258,8 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\ModelEditScene\Editor\Stage\StageEditor.cpp" />
     <ClCompile Include="AppSource\OreAddScene\OreAddScene.cpp" />
     <ClCompile Include="AppSource\UI\Number.cpp" />
-    <ClCompile Include="WWGenerator.cpp" />
+    <ClInclude Include="AppSource\UI\Effect\ConfettiEffectUI.h" />
+    <ClInclude Include="AppSource\GameOver\GameOverTask.h" />
     <ClInclude Include="Engine\Assets\Audio\AudioManager.h" />
     <ClInclude Include="AppSource\GameCamera\DebugMousePos.h" />
     <ClInclude Include="AppSource\GameCamera\MarkResult.h" />
@@ -342,7 +345,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\ModelEditScene\Editor\Stage\StageEditor.h" />
     <ClInclude Include="AppSource\OreAddScene\OreAddScene.h" />
     <ClInclude Include="AppSource\UI\Number.h" />
-    <ClInclude Include="WWGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppSource\Common\DebugParam\GameParamEditor.h" />

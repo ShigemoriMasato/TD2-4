@@ -1,6 +1,7 @@
 #include"LogUI.h"
 #include"Utility/Easing.h"
 #include"FpsCount.h"
+#include"Assets/Audio/AudioManager.h"
 
 void LogUI::Initialize(DrawData drawData, int confTex, int effectTex, int deathTex) {
 
@@ -24,6 +25,11 @@ void LogUI::Initialize(DrawData drawData, int confTex, int effectTex, int deathT
 
 	conflTex_ = confTex;
 	deathTex_ = deathTex;
+
+	// 衝突通知
+	conflictSH_ = AudioManager::GetInstance().GetHandleByName("OreCrush.mp3");
+	// 死亡通知
+	deathSH_ = AudioManager::GetInstance().GetHandleByName("Ore_Death.mp3");
 }
 
 void LogUI::Update() {
@@ -105,6 +111,10 @@ void LogUI::Draw(Window* window, const Matrix4x4& vpMatrix) {
 }
 
 void LogUI::AddUnitConflictLog() {
+
+	// 衝突通知音声を再生
+	AudioManager::GetInstance().Play(conflictSH_, 0.5f, false);
+
 	// 衝突ログを出現させる
 	for (auto& log : logDatas_) {
 		if (log.isActive_) {
@@ -130,6 +140,9 @@ void LogUI::AddUnitConflictLog() {
 }
 
 void LogUI::AddUnitDeathLog() {
+
+	// 死亡通知
+	AudioManager::GetInstance().Play(deathSH_, 0.5f, false);
 
 	// 死亡ログを出現させる
 	for (auto& log : logDatas_) {

@@ -13,15 +13,21 @@ public:
 
 	bool IsNumChanged() const { return isNumChanged_; }
 
+	void Start() {
+		if (!isAnimation_) {
+			isAnimation_ = true;
+		}
+	}
+
 public:
 
 	Vector3 pos_;
 
 	Vector3 size_ = { 1.0f,-1.0f,1.0f };
 
-private:
-
+	// 現在の数を描画するオブジェクト
 	std::unique_ptr<FontObject> fontObject_;
+private:
 
 	// 最大数
 	std::unique_ptr<FontObject> maxnumFontObject_;
