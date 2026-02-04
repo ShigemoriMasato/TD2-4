@@ -184,6 +184,9 @@ void FontLoader::LoadResponseText() {
 	//重複削除
 	std::sort(text_.begin(), text_.end());
 	text_.erase(std::unique(text_.begin(), text_.end()), text_.end());
+
+	text_.push_back(L'衝');
+	text_.push_back(L'突');
 }
 
 std::string FontLoader::FilePathChecker(const std::string& filePath) {

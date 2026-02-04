@@ -88,5 +88,5 @@ private:
 	Vector2 offset_{};
 
 
-	const int fontSize = 128;
+	int fontSize = 128;
 };

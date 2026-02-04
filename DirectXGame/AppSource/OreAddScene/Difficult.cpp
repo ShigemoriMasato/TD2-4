@@ -32,7 +32,7 @@ void Difficult::Initialize(ModelManager* modelManager, DrawDataManager* drawData
 
 	difficultText_ = std::make_unique<FontObject>();
 	drawData = drawDataManager->GetDrawData(modelManager->GetNodeModelData(1).drawDataIndex);
-	difficultText_->Initialize("YDWbananaslipplus.otf", L"接触時 Oreの体力減少", drawData, fontLoader);
+	difficultText_->Initialize("YDWbananaslipplus.otf", L"衝突時 Oreの体力減少", drawData, fontLoader);
 
 	difficultNumber_ = std::make_unique<Number>();
 	difficultNumber_->Initialize("YDWbananaslipplus.otf", drawData, fontLoader);
