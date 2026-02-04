@@ -178,11 +178,12 @@ void GameUIManager::Draw(Window* window, const Matrix4x4& vpMatrix, bool isDrawE
 
 	// 時間計測表示UI
 	timerUI_->Draw(window, vpMatrix);
-
+#ifdef USE_IMGUI
 	ImGui::Begin("currentItem");
 	ImGui::DragInt("cur", &OreItemStorageNum::currentOreItemNum_);
 	ImGui::DragInt("CountCur", &oreItemUI_->currenyNum_);
 	ImGui::End();
+#endifく
 
 	if (isDrawEffect) {
 		// ノルマクリア演出を描画

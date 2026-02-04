@@ -72,6 +72,7 @@ void GameOverTask::Draw(Window* window, const Matrix4x4& vpMat) {
 }
 
 void GameOverTask::DrawImGui() {
+#ifdef USE_IMGUI
 	ImGui::Begin("GameOverTask");
 	ImGui::DragFloat("Timer", &timer_, 0.01f, 0.0f, duration_);
 	
@@ -96,6 +97,7 @@ void GameOverTask::DrawImGui() {
 	}
 
 	ImGui::End();
+#endif
 }
 
 void GameOverTask::Save() {
