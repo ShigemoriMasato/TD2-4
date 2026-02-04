@@ -36,10 +36,10 @@ void PauseUI::Initialize(DrawData drawData, uint32_t texture, KeyManager* keyMan
 	gameOverFontObject_->Initialize(fontName, L"Tab : ポーズ", fontDrawData, fontLoader);
 	//gameOverFontObject_->transform_.position.x = 640.0f - (static_cast<float>(gameOverFontObject_->GetTextSize()) * 48.0f * 0.5f);
 	gameOverFontObject_->transform_.position.x = 32.0f;
-	gameOverFontObject_->transform_.position.y = 650.0f;
+	gameOverFontObject_->transform_.position.y = 680.0f;
 	gameOverFontObject_->transform_.scale.x = 0.8f;
 	gameOverFontObject_->transform_.scale.y = -0.8f;
-	gameOverFontObject_->fontColor_ = { 0.0f,1.0f,1.0f,1.0f };
+	gameOverFontObject_->fontColor_ = { 1.0f, 0.27f, 0.0f,1.0f };
 
 	// 選択画像を初期化
 	for (size_t i = 0; i < selectSpriteObject_.size(); ++i) {

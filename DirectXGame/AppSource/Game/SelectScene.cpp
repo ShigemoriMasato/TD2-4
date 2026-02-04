@@ -51,6 +51,10 @@ void SelectScene::Initialize() {
 	// 決定音を取得
 	decideSH_ = AudioManager::GetInstance().GetHandleByName("Decide.mp3");
 
+	playerDesicion_ = AudioManager::GetInstance().GetHandleByName("SelectWalk.mp3");
+	// 移動
+	playerMove_ = AudioManager::GetInstance().GetHandleByName("SelectTranstate.mp3");
+
 	SelectStageNum::num_ = 1;
 
 	// UIカメラを設定
@@ -305,6 +309,10 @@ void SelectScene::InGameScene() {
 					selectDir_ = -1.0f;
 					startRotY_ = playerObject_->transform_.rotate.y;
 					endRotY_ = -std::numbers::pi_v<float> / 2;
+
+					if (!AudioManager::GetInstance().IsPlay(playerMove_)) {
+						AudioManager::GetInstance().Play(playerMove_, 0.5f, false);
+					}
 				}
 			}
 		}
@@ -322,6 +330,11 @@ void SelectScene::InGameScene() {
 					selectDir_ = 1.0f;
 					startRotY_ = playerObject_->transform_.rotate.y;
 					endRotY_ = std::numbers::pi_v<float> / 2;
+
+
+					if (!AudioManager::GetInstance().IsPlay(playerMove_)) {
+						AudioManager::GetInstance().Play(playerMove_, 0.5f, false);
+					}
 				}
 			}
 		}
@@ -334,6 +347,10 @@ void SelectScene::InGameScene() {
 			// 決定音を鳴らす
 			if (!AudioManager::GetInstance().IsPlay(decideSH_)) {
 				AudioManager::GetInstance().Play(decideSH_, 0.5f, false);
+			}
+
+			if (!AudioManager::GetInstance().IsPlay(playerDesicion_)) {
+				AudioManager::GetInstance().Play(playerDesicion_, 0.5f, false);
 			}
 
 			commonData_->nextStageIndex = selectStageNum_ - 1;
