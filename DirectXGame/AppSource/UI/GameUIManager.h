@@ -59,6 +59,8 @@ private:
 	// 収集演出
 	std::unique_ptr<CollectEffectUI> collectEffectUI_;
 
+	float alertTImer_ = 0.0f;
+
 private:
 
 	/// <summary>
