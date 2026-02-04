@@ -442,7 +442,7 @@ void GameScene::Initialize() {
 	// 最初に一度だけ更新処理を呼ぶ
 	InGameScene();
 
-	OreItemStorageNum::currentOreItemNum_ = 1000000;
+	//OreItemStorageNum::currentOreItemNum_ = 1000000;
 }
 
 void GameScene::InitializeOtherScene() {
