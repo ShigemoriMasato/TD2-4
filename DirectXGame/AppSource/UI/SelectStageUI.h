@@ -5,7 +5,7 @@
 class SelectStageUI {
 public:
 
-	void Init(DrawData drawData, const std::string& fontName,DrawData fontDrawData, FontLoader* fontLoader);
+	void Init(DrawData drawData, const std::string& fontName,DrawData fontDrawData, FontLoader* fontLoader,int tex);
 
 	void Update();
 

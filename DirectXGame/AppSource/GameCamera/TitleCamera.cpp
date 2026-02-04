@@ -18,7 +18,7 @@ void TitleCamera::Update() {
 	// 移動
 	//position_.y = lerp(30.0f, 20.0f, timer_, EaseType::EaseInOutCubic);
 	// 回転
-	rotation_.x = lerp(1.0f, -0.32f, timer_, EaseType::EaseInOutCubic);
+	//rotation_.x = lerp(1.0f, -0.32f, timer_, EaseType::EaseInOutCubic);
 
 	if (timer_ >= 1.0f) {
 		isAnimation_ = false;

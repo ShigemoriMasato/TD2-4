@@ -67,9 +67,11 @@ void SelectScene::Initialize() {
 
 	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
 
+	int selcIndex = textureManager_->GetTexture("SelectBG.png");
+
 	// ステージのロゴ表示機能
 	selectStageUI_ = std::make_unique<SelectStageUI>();
-	selectStageUI_->Init(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), fontName, drawData, fontLoader_);
+	selectStageUI_->Init(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), fontName, drawData, fontLoader_, selcIndex);
 
 	// プレイヤーモデルを取得
 	int stageModelID = modelManager_->LoadModel(playerModelName);
@@ -392,7 +394,7 @@ void SelectScene::TitleScene() {
 	}
 
 	// カメラの更新処理
-	//titleCamera_->Update();
+	titleCamera_->Update();
 
 	if (!isStartTitle_) { return; }
 
@@ -478,9 +480,9 @@ void SelectScene::Draw() {
 	gameWindow_->DrawDisplayWithImGui();
 	paramManager_->Draw();
 
-	selectCamera_->DrawImGui();
+	//selectCamera_->DrawImGui();
 
-	//titleCamera_->DebugDraw();
+	titleCamera_->DebugDraw();
 
 #ifdef USE_IMGUI
 	ImGui::Begin("Titel");
