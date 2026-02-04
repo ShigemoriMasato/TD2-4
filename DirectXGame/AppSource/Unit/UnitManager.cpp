@@ -271,6 +271,7 @@ void UnitManager::AddOreUnit(const Vector3& targetPos, OreItem* oreItem,uint32_t
 		}
 		// 初期化
 		unit->second->Init(homePos, targetPos, oreItem, groupId);
+
 	} else {
 		// 新しく登録
 		std::unique_ptr<OreUnit> oreUnit = std::make_unique<OreUnit>(mapChipField_, oreDrawData_, oreTexIndex_, playerUnit_->GetPos(), unitMarkUIManager_, unitEffectManager_, dagageParam_);

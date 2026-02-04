@@ -90,6 +90,10 @@ void OreUnit::Init(const Vector3& apearPos, const Vector3& targetPos, OreItem* o
 	// 取得する鉱石
 	oreItem_ = oreItem;
 
+	if (oreItem_) {
+		oreItem_->RegisterUnit(this);
+	}
+
 	// 初期位置を設定
 	object_->transform_.position = apearPos;
 	object_->transform_.scale = { 0.5f,0.5f,0.5f };
@@ -247,7 +251,9 @@ void OreUnit::Update() {
 				// 登録されている労働者を減らす
 				if (oreItem_) {
 					oreItem_->RemoveWorker();
-				}	
+					oreItem_->UnregisterUnit(this); // 登録解除
+					oreItem_ = nullptr;
+				}
 			}
 			isDead_ = true;
 		}
@@ -497,6 +503,11 @@ void OreUnit::ReturnUpdate() {
 		if (timer_ >= 1.0f) {
 			timer_ = 0.0f;
 			isActive_ = false;
+
+			if (oreItem_) {
+				oreItem_->UnregisterUnit(this); // 登録解除
+				oreItem_ = nullptr;
+			}
 		}
 		break;
 	}
