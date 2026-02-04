@@ -140,7 +140,7 @@ void MiniMap::PostDraw(Window* window, const Matrix4x4& vpMatrix, Vector3 player
 void MiniMap::Draw(Window* window) {
 
 	Vector3 scale = { 0.5f, 0.5f, 1.0f };
-	Vector3 pos = { 0.5f, -0.5f, 0.0f };
+	Vector3 pos = { 0.75f, -0.75f, 0.0f };
 	if (pleasePose_) {
 		scale = {2.0f, 2.0f, 1.0f};
 		pos = { 0.0f, 0.0f, 0.0f };

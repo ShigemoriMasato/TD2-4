@@ -120,7 +120,7 @@ void InitializeScene::CreateDisplay() {
 	{
 		auto& minidisp = commonData_->miniMapDisplay;
 		minidisp = std::make_unique<DualDisplay>("MiniMapDisplay");
-		uint32_t clearColor = 0x00ff00ff;
+		uint32_t clearColor = 0x000000ff;
 		int textureIndex = textureManager_->CreateWindowTexture(256, 256, clearColor);
 		int textureIndex2 = textureManager_->CreateWindowTexture(256, 256, clearColor);
 		auto textureData = textureManager_->GetTextureData(textureIndex);
