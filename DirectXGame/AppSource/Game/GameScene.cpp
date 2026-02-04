@@ -230,6 +230,7 @@ void GameScene::Initialize() {
 
 	// マップシステムを取得
 	oreItemManager_->SetMapChipField(mapChipField_.get());
+	oreItemManager_->SetDirtParticleEmit();
 
 	//鉱床の配置
 	PutGold();

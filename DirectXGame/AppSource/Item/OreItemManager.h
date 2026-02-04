@@ -11,6 +11,7 @@
 #include"Unit/MapChipField.h"
 #include"Effect/OreFragmentParticle.h"
 #include"Effect/OreBreakParticle.h"
+#include"Effect/DirtMoveParticle.h"
 
 class OreItemManager {
 public:
@@ -57,6 +58,9 @@ public:
 		MapChipField_ = MapChipField;
 	}
 
+	// 泥沼のパーティクルを設定
+	void SetDirtParticleEmit();
+
 private:
 
 	// マップの解釈昨日
@@ -90,7 +94,19 @@ private:
 	// 鉱石の破壊表現
 	std::unique_ptr<OreBreakParticle> oreBreakParticle_;
 
+	// 泥のパーティクル
+	std::unique_ptr<DirtMoveParticle> dirtMoveParticle_;
+
 	bool isLargeScale_ = false;
+
+	struct DirtData {
+		Vector3 pos;
+		float timer_ = 0.0f;
+		float maxTime_ = 1.0f;
+	};
+
+	// 泥の位置リスト
+	std::vector<DirtData> dirtDataList_;
 
 private: // フォント機能
 

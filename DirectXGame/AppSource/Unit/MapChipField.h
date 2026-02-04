@@ -65,6 +65,9 @@ public: // マップの情報
 	// ユニットの出現位置を取得
 	std::vector<Vector3> GetHomePosList() { return homePosList_; }
 
+	// 泥沼の位置を取得
+	std::vector<Vector3> GetDirtPosList();
+
 	/// <summary>
 	/// 指定されたマップチップデータの種類を返す
 	/// </summary>
