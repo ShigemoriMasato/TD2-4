@@ -68,6 +68,7 @@ private: // 調整項目
 
 	// アニメーション
 	float animeMaxHeight_ = 1.0f;
+	float animeMinHeight_ = 1.0f;
 	float maxWidth_ = 1.2f;
 	float minWidth_ = 0.8f;
 	float maxHeight_ = 1.2f;

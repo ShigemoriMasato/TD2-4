@@ -1,7 +1,8 @@
 #include "NewMapManager.h"
 
-void NewMapManager::Initialize(ModelManager* modelManager) {
+void NewMapManager::Initialize(ModelManager* modelManager, TextureManager* textureManager) {
 	modelManager_ = modelManager;
+	textureManager_ = textureManager;
 	LoadTexturePaths();
 	LoadMapData();
 	LoadModelList();
@@ -107,7 +108,7 @@ void NewMapManager::LoadTexturePaths() {
 	while (index < values.size()) {
 		int textureID = BinaryManager::Reverse<int>(values[index++].get());
 		std::string texturePath = BinaryManager::Reverse<std::string>(values[index++].get());
-		textureMap_[textureID] = texturePath;
+		textureMap_[textureID] = textureManager_->LoadTexture("MapChip/" + texturePath);
 	}
 }
 
@@ -154,7 +155,7 @@ void NewMapManager::LoadMapData() {
 			for (int x = 0; x < width; ++x) {
 				int textureID = BinaryManager::Reverse<int>(textureValues[textureIndex++].get());
 				int directionInt = BinaryManager::Reverse<int>(textureValues[textureIndex++].get());
-				newMap.renderData[y][x] = { textureID, static_cast<Direction>(directionInt) };
+				newMap.renderData[y][x] = { textureMap_[textureID], static_cast<Direction>(directionInt)};
 			}
 		}
 

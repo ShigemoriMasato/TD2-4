@@ -160,6 +160,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\Item\Effect\OreBreakParticle.cpp" />
     <ClCompile Include="AppSource\UI\Effect\ConfettiEffectUI.cpp" />
     <ClCompile Include="AppSource\GameOver\GameOverTask.cpp" />
+    <ClCompile Include="AppSource\UI\Effect\ConfettiEffectUI.cpp" />
     <ClCompile Include="Engine\Assets\Audio\AudioManager.cpp" />
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
     <ClCompile Include="AppSource\Common\DebugParam\GameParamEditor.cpp" />
@@ -262,17 +263,11 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\Item\Effect\OreBreakParticle.h" />
     <ClInclude Include="AppSource\UI\Effect\ConfettiEffectUI.h" />
     <ClInclude Include="AppSource\GameOver\GameOverTask.h" />
+    <ClInclude Include="AppSource\UI\Effect\ConfettiEffectUI.h" />
     <ClInclude Include="Engine\Assets\Audio\AudioManager.h" />
-    <ClInclude Include="AppSource\GameCamera\DebugMousePos.h" />
     <ClInclude Include="AppSource\GameCamera\MarkResult.h" />
-    <ClInclude Include="AppSource\GameCamera\SelectCamera.h" />
     <ClInclude Include="AppSource\GameCamera\TitleCamera.h" />
-    <ClInclude Include="AppSource\GameCommon\DefaultObject.h" />
     <ClCompile Include="AppSource\UI\PauseUI.cpp" />
-    <ClInclude Include="AppSource\GameCamera\DebugMousePos.h" />
-    <ClInclude Include="AppSource\GameCamera\SelectCamera.h" />
-    <ClInclude Include="AppSource\GameCommon\DefaultObject.h" />
-    <ClInclude Include="AppSource\Game\MapData\Data\StageData.h" />
     <ClInclude Include="AppSource\Game\MiniMap\MiniMap.h" />
     <ClInclude Include="AppSource\Game\NewMap\NewMap.h" />
     <ClInclude Include="AppSource\Game\SelectScene.h" />
