@@ -4,6 +4,7 @@
 #include"TimeLimit.h"
 #include"FpsCount.h"
 #include"Utility/Easing.h"
+#include"Assets/Audio/AudioManager.h"
 
 void GameUIManager::Initialize(DrawData spriteData, int starTexture, int lineTexture, int oreIcon, int itemIcon,const std::string& fontName, DrawData fontData, FontLoader* fontLoader, int florNum) {
 	fontLoader_ = fontLoader;
@@ -70,6 +71,9 @@ void GameUIManager::Initialize(DrawData spriteData, int starTexture, int lineTex
 	collectEffectUI_ = std::make_unique<CollectEffectUI>();
 	collectEffectUI_->Initialize(spriteData, starTexture, lineTexture);
 
+	timeSH_ = AudioManager::GetInstance().GetHandleByName("TimeNews.mp3");
+
+
 #ifdef USE_IMGUI
 	RegisterDebugParam();
 #endif
@@ -115,6 +119,11 @@ void GameUIManager::Update(const int32_t& unitNum, const int32_t& maxUnitNum) {
 		// ノルマを達成せずに、30秒経過
 		if (TimeLimit::totalSeconds <= 30) {
 
+			if (!isPlaySH_) {
+				isPlaySH_ = true;
+				AudioManager::GetInstance().Play(timeSH_, 0.5f, false);
+			}
+		
 			alertTImer_ += FpsCount::deltaTime;
 
 			if (alertTImer_ <= 0.5f) {
