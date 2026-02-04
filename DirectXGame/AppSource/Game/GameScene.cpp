@@ -116,7 +116,7 @@ void GameScene::Initialize() {
 		currentMap_ = commonData_->newMapManager->GetEndlessMap(commonData_->stageCount, commonData_->prevMapIndex);
 
 		if (commonData_->stageCount == 0) {
-			commonData_->oreNum = currentMap_.initOreNum;
+			commonData_->oreNum = 20;
 		}
 
 		commonData_->stageCount++;
