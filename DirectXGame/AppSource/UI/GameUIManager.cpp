@@ -81,9 +81,6 @@ void GameUIManager::Update(const int32_t& unitNum, const int32_t& maxUnitNum) {
 	ApplyDebugParam();
 #endif
 
-	// ユニットの数を更新
-	unitCounterUI_->Update(unitNum, maxUnitNum);
-
 	// ユニットの残り数によって色を変更
 	if (unitNum <= 0) {
 		unitCounterUI_->fontObject_->fontColor_ = { 0.8f,0.0f,0.0f,1.0f };
@@ -92,6 +89,9 @@ void GameUIManager::Update(const int32_t& unitNum, const int32_t& maxUnitNum) {
 	} else {
 		unitCounterUI_->fontObject_->fontColor_ = { 1.0f,1.0f,1.0f,1.0f };
 	}
+
+	// ユニットの数を更新
+	unitCounterUI_->Update(unitNum, maxUnitNum);
 
 	// 鉱石の数を更新
 	oreItemUI_->Update(OreItemStorageNum::currentOreItemNum_, OreItemStorageNum::maxOreItemNum_);
@@ -169,6 +169,11 @@ void GameUIManager::Draw(Window* window, const Matrix4x4& vpMatrix, bool isDrawE
 
 	// 時間計測表示UI
 	timerUI_->Draw(window, vpMatrix);
+
+	ImGui::Begin("currentItem");
+	ImGui::DragInt("cur", &OreItemStorageNum::currentOreItemNum_);
+	ImGui::DragInt("CountCur", &oreItemUI_->currenyNum_);
+	ImGui::End();
 
 	if (isDrawEffect) {
 		// ノルマクリア演出を描画
@@ -249,5 +254,5 @@ void GameUIManager::ApplyDebugParam() {
 	oreIconSpriteObject_->Update();
 	itemIconSpriteObject_->Update();
 
-	oreItemUI_->Update(0,20);
+	//oreItemUI_->Update(0,20);
 }

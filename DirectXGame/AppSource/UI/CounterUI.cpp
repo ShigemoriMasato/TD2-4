@@ -25,10 +25,10 @@ void CounterUI::Initialize(const std::string& fontName, int32_t curNum, int32_t 
 
 void CounterUI::Update(int32_t curNum, int32_t maxNum) {
 
-	fontObject_->transform_.scale = size_;
+	//fontObject_->transform_.scale = size_;
 	isNumChanged_ = false;
 
-	if (curNum != currenyNum_ || maxNum != maxNum_) {
+	if ((curNum != currenyNum_) || (maxNum != maxNum_)) {
 
 		currenyNum_ = curNum;
 		maxNum_ = maxNum;
@@ -45,6 +45,8 @@ void CounterUI::Update(int32_t curNum, int32_t maxNum) {
 	// アニメーションの更新処理
 	if (isAnimation_) {
 		Animation();
+	} else {
+		fontObject_->transform_.scale = size_;
 	}
 
 	// 1つの文字サイズ
