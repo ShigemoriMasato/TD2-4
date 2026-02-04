@@ -10,15 +10,22 @@ void PauseUI::Initialize(DrawData drawData, uint32_t texture, KeyManager* keyMan
 
 	// 描画機能の初期化
 	bgSpriteObject_ = std::make_unique<SpriteObject>();
-	bgSpriteObject_->Initialize(drawData, { 1280.0f,720.0f });
+	bgSpriteObject_->Initialize(drawData, { 520.0f,720.0f });
 	bgSpriteObject_->transform_.position = { 640.0f,360.0f,0.0f };
 	bgSpriteObject_->color_ = { 0.0f,0.0f,0.0f,0.9f };
 	bgSpriteObject_->SetTexture(0);
 	bgSpriteObject_->Update();
 
+	fliterSpriteObject_ = std::make_unique<SpriteObject>();
+	fliterSpriteObject_->Initialize(drawData, { 1280.0f,720.0f });
+	fliterSpriteObject_->transform_.position = { 640.0f,360.0f,0.0f };
+	fliterSpriteObject_->color_ = { 0.0f,0.0f,0.0f,0.5f };
+	fliterSpriteObject_->SetTexture(0);
+	fliterSpriteObject_->Update();
+
 	// ポーズのロゴ描画用
 	logSprite_ = std::make_unique<SpriteObject>();
-	logSprite_->Initialize(drawData, { 256.0f,256.0f });
+	logSprite_->Initialize(drawData, { 420.0f,256.0f });
 	logSprite_->transform_.position = { -256.0f,160.0f,0.0f };
 	logSprite_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	logSprite_->SetTexture(log);
@@ -111,6 +118,8 @@ void PauseUI::Update() {
 void PauseUI::Draw(Window* window, const Matrix4x4& vpMatrix) {
 
 	if (isOpenPause_ || isAnimation_) {
+
+		fliterSpriteObject_->Draw(window, vpMatrix);
 		// 背景の描画
 		bgSpriteObject_->Draw(window, vpMatrix);
 
@@ -213,15 +222,17 @@ void PauseUI::StartAnimation() {
 
 	if (timer_ <= 0.1f) {
 		float localT = timer_ / 0.1f;
-		float alpha = lerp(0.0f, 0.9f, localT, EaseType::EaseOutBounce);
+		//float alpha = lerp(0.0f, 0.9f, localT, EaseType::EaseOutBounce);
 		// 透明度を出す
-		gameOverFontObject_->fontColor_.w = alpha;
+		//gameOverFontObject_->fontColor_.w = alpha;
+
+		bgSpriteObject_->transform_.position.x = lerp(-300.0f, 350.0f, localT, EaseType::EaseOutBounce);
 	}
 
 	// ロゴ
 	if (timer_ <= 0.5f) {
 		float localT = timer_ / 0.5f;
-		logSprite_->transform_.position.x = lerp(-256.0f, 360.0f, localT, EaseType::EaseInOutCubic);
+		logSprite_->transform_.position.x = lerp(-256.0f, 270.0f, localT, EaseType::EaseInOutCubic);
 	}
 
 	// 選択
@@ -244,7 +255,7 @@ void PauseUI::StartAnimation() {
 		float alpha = 1.0f;
 		gameOverFontObject_->fontColor_.w = alpha;
 
-		logSprite_->transform_.position.x = 360.0f;
+		logSprite_->transform_.position.x = 270.0f;
 		isAnimation_ = false;
 	}
 }
@@ -254,15 +265,17 @@ void PauseUI::EndAnimation() {
 
 	if (timer_ <= 0.1f) {
 		float localT = timer_ / 0.1f;
-		float alpha = lerp(0.9f, 0.0f, localT, EaseType::EaseOutBounce);
+		float alpha = lerp(0.0f, 0.9f, localT, EaseType::EaseOutBounce);
 		// 透明度を出す
 		gameOverFontObject_->fontColor_.w = alpha;
+
+		bgSpriteObject_->transform_.position.x = lerp(350.0f, -400.0f, localT, EaseType::EaseOutBounce);
 	}
 
 	// ロゴ
 	if (timer_ <= 0.5f) {
 		float localT = timer_ / 0.5f;
-		logSprite_->transform_.position.x = lerp(360.0f, -256.0f, localT, EaseType::EaseInOutCubic);
+		logSprite_->transform_.position.x = lerp(270.0f, -256.0f, localT, EaseType::EaseInOutCubic);
 	}
 
 	if (timer_ <= 1.0f && timer_ >= 0.1f) {
@@ -281,7 +294,7 @@ void PauseUI::EndAnimation() {
 	}
 
 	if (timer_ >= 1.0f) {
-		float alpha = 0.0f;
+		float alpha = 0.9f;
 		gameOverFontObject_->fontColor_.w = alpha;
 		isAnimation_ = false;
 	}
