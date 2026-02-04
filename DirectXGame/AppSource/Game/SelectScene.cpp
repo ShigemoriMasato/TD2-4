@@ -174,11 +174,15 @@ void SelectScene::Initialize() {
 	titleSprite_->SetTexture(titleLogIndex);
 	titleSprite_->Update();
 
+	// タイトルロゴ
+	int titlespaceIndex = textureManager_->GetTexture("ClickToStart.png");
+
 	// プレススペース
 	spaceSprite_ = std::make_unique<SpriteObject>();
-	spaceSprite_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), { 256.0f,64.0f });
+	spaceSprite_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), { 256.0f * 1.3f,64.0f * 1.3f });
 	spaceSprite_->transform_.position = { 640.0f,500.0f,0.0f };
 	spaceSprite_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+	spaceSprite_->SetTexture(titlespaceIndex);
 	spaceSprite_->Update();
 
 	// タイトルカメラ
@@ -249,7 +253,7 @@ std::unique_ptr<IScene> SelectScene::Update() {
 
 	// 演出が終わったので次のシーンに切り替える
 	if (fadeTransition_->IsFinished()) {
-
+		isSceneChange_ = true;
 	}
 
 	if (fadeTransition_->IsAnimation()) {
@@ -272,7 +276,7 @@ std::unique_ptr<IScene> SelectScene::Update() {
 	}
 
 	// シーンを切り替える
-	if (isSceneChange_ && !fadeTransition_->IsAnimation()) {
+	if (isSceneChange_ && fadeTransition_->IsFinished()) {
 		return std::make_unique<GameScene>();
 	}
 	
@@ -325,7 +329,7 @@ void SelectScene::InGameScene() {
 		SelectStageNum::num_ = selectStageNum_;
 
 		// 決定
-		if (key[Key::Decision]) {
+		if (key[Key::Decision] || ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80))) {
 
 			// 決定音を鳴らす
 			if (!AudioManager::GetInstance().IsPlay(decideSH_)) {
@@ -367,7 +371,7 @@ void SelectScene::InGameScene() {
 		playerObject_->transform_.position.z = lerp(-0.5f, 8.0f, inPlayerTimer_, EaseType::EaseInOutCubic);
 
 		if (inPlayerTimer_ >= 1.0f) {
-			isSceneChange_ = true;
+			fadeTransition_->SetFade(FadeTransition::Phase::Out);
 		}
 	} else {
 		if (isPlayerAnimation_) {
@@ -426,7 +430,7 @@ void SelectScene::TitleScene() {
 	// キーの状態を取得
 	auto key = commonData_->keyManager->GetKeyStates();
 
-	if (key[Key::Decision]) {
+	if (key[Key::Decision] || ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80))) {
 		isStartTitle_ = true;
 
 		// 決定音を鳴らす

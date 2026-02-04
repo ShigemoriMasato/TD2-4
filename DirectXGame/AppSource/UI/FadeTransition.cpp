@@ -38,16 +38,21 @@ void FadeTransition::Update() {
 		if (timer_ >= 1.0f) {
 			bgSpriteObject_->color_.w = 1.0f;
 			timer_ = 0.0f;
+			isAnimation_ = false;
 			isFinished_ = true;
 		}
 		break;
+	}
+
+	if (isFinished_) {
+		bgSpriteObject_->color_.w = 1.0f;
 	}
 
 	bgSpriteObject_->Update();
 }
 
 void FadeTransition::Draw(Window* window, const Matrix4x4& vpMatrix) {
-	if (!isAnimation_) { return; }
+	//if (!isAnimation_) { return; }
 	// 背景の描画
 	bgSpriteObject_->Draw(window, vpMatrix);
 }
