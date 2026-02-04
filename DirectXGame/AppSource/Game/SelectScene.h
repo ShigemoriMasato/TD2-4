@@ -139,6 +139,26 @@ private:
 	// 決定音
 	uint32_t decideSH_ = 0;
 
+	//========================================================
+	// ユニットの演出
+	//========================================================
+
+	// 演出用のユニットデータ
+	struct UnitEffectData {
+		std::unique_ptr<DefaultObject> unitObject;
+		std::unique_ptr<DefaultObject> itemObject;
+		float timer_ = 0.0f;
+
+		float animationTimer_ = 0.0f;
+
+		bool isActive_ = false;
+	};
+
+	// ユニットデータ
+	std::vector<UnitEffectData> unitEffectDatas_;
+
+	float coolTimer_ = 0.0f;
+	float coolTime_ = 1.0f;
 
 private:
 
@@ -147,4 +167,7 @@ private:
 
 	// タイトルシーン
 	void TitleScene();
+
+	// ユニットの更新処理
+	void unitUpdate();
 };

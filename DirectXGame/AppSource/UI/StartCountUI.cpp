@@ -5,7 +5,7 @@
 #include"TimeLimit.h"
 #include<numbers>
 
-void StartCountUI::Initialize(const std::string& fontName, DrawData drawData, FontLoader* fontLoader, int florNum) {
+void StartCountUI::Initialize(const std::string& fontName, DrawData drawData, FontLoader* fontLoader, int florNum, const std::string& fontName1) {
 
 	fontLoader_ = fontLoader;
 
@@ -16,7 +16,7 @@ void StartCountUI::Initialize(const std::string& fontName, DrawData drawData, Fo
 
 	// スタート時フォント
 	startFontObject_ = std::make_unique<FontObject>();
-	startFontObject_->Initialize(fontName, L"Ready", drawData, fontLoader);
+	startFontObject_->Initialize(fontName1, L"Ready", drawData, fontLoader);
 	startFontObject_->fontColor_ = { 0.0f,1.0f,0.4980f,1.0f };
 
 	// 最後にカウントする数
