@@ -431,6 +431,9 @@ FodyWeavers.xsd
 # 以下オリジナル
 # 出力ファイル
 [Gg]enerated/
+*/[Dd]umps/
+*.dmp
+*/[Ll]ogs
 # ImGuiの生成ファイル
 *.ini
 # 自分のプロジェクトのフィルター(ビルド時に成型するため)

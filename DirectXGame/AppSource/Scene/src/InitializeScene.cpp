@@ -105,7 +105,7 @@ void InitializeScene::CreateDisplay() {
 		auto& display = commonData_->display;
 		display = std::make_unique<DualDisplay>("MainDisplay");
 
-		uint32_t clearColor = 0x000105ff;
+		uint32_t clearColor = 0x000000ff;
 
 		int textureIndex = textureManager_->CreateWindowTexture(1280, 720, clearColor);
 		int textureIndex2 = textureManager_->CreateWindowTexture(1280, 720, clearColor);
