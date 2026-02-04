@@ -61,6 +61,9 @@ void GameScene::Initialize() {
 	//パラメーター管理の初期化
 	paramManager_ = std::make_unique<ParamManager>();
 
+	//lightの初期化
+	LightManager::GetInstance()->Initialize();
+
 	//　当たり判定管理クラスを初期化
 	colliderManager_ = std::make_unique<ColliderManager>();
 	// 当たり判定管理クラスを登録
