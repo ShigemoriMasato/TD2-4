@@ -35,6 +35,8 @@ public:
 
 		if (!isLineAnimation_) {
 			isLineAnimation_ = true;
+
+			Audio();
 		}
 	}
 
@@ -65,6 +67,9 @@ private: // パーティクル
 	float animeCoolTimer_ = 0.0f;
 	float animeCoolTime_ = 1.5f;
 
+
+	uint32_t sh_ = 0;
+
 private: // スプライト
 
 	// 背景画像
@@ -83,4 +88,6 @@ private:
 	void Move();
 
 	void LineAnimatoin();
+
+	void Audio();
 };
