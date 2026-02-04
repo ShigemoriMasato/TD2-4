@@ -368,26 +368,27 @@ void SelectScene::InGameScene() {
 
 		// 決定
 		if (key[Key::Decision] || ((Input::GetMouseButtonState()[0] & 0x80) && !(Input::GetPreMouseButtonState()[0] & 0x80))) {
+			if (!selectStageUI_->IsAnimation() && !isPlayerAnimation_) {
+				// 決定音を鳴らす
+				if (!AudioManager::GetInstance().IsPlay(decideSH_)) {
+					AudioManager::GetInstance().Play(decideSH_, 0.5f, false);
+				}
 
-			// 決定音を鳴らす
-			if (!AudioManager::GetInstance().IsPlay(decideSH_)) {
-				AudioManager::GetInstance().Play(decideSH_, 0.5f, false);
-			}
+				if (!AudioManager::GetInstance().IsPlay(playerDesicion_)) {
+					AudioManager::GetInstance().Play(playerDesicion_, 0.5f, false);
+				}
 
-			if (!AudioManager::GetInstance().IsPlay(playerDesicion_)) {
-				AudioManager::GetInstance().Play(playerDesicion_, 0.5f, false);
-			}
+				commonData_->nextStageIndex = selectStageNum_ - 1;
+				commonData_->nextMapIndex = 0;
+				commonData_->stageCount = 0;
+				isInPlayerAnimation_ = true;
+				inPlayerStartRotY_ = playerObject_->transform_.rotate.y;
 
-			commonData_->nextStageIndex = selectStageNum_ - 1;
-			commonData_->nextMapIndex = 0;
-			commonData_->stageCount = 0;
-			isInPlayerAnimation_ = true;
-			inPlayerStartRotY_ = playerObject_->transform_.rotate.y;
-
-			//EndlessModeのセット
-			if (selectStageNum_ == 3) {
-				commonData_->isEndlessMode = true;
-				commonData_->goldNum = 0;
+				//EndlessModeのセット
+				if (selectStageNum_ == 3) {
+					commonData_->isEndlessMode = true;
+					commonData_->goldNum = 0;
+				}
 			}
 		}
 	}

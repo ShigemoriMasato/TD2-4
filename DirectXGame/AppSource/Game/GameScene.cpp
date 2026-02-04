@@ -286,8 +286,8 @@ void GameScene::Initialize() {
 
 	// ステージの番号を取得する
 	int32_t sn = -1;
-	if (commonData_->nextStageIndex >= 3) {
-		sn = commonData_->nextMapIndex;
+	if (commonData_->nextStageIndex >= 2) {
+		sn = commonData_->stageCount-1;
 	}
 
 	// ユニットの管理クラス
