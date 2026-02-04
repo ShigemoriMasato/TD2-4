@@ -119,7 +119,6 @@ void GameScene::Initialize() {
 			commonData_->oreNum = 20;
 		}
 
-		commonData_->stageCount++;
 	} else {
 		currentMap_ = commonData_->newMapManager->GetStageMap(commonData_->nextStageIndex, commonData_->nextMapIndex);
 
@@ -139,6 +138,7 @@ void GameScene::Initialize() {
 		}
 	}
 	commonData_->prevMapIndex = currentMap_.currentMapID;
+	commonData_->stageCount++;
 
 	commonData_->norma = currentMap_.norma;
 

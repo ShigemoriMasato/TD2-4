@@ -25,6 +25,7 @@ void Card::Initialize(const std::string& fontName, const DrawData& drawData, Fon
 	cardBack_->SetUseTexture(true);
 	cardBack_->psoConfig_.vs = "Simple.VS.hlsl";
 	cardBack_->psoConfig_.ps = "PostEffect/Simple.PS.hlsl";
+	cardBack_->psoConfig_.depthStencilID = DepthStencilID::Transparent;
 	cbTextureIndex_ = textureManager->LoadTexture("ScoreCard.png");
 	// フロア数の初期化
 	floorNum_ = std::make_unique<FontObject>();

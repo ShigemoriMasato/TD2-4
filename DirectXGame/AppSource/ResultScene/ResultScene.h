@@ -23,7 +23,7 @@ private:
 
 	void CameraUpdate(float deltaTime);
 
-	bool reusltFirstFinished_ = false;
+	bool resultFirstFinished_ = false;
 
 	std::unique_ptr<Camera> camera_;
 	Vector3 cameraPos_ = { -740.0f, 0.0f, 0.0f };
@@ -35,7 +35,7 @@ private:
 
 	std::unique_ptr<PostEffect> bgpe_ = nullptr;
 	PostEffectConfig bgConfig{};
-	Blur blur_{};
+	HeavyBlur blur_{};
 	std::unique_ptr<PostEffect> pe_ = nullptr;
 	PostEffectConfig config{};
 	Fade fade_{};

@@ -40,7 +40,7 @@ void ResultScene::Initialize() {
 
 	bgpe_ = std::make_unique<PostEffect>();
 	bgpe_->Initialize(textureManager_, drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex));
-	bgConfig.jobs_ = uint32_t(PostEffectJob::Blur);
+	bgConfig.jobs_ = uint32_t(PostEffectJob::HeavyBlur);
 	bgConfig.origin = commonData_->miniMapDisplay.get();
 	bgConfig.window = commonData_->mainWindow->GetWindow();
 	bgConfig.output = commonData_->display.get();
@@ -63,6 +63,20 @@ void ResultScene::Initialize() {
 	staticObjectRender_ = std::make_unique<StaticObjectRender>();
 	staticObjectRender_->Initialize(modelManager_, drawDataManager_, false);
 	staticObjectRender_->SetObjects(prevMap_.decorations);
+
+	miniMap_ = std::make_unique<MiniMap>();
+	miniMap_->Initialize(
+		static_cast<int>(prevMap_.mapChipData.size()),
+		static_cast<int>(prevMap_.mapChipData[0].size()),
+		commonData_->miniMapDisplay.get(),
+		drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex),
+		drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(modelManager_->LoadModel("VisionFrame")).drawDataIndex),
+		textureManager_);
+
+	blur_.kernelSize = 5.0f;
+	blur_.intensity = 1.0f;
+
+	miniMap_->Update(true);
 }
 
 std::unique_ptr<IScene> ResultScene::Update() {
@@ -71,8 +85,9 @@ std::unique_ptr<IScene> ResultScene::Update() {
 	commonData_->keyManager->Update();
 	auto key = commonData_->keyManager->GetKeyStates();
 
+
 	//最初のリザルトが終わったらプレイヤーが切り替えられるようにする
-	if (reusltFirstFinished_) {
+	if (resultFirstFinished_) {
 		if (key[Key::LeftTri]) {
 			state = ResultState::Result;
 		}
@@ -84,14 +99,14 @@ std::unique_ptr<IScene> ResultScene::Update() {
 
 	CameraUpdate(deltaTime);
 
-	if (cardManager_->Update(deltaTime) && !reusltFirstFinished_) {
+	if (cardManager_->Update(deltaTime) && !resultFirstFinished_) {
 		state = ResultState::Total;
-		reusltFirstFinished_ = true;
+		resultFirstFinished_ = true;
 	}
 
 	totalManager_->Update(deltaTime);
 
-	if(reusltFirstFinished_ && key[Key::Correct]) {
+	if(resultFirstFinished_ && key[Key::Correct]) {
 		fadeOut_ = true;
 	}
 
@@ -116,10 +131,14 @@ void ResultScene::Draw() {
 	auto display = commonData_->display.get();
 
 	if (!MapInit_) {
-
+		MapInit_ = true;
+		Matrix4x4 vpMat = miniMap_->PreDraw(window)->GetVPMatrix();
+		mapRender_->Draw(vpMat, window);
+		staticObjectRender_->Draw(vpMat, window);
+		miniMap_->PostDraw(window, {}, {}, 0.0f);
 	}
 
-	bgpe_->CopyBuffer(PostEffectJob::Blur, blur_);
+	bgpe_->CopyBuffer(PostEffectJob::HeavyBlur, blur_);
 	bgpe_->Draw(bgConfig);
 
 	display->PreDraw(window->GetCommandObject(), false);

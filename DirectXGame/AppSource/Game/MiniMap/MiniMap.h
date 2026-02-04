@@ -12,7 +12,7 @@ class MiniMap {
 public:
 
 	void Initialize(int mapWidth, int mapHeight, DualDisplay* disp, const DrawData& plane, const DrawData& visionFrame, TextureManager* textureManager);
-	void Update();
+	void Update(bool debug = false);
 	Camera* PreDraw(Window* window);
 	void PostDraw(Window* window, const Matrix4x4& vpMatrix, Vector3 playerPosition, float range);
 	void Draw(Window* window);

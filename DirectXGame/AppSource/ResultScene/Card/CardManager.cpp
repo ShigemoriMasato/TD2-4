@@ -56,6 +56,7 @@ void CardManager::Draw(Window* window, const Matrix4x4 vpMat) {
 	if (cards_.empty()) return;
 	for(const auto& card : cards_)
 		card->Draw(window, vpMat);
+	cards_[0]->DrawImGui();
 }
 
 void CardManager::AddCard(int score, int norma) {

@@ -170,7 +170,6 @@ void OreAddScene::Draw() {
 	postEffectConfig_.output = commonData_->mainWindow->GetDualDisplay();
 #endif
 	postEffect_->CopyBuffer(PostEffectJob::Fade, fade_);
-	postEffect_->CopyBuffer(PostEffectJob::Blur, blur_);
 	postEffect_->Draw(postEffectConfig_);
 
 	//もしSwapChainに直接書き込むならココ
