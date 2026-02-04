@@ -344,7 +344,7 @@ void OreUnit::OnCollision(Collider* other) {
 			float dot = MyMath::dot(oreUnit->GetDir(),dir_);
 
 			// 衝突
-			if (dot < -0.9f) {
+			if (dot < -0.95f) {
 				// 衝突処理
 				if (!isConflict_) {
 					isConflict_ = true;
