@@ -16,8 +16,8 @@ void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData,
 		dagageParam_ = mapNum / 2;
 
 		// 上限設定
-		if (dagageParam_ >= 6) {
-			dagageParam_ = 6;
+		if (dagageParam_ >= 4) {
+			dagageParam_ = 4;
 		}
 	} else {
 		dagageParam_ = -1;

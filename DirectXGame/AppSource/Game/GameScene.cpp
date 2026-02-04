@@ -359,7 +359,7 @@ void GameScene::Initialize() {
 	gameUIManager_ = std::make_unique<GameUIManager>();
 	gameUIManager_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), starTextureIndex, lineTextureIndex, oreiTextureIndex, oreItemTextureIndex,
 		fontName, drawData, fontLoader_,
-		commonData_->nextMapIndex);
+		commonData_->stageCount);
 
 	// spriteモデルを取得(アンカーポイントが違うスプライト)
 	int uModelID = modelManager_->LoadModel(unitHpModelName);

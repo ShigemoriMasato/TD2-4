@@ -40,9 +40,8 @@ void InitializeScene::Initialize() {
 	// テクスチャを全てロード
 	textureManager_->LoadAllTextures();
 
-	commonData_->nextStageIndex = 1;
+	//commonData_->nextStageIndex = commonData_->stageCount;
 	commonData_->nextMapIndex = 0;
-	commonData_->prevMapIndex = 2;
 
 	LightManager::GetInstance()->Load();
   
@@ -58,9 +57,8 @@ void InitializeScene::Initialize() {
 std::unique_ptr<IScene> InitializeScene::Update(){
 	//return std::make_unique<OreAddScene>();
 	//return std::make_unique<ModelEditScene>();
-	//return std::make_unique<ResultScene>();
-	//return std::make_unique<SelectScene>();
-	return std::make_unique<GameScene>();
+	return std::make_unique<SelectScene>();
+	//return std::make_unique<GameScene>();
 }
 
 void InitializeScene::Draw() {

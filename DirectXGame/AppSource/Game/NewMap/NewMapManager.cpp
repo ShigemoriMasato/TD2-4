@@ -60,6 +60,26 @@ CurrentStageConfig NewMapManager::GetEndlessMap(int stageCount, int prevMap) {
 		}
 	}
 
+	std::vector<int> ignores = { 1, 2 };
+
+	for (int i = 0; i < (int)maps.size(); ++i) {
+		bool erase = false;
+		for (const int ignore : ignores) {
+			if (maps[i] == ignore) {
+				erase = true;
+				break;
+			}
+		}
+
+		if (newMapData_[maps[i]].mapChipData.empty() || newMapData_[maps[i]].endlessPriority == 4) {
+			erase = true;
+		}
+
+		if (erase) {
+			maps.erase(maps.begin() + i);
+		}
+	}
+
 	int factID = rand() % int(maps.size());
 	CurrentStageConfig config;
 
