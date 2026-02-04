@@ -99,7 +99,7 @@ void OreItemManager::Update(bool isOpenMap) {
 		} else {
 			fontList_[it->first].hpSprite->transform_.scale.x = 2.0f * p;
 			fontList_[it->first].font->transform_.scale = Vector3(0.01f, -0.01f, 1.0f);
-			fontList_[it->first].font->transform_.position = fontList_[it->first].fontPos;
+			fontList_[it->first].font->transform_.position = fontList_[it->first].fontPos + Vector3(0.0f, 0.1f, -0.1f);
 		}
 
 		float posZ = 0.0f;

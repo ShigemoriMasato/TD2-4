@@ -77,6 +77,7 @@ void FontObject::Draw(Window* window, const Matrix4x4& vpMatrix) {
 	renderObject_->CopyBufferData(1, charPositions_.data(), sizeof(CharPosition) * charPositions_.size());
 	renderObject_->CopyBufferData(2, &textureIndex_, sizeof(int));
 	renderObject_->CopyBufferData(3, &fontColor_, sizeof(Vector4));
+	renderObject_->psoConfig_.depthStencilID = DepthStencilID::Transparent;
 
 	// インスタンス数を設定
 	renderObject_->instanceNum_ = static_cast<uint32_t>(charPositions_.size());
