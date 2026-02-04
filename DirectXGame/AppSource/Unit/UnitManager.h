@@ -180,6 +180,11 @@ private:
 
 	int32_t dagageParam_ = 0;
 
+	/// 変える音
+
+	// 帰る音
+	uint32_t oreRetrunSH_ = 0;
+
 private: // 調整項目
 
 	// 出現させるユニットの数

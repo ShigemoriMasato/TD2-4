@@ -3,6 +3,7 @@
 #include <Common/DebugParam/GameParamEditor.h>
 
 #include"Item/Object/OreItem.h"
+#include"Assets/Audio/AudioManager.h"
 
 #ifdef USE_IMGUI
 #include <imgui/imgui.h>
@@ -42,6 +43,8 @@ void UnitManager::Initalize(MapChipField* mapChipField, DrawData playerDrawData,
 
 	// おれのメモリを確保
 	oreUnits_.reserve(maxOreCount_);
+
+	oreRetrunSH_ = AudioManager::GetInstance().GetHandleByName("OreRetrun.mp3");
 
 	// ミニマップのユニットのアイコン描画
 	unitIconObjects_.resize(100);
@@ -120,6 +123,9 @@ void UnitManager::Update() {
 				// 再利用リストに追加
 				freeIndices_.push_back(id);
 				activeCount_--;
+
+				AudioManager::GetInstance().Play(oreRetrunSH_, 0.5f, false);
+
 			} else if (unit->IsDead()) {
 
 				// 死亡ログを出す
