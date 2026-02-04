@@ -27,6 +27,9 @@ public:
 
 	// 現在の数を描画するオブジェクト
 	std::unique_ptr<FontObject> fontObject_;
+
+	int32_t currenyNum_ = 0;
+
 private:
 
 	// 最大数
@@ -35,7 +38,7 @@ private:
 	// フォントロード
 	FontLoader* fontLoader_ = nullptr;
 
-	int32_t currenyNum_ = 0;
+	
 	int32_t maxNum_ = 0;
 
 	float timer_ = 0.0f;
