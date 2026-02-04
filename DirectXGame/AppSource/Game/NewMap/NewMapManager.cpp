@@ -106,7 +106,7 @@ CurrentStageConfig NewMapManager::GetEndlessMap(int stageCount, int prevMap) {
 	float midPoint = 7.0f;   // 加速の中心を4と10の間に
 	float steepness = 0.5f;  // 急な上昇
 	float t = 1.0f / (1.0f + std::exp(-steepness * (stageCount - midPoint)));
-	config.norma = int(minNorma + (maxNorma - minNorma) * t * 0.6f);  // 20で約50になるよう調整
+	config.norma = int(minNorma + (maxNorma - minNorma) * t * 0.6f) + 4;  // 20で約50になるよう調整
 	config.initOreNum = 10;
 	config.currentMapID = maps[factID];
 	int dir = (rand() % 2) * 2;
