@@ -55,7 +55,7 @@ void InitializeScene::Initialize() {
 }
 
 std::unique_ptr<IScene> InitializeScene::Update(){
-	//return std::make_unique<OreAddScene>();
+	return std::make_unique<OreAddScene>();
 	//return std::make_unique<ModelEditScene>();
 	return std::make_unique<SelectScene>();
 	//return std::make_unique<GameScene>();
@@ -120,7 +120,7 @@ void InitializeScene::CreateDisplay() {
 	{
 		auto& minidisp = commonData_->miniMapDisplay;
 		minidisp = std::make_unique<DualDisplay>("MiniMapDisplay");
-		uint32_t clearColor = 0x000105ff;
+		uint32_t clearColor = 0x00ff00ff;
 		int textureIndex = textureManager_->CreateWindowTexture(256, 256, clearColor);
 		int textureIndex2 = textureManager_->CreateWindowTexture(256, 256, clearColor);
 		auto textureData = textureManager_->GetTextureData(textureIndex);

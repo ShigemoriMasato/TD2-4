@@ -32,7 +32,7 @@ StructuredBuffer<StringUV> gUVs : register(t0);
 VSOutput main(VSInput input, uint instanceId : SV_InstanceID, uint vertexID : SV_VertexID)
 {
     VSOutput output;
-    const int gAtlasSize = 2048; // アトラスサイズ
+    const int gAtlasSize = 4096; // アトラスサイズ
 
     // 今描いている文字の Glyph
     StringUV g = gUVs[instanceId];

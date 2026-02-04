@@ -86,6 +86,15 @@ void OreAddScene::Initialize() {
 	addNum_->SetColor(0x000000ff, 0xffff30ff);
 	addNum_->SetMaxScale(1.4f);
 
+
+	difficulty_ = std::make_unique<Difficult>();
+	bool reset = commonData_->stageCount == 1;
+	difficulty_->Initialize(modelManager_, drawDataManager_, fontLoader_, reset);
+
+
+	commonData_->isEndlessMode = true;
+	commonData_->stageCount = 2;
+
 	Load();
 }
 
@@ -105,9 +114,37 @@ std::unique_ptr<IScene> OreAddScene::Update() {
 			phase_++;
 		}
 	} else if (phase_ == 2) {
-		if(Wait(deltaTime, 0.5f)) {
+		if (Wait(deltaTime, 0.5f)) {
+			if (!commonData_->isEndlessMode) {
+				phase_ = 10;
+			} else {
+				phase_++;
+			}
+
+		}
+	} else if (phase_ == 3) {
+		static float t = 0.0f;
+		t += deltaTime;
+		cameraTransform_.rotate.y = lerp(0.0f, 3.14159265f, t, EaseType::EaseInOutCubic);
+		cameraTransform_.rotate.x = std::sin(3.14159265f * t * 2.0f) * 0.2f;
+		if (t >= 0.5f) {
+			camera_->SetProjectionMatrix(PerspectiveFovDesc());
+			notDraw_ = true;
+		}
+		if (t >= 1.0f) {
+			t = 0.0f;
+			cameraTransform_.rotate.y = 3.14159265f;
+			cameraTransform_.rotate.x = 0.0f;
+			phase_++;
+		}
+	} else if (phase_ == 4) {
+		if (Wait(deltaTime, 0.5f)) {
+			difficulty_->DifficultyUp(commonData_->stageCount % 2 == 0);
+			phase_++;
+		}
+	} else if (phase_ == 5) {
+		if (difficulty_->AnimationEnd()) {
 			phase_ = 10;
-			
 		}
 	}
 	//此処で演出入れるならいれる
@@ -118,15 +155,19 @@ std::unique_ptr<IScene> OreAddScene::Update() {
 			phase_++;
 		}
 	} else {
-		if(Wait(deltaTime, 0.2f)) {
+		if (Wait(deltaTime, 0.2f)) {
 			return std::make_unique<GameScene>();
 		}
 	}
 
+	camera_->SetTransform(Matrix::MakeAffineMatrix(cameraTransform_.scale, cameraTransform_.rotate, cameraTransform_.position).Inverse());
+	camera_->MakeMatrix();
 	fade_.alpha = 1.0f - (fadeTimer_ / kFadeDuration_);
 
 	addNum_->SetNumber(oreAddNum_);
 	addNum_->SetTransform(addNumTransform_);
+
+	difficulty_->Update(deltaTime);
 
 	oreNum_->Update(deltaTime);
 	goldNum_->Update(deltaTime);
@@ -145,23 +186,26 @@ void OreAddScene::Draw() {
 
 	Matrix4x4 vpMat = camera_->GetVPMatrix();
 
-	//描画処理
-	result_->Draw(wind, vpMat);
-	oreNumIs_->Draw(wind, vpMat);
-	oreNum_->Draw(wind, vpMat);
-	slashNumOre_->Draw(wind, vpMat);
-	goldNumIs_->Draw(wind, vpMat);
-	goldNum_->Draw(wind, vpMat);
-	slashNumGold_->Draw(wind, vpMat);
-	Matrix4x4 mat[4];
-	for (int i = 0; i < 4; i += 2) {
-		mat[i] = Matrix::MakeAffineMatrix(fukidashiTransforms_[i / 2].scale, fukidashiTransforms_[i / 2].rotate, fukidashiTransforms_[i / 2].position);
-		mat[i + 1] = vpMat;
+	if (!notDraw_) {
+		//描画処理
+		result_->Draw(wind, vpMat);
+		oreNumIs_->Draw(wind, vpMat);
+		oreNum_->Draw(wind, vpMat);
+		slashNumOre_->Draw(wind, vpMat);
+		goldNumIs_->Draw(wind, vpMat);
+		goldNum_->Draw(wind, vpMat);
+		slashNumGold_->Draw(wind, vpMat);
+		Matrix4x4 mat[4];
+		for (int i = 0; i < 4; i += 2) {
+			mat[i] = Matrix::MakeAffineMatrix(fukidashiTransforms_[i / 2].scale, fukidashiTransforms_[i / 2].rotate, fukidashiTransforms_[i / 2].position);
+			mat[i + 1] = vpMat;
+		}
+		fukidashi_->CopyBufferData(0, mat, sizeof(Matrix4x4) * 4);
+		fukidashi_->CopyBufferData(1, &fkdsTextureIndex_, sizeof(int));
+		fukidashi_->Draw(wind);
+		addNum_->Draw(wind, vpMat);
 	}
-	fukidashi_->CopyBufferData(0, mat, sizeof(Matrix4x4) * 4);
-	fukidashi_->CopyBufferData(1, &fkdsTextureIndex_, sizeof(int));
-	fukidashi_->Draw(wind);
-	addNum_->Draw(wind, vpMat);
+	difficulty_->Draw(wind, vpMat);
 
 	display->PostDraw(window->GetCommandObject());
 

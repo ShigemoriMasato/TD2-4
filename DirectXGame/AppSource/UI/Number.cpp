@@ -27,7 +27,7 @@ void Number::Update(float deltaTime) {
 	fontObject_->transform_ = transform_;
 	fontObject_->transform_.scale *= scale_;
 	std::wstring number = std::to_wstring(currentNumber_);
-	fontObject_->SetText(offset_ + number);
+	fontObject_->SetText(offset_ + number + aoffset_);
 
 	fontObject_->Update();
 

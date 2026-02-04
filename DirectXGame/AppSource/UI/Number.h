@@ -11,6 +11,7 @@ public:
 	void LeftAlign(bool flug) { leftAlign_ = flug; };
 
 	void SetOffset(std::wstring offset);
+	void SetAfterOffset(std::wstring aoffset) { aoffset_ = aoffset; }
 	void SetNumber(int number);
 	void SetTransform(const Transform& transform) { transform_ = transform; }
 
@@ -35,6 +36,7 @@ private:
 	uint32_t highColor_ = 0xffffffff;
 
 	std::wstring offset_ = L"";
+	std::wstring aoffset_ = L"";
 	float maxScale_ = 2.0f;
 
 	bool leftAlign_ = false;

@@ -21,7 +21,7 @@ void MiniMap::Initialize(int mapWidth, int mapHeight, DualDisplay* disp, const D
 	camera_->SetProjectionMatrix(PerspectiveFovDesc());
 
 	transform_.rotate.x = std::numbers::pi_v<float> / 2.0f;
-	distRatio_ = 0.7f;
+	distRatio_ = 0.75f;
 
 	dist = std::max(mapWidth, mapHeight) * 0.5f / std::tan(0.45f / 2.0f);
 	transform_.position = { mapWidth / 2.0f - 0.5f, 0.0f, mapHeight / 2.0f - 0.5f };
@@ -59,6 +59,16 @@ void MiniMap::Initialize(int mapWidth, int mapHeight, DualDisplay* disp, const D
 	visionField_->psoConfig_.vs = "Simple.VS.hlsl";
 	visionField_->psoConfig_.ps = "PostEffect/Simple.PS.hlsl";
 	vfModelsTextureIndex_ = textureManager->LoadTexture("Mineral-0.png");
+
+	bg_ = std::make_unique<RenderObject>();
+	bg_->Initialize();
+	bg_->SetDrawData(plane);
+	bg_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "Matrix");
+	bg_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	bg_->SetUseTexture(true);
+	bg_->psoConfig_.vs = "Simple.VS.hlsl";
+	bg_->psoConfig_.ps = "PostEffect/Simple.PS.hlsl";
+	bgti_ = textureManager->LoadTexture("MiniMapBG.png");
 }
 
 void MiniMap::Update(bool debug) {
@@ -108,6 +118,7 @@ void MiniMap::Update(bool debug) {
 
 Camera* MiniMap::PreDraw(Window* window) {
 	display_->PreDraw(window->GetCommandObject(), true);
+
 	return camera_.get();
 }
 
@@ -128,14 +139,20 @@ void MiniMap::PostDraw(Window* window, const Matrix4x4& vpMatrix, Vector3 player
 
 void MiniMap::Draw(Window* window) {
 
-	float scale = 0.5f;
-	Vector3 pos = { 0.75f, -0.75f, 0.0f };
+	Vector3 scale = { 0.5f, 0.5f, 1.0f };
+	Vector3 pos = { 0.5f, -0.5f, 0.0f };
 	if (pleasePose_) {
-		scale = 2.0f;
+		scale = {2.0f, 2.0f, 1.0f};
 		pos = { 0.0f, 0.0f, 0.0f };
 	}
 
-	Matrix4x4 matWorld = Matrix::MakeAffineMatrix({ scale, scale, scale }, { 0.0f, 0.0f, 1.57f }, pos);
+	//背景描画
+	Matrix4x4 matWorld = Matrix::MakeAffineMatrix(scale, { 0.0f, 0.0f, 1.57f }, pos);
+	Matrix4x4 mat = Matrix::MakeAffineMatrix({scale.x + 0.1f, scale.y, scale.z}, {0.0f, 0.0f, 1.57f}, pos);
+	bg_->CopyBufferData(0, &mat, sizeof(Matrix4x4));
+	bg_->CopyBufferData(1, &bgti_, sizeof(int));
+	bg_->Draw(window);
+
 	miniMapRender_->CopyBufferData(0, &matWorld, sizeof(Matrix4x4));
 	int textureIndex = display_->GetTextureData()->GetOffset();
 	miniMapRender_->CopyBufferData(1, &textureIndex, sizeof(int));

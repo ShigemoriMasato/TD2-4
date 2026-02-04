@@ -58,8 +58,8 @@ private://入出力関係
 	std::string responseTextFile_ = "Assets/.EngineResource/Fonts/response.txt";
 
 private://アトラス関係
-	const int atlas_width_ = 2048;
-	const int atlas_height_ = 2048;
+	const int atlas_width_ = 4096;
+	const int atlas_height_ = 4096;
 
 private://フォントデータ
 	std::unordered_map<std::string, FontData> fontIndex_;

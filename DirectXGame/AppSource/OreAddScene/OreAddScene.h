@@ -4,6 +4,7 @@
 #include <UI/Object/FontObject.h>
 #include <UI/Number.h>
 #include <Render/PostEffect.h>
+#include "Difficult.h"
 
 class OreAddScene : public IScene {
 public:
@@ -26,10 +27,12 @@ private:
 private: //Camera
 
 	std::unique_ptr<Camera> camera_ = nullptr;
+	Transform cameraTransform_{};
 
 private: //phase
 
 	int phase_ = 0;
+	bool notDraw_ = false;
 
 private: //font
 	
@@ -47,6 +50,10 @@ private: //font
 	int fkdsTextureIndex_ = 0;
 	std::unique_ptr<Number> addNum_ = nullptr;
 	Transform addNumTransform_{};
+
+private: //Endress
+
+	std::unique_ptr<Difficult> difficulty_ = nullptr;
 
 private: //postEffect
 

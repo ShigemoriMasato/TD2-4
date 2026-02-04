@@ -163,6 +163,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\GameOver\GameOverTask.cpp" />
     <ClCompile Include="AppSource\ResultScene\Card\Card.cpp" />
     <ClCompile Include="AppSource\ResultScene\Card\CardManager.cpp" />
+    <ClCompile Include="AppSource\OreAddScene\Difficult.cpp" />
     <ClCompile Include="Engine\Assets\Audio\AudioManager.cpp" />
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
     <ClCompile Include="AppSource\Common\DebugParam\GameParamEditor.cpp" />
@@ -270,6 +271,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\GameOver\GameOverTask.h" />
     <ClInclude Include="AppSource\ResultScene\Card\Card.h" />
     <ClInclude Include="AppSource\ResultScene\Card\CardManager.h" />
+    <ClInclude Include="AppSource\OreAddScene\Difficult.h" />
     <ClInclude Include="Engine\Assets\Audio\AudioManager.h" />
     <ClInclude Include="AppSource\GameCamera\MarkResult.h" />
     <ClInclude Include="AppSource\GameCamera\TitleCamera.h" />

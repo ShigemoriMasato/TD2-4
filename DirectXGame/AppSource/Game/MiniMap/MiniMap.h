@@ -35,6 +35,9 @@ public:
 
 private:
 
+	std::unique_ptr<RenderObject> bg_ = nullptr;
+	int bgti_ = -1;
+
 	std::unique_ptr<Camera> camera_ = nullptr;
 	DualDisplay* display_ = nullptr;
 	int vfModelsTextureIndex_ = -1;
