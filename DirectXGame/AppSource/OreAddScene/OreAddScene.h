@@ -62,6 +62,9 @@ private: //postEffect
 	Fade fade_{};
 	Blur blur_{};
 
+	std::unique_ptr<PostEffect> endProcess_ = nullptr;
+	PostEffectConfig endConfig_;
+
 	//鉱石 n個 でOre一個増やす
 	int rateGoldToOre_ = 2;
 

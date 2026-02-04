@@ -91,6 +91,12 @@ void OreAddScene::Initialize() {
 	bool reset = commonData_->stageCount == 1;
 	difficulty_->Initialize(modelManager_, drawDataManager_, fontLoader_, reset);
 
+	endProcess_ = std::make_unique<PostEffect>();
+	endProcess_->Initialize(textureManager_, drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex));
+	endConfig_.jobs_ = 0;
+	endConfig_.origin = commonData_->display.get();
+	endConfig_.window = commonData_->mainWindow->GetWindow();
+
 	Load();
 }
 
@@ -213,7 +219,7 @@ void OreAddScene::Draw() {
 	postEffect_->Draw(postEffectConfig_);
 
 	//もしSwapChainに直接書き込むならココ
-	window->PreDraw(true);
+	window->PreDraw(false);
 
 
 #ifdef USE_IMGUI
