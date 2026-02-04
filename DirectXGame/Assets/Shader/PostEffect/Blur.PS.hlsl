@@ -37,10 +37,14 @@ PixelShaderOutput main(PixelShaderInput input)
         for (int y = -kernelRadius; y <= kernelRadius; y++)
         {
             float2 offset = float2(x, y) * texelSize;
-            float weight = exp(-0.5 * (float2(x, y) * float2(x, y)) / (sigma * sigma));
+            float distance = length(float2(x, y));
+            float weight = exp(-0.5 * (distance * distance) / (sigma * sigma));
 
             float4 tex = gTexture[textureIndex].Sample(gSampler, input.texcoord + offset);
-            
+
+            // sRGB → Linear
+            tex.rgb = pow(tex.rgb, 2.2f);
+
             color += tex * weight;
             totalWeight += weight;
         }

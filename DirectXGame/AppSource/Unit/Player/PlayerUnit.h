@@ -6,6 +6,7 @@
 #include"Common/KeyConfig/KeyManager.h"
 
 #include"Collision/Collider.h"
+#include"Item/Object/OreOutLineObject.h"
 
 class PlayerUnit : public Collider {
 public:
@@ -30,6 +31,9 @@ private:
 
 	// オブジェクトデータ
 	std::unique_ptr<PlayerUnitObject> object_;
+
+	// 選択中のオブジェクトにアウトラインを描画する
+	std::unique_ptr<OreOutLineObject> oreOutLineObject_;
 
 	// キーを取得する
 	KeyManager* keyManager_ = nullptr;

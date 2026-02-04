@@ -13,7 +13,7 @@ void StartCountUI::Initialize(const std::string& fontName, DrawData drawData, Fo
 	// 開始ウェーブ文字
 	waveFontObject_ = std::make_unique<FontObject>();
 	waveFontObject_->Initialize(fontName,L"フロア" + std::to_wstring(florNum), drawData, fontLoader);
-	waveFontObject_->fontColor_ = {0.0f,1.0f,0.4980f,1.0f};
+	waveFontObject_->fontColor_ = { 0.0f,1.0f,0.4980f,1.0f};
 
 	// スタート時フォント
 	startFontObject_ = std::make_unique<FontObject>();
@@ -22,7 +22,7 @@ void StartCountUI::Initialize(const std::string& fontName, DrawData drawData, Fo
 
 	// 最後にカウントする数
 	numFontObject_ = std::make_unique<FontObject>();
-	numFontObject_->Initialize(fontName, L"9", drawData, fontLoader);
+	numFontObject_->Initialize(fontName1, L"9", drawData, fontLoader);
 	numFontObject_->fontColor_ = { 0.0f,1.0f,0.4980f,0.8f };
 
 	readySH_ = AudioManager::GetInstance().GetHandleByName("Ready.mp3");
@@ -103,7 +103,7 @@ void StartCountUI::StartAnimation() {
 
 		float localT = timer_ / 0.5f;
 
-		startFontObject_->transform_.position.x = lerp(1280.0f, 420.0f, localT, EaseType::EaseOutBack);
+		startFontObject_->transform_.position.x = lerp(1280.0f, 400.0f, localT, EaseType::EaseOutBack);
 
 	} else if(timer_ <= 0.8f) {
 		float localT = (timer_ - 0.5f) / 0.3f;
@@ -128,7 +128,7 @@ void StartCountUI::StartAnimation() {
 		startFontObject_->transform_.scale.x = width;
 		startFontObject_->transform_.scale.y = -width;
 
-		startFontObject_->transform_.position.x = 640.0f - (width * 32.0f * 3.0f * 0.5f);
+		startFontObject_->transform_.position.x = 640.0f - (width * 32.0f * 3.0f * 0.5f) - 20.0f;
 		startFontObject_->transform_.position.y = 360.0f + (width * 24.0f * 3.0f * 0.5f);
 	} else {
 		float localT = (timer_ - 0.9f) / 0.1f;
