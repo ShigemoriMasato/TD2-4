@@ -159,9 +159,6 @@ void SelectScene::Initialize() {
 	fadeTransition_ = std::make_unique<FadeTransition>();
 	fadeTransition_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex));
 
-	// インゲームの処理
-	InGameScene();
-
 	//=================================================================
 	// 
 	// タイトルシーンの初期化
@@ -199,7 +196,7 @@ void SelectScene::Initialize() {
 	int leIndex = textureManager_->GetTexture("Select_A.png");
 	int riIndex = textureManager_->GetTexture("Select_D.png");
 	decisSprite_ = std::make_unique<SpriteObject>();
-	decisSprite_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), { 256.0f * 0.9f,64.0f * 1.2f });
+	decisSprite_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), { 230.0f,83.0f });
 	decisSprite_->transform_.position = { 640.0f,640.0f,0.0f };
 	decisSprite_->color_ = { 1.0f,1.0f,1.0f,1.0f };
 	decisSprite_->SetTexture(spIndex);
@@ -269,6 +266,9 @@ void SelectScene::Initialize() {
 	titleSprite_->Update();
 	titleCamera_->Update();
 	TitleScene();
+
+	// インゲームの処理
+	InGameScene();
 }
 
 std::unique_ptr<IScene> SelectScene::Update() {
@@ -337,6 +337,7 @@ void SelectScene::InGameScene() {
 					selectDir_ = -1.0f;
 					startRotY_ = playerObject_->transform_.rotate.y;
 					endRotY_ = -std::numbers::pi_v<float> / 2;
+					isLeftAnimation_ = true;
 
 					if (!AudioManager::GetInstance().IsPlay(playerMove_)) {
 						AudioManager::GetInstance().Play(playerMove_, 0.5f, false);
@@ -358,7 +359,7 @@ void SelectScene::InGameScene() {
 					selectDir_ = 1.0f;
 					startRotY_ = playerObject_->transform_.rotate.y;
 					endRotY_ = std::numbers::pi_v<float> / 2;
-
+					isRightAnimation_ = true;
 
 					if (!AudioManager::GetInstance().IsPlay(playerMove_)) {
 						AudioManager::GetInstance().Play(playerMove_, 0.5f, false);
@@ -416,9 +417,21 @@ void SelectScene::InGameScene() {
 		// 移動
 		playerObject_->transform_.position.z = lerp(-0.5f, 8.0f, inPlayerTimer_, EaseType::EaseInOutCubic);
 
+		if (inPlayerTimer_ <= 0.2f) {
+			float localT = inPlayerTimer_ / 0.2f;
+			decisSprite_->transform_.scale.x = lerp(230.0f, 128.0f, localT, EaseType::EaseInCubic);
+			//decisSprite_->transform_.scale.y = width;
+		} else if (inPlayerTimer_ <= 0.4f) {
+			float localT = (inPlayerTimer_ - 0.2f) / 0.2f;
+			decisSprite_->transform_.scale.x = lerp(128.0f, 230.0f, localT, EaseType::EaseOutCubic);
+			//decisSprite_->transform_.scale.y = width;
+		} 
+
 		if (inPlayerTimer_ >= 1.0f) {
 			fadeTransition_->SetFade(FadeTransition::Phase::Out);
 		}
+
+		decisSprite_->Update();
 	} else {
 		if (isPlayerAnimation_) {
 			timer_ += FpsCount::deltaTime / moveTime_;
@@ -439,19 +452,28 @@ void SelectScene::InGameScene() {
 			if (isLeftAnimation_) {
 				if (timer_ <= 0.5f) {
 					float localT = timer_ / 0.5f;
-
+					float width = lerp(128.0f,64.0f,localT,EaseType::EaseInCubic);
+					leSprite_->transform_.scale.x = width;
+					leSprite_->transform_.scale.y = width;
 				} else {
 					float localT = (timer_ - 0.5f) / 0.5f;
-
+					float width = lerp(64.0f, 128.0f, localT, EaseType::EaseOutCubic);
+					leSprite_->transform_.scale.x = width;
+					leSprite_->transform_.scale.y = width;
 				}
 			}
 
 			if(isRightAnimation_) {
 				if (timer_ <= 0.5f) {
 					float localT = timer_ / 0.5f;
-
+					float width = lerp(128.0f, 64.0f, localT, EaseType::EaseInCubic);
+					riSprite_->transform_.scale.x = width;
+					riSprite_->transform_.scale.y = width;
 				} else {
 					float localT = (timer_ - 0.5f) / 0.5f;
+					float width = lerp(64.0f, 128.0f, localT, EaseType::EaseOutCubic);
+					riSprite_->transform_.scale.x = width;
+					riSprite_->transform_.scale.y = width;
 				}
 			}
 
@@ -467,6 +489,12 @@ void SelectScene::InGameScene() {
 				timer_ = 0.0f;
 				isPlayerAnimation_ = false;
 				playerObject_->transform_.position = endPos_;
+
+				float width = 128.0f;
+				leSprite_->transform_.scale.x = width;
+				leSprite_->transform_.scale.y = width;
+				riSprite_->transform_.scale.x = width;
+				riSprite_->transform_.scale.y = width;
 			}
 		}
 	}
@@ -474,7 +502,8 @@ void SelectScene::InGameScene() {
 	// プレイヤーの更新処理
 	playerObject_->Update();
 
-
+	leSprite_->Update();
+	riSprite_->Update();
 	floorObject_->Update();
 
 	//=====================================================
