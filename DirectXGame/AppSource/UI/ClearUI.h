@@ -19,12 +19,15 @@ public:
 	// クリアシーンの開始を宣言する
 	void Start(const bool& isStart) {
 		isClearStart_ = isStart;
+		isAnimation_ = true;
 	}
 
 	// シーン遷移で仕様する色を取得する
 	void SetSceneColor(float* fadealpha) {
 		fadealpha_ = fadealpha;
 	}
+
+	bool IsClearAnimationEnd() { return isClearAnimationEnd_; }
 
 public:
 
@@ -46,6 +49,8 @@ private:
 	bool isClearStart_ = false;
 	bool isEnd_ = false;
 
+	bool isClearAnimationEnd_ = false;
+
 	float timer_ = 0.0f;
 
 	// 背景の移動処理
@@ -53,14 +58,6 @@ private:
 	float endBgPosY_ = 360.0f;
 
 	bool isAnimation_ = true;
-
-	// リトライ
-	std::unique_ptr<FontObject> retryFontObject_;
-	Vector3 retryPos_;
-
-	// ステージ選択へ
-	std::unique_ptr<FontObject> selectFontObject_;
-	Vector3 selectPos_;
 
 	// クリックコールバック
 	std::function<void()> onRetryClicked_ = nullptr;
@@ -81,7 +78,7 @@ private:
 
 private: // 調整項目
 
-	float maxTime_ = 1.0f;
+	float maxTime_ = 2.0f;
 
 private:
 

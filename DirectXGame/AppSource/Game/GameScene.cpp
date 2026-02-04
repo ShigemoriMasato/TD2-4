@@ -8,6 +8,7 @@
 #include<Game/SelectScene.h>
 #include <OreAddScene/OreAddScene.h>
 #include"Assets/Audio/AudioManager.h"
+#include <ResultScene/ResultScene.h>
 
 namespace {
 	//MiniMap確認用
@@ -440,6 +441,8 @@ void GameScene::Initialize() {
 
 	// 最初に一度だけ更新処理を呼ぶ
 	InGameScene();
+
+	OreItemStorageNum::currentOreItemNum_ = 1000000;
 }
 
 void GameScene::InitializeOtherScene() {
@@ -529,7 +532,7 @@ std::unique_ptr<IScene> GameScene::Update() {
 	CommonUpdate();
 
 	if (fadeTransition_->IsAnimation()) {
-		
+
 		// ゲーム開始時の遷移処理
 		fadeTransition_->Update();
 
@@ -559,35 +562,55 @@ std::unique_ptr<IScene> GameScene::Update() {
 	//====================================================
 	if (isGameOver_) {
 		if (gameOverTask_->Update(FpsCount::deltaTime)) {
-			return std::make_unique<SelectScene>();
+			int goldNum = OreItemStorageNum::currentOreItemNum_;
+			int oreNum = unitManager_->GetMaxOreCount();
+			int norma = currentMap_.norma;
+			commonData_->normaAndScore_.push_back({ norma, goldNum });
+			commonData_->sumGoldNum_ += goldNum;
+			commonData_->maxGoldNum = std::max(commonData_->maxGoldNum, goldNum);
+			commonData_->killOreNum += commonData_->oreNum - oreNum;
+			commonData_->oreNum = oreNum;
+			commonData_->goldNum = goldNum;
+
+			return std::make_unique<ResultScene>();
 		}
 	}
 
-	if (isGameClear_) {
+	if ( clearUI_->IsClearAnimationEnd()) {
 
 		//以下シーン切り替えについて
 		if (hasNextMap_) {
+
+			int goldNum = OreItemStorageNum::currentOreItemNum_;
+			int oreNum = unitManager_->GetMaxOreCount();
+			int norma = currentMap_.norma;
+			commonData_->normaAndScore_.push_back({ norma, goldNum });
+			commonData_->sumGoldNum_ += goldNum;
+			commonData_->maxGoldNum = std::max(commonData_->maxGoldNum, goldNum);
+			commonData_->killOreNum += commonData_->oreNum - oreNum;
+			commonData_->oreNum = oreNum;
+			commonData_->goldNum = goldNum;
 
 			return std::make_unique<OreAddScene>();
 
 		} else {
 
-			//最大点数の更新
-			auto& scores = commonData_->maxGoldNum_;
-			int currentStage = commonData_->nextStageIndex;
-			if (scores.size() <= currentStage) {
-				scores.resize(currentStage + 1, 0);
-			}
-			scores[currentStage] = std::max(scores[currentStage], commonData_->currentGoldNum_);
-
+			int goldNum = OreItemStorageNum::currentOreItemNum_;
+			int oreNum = unitManager_->GetMaxOreCount();
+			int norma = currentMap_.norma;
+			commonData_->normaAndScore_.push_back({ norma, goldNum });
+			commonData_->sumGoldNum_ += goldNum;
+			commonData_->maxGoldNum = std::max(commonData_->maxGoldNum, goldNum);
+			commonData_->killOreNum += commonData_->oreNum - oreNum;
+			commonData_->oreNum = oreNum;
+			commonData_->goldNum = goldNum;
 
 			//終了処理(とりあえずの仮置き)
-			return std::make_unique<SelectScene>();
+			return std::make_unique<ResultScene>();
 		}
-
 	}
 
-	//clearUI_->Update();
+	clearUI_->Update();
 
 	//====================================================
 	// クリア、ゲームオーバーの判定処理
@@ -605,7 +628,7 @@ std::unique_ptr<IScene> GameScene::Update() {
 		if (OreItemStorageNum::currentOreItemNum_ >= OreItemStorageNum::maxOreItemNum_ ||
 			oreItemManager_->GetCurrentOreItemNum() <= 0) {
 
-			isGameClear_ = true;
+			clearUI_->Start(true);
 			SaveGameData();
 
 			// クリア音声を再生
@@ -732,7 +755,7 @@ void GameScene::InGameScene() {
 		if (!AudioManager::GetInstance().IsPlay(oreRejectedSH_)) {
 			AudioManager::GetInstance().Play(oreRejectedSH_, 0.5f, false);
 		}
-	};
+		};
 
 	auto PlayGo = [this]() {
 		if (!AudioManager::GetInstance().IsPlay(oreGoSH_)) {
@@ -939,7 +962,7 @@ void GameScene::Draw() {
 
 			// クリアシーンの描画処理
 			if (isGameClear_) {
-			
+
 			}
 
 			// クリアシーンの更新処理
@@ -1083,11 +1106,11 @@ Vector3 GameScene::GetPlayerInitPosition() {
 void GameScene::SaveGameData() {
 
 	//合計の集計
-	commonData_->currentGoldNum_ += OreItemStorageNum::maxOreItemNum_;
+	commonData_->sumGoldNum_ += OreItemStorageNum::maxOreItemNum_;
 	//最大値の更新
 	commonData_->maxGoldNum = std::max(commonData_->maxGoldNum, OreItemStorageNum::maxOreItemNum_);
 	//ノルマと獲得数の保存
-	commonData_->stageNorma_.push_back(std::make_pair(OreItemStorageNum::currentOreItemNum_, currentMap_.norma));
+	commonData_->normaAndScore_.push_back(std::make_pair(OreItemStorageNum::currentOreItemNum_, currentMap_.norma));
 	//殺したOreの数
 	commonData_->killOreNum += commonData_->oreNum - unitManager_->GetOreCount();
 

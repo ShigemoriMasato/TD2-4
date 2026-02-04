@@ -105,7 +105,7 @@ std::unique_ptr<IScene> OreAddScene::Update() {
 			phase_++;
 		}
 	} else if (phase_ == 2) {
-		if(Wait(deltaTime, 1.0f)) {
+		if(Wait(deltaTime, 0.5f)) {
 			phase_ = 10;
 			
 		}
@@ -118,7 +118,7 @@ std::unique_ptr<IScene> OreAddScene::Update() {
 			phase_++;
 		}
 	} else {
-		if(Wait(deltaTime, 0.5f)) {
+		if(Wait(deltaTime, 0.2f)) {
 			return std::make_unique<GameScene>();
 		}
 	}
@@ -238,6 +238,8 @@ bool OreAddScene::OreAdd(float deltaTime) {
 	oreAddNum_ = oreNum - commonData_->oreNum;
 
 	if (t >= 1.0f) {
+		oreAddNum_ = oreNum - commonData_->oreNum;
+		commonData_->getOreNum += oreAddNum_;
 		commonData_->goldNum = commonData_->norma;
 		commonData_->oreNum = oreNum;
 		goldNum_->SetNumber(commonData_->goldNum);

@@ -12,28 +12,16 @@ void ResultScene::Initialize() {
 	camera_->SetTransform(Matrix::MakeTranslationMatrix({ -740.0f, 0.0f, 0.0f }).Inverse());
 	camera_->MakeMatrix();
 
-	commonData_->stageNorma_ = {
-		{20, 10},
-		{40, 20},
-		{60, 30},
-		{80, 40},
-		{100, 50},
-		{70, 60},
-		{ 20, 10 },
-		{40, 20},
-		{20, 30},
-	};
-
 	cardManager_ = std::make_unique<CardManager>();
 	DrawData drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
-	cardManager_->Initialize(drawData, fontLoader_, textureManager_, commonData_->stageNorma_);
+	cardManager_->Initialize(drawData, fontLoader_, textureManager_, commonData_->normaAndScore_);
 
 	totalManager_ = std::make_unique<TotalManager>();
 	totalManager_->Initialize(
 		commonData_->maxOreNum,
+		commonData_->getOreNum,
 		commonData_->killOreNum,
-		commonData_->maxGoldNum,
-		commonData_->currentGoldNum_,
+		commonData_->sumGoldNum_,
 		commonData_->maxGoldNum,
 		drawData,
 		fontLoader_);
