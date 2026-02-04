@@ -7,7 +7,7 @@ void SelectCamera::Initialize() {
 
 	// カメラを初期化
 	this->SetProjectionMatrix(PerspectiveFovDesc{});
-	position_ = { 0.0f,3.9f,-14.0f };
+	position_ = { 0.0f,6.1f,-16.0f };
 	rotation_ = { -0.32f,0.0f,0.0f };
 	MakeMatrix();
 }

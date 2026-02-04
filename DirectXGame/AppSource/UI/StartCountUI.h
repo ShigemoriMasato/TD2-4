@@ -4,7 +4,7 @@
 class StartCountUI {
 public:
 
-	void Initialize(const std::string& fontName, DrawData drawData, FontLoader* fontLoader,int florNum);
+	void Initialize(const std::string& fontName, DrawData drawData, FontLoader* fontLoader,int florNum, const std::string& fontName1);
 
 	void Update();
 

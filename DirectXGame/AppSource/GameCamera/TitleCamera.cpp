@@ -6,8 +6,8 @@ void TitleCamera::Initialize() {
 
 	// カメラを初期化
 	this->SetProjectionMatrix(PerspectiveFovDesc{});
-	position_ = { 0.0f,3.9f,-14.0f };
-	rotation_ = { -0.32f,0.0f,0.0f };
+	position_ = { -22.5f,4.2f,-22.4f };
+	rotation_ = { 0.0f,-0.8f,0.0f };
 	MakeMatrix();
 }
 
@@ -16,9 +16,10 @@ void TitleCamera::Update() {
 	timer_ += FpsCount::deltaTime / maxTime_;
 
 	// 移動
-	//position_.y = lerp(30.0f, 20.0f, timer_, EaseType::EaseInOutCubic);
+	position_ = lerp(Vector3(-22.5f, 4.2f, -22.4f), Vector3(0.0f, 6.1f, -16.0f), timer_, EaseType::EaseInOutCubic);
 	// 回転
-	//rotation_.x = lerp(1.0f, -0.32f, timer_, EaseType::EaseInOutCubic);
+	rotation_.x = lerp(0.0f, -0.32f, timer_, EaseType::EaseInOutCubic);
+	rotation_.y = lerp(-0.8f, 0.0f, timer_, EaseType::EaseInOutCubic);
 
 	if (timer_ >= 1.0f) {
 		isAnimation_ = false;
