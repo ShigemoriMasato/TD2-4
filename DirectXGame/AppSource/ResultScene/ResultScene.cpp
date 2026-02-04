@@ -143,7 +143,7 @@ void ResultScene::Draw() {
 	pe_->CopyBuffer(PostEffectJob::Fade, fade_);
 	pe_->Draw(config);
 
-	gWindow->PreDraw(true);
+	gWindow->PreDraw(false);
 
 #ifdef USE_IMGUI
 
