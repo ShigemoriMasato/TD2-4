@@ -29,6 +29,7 @@ SelectScene::~SelectScene() {
 }
 
 void SelectScene::Initialize() {
+	LightManager::GetInstance()->Initialize();
 	gameWindow_ = commonData_->mainWindow.get();
 	display_ = commonData_->display.get();
 	//カメラの初期化
