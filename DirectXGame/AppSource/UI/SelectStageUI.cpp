@@ -3,15 +3,16 @@
 #include"FpsCount.h"
 #include"SelectStageNum.h"
 
-void SelectStageUI::Init(DrawData drawData, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader) {
+void SelectStageUI::Init(DrawData drawData, const std::string& fontName, DrawData fontDrawData, FontLoader* fontLoader, int tex) {
 
 	fontLoader_ = fontLoader;
 
 	// 描画機能の初期化
 	spriteObject_ = std::make_unique<SpriteObject>();
-	spriteObject_->Initialize(drawData,{400.0f,64.0f});
+	spriteObject_->Initialize(drawData,{500.0f,140.0f});
 	spriteObject_->transform_.position.x = 640.0f;
 	spriteObject_->transform_.position.y = 128.0f;
+	spriteObject_->SetTexture(tex);
 
 	// デフォルトのサイズを設定
 	defaultSize_ = spriteObject_->transform_.scale;
@@ -23,7 +24,7 @@ void SelectStageUI::Init(DrawData drawData, const std::string& fontName, DrawDat
 	fontObject_->Initialize(fontName, name_ + std::to_wstring(SelectStageNum::num_), fontDrawData, fontLoader);
 	fontObject_->transform_.position.x = fontPos_.x;
 	fontObject_->transform_.position.y = fontPos_.y;
-	fontObject_->fontColor_ = { 0.0f,0.0f,0.0f,1.0f };
+	fontObject_->fontColor_ = { 1.0f,1.0f,1.0f,1.0f };
 }
 
 void SelectStageUI::Update() {
