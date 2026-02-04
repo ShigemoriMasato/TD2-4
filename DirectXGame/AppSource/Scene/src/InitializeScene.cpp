@@ -71,7 +71,7 @@ void InitializeScene::Draw() {
 void InitializeScene::CreateDisplay() {
 	{
 		WindowConfig config;
-		config.windowName = L"2208_Ore";
+		config.windowName = L"2305_Ore";
 		CommonData* cd = commonData_;
 		config.windowProc = [cd](HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)->LRESULT {
 
