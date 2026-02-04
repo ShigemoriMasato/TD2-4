@@ -10,6 +10,7 @@
 
 #include"Unit/MapChipField.h"
 #include"Effect/OreFragmentParticle.h"
+#include"Effect/OreBreakParticle.h"
 
 class OreItemManager {
 public:
@@ -85,6 +86,9 @@ private:
 
 	// 破片パーティクル
 	std::unique_ptr<OreFragmentParticle> oreFragmentParticle_;
+
+	// 鉱石の破壊表現
+	std::unique_ptr<OreBreakParticle> oreBreakParticle_;
 
 	bool isLargeScale_ = false;
 

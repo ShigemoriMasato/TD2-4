@@ -24,6 +24,10 @@ void OreItemManager::Initialize(DrawData spriteDrawData, DrawData hpDrawData, co
 	oreFragmentParticle_ = std::make_unique<OreFragmentParticle>();
 	oreFragmentParticle_->Initialize(drawData);
 
+	// 鉱石の破壊演出を初期化
+	oreBreakParticle_ = std::make_unique<OreBreakParticle>();
+	oreBreakParticle_->Initialize(drawData);
+
 	if (stageNum >= 1) {
 		isLargeScale_ = true;
 	}
@@ -128,6 +132,9 @@ void OreItemManager::Update(bool isOpenMap) {
 			MapChipField::IndexSet index = MapChipField_->GetMapChipIndexSetByPosition(pos);
 			MapChipField_->SetMapChipBlockType(index.xIndex, index.zIndex, TileType::Air);
 
+			// 破壊演出を起動
+			oreBreakParticle_->AddParticle(ore->GetPos());
+
 			// 5フレーム後に削除するようにリストに追加
 			graveyard_.push_back({ std::move(ore), 5 });
 
@@ -170,6 +177,9 @@ void OreItemManager::Update(bool isOpenMap) {
 
 	// 演出の更新処理
 	oreFragmentParticle_->Update();
+
+	// 演出の更新
+	oreBreakParticle_->Update();
 }
 
 void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
@@ -194,6 +204,9 @@ void OreItemManager::Draw(Window* window, const Matrix4x4& vpMatrix) {
 void OreItemManager::DrawEffect(Window* window, const Matrix4x4& vpMatrix) {
 	// 演出を描画
 	oreFragmentParticle_->Draw(window, vpMatrix);
+
+	// 鉱石の破壊表現を描画
+	oreBreakParticle_->Draw(window, vpMatrix);
 }
 
 void OreItemManager::DrawUI() {
