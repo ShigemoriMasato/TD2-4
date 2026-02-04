@@ -193,6 +193,31 @@ void SelectScene::Initialize() {
 	titleCamera_ = std::make_unique<TitleCamera>();
 	titleCamera_->Initialize();
 
+	// 操作UI
+	int spIndex = textureManager_->GetTexture("Select_Space.png");
+	int leIndex = textureManager_->GetTexture("Select_A.png");
+	int riIndex = textureManager_->GetTexture("Select_D.png");
+	decisSprite_ = std::make_unique<SpriteObject>();
+	decisSprite_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), { 256.0f * 0.8f,64.0f });
+	decisSprite_->transform_.position = { 1080.0f,640.0f,0.0f };
+	decisSprite_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+	decisSprite_->SetTexture(spIndex);
+	decisSprite_->Update();
+
+	leSprite_ = std::make_unique<SpriteObject>();
+	leSprite_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), { 128.0f,128.0f });
+	leSprite_->transform_.position = { 96.0f,360.0f,0.0f };
+	leSprite_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+	leSprite_->SetTexture(leIndex);
+	leSprite_->Update();
+
+	riSprite_ = std::make_unique<SpriteObject>();
+	riSprite_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), { 128.0f,128.0f });
+	riSprite_->transform_.position = { 1184.0f,360.0f,0.0f };
+	riSprite_->color_ = { 1.0f,1.0f,1.0f,1.0f };
+	riSprite_->SetTexture(riIndex);
+	riSprite_->Update();
+
 	// おれモデルを取得
 	int oreModelID = modelManager_->LoadModel("Ore");
 	auto oreModel = modelManager_->GetNodeModelData(oreModelID);
@@ -612,6 +637,11 @@ void SelectScene::Draw() {
 	} else {
 		// ステージの選択
 		selectStageUI_->Draw(gameWindow_->GetWindow(), vpMatrix);
+
+		// 操作方法
+		decisSprite_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		leSprite_->Draw(gameWindow_->GetWindow(), vpMatrix);
+		riSprite_->Draw(gameWindow_->GetWindow(), vpMatrix);
 	}
 
 	// シーン遷移の描画

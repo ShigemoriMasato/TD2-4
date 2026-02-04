@@ -110,6 +110,12 @@ private:
 	// ステージ選択のロゴ
 	std::unique_ptr<SelectStageUI> selectStageUI_;
 
+	// スペース
+	std::unique_ptr<SpriteObject> decisSprite_;
+
+	std::unique_ptr<SpriteObject> leSprite_;
+	std::unique_ptr<SpriteObject> riSprite_;
+
 	//===========================================================
 	// 
 	// タイトルシーン
