@@ -83,7 +83,9 @@ void ClearUI::Initialize(DrawData drawData, KeyManager* keyManager, const std::s
 	// 背景画像の更新処理
 	bgSpriteObject_->Update();
 
-	retryFontObject_->Update();
+	if (hasNextMap) {
+		retryFontObject_->Update();
+	}
 	selectFontObject_->Update();
 }
 
