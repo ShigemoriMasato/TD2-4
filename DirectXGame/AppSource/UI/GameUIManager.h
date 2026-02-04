@@ -22,6 +22,10 @@ public:
 		timerUI_->SetPreTime(time);
 	}
 
+	void StartAnimation() {
+		unitCounterUI_->Start();
+	}
+
 private:
 
 	// フォントロード
