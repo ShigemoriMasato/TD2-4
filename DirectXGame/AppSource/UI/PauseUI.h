@@ -30,6 +30,10 @@ private:
 	// 背景画像
 	std::unique_ptr<SpriteObject> bgSpriteObject_;
 
+
+	// 背景画像
+	std::unique_ptr<SpriteObject> fliterSpriteObject_;
+
 	float timer_ = 0.0f;
 
 	// 背景の移動処理

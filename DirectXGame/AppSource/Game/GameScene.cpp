@@ -498,7 +498,7 @@ void GameScene::InitializeOtherScene() {
 	int pPlayIndex = textureManager_->GetTexture("Pause_HowToPlay.png");
 	int pSeleIndex = textureManager_->GetTexture("Pause_Select.png");
 
-	int plogIndex = textureManager_->GetTexture("Pause_Select.png");
+	int plogIndex = textureManager_->GetTexture("Pebble_01.png");
 
 	// ポーズシーンUIの初期化
 	pauseUI_ = std::make_unique<PauseUI>();
