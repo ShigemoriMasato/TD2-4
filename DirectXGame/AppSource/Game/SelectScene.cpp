@@ -385,6 +385,14 @@ void SelectScene::InGameScene() {
 				commonData_->nextStageIndex = selectStageNum_ - 1;
 				commonData_->nextMapIndex = 0;
 				commonData_->stageCount = 0;
+				commonData_->normaAndScore_.clear();
+				commonData_->goldNum = 0;
+				commonData_->sumGoldNum_ = 0;
+				commonData_->maxGoldNum = 0;
+				commonData_->maxOreNum = 0;
+				commonData_->killOreNum = 0;
+				commonData_->getOreNum = 0;
+
 				isInPlayerAnimation_ = true;
 				inPlayerStartRotY_ = playerObject_->transform_.rotate.y;
 
