@@ -64,6 +64,9 @@ private:
 	std::unique_ptr<CollectEffectUI> collectEffectUI_;
 
 	float alertTImer_ = 0.0f;
+	
+	uint32_t timeSH_ = 0;
+	bool isPlaySH_ = false;
 
 private:
 

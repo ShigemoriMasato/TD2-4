@@ -3,6 +3,8 @@
 #include"Utility/Easing.h"
 #include"RandomGenerator.h"
 
+#include"Assets/Audio/AudioManager.h"
+
 void CollectEffectUI::Initialize(DrawData spriteDrawData, int texture, int lineTexture) {
 
 	instancingObject_ = std::make_unique<InstancingObject>();
@@ -24,6 +26,13 @@ void CollectEffectUI::Initialize(DrawData spriteDrawData, int texture, int lineT
 	lineSpriteObject_->color_ = { 1.0f,1.0f,1.0f,0.9f };
 	lineSpriteObject_->texture_ = lineTexture;
 	lineSpriteObject_->Update();
+
+	sh_ = AudioManager::GetInstance().GetHandleByName("GetOreItem_OverNorma.mp3");
+}
+
+void CollectEffectUI::Audio() {
+	// 音声を再生
+	AudioManager::GetInstance().Play(sh_, 0.5f, false);
 }
 
 void CollectEffectUI::Update() {
