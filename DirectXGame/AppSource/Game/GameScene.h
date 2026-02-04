@@ -198,6 +198,8 @@ private: // デバックの調整項目
 	// 最大の鉱石数
 	int32_t maxOreItemNum_ = 20;
 
+	bool selectSceneBack_ = false;
+
 private:
 
 	// 恒常的な更新処理

@@ -456,12 +456,10 @@ void GameScene::InitializeOtherScene() {
 	// リトライ
 	gameOverUI_->SetOnRetryClicked([this]() {
 		isSceneChange_ = true;
-		isRetry_ = true;
 		});
 	// 選択
 	gameOverUI_->SetOnSelectClicked([this]() {
 		isSceneChange_ = true;
-		isRetry_ = false;
 		});
 
 	// フロアクリアのテクスチャを取得
@@ -474,16 +472,14 @@ void GameScene::InitializeOtherScene() {
 	clearUI_->Initialize(drawDataManager_->GetDrawData(spriteModel.drawDataIndex), commonData_->keyManager.get(), fontName, drawData, fontLoader_, hasNextMap_, florClerTexIndex, starTextureIndex);
 	// リトライ
 	clearUI_->SetOnRetryClicked([this]() {
-		/*isSceneChange_ = true;
-		isRetry_ = true;*/
+		/*isSceneChange_ = true;*/
 
 		hasNextMap_ = true;
 
 		});
 	// 選択
 	clearUI_->SetOnSelectClicked([this]() {
-		/*isSceneChange_ = true;
-		isRetry_ = false;*/
+		/*isSceneChange_ = true;*/
 
 		hasNextMap_ = false;
 
@@ -520,7 +516,7 @@ void GameScene::InitializeOtherScene() {
 	pauseUI_->SetOnSelectClicked([this]() {
 		isPauseScene_ = true;
 		isSceneChange_ = true;
-		isRetry_ = false;
+		selectSceneBack_ = true;
 		});
 }
 
@@ -631,6 +627,13 @@ std::unique_ptr<IScene> GameScene::Update() {
 		// ゲームオーバーシーンに移動
 		isGameOver_ = true;
 		SaveGameData();
+	}
+
+	//====================================================
+	// ポーズシーンでselectシーンに戻るよう要求された場合
+	//====================================================
+	if (selectSceneBack_) {
+		return std::make_unique<SelectScene>();
 	}
 
 	return nullptr;
