@@ -12,7 +12,7 @@ void PauseUI::Initialize(DrawData drawData, uint32_t texture, KeyManager* keyMan
 	bgSpriteObject_ = std::make_unique<SpriteObject>();
 	bgSpriteObject_->Initialize(drawData, { 520.0f,720.0f });
 	bgSpriteObject_->transform_.position = { 640.0f,360.0f,0.0f };
-	bgSpriteObject_->color_ = { 0.0f,0.0f,0.0f,0.9f };
+	bgSpriteObject_->color_ = { 0.0f,0.0f,0.0f,0.7f };
 	bgSpriteObject_->SetTexture(0);
 	bgSpriteObject_->Update();
 

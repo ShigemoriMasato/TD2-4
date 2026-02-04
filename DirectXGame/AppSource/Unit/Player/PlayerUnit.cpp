@@ -21,6 +21,9 @@ void PlayerUnit::Init(MapChipField* mapChipField, DrawData drawData, int pIndex,
 	object_ = std::make_unique<PlayerUnitObject>();
 	object_->Initialize(drawData,pIndex);
 
+	oreOutLineObject_ = std::make_unique<OreOutLineObject>();
+	oreOutLineObject_->Initialize(drawData);
+
 	// 初期位置を設定
 	object_->transform_.position = pos;
 	object_->transform_.rotate.y = std::numbers::pi_v<float>;
@@ -83,12 +86,18 @@ void PlayerUnit::Update() {
 	// 更新処理
 	object_->Update();
 
+	oreOutLineObject_->transform_ = object_->transform_;
+	oreOutLineObject_->transform_.scale = object_->transform_.scale * 1.08f;
+	oreOutLineObject_->Update();
+
 	// 当たり判定の位置を更新
 	circleCollider_.center.x = object_->transform_.position.x;
 	circleCollider_.center.y = object_->transform_.position.z;
 }
 
 void PlayerUnit::Draw(Window* window, const Matrix4x4& vpMatrix) {
+
+	oreOutLineObject_->Draw(window, vpMatrix);
 	// 描画
 	object_->Draw(window, vpMatrix);
 

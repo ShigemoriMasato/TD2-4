@@ -88,7 +88,7 @@ void SelectScene::Initialize() {
 		stagePointObjects_[i]->Initialize(drawDataManager_->GetDrawData(stageModel.drawDataIndex),0);
 		stagePointObjects_[i]->transform_.position = { i * 6.0f,-1.8f,0.0f };
 		stagePointObjects_[i]->transform_.scale = { 1.5f,0.2f,1.5f };
-		stagePointObjects_[i]->material_.color = { 1.0f,0.0f,0.0f,1.0f };
+		stagePointObjects_[i]->material_.color = { 0.4f,0.4f,0.4f,1.0f };
 		stagePointObjects_[i]->Update();
 	}
 

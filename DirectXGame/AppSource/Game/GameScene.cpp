@@ -562,16 +562,7 @@ std::unique_ptr<IScene> GameScene::Update() {
 	//====================================================
 	if (isGameOver_) {
 		if (gameOverTask_->Update(FpsCount::deltaTime)) {
-			int goldNum = OreItemStorageNum::currentOreItemNum_;
-			int oreNum = unitManager_->GetMaxOreCount();
-			int norma = currentMap_.norma;
-			commonData_->normaAndScore_.push_back({ norma, goldNum });
-			commonData_->sumGoldNum_ += goldNum;
-			commonData_->maxGoldNum = std::max(commonData_->maxGoldNum, goldNum);
-			commonData_->killOreNum += commonData_->oreNum - oreNum;
-			commonData_->oreNum = oreNum;
-			commonData_->goldNum = goldNum;
-
+			SaveGameData();
 			return std::make_unique<ResultScene>();
 		}
 	}
@@ -580,30 +571,11 @@ std::unique_ptr<IScene> GameScene::Update() {
 
 		//以下シーン切り替えについて
 		if (hasNextMap_) {
-
-			int goldNum = OreItemStorageNum::currentOreItemNum_;
-			int oreNum = unitManager_->GetMaxOreCount();
-			int norma = currentMap_.norma;
-			commonData_->normaAndScore_.push_back({ norma, goldNum });
-			commonData_->sumGoldNum_ += goldNum;
-			commonData_->maxGoldNum = std::max(commonData_->maxGoldNum, goldNum);
-			commonData_->killOreNum += commonData_->oreNum - oreNum;
-			commonData_->oreNum = oreNum;
-			commonData_->goldNum = goldNum;
-
+			SaveGameData();
 			return std::make_unique<OreAddScene>();
 
 		} else {
-
-			int goldNum = OreItemStorageNum::currentOreItemNum_;
-			int oreNum = unitManager_->GetMaxOreCount();
-			int norma = currentMap_.norma;
-			commonData_->normaAndScore_.push_back({ norma, goldNum });
-			commonData_->sumGoldNum_ += goldNum;
-			commonData_->maxGoldNum = std::max(commonData_->maxGoldNum, goldNum);
-			commonData_->killOreNum += commonData_->oreNum - oreNum;
-			commonData_->oreNum = oreNum;
-			commonData_->goldNum = goldNum;
+			SaveGameData();
 
 			//終了処理(とりあえずの仮置き)
 			return std::make_unique<ResultScene>();
@@ -629,7 +601,7 @@ std::unique_ptr<IScene> GameScene::Update() {
 			oreItemManager_->GetCurrentOreItemNum() <= 0) {
 
 			clearUI_->Start(true);
-			SaveGameData();
+			//SaveGameData();
 
 			// クリア音声を再生
 			if (!isPlayClearSH_) {
@@ -640,7 +612,7 @@ std::unique_ptr<IScene> GameScene::Update() {
 		} else {
 
 			isGameOver_ = true;
-			SaveGameData();
+			//SaveGameData();
 
 		}
 	}
@@ -649,7 +621,7 @@ std::unique_ptr<IScene> GameScene::Update() {
 	if (unitManager_->GetMaxOreCount() <= 0) {
 		// ゲームオーバーシーンに移動
 		isGameOver_ = true;
-		SaveGameData();
+		//SaveGameData();
 	}
 
 	//====================================================
@@ -1108,18 +1080,14 @@ Vector3 GameScene::GetPlayerInitPosition() {
 
 void GameScene::SaveGameData() {
 
-	//合計の集計
-	commonData_->sumGoldNum_ += OreItemStorageNum::maxOreItemNum_;
-	//最大値の更新
-	commonData_->maxGoldNum = std::max(commonData_->maxGoldNum, OreItemStorageNum::maxOreItemNum_);
-	//ノルマと獲得数の保存
-	commonData_->normaAndScore_.push_back(std::make_pair(OreItemStorageNum::currentOreItemNum_, currentMap_.norma));
-	//殺したOreの数
-	commonData_->killOreNum += commonData_->oreNum - unitManager_->GetOreCount();
-
-	//OreAddで使う、ゲームシーンで取得した鉱石の数
-	commonData_->goldNum = OreItemStorageNum::currentOreItemNum_;
-	//OreAddで使う、ゲームシーンで残っているOre
-	commonData_->oreNum = unitManager_->GetOreCount();
+	int goldNum = OreItemStorageNum::currentOreItemNum_;
+	int oreNum = unitManager_->GetMaxOreCount();
+	int norma = currentMap_.norma;
+	commonData_->normaAndScore_.push_back({ norma, goldNum });
+	commonData_->sumGoldNum_ += goldNum;
+	commonData_->maxGoldNum = std::max(commonData_->maxGoldNum, goldNum);
+	commonData_->killOreNum += commonData_->oreNum - oreNum;
+	commonData_->oreNum = oreNum;
+	commonData_->goldNum = goldNum;
 
 }
