@@ -37,10 +37,10 @@ void Difficult::Initialize(ModelManager* modelManager, DrawDataManager* drawData
 	difficultNumber_ = std::make_unique<Number>();
 	difficultNumber_->Initialize("YDWbananaslipplus.otf", drawData, fontLoader);
 
-	difficultNumber_->SetNumber(difficult_ * 15);
+	number = difficult_ * 5;
+	difficultNumber_->SetNumber(number);
 	difficultNumber_->SetAfterOffset(L" %");
 
-	number = difficult_ * 15;
 }
 
 void Difficult::Update(float deltaTime) {
@@ -57,7 +57,7 @@ void Difficult::Update(float deltaTime) {
 
 	modelParentTransform_.rotate.y = lerp(targetRotateY_, 0.0f, t, EaseType::EaseOutExpo);
 
-	number = lerp(number, difficult_ * 15, t);
+	number = lerp(number, difficult_ * 5, t);
 
 	difficultNumber_->SetNumber(number);
 	difficultNumber_->Update(deltaTime);
@@ -113,7 +113,7 @@ void Difficult::Draw(Window* window, const Matrix4x4& vpMat) {
 }
 
 void Difficult::DifficultyUp(bool up) {
-	if (up) {
+	if (up && difficult_  < 4) {
 		difficult_++;
 
 		prevY_ = targetY_;

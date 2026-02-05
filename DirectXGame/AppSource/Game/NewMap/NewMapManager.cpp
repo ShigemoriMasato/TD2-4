@@ -84,7 +84,7 @@ CurrentStageConfig NewMapManager::GetEndlessMap(int stageCount, int prevMap) {
 	int factID = rand() % int(maps.size());
 	CurrentStageConfig config;
 
-	config.norma = std::min(stageCount * 3 + 17, 35);
+	config.norma = std::min(stageCount * 3 + 20, 35);
 	config.initOreNum = 10;
 	config.currentMapID = maps[factID];
 	int dir = (rand() % 2) * 2;
