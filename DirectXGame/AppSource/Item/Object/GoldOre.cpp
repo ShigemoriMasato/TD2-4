@@ -5,12 +5,7 @@
 #include"Unit/Ore/OreUnit.h"
 
 GoldOre::~GoldOre() {
-	for (OreUnit* unit : linkedUnits_) {
-		if (unit) {
-			// ここでのポインタをnullにさせる
-			unit->NotifyOreDespawn();
-		}
-	}
+
 }
 
 void GoldOre::Init(DrawData drawData, int texture, const Vector3& pos, OreType type, const float& rotY) {
@@ -80,6 +75,16 @@ void GoldOre::Update() {
 
 	// 体力がないと死亡
 	if (hp_ <= 0) {
+
+		if (!isDead_) {
+			for (OreUnit* unit : linkedUnits_) {
+				if (unit) {
+					// ここでのポインタをnullにさせる
+					unit->NotifyOreDespawn();
+				}
+			}
+			linkedUnits_.clear();
+		}
 		isDead_ = true;
 	}
 }
