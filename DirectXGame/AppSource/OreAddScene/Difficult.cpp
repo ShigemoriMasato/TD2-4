@@ -41,6 +41,7 @@ void Difficult::Initialize(ModelManager* modelManager, DrawDataManager* drawData
 	difficultNumber_->SetNumber(number);
 	difficultNumber_->SetAfterOffset(L" %");
 
+	prevY_ = -downHeight_ * difficult_;
 }
 
 void Difficult::Update(float deltaTime) {
