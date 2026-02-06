@@ -3,8 +3,6 @@
 #include <Render/RenderObject.h>
 #include <Camera/DebugCamera.h>
 #include <Render/DebugLine.h>
-#include <ModelEditScene/Render/MapRender.h>
-#include <ModelEditScene/Render/DebugMCRender.h>
 
 #include"Common/DebugParam/ParamManager.h"
 
@@ -21,39 +19,4 @@ public:
 private:
 
 	std::unique_ptr<DebugCamera> debugCamera_;
-	std::unique_ptr<Camera> orthoCamera_;
-
-	struct VSData {
-		Matrix4x4 worldMatrix = Matrix4x4::Identity();
-		Matrix4x4 vpMatrix = Matrix4x4::Identity();
-	};
-	std::vector<WellForGPU> skinningMatrices_;
-	std::unique_ptr<RenderObject> renderObject_;
-	VSData vsData_{};
-	int vsDataIndex_ = -1;
-	std::unique_ptr<DebugLine> debugLine_;
-
-	std::unique_ptr<RenderObject> fontTest_;
-	Matrix4x4 wvpMat_{};
-	std::vector<CharPosition> charPositions_;
-	Vector4 fontColor_ = {1.0f, 1.0f, 1.0f, 1.0f};
-	char willLoadPath_[256] = "ABC";
-	std::wstring text_ = L"ABC";
-	Transform transform_{};
-
-	std::string fontName = "ZenOldMincho-Medium.ttf";
-
-	// パラメーター管理
-	std::unique_ptr<ParamManager> paramManager_;
-	// テストパラメーター
-	float testParam_ = 0.0f;
-
-	std::unique_ptr<RenderObject> modelTest_ = nullptr;
-
-
-	// MapRender用
-	std::unique_ptr<MapRender> mapRender_ = nullptr;
-	std::unique_ptr<DebugMCRender> debugMCRender_ = nullptr;
-	std::map<TileType, Vector3> colorMap_{};
-	NewMap currentMap_;
 };

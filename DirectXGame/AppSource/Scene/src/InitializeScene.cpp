@@ -1,15 +1,8 @@
 #include "../InitializeScene.h"
 #include <Test/TestScene.h>
-#include <Game/GameScene.h>
-#include <ModelEditScene/ModelEditScene.h>
-#include<Game/SelectScene.h>
-#include <OreAddScene/OreAddScene.h>
-#include <ResultScene/ResultScene.h>
 #include <imgui/imgui.h>
 #include <Utility/DataStructures.h>
 #include<Common/DebugParam/GameParamEditor.h>
-#include <LightManager.h>
-#include"RandomGenerator.h"
 #include"Assets/Audio/AudioManager.h"
 
 #ifdef USE_IMGUI
@@ -31,22 +24,11 @@ void InitializeScene::Initialize() {
 	drawDataManager_->AddVertexBuffer(vertices);
 	commonData_->postEffectDrawDataIndex = drawDataManager_->CreateDrawData();
 
-	commonData_->newMapManager = std::make_unique<NewMapManager>();
-	commonData_->newMapManager->Initialize(modelManager_, textureManager_);
-
 	// 保存されているパラメーターを取得する
 	GameParamEditor::GetInstance()->LoadFiles();
 
 	// テクスチャを全てロード
 	textureManager_->LoadAllTextures();
-
-	//commonData_->nextStageIndex = commonData_->stageCount;
-	commonData_->nextMapIndex = 0;
-
-	LightManager::GetInstance()->Load();
-  
-  // ランダム生成器を初期化
-	RandomGenerator::Initialize();
 
 	// 音声シーンを初期化
 	AudioManager::GetInstance().Initialize();
@@ -55,10 +37,7 @@ void InitializeScene::Initialize() {
 }
 
 std::unique_ptr<IScene> InitializeScene::Update(){
-	//return std::make_unique<OreAddScene>();
-	//return std::make_unique<ModelEditScene>();
-	return std::make_unique<SelectScene>();
-	//return std::make_unique<GameScene>();
+	return std::make_unique<TestScene>();
 }
 
 void InitializeScene::Draw() {
@@ -115,17 +94,6 @@ void InitializeScene::CreateDisplay() {
 		display->Initialize(textureData, textureData2);
 
 		commonData_->mainWindow->AddDisplay(textureIndex, "Main Display", 1280 / 2, 720 / 2);
-	}
-
-	{
-		auto& minidisp = commonData_->miniMapDisplay;
-		minidisp = std::make_unique<DualDisplay>("MiniMapDisplay");
-		uint32_t clearColor = 0x000000ff;
-		int textureIndex = textureManager_->CreateWindowTexture(1280, 720, clearColor);
-		int textureIndex2 = textureManager_->CreateWindowTexture(1280, 720, clearColor);
-		auto textureData = textureManager_->GetTextureData(textureIndex);
-		auto textureData2 = textureManager_->GetTextureData(textureIndex2);
-		minidisp->Initialize(textureData, textureData2);
 	}
 }
 
