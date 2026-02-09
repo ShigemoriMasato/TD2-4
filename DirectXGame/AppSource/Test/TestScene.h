@@ -4,8 +4,6 @@
 #include <Camera/DebugCamera.h>
 #include <Render/DebugLine.h>
 
-#include"Common/DebugParam/ParamManager.h"
-
 class TestScene : public IScene {
 public:
 

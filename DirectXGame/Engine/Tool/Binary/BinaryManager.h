@@ -1,83 +1,76 @@
 #pragma once
-#include <memory>
-#include "Data/BinaryOutput.h"
-#include "Data/BinaryInput.h"
 #include <string>
-#include <vector>
+#include "Value.h"
 
-//std::vectorと、std::stringやstd::vectorを含むクラス以外の型に対応
+using BinaryData = std::string;
 
-/**
- * @class BinaryManager
- * @brief バイナリデータの読み書きを管理するクラス
- * 
- * Assets/Bin内のデータをバイナリ形式で保存・読み込みする機能を提供。
- * 様々な型のデータをValueとして登録し、ファイルへの書き込みや読み込みが可能。
- * std::vector、std::string、およびこれらを含むクラスに対応する。
- */
 class BinaryManager {
 public:
 
-	/// @brief コンストラクタ。保存先ディレクトリを作成する
-	BinaryManager();
-	
-	/// @brief デストラクタ
-	~BinaryManager();
-
-	/**
-	 * @brief 出力データを登録
-	 * @tparam T データ型
-	 * @param value 登録する値
-	 * @param name 値の名前（オプション）
-	 */
 	template<typename T>
-	void RegisterOutput(T value, std::string name = "") {
-		values_.push_back(std::make_shared<Value<T>>(value, name));
-	};
+	void RegisterOutput(T* data);
+	void Write(const std::string& fileName);
 
-	/**
-	 * @brief ValueBaseを直接登録
-	 * @param value 登録するValueBase
-	 */
-	void RegisterOutput(ValueBase* value) {
-		values_.push_back(value->Clone());
-	}
-
-	/**
-	 * @brief ValueBaseから元の型に復元
-	 * @tparam T 復元する型
-	 * @param value ValueBase
-	 * @return 復元された値
-	 */
+	BinaryData Read(const std::string& fileName);
 	template<typename T>
-	static T Reverse(ValueBase* value) {
-		return static_cast<Value<T>*>(value)->value;
-	}
-
-	/**
-	 * @brief 登録したデータをファイルに書き込む
-	 * 
-	 * 実行後、登録したValueはクリアされる。
-	 * @param fileName ファイル名（拡張子なし）
-	 */
-	void Write(std::string fileName);
-
-	/**
-	 * @brief ファイルからValueを読み込む
-	 * @param fileName ファイル名
-	 * @return 読み込んだValueの配列
-	 */
-	std::vector<std::shared_ptr<ValueBase>> Read(std::string fileName);
+	T Reverse(BinaryData& buffer);
 
 private:
 
-	/// @brief バイナリ入力処理クラス
-	static std::unique_ptr<BinaryInput> input_;
-	/// @brief バイナリ出力処理クラス
-	static std::unique_ptr<BinaryOutput> output_;
-	/// @brief 登録されたValueのリスト
-	std::vector<std::shared_ptr<ValueBase>> values_;
+	BinaryData binaryBuffer_;
 
-	/// @brief データの保存先パス
-	static const std::string basePath_;
+	static constexpr size_t idSize = sizeof(TypeID);
+	static constexpr size_t sizeSize = sizeof(size_t);
+	static constexpr size_t headerSize = idSize + sizeSize;
 };
+
+template<typename T>
+void BinaryManager::RegisterOutput(T* data) {
+	constexpr TypeID currentID = TypeIDResolver<T>::id;
+	size_t size = sizeof(T);
+
+	// 未対応の型の場合は登録しない
+	if (currentID == TypeID::kUnknown) {
+		return;
+	}
+
+	/* ID->Size->値 */
+	binaryBuffer_.append(static_cast<const char*>(&currentID), sizeof(TypeID));
+
+	if (currentID == TypeID::String) {
+		// 文字列の場合はサイズを文字数分にする
+		size = strlen(static_cast<const char*>(data));
+		binaryBuffer_.append(static_cast<const char*>(&size), sizeof(size_t));
+
+	} else {
+		binaryBuffer_.append(static_cast<const char*>(&size), sizeof(size_t));
+	}
+	binaryBuffer_.append(static_cast<const char*>(data), size);
+}
+
+template<typename T>
+T BinaryManager::Reverse(BinaryData& buffer) {
+	T value{};
+
+	if (buffer.size() < headerSize) {
+		return value;
+	}
+
+	TypeID id;
+	size_t size;
+
+	std::memcpy(&id, buffer.data(), idSize);
+	std::memcpy(&size, buffer.data() + idSize, sizeSize);
+
+	if (id != TypeIDResolver<T>::id) {
+		return value;
+	}
+
+	if(buffer.size() < headerSize + size) {
+		return value;
+	}
+
+	std::memcpy(&value, buffer.data() + headerSize, sizeof(T));
+	buffer.erase(0, headerSize + size);
+	return value;
+}

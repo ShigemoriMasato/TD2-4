@@ -33,7 +33,6 @@ enum class TypeID : uint8_t {
 
 	//構造体とか
 	Custom = 0x80,
-	DirectionalLight,
 };
 
 struct Vector2;
@@ -50,14 +49,12 @@ template<> struct TypeIDResolver<float> { static constexpr TypeID id = TypeID::F
 template<> struct TypeIDResolver<bool> { static constexpr TypeID id = TypeID::Bool; };
 template<> struct TypeIDResolver<std::string> { static constexpr TypeID id = TypeID::String; };
 template<> struct TypeIDResolver<double> { static constexpr TypeID id = TypeID::Double; };
-template<> struct TypeIDResolver<std::vector<int>> { static constexpr TypeID id = TypeID::Vector; };
 template<> struct TypeIDResolver<uint8_t> { static constexpr TypeID id = TypeID::uint8_t; };
 template<> struct TypeIDResolver<uint16_t> { static constexpr TypeID id = TypeID::uint16_t; };
 template<> struct TypeIDResolver<uint32_t> { static constexpr TypeID id = TypeID::uint32_t; };
 template<> struct TypeIDResolver<Vector2> { static constexpr TypeID id = TypeID::Vector2; };
 template<> struct TypeIDResolver<Vector3> { static constexpr TypeID id = TypeID::Vector3; };
 template<> struct TypeIDResolver<Vector4> { static constexpr TypeID id = TypeID::Vector4; };
-template<> struct TypeIDResolver<DirectionalLight> { static constexpr TypeID id = TypeID::DirectionalLight; };
 
 class ValueBase {
 public:

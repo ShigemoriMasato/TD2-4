@@ -33,20 +33,11 @@ int FontLoader::Load(const std::string& filePath, int fontSize) {
 
 	logger_->info("FontLoader Load: {}", factPath.string());
 
-	auto values = binaryManager_.Read(cachePath_ + cacheFileName);
 	FontData fontBuffer;
 
-	//キャッシュデータを何らかの方法で作成する
-	if (values.empty()) {
-		//キャッシュが存在しない場合
-		//フォントデータを新規作成
-		fontBuffer = CreateFontBuffer(factPath.string(), fontSize);
-		//キャッシュを作成仕様と思ったが現状げろクソ重くなるのでやりません
-	} else {
-		//キャッシュが存在する場合
-		int index = 0;
-		LoadCache(values, fontBuffer);
-	}
+	//フォントデータを新規作成
+	fontBuffer = CreateFontBuffer(factPath.string(), fontSize);
+
 
 	int textureID = textureManager_->CreateBitmapTexture(atlas_width_, atlas_height_, fontBuffer.atlasData);
 	fontBuffer.textureIndex = textureID;
@@ -211,52 +202,4 @@ std::string FontLoader::FilePathChecker(const std::string& filePath) {
 	}
 
 	return {};
-}
-
-void FontLoader::CreateCache(const FontData& data, const std::string& cacheFileName) {
-
-	//AtlasData
-	binaryManager_.RegisterOutput(static_cast<int>(data.lastUsedIndex));
-	for (int i = 0; i < data.lastUsedIndex; ++i) {
-		binaryManager_.RegisterOutput(uint8_t(data.atlasData[i]) | 0xff);
-	}
-
-	//CharPositions
-	binaryManager_.RegisterOutput(static_cast<int>(data.charPositions.size()));
-	for (const auto& [key, value] : data.charPositions) {
-		binaryManager_.RegisterOutput(static_cast<int>(key));
-		binaryManager_.RegisterOutput(value.uvStart);
-		binaryManager_.RegisterOutput(value.uvEnd);
-	}
-
-	if (std::filesystem::exists(cachePath_) == false) {
-		std::filesystem::create_directories(cachePath_);
-	}
-
-	binaryManager_.Write("cache/" + cacheFileName);
-}
-
-void FontLoader::LoadCache(const std::vector<std::shared_ptr<ValueBase>>& values, FontData& data) {
-	if (values.empty()) {
-		return;
-	}
-
-	int index = 0;
-	//AtlasData
-	data.lastUsedIndex = BinaryManager::Reverse<int>(values[index++].get());
-	data.atlasData.resize(atlas_width_ * atlas_height_, 0);
-	for (int i = 0; i < data.lastUsedIndex; ++i) {
-		data.atlasData[i] = 0xffffff00 | BinaryManager::Reverse<uint8_t>(values[index++].get());
-	}
-	//CharPositions
-	int charPosSize = BinaryManager::Reverse<int>(values[index++].get());
-	for (int i = 0; i < charPosSize; ++i) {
-		wchar_t key = static_cast<wchar_t>(BinaryManager::Reverse<int>(values[index++].get()));
-		Vector2 uvStart = BinaryManager::Reverse<Vector2>(values[index++].get());
-		Vector2 uvEnd = BinaryManager::Reverse<Vector2>(values[index++].get());
-		CharPosition charPos;
-		charPos.uvStart = uvStart;
-		charPos.uvEnd = uvEnd;
-		data.charPositions[key] = charPos;
-	}
 }

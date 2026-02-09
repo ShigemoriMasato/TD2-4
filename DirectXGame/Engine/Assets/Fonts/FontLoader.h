@@ -43,8 +43,6 @@ private:
 	std::string FilePathChecker(const std::string& filePath);
 
 	FontData CreateFontBuffer(const std::string& filePath, int fontSize);
-	void CreateCache(const FontData& data, const std::string& cacheFileName);
-	void LoadCache(const std::vector<std::shared_ptr<ValueBase>>& values, FontData& data);
 
 private://フォント関係
 	std::vector<wchar_t> text_;
@@ -52,12 +50,12 @@ private://フォント関係
 	std::unordered_map<std::string, FT_Face> fonts_;
 
 private://入出力関係
-	BinaryManager binaryManager_;
+
 	std::string basePath_ = "Assets/Fonts/";
-	std::string cachePath_ = "Assets/Binary/cache/";
 	std::string responseTextFile_ = "Assets/.EngineResource/Fonts/response.txt";
 
 private://アトラス関係
+
 	const int atlas_width_ = 4096;
 	const int atlas_height_ = 4096;
 

@@ -1,60 +1,71 @@
 #include "BinaryManager.h"
-#include <fstream>
 #include <filesystem>
-
-std::unique_ptr<BinaryInput> BinaryManager::input_ = std::make_unique<BinaryInput>();
-std::unique_ptr<BinaryOutput> BinaryManager::output_ = std::make_unique<BinaryOutput>();
-std::string const BinaryManager::basePath_ = "Assets/Binary/";
+#include <fstream>
+#include <ostream>
 
 namespace fs = std::filesystem;
 
-BinaryManager::BinaryManager() {
-	fs::create_directories(basePath_);
+template<>
+void BinaryManager::RegisterOutput<std::string>(std::string* data) {
+	constexpr TypeID id = TypeIDResolver<std::string>::id;
+	size_t size = data->size();
+
+	binaryBuffer_.append(reinterpret_cast<const char*>(&id), sizeof(id));
+	binaryBuffer_.append(reinterpret_cast<const char*>(&size), sizeof(size));
+	binaryBuffer_.append(data->data(), size);
 }
 
-BinaryManager::~BinaryManager() {
+template<>
+std::string BinaryManager::Reverse<std::string>(BinaryData& buffer) {
+	std::string value;
+
+	if (buffer.size() < headerSize) {
+		return value;
+	}
+
+	TypeID id;
+	size_t size;
+	std::memcpy(&id, buffer.data(), idSize);
+	std::memcpy(&size, buffer.data() + idSize, sizeSize);
+
+	if(id != TypeIDResolver<std::string>::id) {
+		return value;
+	}
+
+	if(buffer.size() < headerSize + size) {
+		return value;
+	}
+
+	value.resize(size);
+	std::memcpy(value.data(), buffer.data() + headerSize, size);
+	buffer.erase(0, headerSize + size);
+
+	return value;
 }
 
-void BinaryManager::Write(std::string fileName) {
+void BinaryManager::Write(const std::string& fileName) {
+	std::ofstream file(fileName, std::ios::binary);
 
-	std::ofstream file(basePath_ + fileName + ".sg", std::ios::binary);
-
-	if (!file.is_open()) {
-		return;
+	if (!file) {
+		throw std::runtime_error("Failed to open file for writing: " + fileName);
 	}
 
-	for (auto v : values_) {
-		output_->WriteBinary(file, v.get());
-	}
-
-	values_.clear();
+	file.write(binaryBuffer_.data(), binaryBuffer_.size());
 
 	file.close();
 }
 
-std::vector<std::shared_ptr<ValueBase>> BinaryManager::Read(std::string fileName) {
-
-	std::filesystem::path factPath = basePath_ + fileName;
-	if (factPath.extension().empty()) {
-		factPath += ".sg";
-	}
-	
-	std::ifstream file(factPath, std::ios::binary);
-	if (!file.is_open()) {
-		return {};
+BinaryData BinaryManager::Read(const std::string& fileName) {
+	std::ifstream file(fileName, std::ios::binary);
+	if (!file) {
+		throw std::runtime_error("Failed to open file for reading: " + fileName);
 	}
 
-	std::vector<std::shared_ptr<ValueBase>> ans;
+	const auto fileSize = fs::file_size(fileName);
+	std::string buffer;
+	buffer.resize(fileSize);
 
-	while(file.peek() != EOF) {
-		auto val = input_->ReadBinary(file);
-		if (!val) {
-			break;
-		}
-		ans.push_back(val);
-	}
+	file.read((char*)buffer.data(), fs::file_size(fileName));
 
-	file.close();
-
-	return ans;
+	return buffer;
 }

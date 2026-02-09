@@ -82,6 +82,14 @@ public:
 	/// @return Display*
 	Display* GetDisplay() const { return swapChain_->GetCurrentDisplay(); }
 
+	/**
+	 * @brief ウィンドウの表示状態を設定する
+	 * @param state 表示状態
+	 */
+	void SetState(WindowsApp::ShowType state) {
+		windowApp_->Show(state);
+	}
+
 private:
 
 	/// @brief コマンドオブジェクト

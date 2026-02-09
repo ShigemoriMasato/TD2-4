@@ -2,7 +2,6 @@
 #include <Test/TestScene.h>
 #include <imgui/imgui.h>
 #include <Utility/DataStructures.h>
-#include<Common/DebugParam/GameParamEditor.h>
 #include"Assets/Audio/AudioManager.h"
 
 #ifdef USE_IMGUI
@@ -23,9 +22,6 @@ void InitializeScene::Initialize() {
 	};
 	drawDataManager_->AddVertexBuffer(vertices);
 	commonData_->postEffectDrawDataIndex = drawDataManager_->CreateDrawData();
-
-	// 保存されているパラメーターを取得する
-	GameParamEditor::GetInstance()->LoadFiles();
 
 	// テクスチャを全てロード
 	textureManager_->LoadAllTextures();
@@ -93,7 +89,7 @@ void InitializeScene::CreateDisplay() {
 		auto textureData2 = textureManager_->GetTextureData(textureIndex2);
 		display->Initialize(textureData, textureData2);
 
-		commonData_->mainWindow->AddDisplay(textureIndex, "Main Display", 1280 / 2, 720 / 2);
+		commonData_->mainWindow->AddDisplay(display.get(), "Main Display", 1280 / 2, 720 / 2, true);
 	}
 }
 
@@ -156,56 +152,9 @@ void InitializeScene::SetupKeyManager() {
 	keyManager->SetStick(Key::DownTri, true, true, -0.5f);
 
 	keyManager->SetKey(Key::Decision, DIK_SPACE, KeyState::Trigger);
-
 	keyManager->SetKey(Key::DecisionPause, DIK_TAB, KeyState::Trigger);
 
-	//================================================================================
 
-	keyManager->SetKey(Key::HardDrop, DIK_W, KeyState::Trigger);
-	keyManager->SetKey(Key::HardDrop, DIK_SPACE, KeyState::Trigger);
-	keyManager->SetKey(Key::HardDrop, DIK_UPARROW, KeyState::Trigger);
-	keyManager->SetButton(Key::HardDrop, XBoxController::kUp, KeyState::Trigger);
-	keyManager->SetStick(Key::HardDrop, true, true, 0.5f);
-
-	keyManager->SetKey(Key::Hold, DIK_LSHIFT, KeyState::Trigger);
-	keyManager->SetKey(Key::Hold, DIK_C, KeyState::Trigger);
-	keyManager->SetKey(Key::Hold, DIK_H, KeyState::Trigger);
-	keyManager->SetKey(Key::Hold, DIK_L, KeyState::Trigger);
-	keyManager->SetKey(Key::Hold, DIK_RSHIFT, KeyState::Trigger);
-	keyManager->SetButton(Key::Hold, XBoxController::kLeftShoulder, KeyState::Trigger);
-	keyManager->SetButton(Key::Hold, XBoxController::kLeftTrigger, KeyState::Trigger);
-	keyManager->SetButton(Key::Hold, XBoxController::kRightShoulder, KeyState::Trigger);
-	keyManager->SetButton(Key::Hold, XBoxController::kLeftTrigger, KeyState::Trigger);
-
-	//================================================================================
-
-	keyManager->SetKey(Key::LRotate, DIK_Z, KeyState::Trigger);
-	keyManager->SetKey(Key::LRotate, DIK_J, KeyState::Trigger);
-	keyManager->SetButton(Key::LRotate, XBoxController::kX, KeyState::Trigger);
-
-	keyManager->SetKey(Key::RRotate, DIK_X, KeyState::Trigger);
-	keyManager->SetKey(Key::RRotate, DIK_K, KeyState::Trigger);
-	keyManager->SetButton(Key::RRotate, XBoxController::kY, KeyState::Trigger);
-
-	//================================================================================
-
-	keyManager->SetKey(Key::Correct, DIK_RETURN, KeyState::Trigger);
-	keyManager->SetKey(Key::Correct, DIK_SPACE, KeyState::Trigger);
-	keyManager->SetKey(Key::Correct, DIK_Z, KeyState::Trigger);
-	keyManager->SetButton(Key::Correct, XBoxController::kA, KeyState::Trigger);
-
-	keyManager->SetKey(Key::Reverse, DIK_X, KeyState::Trigger);
-	keyManager->SetButton(Key::Reverse, XBoxController::kB, KeyState::Trigger);
-
-	keyManager->SetKey(Key::Pause, DIK_ESCAPE, KeyState::Trigger);
-	keyManager->SetKey(Key::Pause, DIK_F1, KeyState::Trigger);
-	keyManager->SetButton(Key::Pause, XBoxController::kStart, KeyState::Trigger);
-
-	//================================================================================
-
-	keyManager->SetKey(Key::Restart, DIK_R, KeyState::Trigger);
-	keyManager->SetKey(Key::Restart, DIK_ESCAPE, KeyState::Trigger);
-	keyManager->SetButton(Key::Restart, XBoxController::kSelect, KeyState::Trigger);
 
 	keyManager->SetKey(Key::Debug1, DIK_F1, KeyState::Trigger);
 	keyManager->SetKey(Key::Debug2, DIK_F2, KeyState::Trigger);

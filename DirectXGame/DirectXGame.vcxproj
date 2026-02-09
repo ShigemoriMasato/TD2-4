@@ -160,12 +160,9 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="AppSource\Scene\src\InitializeScene.cpp" />
     <ClCompile Include="AppSource\Scene\src\IScene.cpp" />
     <ClCompile Include="AppSource\Scene\src\SceneManager.cpp" />
+    <ClCompile Include="Engine\Tool\Binary\BinaryManager.cpp" />
     <ClCompile Include="Engine\Assets\Audio\AudioManager.cpp" />
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
-    <ClCompile Include="AppSource\Common\DebugParam\GameParamEditor.cpp" />
-    <ClCompile Include="AppSource\Common\DebugParam\HierarchyWindow.cpp" />
-    <ClCompile Include="AppSource\Common\DebugParam\InspectorWindow.cpp" />
-    <ClCompile Include="AppSource\Common\DebugParam\ParamManager.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\AudioData.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\MP3Data.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\WAVData.cpp" />
@@ -200,9 +197,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="Engine\PSO\Shelf\RasterizerShelf.cpp" />
     <ClCompile Include="Engine\PSO\Shelf\RootSignatureShelf.cpp" />
     <ClCompile Include="Engine\PSO\Shelf\ShaderShelf.cpp" />
-    <ClCompile Include="Engine\Tool\Binary\BinaryManager.cpp" />
-    <ClCompile Include="Engine\Tool\Binary\Data\BinaryInput.cpp" />
-    <ClCompile Include="Engine\Tool\Binary\Data\BinaryOutput.cpp" />
     <ClCompile Include="Engine\Tool\FPS\FPSObserver.cpp" />
     <ClCompile Include="Engine\Utility\src\ConvertString.cpp" />
     <ClCompile Include="Engine\Utility\src\Easing.cpp" />
@@ -211,7 +205,9 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="AppSource\Scene\InitializeScene.h" />
     <ClInclude Include="AppSource\Scene\IScene.h" />
     <ClInclude Include="AppSource\Scene\SceneManager.h" />
+    <ClInclude Include="Engine\Tool\Binary\BinaryManager.h" />
     <ClInclude Include="Engine\Assets\Audio\AudioManager.h" />
+    <ClInclude Include="Engine\Tool\Binary\Value.h" />
     <ClInclude Include="Engine\Utility\Quaternion.h" />
     <ClCompile Include="AppSource\Common\GameWindow.cpp" />
     <ClCompile Include="Engine\Core\src\ImGuiforEngine.cpp" />
@@ -236,10 +232,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="Engine\Assets\Fonts\FontLoader.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AppSource\Common\DebugParam\GameParamEditor.h" />
-    <ClInclude Include="AppSource\Common\DebugParam\HierarchyWindow.h" />
-    <ClInclude Include="AppSource\Common\DebugParam\InspectorWindow.h" />
-    <ClInclude Include="AppSource\Common\DebugParam\ParamManager.h" />
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
     <ClInclude Include="Engine\Assets\Audio\Data\MP3Data.h" />
     <ClInclude Include="Engine\Assets\Audio\Data\WAVData.h" />
@@ -279,10 +271,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="Engine\PSO\Shelf\RasterizerShelf.h" />
     <ClInclude Include="Engine\PSO\Shelf\RootSignatureShelf.h" />
     <ClInclude Include="Engine\PSO\Shelf\ShaderShelf.h" />
-    <ClInclude Include="Engine\Tool\Binary\BinaryManager.h" />
-    <ClInclude Include="Engine\Tool\Binary\Data\BinaryInput.h" />
-    <ClInclude Include="Engine\Tool\Binary\Data\BinaryOutput.h" />
-    <ClInclude Include="Engine\Tool\Binary\Data\Value.h" />
     <ClInclude Include="Engine\Tool\FPS\FPSObserver.h" />
     <ClInclude Include="Engine\Tool\Logger\Logger.h" />
     <ClInclude Include="Engine\Utility\ConvertString.h" />

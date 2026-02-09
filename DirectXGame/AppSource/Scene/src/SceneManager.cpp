@@ -1,14 +1,11 @@
 #include "../SceneManager.h"
 #include "Scene/InitializeScene.h"
-#include <Common/DebugParam/GameParamEditor.h>
 
 SceneManager::~SceneManager() {
-	GameParamEditor::GetInstance()->Finalize();
 }
 
 void SceneManager::Initialize(SHEngine* engine) {
 	commonData_ = std::make_unique<CommonData>();
-	// 初期シーンの設定
 	nextScene_ = std::make_unique<InitializeScene>();
 	engine_ = engine;
 }
@@ -23,7 +20,6 @@ void SceneManager::Update() {
 }
 
 void SceneManager::Draw() {
-	//絶対よくない
 	currentScene_->Draw();
 }
 
