@@ -85,7 +85,7 @@ struct Matrix4x4 final {
 
 struct Matrix3x3 {
 
-	static Matrix4x4 Identity() {
+	static Matrix3x3 Identity() {
 		return {
 			1,0,0,
 			0,1,0,

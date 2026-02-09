@@ -30,6 +30,13 @@ void InitializeScene::Initialize() {
 	AudioManager::GetInstance().Initialize();
 	// 音声データを全て読み込む
 	AudioManager::GetInstance().LoadAllAudio();
+
+	auto logger = getLogger("Test");
+	logger->info("Test Mat: {}\n{}", Matrix4x4::Identity(), Matrix3x3::Identity());
+	logger->info("Test Vec\n{}\n{}\n{}", Vector2(), Vector3(), Vector4());
+
+	commonData_->exeFinishedForEngine = true;
+
 }
 
 std::unique_ptr<IScene> InitializeScene::Update(){
@@ -60,7 +67,7 @@ void InitializeScene::CreateDisplay() {
 			case WM_DESTROY:
 				PostQuitMessage(0);
 				//WindowsProcが通っているかの確認用
-				cd->requireExeFinished = true;
+				cd->exeFinishedForEngine = true;
 				return 0;
 			}
 			return DefWindowProc(hwnd, msg, wparam, lparam);

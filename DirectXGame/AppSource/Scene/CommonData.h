@@ -7,7 +7,7 @@ struct CommonData {
 	std::unique_ptr<DualDisplay> display;
 	std::unique_ptr<GameWindow> mainWindow;
 	std::unique_ptr<KeyManager> keyManager;
-	bool requireExeFinished = false;
+	bool exeFinishedForEngine = false;
 	bool exeFinished = true;
 
 	int postEffectDrawDataIndex = -1;

@@ -208,6 +208,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="Engine\Tool\Binary\BinaryManager.h" />
     <ClInclude Include="Engine\Assets\Audio\AudioManager.h" />
     <ClInclude Include="Engine\Tool\Binary\Value.h" />
+    <ClInclude Include="Engine\Tool\Logger\CustomLogSetting.h" />
     <ClInclude Include="Engine\Utility\Quaternion.h" />
     <ClCompile Include="AppSource\Common\GameWindow.cpp" />
     <ClCompile Include="Engine\Core\src\ImGuiforEngine.cpp" />
