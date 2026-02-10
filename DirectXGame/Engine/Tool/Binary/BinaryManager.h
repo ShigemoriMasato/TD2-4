@@ -35,17 +35,9 @@ void BinaryManager::RegisterOutput(T* data) {
 	}
 
 	/* ID->Size->値 */
-	binaryBuffer_.append(static_cast<const char*>(&currentID), sizeof(TypeID));
-
-	if (currentID == TypeID::String) {
-		// 文字列の場合はサイズを文字数分にする
-		size = strlen(static_cast<const char*>(data));
-		binaryBuffer_.append(static_cast<const char*>(&size), sizeof(size_t));
-
-	} else {
-		binaryBuffer_.append(static_cast<const char*>(&size), sizeof(size_t));
-	}
-	binaryBuffer_.append(static_cast<const char*>(data), size);
+	binaryBuffer_.append(reinterpret_cast<const char*>(&currentID), sizeof(TypeID));
+	binaryBuffer_.append(reinterpret_cast<const char*>(&size), sizeof(size_t));
+	binaryBuffer_.append(reinterpret_cast<const char*>(data), size);
 }
 
 template<typename T>
@@ -66,7 +58,7 @@ T BinaryManager::Reverse(BinaryData& buffer) {
 		return value;
 	}
 
-	if(buffer.size() < headerSize + size) {
+	if (buffer.size() < headerSize + size) {
 		return value;
 	}
 

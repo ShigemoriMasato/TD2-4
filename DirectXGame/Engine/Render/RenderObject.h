@@ -7,7 +7,7 @@
 /**
  * @class RenderObject
  * @brief 描画オブジェクトを管理するクラス
- * 
+ *
  * 頂点データ、インデックスデータ、定数バッファ、シェーダーリソースビューを管理し、
  * DirectX12のパイプラインステートを使用してオブジェクトを描画する。
  * インスタンシング描画にも対応する。
@@ -20,7 +20,7 @@ public:
 	 * @param debugName デバッグ用の名前
 	 */
 	RenderObject(std::string debugName = "");
-	
+
 	/// @brief デストラクタ
 	~RenderObject();
 
@@ -40,7 +40,7 @@ public:
 	 * @param data 描画データ
 	 */
 	void SetDrawData(const DrawData& data);
-	
+
 	/**
 	 * @brief 定数バッファビュー（CBV）を作成
 	 * @param size バッファサイズ
@@ -49,7 +49,7 @@ public:
 	 * @return CBVのインデックス
 	 */
 	int CreateCBV(size_t size, ShaderType type, std::string debugName = "");
-	
+
 	/**
 	 * @brief シェーダーリソースビュー（SRV）を作成
 	 * @param size バッファサイズ
@@ -85,44 +85,47 @@ public:
 	/// @brief インスタンス数
 	uint32_t instanceNum_ = 1;
 
+	/// @brief コピー禁止
+	void operator=(const RenderObject& other) = delete;
+
 
 private://static
 
-/// @brief DirectX12デバイス（全インスタンスで共有）
-static DXDevice* device_;
-/// @brief ロガー
-static Logger logger_;
+	/// @brief DirectX12デバイス（全インスタンスで共有）
+	static DXDevice* device_;
+	/// @brief ロガー
+	static Logger logger_;
 
 
 private://データ管理
 
-/// @brief 頂点バッファビューのリスト
-std::vector<D3D12_VERTEX_BUFFER_VIEW> vbv_{};
-/// @brief インデックスバッファビュー
-D3D12_INDEX_BUFFER_VIEW ibv_{};
-/// @brief インデックス数
-uint32_t indexNum_ = 0;
+	/// @brief 頂点バッファビューのリスト
+	std::vector<D3D12_VERTEX_BUFFER_VIEW> vbv_{};
+	/// @brief インデックスバッファビュー
+	D3D12_INDEX_BUFFER_VIEW ibv_{};
+	/// @brief インデックス数
+	uint32_t indexNum_ = 0;
 
-/**
-* @struct BufferData
-* @brief マップされたバッファ情報
-*/
-struct BufferData {
-/// @brief マップされたメモリへのポインタ
-void* mapped = nullptr;
-/// @brief バッファサイズ
-size_t size = 0;
-};
-/// @brief バッファデータのリスト（二重配列：外側=バッファ種類、内側=スワップチェーン対応）
-std::vector<std::vector<BufferData>> bufferDatas_{};
+	/**
+	* @struct BufferData
+	* @brief マップされたバッファ情報
+	*/
+	struct BufferData {
+		/// @brief マップされたメモリへのポインタ
+		void* mapped = nullptr;
+		/// @brief バッファサイズ
+		size_t size = 0;
+	};
+	/// @brief バッファデータのリスト（二重配列：外側=バッファ種類、内側=スワップチェーン対応）
+	std::vector<std::vector<BufferData>> bufferDatas_{};
 
-/// @brief 定数バッファのGPUアドレスリスト
-std::vector<std::vector<D3D12_GPU_VIRTUAL_ADDRESS>> cbvAddresses_{};
-/// @brief シェーダーリソースビューハンドルのリスト
-std::vector<std::vector<std::unique_ptr<SRVHandle>>> srvHandles_{};
+	/// @brief 定数バッファのGPUアドレスリスト
+	std::vector<std::vector<D3D12_GPU_VIRTUAL_ADDRESS>> cbvAddresses_{};
+	/// @brief シェーダーリソースビューハンドルのリスト
+	std::vector<std::vector<std::unique_ptr<SRVHandle>>> srvHandles_{};
 
-/// @brief スワップチェーンインデックス
-int index_ = 0;
+	/// @brief スワップチェーンインデックス
+	int index_ = 0;
 
 
 private://寿命管理
