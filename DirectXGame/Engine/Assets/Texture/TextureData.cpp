@@ -4,6 +4,7 @@
 #include <Assets/Texture/TextureManager.h>
 
 using namespace Microsoft::WRL;
+using namespace SHEngine;
 
 namespace {
 	DirectX::ScratchImage CreateMipImages(const std::string& filePath) {

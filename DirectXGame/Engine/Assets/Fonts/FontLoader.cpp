@@ -7,6 +7,8 @@
 #include <Utility/Vector.h>
 #include <Utility/ConvertString.h>
 
+using namespace SHEngine;
+
 void FontLoader::Initialize(TextureManager* textureManager) {
 	logger_ = getLogger("Engine");
 	logger_->info("FontLoader Initialize");

@@ -4,6 +4,8 @@
 #include <DirectXTex/d3dx12.h>
 #include <Utility/SearchFile.h>
 
+using namespace SHEngine;
+
 namespace {
 	[[nodiscard]]
 	ID3D12Resource* UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, ID3D12Device* device, ID3D12GraphicsCommandList* commandList) {
@@ -26,10 +28,9 @@ namespace {
 	}
 }
 
-void TextureManager::Initialize(DXDevice* device, CmdListManager* CmdListManager) {
+void TextureManager::Initialize(DXDevice* device) {
 	device_ = device;
 	srvManager_ = device->GetSRVManager();
-	cmdObject_ = CmdListManager->CreateCommandObject();
 	LoadTexture("Assets/.EngineResource/Texture/white1x1.png");
 	LoadTexture("Assets/.EngineResource/Texture/uvChecker.png");
 	errorTextureHandle_ = LoadTexture("Assets/.EngineResource/Texture/error.png");

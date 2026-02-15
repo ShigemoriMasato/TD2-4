@@ -1,6 +1,8 @@
 #include "DrawDataManager.h"
 #include <Utility/DirectUtilFuncs.h>
 
+using namespace SHEngine;
+
 void DrawDataManager::Initialize(DXDevice* device) {
 	device_ = device;
 	drawDataList_.clear();
