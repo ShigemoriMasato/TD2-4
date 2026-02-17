@@ -2,6 +2,8 @@
 #include <Utility/DirectUtilFuncs.h>
 #include <Utility/ConvertString.h>
 
+using namespace SHEngine;
+
 DXDevice* RenderObject::device_ = nullptr;
 Logger RenderObject::logger_ = getLogger("Engine");
 
@@ -35,9 +37,9 @@ int RenderObject::CreateCBV(size_t size, ShaderType type, std::string debugName)
 	std::vector<BufferData> cbvBufferDatas;
 	std::vector<D3D12_GPU_VIRTUAL_ADDRESS> cbvAddresses;
 
-	for (int i = 0; i < 2; ++i) {
+	for (int i = 0; i < bufferNum_; ++i) {
 		Resource res{};
-		res.res.Attach(CreateBufferResource(device_->GetDevice(), (size + 255) & ~255));	//256の倍数に揃える
+		res.res.Attach(Func::CreateBufferResource(device_->GetDevice(), (size + 255) & ~255));	//256の倍数に揃える
 		res.res->SetName(ConvertString(debugName).c_str());
 		resources_.push_back(res);
 
@@ -73,10 +75,10 @@ int RenderObject::CreateSRV(size_t size, uint32_t num, ShaderType type, std::str
 	std::vector<std::unique_ptr<SRVHandle>> srvHandles;
 
 	auto srv = device_->GetSRVManager();
-	for (int i = 0; i < 2; ++i) {
+	for (int i = 0; i < bufferNum_; ++i) {
 		Resource res{};
 		size_t bufferSize = size;
-		res.res.Attach(CreateBufferResource(device_->GetDevice(), bufferSize * num));	//256の倍数に揃えたうえでnum倍
+		res.res.Attach(Func::CreateBufferResource(device_->GetDevice(), bufferSize * num));	//256の倍数に揃えたうえでnum倍
 		res.res->SetName(ConvertString(debugName).c_str());
 		resources_.push_back(res);
 
@@ -135,7 +137,7 @@ void RenderObject::CopyBufferData(int index, const void* data, size_t size) {
 	std::memcpy(gpuData.mapped, data, size);
 }
 
-void RenderObject::Draw(Window* window) {
+void RenderObject::Draw(Command::Object* cmdObject) {
 	//描画できる状態か確認
 	if (vbv_.size() == 0) {
 		logger_->error("=========== Draw || No vertex buffer set ===========");
@@ -154,7 +156,7 @@ void RenderObject::Draw(Window* window) {
 		return;
 	}
 
-	auto cmdList = window->GetCommandObject()->GetCommandList();
+	auto cmdList = cmdObject->GetCommandList();
 
 	//パイプラインステートの設定
 	device_->SetPSO(cmdList, psoConfig_);
@@ -179,7 +181,7 @@ void RenderObject::Draw(Window* window) {
 	//描画コマンド
 	cmdList->DrawIndexedInstanced(indexNum_, instanceNum_, 0, 0, 0);
 
-	index_ = (index_ + 1) % 2;
+	index_ = (index_ + 1) % bufferNum_;
 }
 
 void RenderObject::SetUseTexture(bool useTexture) {

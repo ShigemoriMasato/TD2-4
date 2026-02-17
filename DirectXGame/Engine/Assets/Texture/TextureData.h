@@ -27,20 +27,14 @@ namespace SHEngine {
 
 	private:
 
-		struct MipMapUploadData {
-			D3D12_RESOURCE_DESC desc = {};
-			ID3D12Resource* textureResource = nullptr;
-			Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = nullptr;
-		};
-
 		friend class TextureManager;
-		std::pair<ID3D12Resource*, DirectX::ScratchImage> Create(std::string filePath, ID3D12Device* device, SRVManager* srvManager);
+		Microsoft::WRL::ComPtr<ID3D12Resource> Create(std::string filePath, ID3D12Device* device, SRVManager* srvManager, ID3D12GraphicsCommandList* cmdList);
 		//Window用のテクスチャを作成
 		void Create(uint32_t width, uint32_t height, Vector4 clearColor, ID3D12Device* device, SRVManager* srvManager);
 		//SwapChain用のテクスチャを作成
 		void Create(ID3D12Resource* resource, ID3D12Device* device, SRVManager* manager);
 		//ビットマップテクスチャを作成
-		MipMapUploadData Create(uint32_t width, uint32_t height, std::vector<uint32_t> colorMap, ID3D12Device* device, SRVManager* srvManager);
+		Microsoft::WRL::ComPtr<ID3D12Resource> Create(uint32_t width, uint32_t height, std::vector<uint32_t> colorMap, ID3D12Device* device, SRVManager* srvManager, ID3D12GraphicsCommandList* cmdList);
 
 	private:
 

@@ -14,7 +14,7 @@ void DrawDataManager::Initialize(DXDevice* device) {
 void DrawDataManager::AddIndexBuffer(std::vector<uint32_t> indices) {
 	Resource res{};
 	size_t bufferSize = ((sizeof(uint32_t) * indices.size() + 255) & ~255);
-	res.res.Attach(CreateBufferResource(device_->GetDevice(), bufferSize));	//256の倍数に揃えたうえでnum倍
+	res.res.Attach(Func::CreateBufferResource(device_->GetDevice(), bufferSize));	//256の倍数に揃えたうえでnum倍
 	resources_.push_back(res);
 
 	//データ転送

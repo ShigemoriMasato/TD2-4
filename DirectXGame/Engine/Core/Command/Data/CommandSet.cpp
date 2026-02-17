@@ -10,11 +10,26 @@ SHEngine::Command::DXList::~DXList() {
 	}
 }
 
-void DXList::Initialize(DXDevice* device) {
+void DXList::Initialize(DXDevice* device, Type type) {
 	device_ = device;
+
+	D3D12_COMMAND_LIST_TYPE commandListType{};
+
+	switch (type) {
+	case Type::Direct:
+		commandListType = D3D12_COMMAND_LIST_TYPE_DIRECT;
+		break;
+	case Type::Texture:
+		commandListType = D3D12_COMMAND_LIST_TYPE_DIRECT;
+		break;
+	case Type::Compute:
+		commandListType = D3D12_COMMAND_LIST_TYPE_COMPUTE;
+		break;
+	}
+
 	// コマンドアロケータの作成
 	HRESULT hr = device_->GetDevice()->CreateCommandAllocator(
-		D3D12_COMMAND_LIST_TYPE_DIRECT,
+		commandListType,
 		IID_PPV_ARGS(&commandAllocator_)
 	);
 	assert(SUCCEEDED(hr) && "Failed to create Command Allocator");
@@ -22,7 +37,7 @@ void DXList::Initialize(DXDevice* device) {
 	// コマンドリストの作成
 	hr = device_->GetDevice()->CreateCommandList(
 		0,
-		D3D12_COMMAND_LIST_TYPE_DIRECT,
+		commandListType,
 		commandAllocator_.Get(),
 		nullptr,
 		IID_PPV_ARGS(&commandList_)
@@ -70,4 +85,20 @@ void DXList::WaitForCanExecute() {
 		assert(SUCCEEDED(hr) && "Failed to set event on completion");
 		WaitForSingleObject(fenceEvent_, INFINITE);
 	}
+}
+
+void DXList::SendSignal(ID3D12CommandQueue* commandQueue) {
+	//コマンドキューにシグナルを送る
+	HRESULT hr = commandQueue->Signal(fence_.Get(), ++fenceValue_);
+	assert(SUCCEEDED(hr) && "Failed to signal Command Queue");
+}
+
+void DXList::ResetCommandList() {
+	WaitForCanExecute(); // コマンドリストが実行可能になるまで待機
+
+	//コマンドリストとアロケータをリセット
+	HRESULT hr = commandAllocator_->Reset();
+	assert(SUCCEEDED(hr) && "Failed to reset Command Allocator");
+	hr = commandList_->Reset(commandAllocator_.Get(), nullptr);
+	assert(SUCCEEDED(hr) && "Failed to reset Command List");
 }

@@ -2,6 +2,7 @@
 #include <DirectXTex/d3dx12.h>
 #include <Utility/ConvertString.h>
 #include <Assets/Texture/TextureManager.h>
+#include <Utility/DirectUtilFuncs.h>
 
 using namespace Microsoft::WRL;
 using namespace SHEngine;
@@ -49,6 +50,27 @@ namespace {
 		assert(SUCCEEDED(hr));
 		return resource;
 	}
+
+	[[nodiscard]]
+	ID3D12Resource* UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, ID3D12Device* device, ID3D12GraphicsCommandList* commandList) {
+		std::vector<D3D12_SUBRESOURCE_DATA> subresources;
+		HRESULT hr = DirectX::PrepareUpload(device, mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresources);
+		assert(SUCCEEDED(hr));
+		uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subresources.size()));
+		ID3D12Resource* intermediateResource = Func::CreateBufferResource(device, intermediateSize);
+		UpdateSubresources(commandList, texture, intermediateResource, 0, 0, UINT(subresources.size()), subresources.data());
+
+		D3D12_RESOURCE_BARRIER barrier{};
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+		barrier.Transition.pResource = texture;
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
+		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+		commandList->ResourceBarrier(1, &barrier);
+		return intermediateResource;
+	}
+
 }
 
 void TextureData::Release() {
@@ -133,11 +155,9 @@ void TextureData::Create(ID3D12Resource* resource, ID3D12Device* device, SRVMana
 	textureResource_->SetName(LPCWSTR(ConvertString("WindowTexture : " + std::to_string(debugTextureCount++)).c_str()));
 }
 
-TextureData::MipMapUploadData TextureData::Create(uint32_t width, uint32_t height, std::vector<uint32_t> colorMap, ID3D12Device* device, SRVManager* srvManager) {
-	MipMapUploadData mipData{};
-
+ComPtr<ID3D12Resource> TextureData::Create(uint32_t width, uint32_t height, std::vector<uint32_t> colorMap, ID3D12Device* device, SRVManager* srvManager, ID3D12GraphicsCommandList* cmdList) {
 	//TextureResource
-	D3D12_RESOURCE_DESC& desc = mipData.desc;
+	D3D12_RESOURCE_DESC desc{};
 	desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	desc.Width = width;
 	desc.Height = height;
@@ -167,9 +187,6 @@ TextureData::MipMapUploadData TextureData::Create(uint32_t width, uint32_t heigh
 	srvHandle_.UpdateHandle(srvManager, 0);
 	device->CreateShaderResourceView(textureResource_.Get(), &srvDesc, srvHandle_.GetCPU());
 
-	//アップロード用バッファの作成
-	UINT64 uploadBufferSize = GetRequiredIntermediateSize(textureResource_.Get(), 0, 1);
-
 	uint64_t uploadSize = 0;
 	device->GetCopyableFootprints(
 		&desc, 0, 1, 0,
@@ -189,27 +206,24 @@ TextureData::MipMapUploadData TextureData::Create(uint32_t width, uint32_t heigh
 	uploadDesc.SampleDesc.Count = 1;
 	uploadDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
+	ComPtr<ID3D12Resource> intermediateResource;
+
 	device->CreateCommittedResource(
 		&uploadHeap,
 		D3D12_HEAP_FLAG_NONE,
 		&uploadDesc,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
-		IID_PPV_ARGS(&mipData.intermediateResource)
+		IID_PPV_ARGS(&intermediateResource)
 	);
 
-	//テクスチャデータを書き込む
-	void* mapped = nullptr;
-	mipData.intermediateResource->Map(0, nullptr, &mapped);
-	std::memcpy(mapped, colorMap.data(), colorMap.size() * sizeof(uint32_t));
-	mipData.intermediateResource->Unmap(0, nullptr);
+	//コマンドリストにコピーコマンドを記録
+	intermediateResource.Attach(UploadTextureData(textureResource_.Get(), DirectX::ScratchImage(), device, cmdList));
 
-	mipData.textureResource = textureResource_.Get();
-
-	return mipData;
+	return intermediateResource;
 }
 
-std::pair<ID3D12Resource*, DirectX::ScratchImage> TextureData::Create(std::string filePath, ID3D12Device* device, SRVManager* srvManager) {
+ComPtr<ID3D12Resource> TextureData::Create(std::string filePath, ID3D12Device* device, SRVManager* srvManager, ID3D12GraphicsCommandList* cmdList) {
 	//TextureResourceを作成
 	DirectX::ScratchImage mipImages = CreateMipImages(filePath);
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
@@ -233,6 +247,9 @@ std::pair<ID3D12Resource*, DirectX::ScratchImage> TextureData::Create(std::strin
 	//SRVを作成する
 	device->CreateShaderResourceView(textureResource_.Get(), &srvDesc, srvHandle_.GetCPU());
 
-	std::pair<ID3D12Resource*, DirectX::ScratchImage> result = { textureResource_.Get(), std::move(mipImages) };
-	return result;
+	//テクスチャデータをアップロードするためのリソースを作成し、コマンドリストにコピーコマンドを記録する
+	ComPtr<ID3D12Resource> intermediateResource;
+	intermediateResource.Attach(UploadTextureData(textureResource_.Get(), mipImages, device, cmdList));
+
+	return intermediateResource;
 }

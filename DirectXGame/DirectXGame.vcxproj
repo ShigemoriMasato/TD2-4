@@ -93,8 +93,8 @@
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
-xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"
-powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</Command>
+copy "$(ProjectDir)dxil.dll" "$(TargetDir)dxil.dll"
+xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -122,8 +122,8 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
-xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"
-powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</Command>
+copy "$(ProjectDir)dxil.dll" "$(TargetDir)dxil.dll"
+xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
@@ -152,15 +152,18 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
-xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"
-powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</Command>
+copy "$(ProjectDir)dxil.dll" "$(TargetDir)dxil.dll"
+xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Assets\Model\ModelManager.cpp" />
     <ClCompile Include="Engine\Core\Command\Data\CommandObject.cpp" />
     <ClCompile Include="Engine\Core\Command\Data\CommandSet.cpp" />
     <ClCompile Include="Engine\Core\Command\CommandManager.cpp" />
     <ClCompile Include="Engine\Compute\ComputeObject.cpp" />
+    <ClCompile Include="Engine\Render\DrawDataManager.cpp" />
+    <ClCompile Include="Engine\Render\RenderObject.cpp" />
     <ClCompile Include="Engine\Tool\Binary\BinaryManager.cpp" />
     <ClCompile Include="Engine\Assets\Audio\AudioManager.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\AudioData.cpp" />
@@ -173,7 +176,6 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="Engine\Camera\DebugCamera.cpp" />
     <ClCompile Include="Engine\Input\Input.cpp" />
     <ClCompile Include="Engine\Utility\src\DirectUtilFuncs.cpp" />
-    <ClCompile Include="Engine\Render\DrawDataManager.cpp" />
     <ClCompile Include="Engine\Core\View\DSVManager.cpp" />
     <ClCompile Include="Engine\Core\View\RTVManager.cpp" />
     <ClCompile Include="Engine\Core\View\SRVManager.cpp" />
@@ -182,22 +184,29 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClCompile Include="Engine\Core\DXDevice.cpp" />
     <ClCompile Include="Engine\Core\View\ViewFunc.cpp" />
     <ClCompile Include="Engine\Tool\Logger\Logger.cpp" />
-    <ClCompile Include="Engine\PSO\PSOEditor.cpp" />
-    <ClCompile Include="Engine\PSO\PSOManager.cpp" />
-    <ClCompile Include="Engine\PSO\Shelf\BlendStateShelf.cpp" />
-    <ClCompile Include="Engine\PSO\Shelf\DepthStencilShelf.cpp" />
-    <ClCompile Include="Engine\PSO\Shelf\InputLayoutShelf.cpp" />
-    <ClCompile Include="Engine\PSO\Shelf\RasterizerShelf.cpp" />
-    <ClCompile Include="Engine\PSO\Shelf\RootSignatureShelf.cpp" />
-    <ClCompile Include="Engine\PSO\Shelf\ShaderShelf.cpp" />
+    <ClCompile Include="Engine\Render\PSO\PSOEditor.cpp" />
+    <ClCompile Include="Engine\Render\PSO\PSOManager.cpp" />
+    <ClCompile Include="Engine\Render\PSO\Shelf\BlendStateShelf.cpp" />
+    <ClCompile Include="Engine\Render\PSO\Shelf\DepthStencilShelf.cpp" />
+    <ClCompile Include="Engine\Render\PSO\Shelf\InputLayoutShelf.cpp" />
+    <ClCompile Include="Engine\Render\PSO\Shelf\RasterizerShelf.cpp" />
+    <ClCompile Include="Engine\Render\PSO\Shelf\RootSignatureShelf.cpp" />
+    <ClCompile Include="Engine\Render\PSO\Shelf\ShaderShelf.cpp" />
     <ClCompile Include="Engine\Tool\FPS\FPSObserver.cpp" />
     <ClCompile Include="Engine\Utility\src\ConvertString.cpp" />
     <ClCompile Include="Engine\Utility\src\Easing.cpp" />
     <ClCompile Include="Engine\Utility\src\MyMath.cpp" />
+    <ClCompile Include="Engine\Render\Screen\MultiDisplay.cpp" />
+    <ClCompile Include="Engine\Render\Screen\SingleDisplay.cpp" />
+    <ClCompile Include="Engine\Render\Screen\WindowsAPI.cpp" />
+    <ClCompile Include="Engine\Render\Screen\SwapChain.cpp" />
+    <ClInclude Include="Engine\Assets\Model\ModelManager.h" />
     <ClInclude Include="Engine\Core\Command\Data\CommandObject.h" />
     <ClInclude Include="Engine\Core\Command\Data\CommandSet.h" />
     <ClInclude Include="Engine\Core\Command\CommandManager.h" />
     <ClInclude Include="Engine\Compute\ComputeObject.h" />
+    <ClInclude Include="Engine\Render\DrawDataManager.h" />
+    <ClInclude Include="Engine\Render\RenderObject.h" />
     <ClInclude Include="Engine\Tool\Binary\BinaryManager.h" />
     <ClInclude Include="Engine\Assets\Audio\AudioManager.h" />
     <ClInclude Include="Engine\Tool\Binary\Value.h" />
@@ -205,16 +214,19 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="Engine\Utility\Quaternion.h" />
     <ClCompile Include="Engine\Utility\src\SearchFile.cpp" />
     <ClCompile Include="Engine\Assets\Fonts\FontLoader.cpp" />
+    <ClCompile Include="Engine\Render\Screen\IDisplay.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
     <ClCompile Include="Engine\Utility\src\MatrixFactory.cpp" />
     <ClCompile Include="Engine\Assets\Texture\TextureData.cpp" />
     <ClCompile Include="Engine\Assets\Texture\TextureManager.cpp" />
-    <ClCompile Include="Engine\Render\RenderObject.cpp" />
-    <ClCompile Include="Engine\Assets\Model\ModelManager.cpp" />
     <ClCompile Include="Engine\Assets\Model\ModelLoader.cpp" />
-    <ClCompile Include="Engine\Render\PostEffect.cpp" />
     <ClInclude Include="Engine\Assets\Fonts\FontLoader.h" />
+    <ClInclude Include="Engine\Render\Screen\IDisplay.h" />
+    <ClInclude Include="Engine\Render\Screen\MultiDisplay.h" />
+    <ClInclude Include="Engine\Render\Screen\SingleDisplay.h" />
+    <ClInclude Include="Engine\Render\Screen\WindowsAPI.h" />
+    <ClInclude Include="Engine\Render\Screen\SwapChain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
@@ -224,14 +236,12 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="Engine\Collision\Collider.h" />
     <ClInclude Include="Engine\Collision\ColliderManager.h" />
     <ClInclude Include="Engine\Collision\Data\CollisionInfo.h" />
-    <ClInclude Include="Engine\Render\PostEffectData.h" />
     <ClInclude Include="Engine\Utility\DataStructures.h" />
     <ClInclude Include="Engine\Assets\Model\ModelData.h" />
     <ClInclude Include="Engine\Camera\Camera.h" />
     <ClInclude Include="Engine\Camera\DebugCamera.h" />
     <ClInclude Include="Engine\Input\Input.h" />
     <ClInclude Include="Engine\Utility\DirectUtilFuncs.h" />
-    <ClInclude Include="Engine\Render\DrawDataManager.h" />
     <ClInclude Include="Engine\Core\View\ViewFunc.h" />
     <ClInclude Include="Engine\Core\View\DSVManager.h" />
     <ClInclude Include="Engine\Core\View\RTVManager.h" />
@@ -239,15 +249,15 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="Engine\Tool\Dump\CreateDump.h" />
     <ClInclude Include="Engine\Utility\Color.h" />
     <ClInclude Include="Engine\Core\DXDevice.h" />
-    <ClInclude Include="Engine\PSO\PSOConfig.h" />
-    <ClInclude Include="Engine\PSO\PSOEditor.h" />
-    <ClInclude Include="Engine\PSO\PSOManager.h" />
-    <ClInclude Include="Engine\PSO\Shelf\BlendStateShelf.h" />
-    <ClInclude Include="Engine\PSO\Shelf\DepthStencilShelf.h" />
-    <ClInclude Include="Engine\PSO\Shelf\InputLayoutShelf.h" />
-    <ClInclude Include="Engine\PSO\Shelf\RasterizerShelf.h" />
-    <ClInclude Include="Engine\PSO\Shelf\RootSignatureShelf.h" />
-    <ClInclude Include="Engine\PSO\Shelf\ShaderShelf.h" />
+    <ClInclude Include="Engine\Render\PSO\PSOConfig.h" />
+    <ClInclude Include="Engine\Render\PSO\PSOEditor.h" />
+    <ClInclude Include="Engine\Render\PSO\PSOManager.h" />
+    <ClInclude Include="Engine\Render\PSO\Shelf\BlendStateShelf.h" />
+    <ClInclude Include="Engine\Render\PSO\Shelf\DepthStencilShelf.h" />
+    <ClInclude Include="Engine\Render\PSO\Shelf\InputLayoutShelf.h" />
+    <ClInclude Include="Engine\Render\PSO\Shelf\RasterizerShelf.h" />
+    <ClInclude Include="Engine\Render\PSO\Shelf\RootSignatureShelf.h" />
+    <ClInclude Include="Engine\Render\PSO\Shelf\ShaderShelf.h" />
     <ClInclude Include="Engine\Tool\FPS\FPSObserver.h" />
     <ClInclude Include="Engine\Tool\Logger\Logger.h" />
     <ClInclude Include="Engine\Utility\ConvertString.h" />
@@ -269,10 +279,7 @@ powershell -ExecutionPolicy Bypass -NoProfile -File "Scripts/FilterAdjust.ps1"</
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
-    <ClInclude Include="Engine\Render\RenderObject.h" />
-    <ClInclude Include="Engine\Assets\Model\ModelManager.h" />
     <ClInclude Include="Engine\Assets\Model\ModelLoader.h" />
-    <ClInclude Include="Engine\Render\PostEffect.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

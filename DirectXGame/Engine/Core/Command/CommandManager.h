@@ -13,7 +13,7 @@ namespace SHEngine::Command {
 		/// @brief コマンドオブジェクトを生成する
 		/// @param type コマンドキューのタイプ
 		/// @param index コマンドキューのインデックス
-		std::unique_ptr<Object> CreateCommandObject(Type type, int index = 0);
+		std::unique_ptr<Object> CreateCommandObject(Type type, int index = 0, int listNum = 3);
 
 		/// @brief コマンドを実行する
 		/// @param type コマンドキューのタイプ
@@ -27,6 +27,11 @@ namespace SHEngine::Command {
 
 		/// @brief コマンドオブジェクトを解放するとき、Managerからも削除する
 		void ReleaseObject(Type type, int index, int id);
+
+		ID3D12CommandQueue* GetCommandQueue(Type type, int index = 0) {
+			assert(queue_.find(type) != queue_.end() && index < queue_[type].size());
+			return queue_[type][index].Get();
+		}
 
 	private:
 

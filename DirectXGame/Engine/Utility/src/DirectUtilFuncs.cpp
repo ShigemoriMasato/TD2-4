@@ -5,6 +5,8 @@
 
 #include <cassert>
 
+using namespace SHEngine;
+
 D3DResourceLeakChecker::~D3DResourceLeakChecker() {
 	Microsoft::WRL::ComPtr<IDXGIDebug1> debug;
 	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
@@ -14,7 +16,7 @@ D3DResourceLeakChecker::~D3DResourceLeakChecker() {
 	}
 }
 
-ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t size) {
+ID3D12Resource* SHEngine::Func::CreateBufferResource(ID3D12Device* device, size_t size) {
 	//頂点リソース用のヒープの設定
 	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
 	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;//uploadHeapを使う
@@ -43,7 +45,7 @@ ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t size) {
 	return bufferResource;
 }
 
-void InsertBarrier(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES stateAfter, D3D12_RESOURCE_STATES& stateBefore, ID3D12Resource* pResource,
+void SHEngine::Func::InsertBarrier(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES stateAfter, D3D12_RESOURCE_STATES& stateBefore, ID3D12Resource* pResource,
 	D3D12_RESOURCE_BARRIER_TYPE type, D3D12_RESOURCE_BARRIER_FLAGS flags) {
 
 	if (stateAfter == stateBefore) {

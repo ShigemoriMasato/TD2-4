@@ -1,5 +1,7 @@
 #include "BlendStateShelf.h"
 
+using namespace SHEngine;
+
 BlendStateShelf::BlendStateShelf() {
 	blendStates_.resize(int(BlendStateID::Count));
 

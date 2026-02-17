@@ -1,5 +1,7 @@
 #include "PSOEditor.h"
 
+using namespace SHEngine;
+
 PSOEditor::PSOEditor(ID3D12Device* device) {
 	logger_ = getLogger("Engine");
 

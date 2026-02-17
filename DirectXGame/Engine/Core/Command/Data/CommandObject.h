@@ -3,24 +3,24 @@
 
 namespace SHEngine::Command {
 
-	enum class Type {
-		Direct,
-		Copy,
-		Compute
-	};
-
 	class Manager;
 
 	class Object {
 	public:
 
+		Object() = default;
+		~Object();
+
 		/// @brief 初期化
-		void Initialize(DXDevice* device, Manager* manager, Type type, int index, int id);
+		void Initialize(DXDevice* device, Manager* manager, Type type, int index, int id, int listNum);
 
 		/// @brief コマンドを積めるかどうか
 		bool CanExecute();
 		/// @brief コマンドを積めるようになるまで待機する
 		void WaitForCanExecute();
+
+		/// @brief コマンドリストをリセットして、コマンドを積める状態にする(実行できる状態でなかったら実行できるまで待つ)
+		void ResetCommandList();
 
 		/// @brief コマンドリストを取得
 		ID3D12GraphicsCommandList* GetCommandList() { return commandLists_[dxListIndex_].GetCommandList(); }
@@ -30,6 +30,9 @@ namespace SHEngine::Command {
 
 		/// @brief Signalを送って、次のコマンドリストへ移動
 		void SendSignal(ID3D12CommandQueue* executedCmdQueue);
+
+		/// @brief 現在の状態を簡単に文字列であらわす
+		std::string Log() const;
 
 	private:
 

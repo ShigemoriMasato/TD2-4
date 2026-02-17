@@ -97,7 +97,7 @@ namespace SHEngine {
 	inline void DrawDataManager::AddVertexBuffer(const std::vector<T>& data) {
 		Resource res{};
 		size_t bufferSize = sizeof(T) * data.size();
-		res.res.Attach(CreateBufferResource(device_->GetDevice(), bufferSize));	//256の倍数に揃えたうえでnum倍
+		res.res.Attach(Func::CreateBufferResource(device_->GetDevice(), bufferSize));	//256の倍数に揃えたうえでnum倍
 		resources_.push_back(res);
 
 		//データ転送

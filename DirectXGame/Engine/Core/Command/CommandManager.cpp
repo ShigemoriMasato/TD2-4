@@ -18,14 +18,9 @@ void Manager::Initialize(DXDevice* device) {
 	HRESULT hr = device_->GetDevice()->CreateCommandQueue(&directQueueDesc, IID_PPV_ARGS(&directQueue));
 	assert(SUCCEEDED(hr) && "Failed to create CommandQueue");
 
-	//CopyQueue
-	auto& copyQueue = queue_[Type::Copy].emplace_back();
-	D3D12_COMMAND_QUEUE_DESC copyQueueDesc{};
-	copyQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_COPY;
-	copyQueueDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL;
-	copyQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-	hr = device_->GetDevice()->CreateCommandQueue(&copyQueueDesc, IID_PPV_ARGS(&copyQueue));
-	assert(SUCCEEDED(hr) && "Failed to create CommandQueue");
+	//TextureQueue(Barrierの張りかえを行うため、DirectQueueを使う)
+	auto& copyQueue = queue_[Type::Texture].emplace_back();
+	copyQueue = directQueue; // DirectQueueと同じキューを使用
 
 	//ComputeQueue(複数作成)
 	D3D12_COMMAND_QUEUE_DESC computeQueueDesc{};
@@ -35,21 +30,22 @@ void Manager::Initialize(DXDevice* device) {
 	for (int i = 0; i < 6; ++i) {
 		auto& computeQueue = queue_[Type::Compute].emplace_back();
 		hr = device_->GetDevice()->CreateCommandQueue(&computeQueueDesc, IID_PPV_ARGS(&computeQueue));
+		assert(SUCCEEDED(hr) && "Failed to create CommandQueue");
 	}
 
 	//==========================================
 	//コマンドオブジェクト管理用のコンテナ初期化
 	//==========================================
-	for (auto type : { Type::Direct, Type::Copy, Type::Compute }) {
+	for (auto type : { Type::Direct, Type::Texture, Type::Compute }) {
 		commandObjects_[type] = std::vector<std::map<int, Object*>>(queue_[type].size());
 		nextIDsForObject_[type] = 0;
 	}
 }
 
-std::unique_ptr<Object> SHEngine::Command::Manager::CreateCommandObject(Type type, int index) {
+std::unique_ptr<Object> SHEngine::Command::Manager::CreateCommandObject(Type type, int index, int listNum) {
 	std::unique_ptr<Object> commandObject = std::make_unique<Object>();
 	int id = nextIDsForObject_[type]++;
-	commandObject->Initialize(device_, this, type, index, id);
+	commandObject->Initialize(device_, this, type, index, id, listNum);
 
 	// コマンドオブジェクトを管理用コンテナに登録
 	if (type != Type::Compute) {
@@ -97,8 +93,7 @@ void SHEngine::Command::Manager::ReleaseObject(Type type, int index, int id) {
 	auto& objMap = commandObjects_[type][index];
 	auto it = objMap.find(id);
 	if (it != objMap.end()) {
-		// コマンドオブジェクトを削除
-		delete it->second;
+		// コマンドオブジェクトを削除(unique_ptrで外に出しているので、解放はされる前提)
 		objMap.erase(it);
 	}
 }

@@ -1,6 +1,8 @@
 #include "ModelLoader.h"
 #include <Utility/MatrixFactory.h>
 
+using namespace SHEngine;
+
 Node ModelLoader::ReadNode(const aiNode* node) {
 	Node result;
 

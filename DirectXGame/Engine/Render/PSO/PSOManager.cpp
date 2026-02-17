@@ -1,6 +1,8 @@
 #include "PSOManager.h"
 #include <cassert>
 
+using namespace SHEngine;
+
 std::unordered_map<D3D12_PRIMITIVE_TOPOLOGY, D3D12_PRIMITIVE_TOPOLOGY_TYPE> PSOManager::topologyMap_{};
 
 PSOManager::PSOManager(ID3D12Device* device) {

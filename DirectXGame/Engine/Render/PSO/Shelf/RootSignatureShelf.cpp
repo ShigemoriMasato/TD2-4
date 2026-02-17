@@ -1,6 +1,8 @@
 #include "RootSignatureShelf.h"
 #include <cassert>
 
+using namespace SHEngine;
+
 RootSignatureShelf::RootSignatureShelf(ID3D12Device* device) {
 	logger_ = getLogger("Engine");
 	device_ = device;
@@ -218,17 +220,21 @@ ID3D12RootSignature* RootSignatureShelf::CreateRootSignature(const RootSignature
 	return rootSignature;
 }
 
-uint32_t operator|(SamplerID a, SamplerID b) {
-	return uint32_t(a) | uint32_t(b);
-}
+namespace SHEngine {
 
-uint32_t operator|(uint32_t a, SamplerID b) {
-	return a | uint32_t(b);
-}
+	uint32_t operator|(SamplerID a, SamplerID b) {
+		return uint32_t(a) | uint32_t(b);
+	}
 
-bool operator<(SamplerID a, SamplerID b) {
-	return uint32_t(a) < uint32_t(b);
-}
+	uint32_t operator|(uint32_t a, SamplerID b) {
+		return a | uint32_t(b);
+	}
+
+	bool operator<(SamplerID a, SamplerID b) {
+		return uint32_t(a) < uint32_t(b);
+	}
+
+} // namespace SHEngine
 
 bool RootSignatureConfig::operator<(const RootSignatureConfig& other) const {
 	if (cbvNums != other.cbvNums) return cbvNums < other.cbvNums;

@@ -1,9 +1,11 @@
-#include "../DXDevice.h"
+#include "DXDevice.h"
 #include <Utility/ConvertString.h>
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
+
+using namespace SHEngine;
 
 DXDevice::~DXDevice() {
 }

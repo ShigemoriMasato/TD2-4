@@ -6,31 +6,15 @@
 
 using namespace SHEngine;
 
-namespace {
-	[[nodiscard]]
-	ID3D12Resource* UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, ID3D12Device* device, ID3D12GraphicsCommandList* commandList) {
-		std::vector<D3D12_SUBRESOURCE_DATA> subresources;
-		HRESULT hr = DirectX::PrepareUpload(device, mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresources);
-		assert(SUCCEEDED(hr));
-		uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subresources.size()));
-		ID3D12Resource* intermediateResource = CreateBufferResource(device, intermediateSize);
-		UpdateSubresources(commandList, texture, intermediateResource, 0, 0, UINT(subresources.size()), subresources.data());
-
-		D3D12_RESOURCE_BARRIER barrier{};
-		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-		barrier.Transition.pResource = texture;
-		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
-		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-		commandList->ResourceBarrier(1, &barrier);
-		return intermediateResource;
-	}
-}
-
-void TextureManager::Initialize(DXDevice* device) {
+void TextureManager::Initialize(DXDevice* device, Command::Manager* manager) {
 	device_ = device;
+	cmdObject_ = manager->CreateCommandObject(Command::Type::Texture, 0, 1);
 	srvManager_ = device->GetSRVManager();
+	manager_ = manager;
+
+	cmdObject_->WaitForCanExecute();
+	cmdObject_->ResetCommandList();
+
 	LoadTexture("Assets/.EngineResource/Texture/white1x1.png");
 	LoadTexture("Assets/.EngineResource/Texture/uvChecker.png");
 	errorTextureHandle_ = LoadTexture("Assets/.EngineResource/Texture/error.png");
@@ -38,10 +22,8 @@ void TextureManager::Initialize(DXDevice* device) {
 	logger_ = getLogger("Engine");
 }
 
-void TextureManager::Clear() {
+void TextureManager::AllTextureClear() {
 	textureDataList_.clear();
-	uploadResources_.clear();
-	intermediateResources_.clear();
 }
 
 void TextureManager::LoadAllTextures() {
@@ -52,7 +34,7 @@ void TextureManager::LoadAllTextures() {
 	}
 }
 
-int TextureManager::GetTexture(std::string filePath) const {
+TextureData* TextureManager::GetTextureData(std::string filePath) {
 	std::string formatFirst = "Assets/";
 	std::string factFilePath = "";
 	if (filePath.length() < formatFirst.length()) {
@@ -72,9 +54,9 @@ int TextureManager::GetTexture(std::string filePath) const {
 
 	auto it = loadedTexturePaths_.find(factFilePath);
 	if (it != loadedTexturePaths_.end()) {
-		return it->second;
+		GetTextureData(it->second);
 	}
-	return errorTextureHandle_;
+	return GetTextureData(errorTextureHandle_);
 }
 
 int TextureManager::LoadTexture(const std::string& filePath) {
@@ -109,7 +91,8 @@ int TextureManager::LoadTexture(const std::string& filePath) {
 		return it->second;
 	}
 
-	uploadResources_.push_back(textureData->Create(factFilePath, device_->GetDevice(), srvManager_));
+	auto cmdList = cmdObject_->GetCommandList();
+	intermediateResources_.push_back(textureData->Create(factFilePath, device_->GetDevice(), srvManager_, cmdList));
 	int offset = textureData->GetOffset();
 	textureData->textureManager_ = this;
 	textureDataList_[offset] = std::move(textureData);
@@ -128,9 +111,10 @@ int TextureManager::CreateWindowTexture(uint32_t width, uint32_t height, uint32_
 	return offset;
 }
 
-int TextureManager::CreateSwapChainTexture(ID3D12Resource* resource) {
+int TextureManager::CreateSwapChainTexture(ID3D12Resource* resource, uint32_t clearColor) {
 	auto textureData = std::make_unique<TextureData>();
 	textureData->Create(resource, device_->GetDevice(), srvManager_);
+	textureData->clearColor_ = ConvertColor(clearColor);
 	textureData->textureManager_ = this;
 	int offset = textureData->GetOffset();
 	textureDataList_[offset] = std::move(textureData);
@@ -139,8 +123,9 @@ int TextureManager::CreateSwapChainTexture(ID3D12Resource* resource) {
 
 int TextureManager::CreateBitmapTexture(uint32_t width, uint32_t height, std::vector<uint32_t> colorMap) {
 	auto textureData = std::make_unique<TextureData>();
-	auto data = textureData->Create(width, height, colorMap, device_->GetDevice(), srvManager_);
-	mipUploadData_.push_back(data);
+	auto cmdList = cmdObject_->GetCommandList();
+	auto data = textureData->Create(width, height, colorMap, device_->GetDevice(), srvManager_, cmdList);
+	intermediateResources_.push_back(data);
 	textureData->textureManager_ = this;
 	int offset = textureData->GetOffset();
 	textureDataList_[offset] = std::move(textureData);
@@ -167,47 +152,19 @@ TextureData* TextureManager::GetTextureData(int handle) {
 	return textureDataList_[handle].get();
 }
 
-void TextureManager::UploadTextures(ID3D12GraphicsCommandList* cmdList) {
+void TextureManager::UploadResources() {
+	//実行
+	manager_->Execute(Command::Type::Texture);
+	manager_->SendSignal(Command::Type::Texture);
+
+	//待機
+	cmdObject_->WaitForCanExecute();
+
+	//中間リソースをクリア
 	intermediateResources_.clear();
-	for (const auto& [resource, mipImage] : uploadResources_) {
-		intermediateResources_.push_back(nullptr);
-		intermediateResources_.back().Attach(UploadTextureData(resource, mipImage, device_->GetDevice(), cmdList));
-	}
-	uploadResources_.clear();
 
-	mipUploadingData_.clear();
-	for (const auto& mipData : mipUploadData_) {
-		mipUploadingData_.push_back(mipData);
-
-		D3D12_TEXTURE_COPY_LOCATION dst{};
-		dst.pResource = mipData.textureResource;
-		dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
-		dst.SubresourceIndex = 0;
-
-		D3D12_TEXTURE_COPY_LOCATION src{};
-		src.pResource = mipData.intermediateResource.Get();
-		src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
-
-		device_->GetDevice()->GetCopyableFootprints(
-			&mipData.desc, 0, 1, 0,
-			&src.PlacedFootprint,
-			nullptr, nullptr, nullptr
-		);
-
-		cmdList->CopyTextureRegion(
-			&dst, 0, 0, 0,
-			&src, nullptr
-		);
-
-		D3D12_RESOURCE_STATES beforeState = D3D12_RESOURCE_STATE_COPY_DEST;
-		InsertBarrier(cmdList, D3D12_RESOURCE_STATE_GENERIC_READ, beforeState, mipData.textureResource);
-	}
-
-	mipUploadData_.clear();
-}
-
-void TextureManager::ClearUploadedResources() {
-	intermediateResources_.clear();
+	//コマンドリストをリセット
+	cmdObject_->ResetCommandList();
 }
 
 void TextureManager::CheckMaxCount(int offset) {

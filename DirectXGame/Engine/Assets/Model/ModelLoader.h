@@ -11,7 +11,7 @@ namespace ModelLoader {
 	std::vector<VertexInfluence> LoadVertexInfluences(const aiScene* scene);
 	std::vector<uint32_t> LoadIndices(const aiScene* scene);
 
-	std::vector<Material> LoadMaterials(const aiScene* scene, std::string directoryPath, TextureManager* textureManager);
+	std::vector<Material> LoadMaterials(const aiScene* scene, std::string directoryPath, SHEngine::TextureManager* textureManager);
 	std::vector<uint32_t> LoadMaterialIndices(const aiScene* scene);
 
 	std::map<std::string, JointWeightData> LoadSkinCluster(const aiScene* scene);

@@ -2,13 +2,20 @@
 #include <Core/DXDevice.h>
 
 namespace SHEngine::Command {
+
+	enum class Type {
+		Direct,
+		Texture,
+		Compute
+	};
+
 	class DXList {
 	public:
 
 		~DXList();
 
 		/// @brief 初期化
-		void Initialize(DXDevice* device);
+		void Initialize(DXDevice* device, Type type);
 
 		/// @brief コマンドを積めるかどうか
 		bool CanExecute();
@@ -19,6 +26,8 @@ namespace SHEngine::Command {
 		ID3D12GraphicsCommandList* GetCommandList() { return commandList_.Get(); }
 
 		void SendSignal(ID3D12CommandQueue* commandQueue);
+
+		void ResetCommandList();
 
 	private:
 

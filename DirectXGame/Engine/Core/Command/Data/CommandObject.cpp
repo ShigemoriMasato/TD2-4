@@ -7,14 +7,13 @@ Object::~Object() {
 	manager_->ReleaseObject(type_, queueIndex_, id_);
 }
 
-void Object::Initialize(DXDevice* device, Manager* manager, Type type, int index, int id) {
+void Object::Initialize(DXDevice* device, Manager* manager, Type type, int index, int id, int listNum) {
 	device_ = device;
 
 	// コマンドリストを3つ作成
-	constexpr int commandListCount = 3;
-	commandLists_.resize(commandListCount);
+	commandLists_.resize(listNum);
 	for (auto& cmdList : commandLists_) {
-		cmdList.Initialize(device_);
+		cmdList.Initialize(device_, type);
 	}
 
 	// コマンドオブジェクトのタイプとキューインデックスを保存
@@ -34,14 +33,13 @@ void Object::WaitForCanExecute() {
 	commandLists_[dxListIndex_].WaitForCanExecute();
 }
 
+void SHEngine::Command::Object::ResetCommandList() {
+	commandLists_[dxListIndex_].ResetCommandList();
+}
+
 void SHEngine::Command::Object::Execute(std::vector<ID3D12CommandList*>& cmdLists) {
 	// 現在のコマンドリストを取得
 	auto& currentDXList = commandLists_[dxListIndex_];
-
-	//実行可能か確かめる
-	if (!currentDXList.CanExecute()) {
-		return;
-	}
 
 	// コマンドリストを取得して閉じる
 	ID3D12GraphicsCommandList* commandList = currentDXList.GetCommandList();
@@ -58,4 +56,13 @@ void SHEngine::Command::Object::SendSignal(ID3D12CommandQueue* executedCmdQueue)
 
 	// 次のコマンドリストに移動（3つのコマンドリストを循環）
 	dxListIndex_ = (dxListIndex_ + 1) % commandLists_.size();
+}
+
+std::string SHEngine::Command::Object::Log() const {
+	std::string ans;
+	ans = "CommandObject - Type: " + std::to_string(static_cast<int>(type_)) +
+		", QueueIndex: " + std::to_string(queueIndex_) +
+		", ID: " + std::to_string(id_) +
+		", CurrentDXListIndex: " + std::to_string(dxListIndex_);
+	return ans;
 }

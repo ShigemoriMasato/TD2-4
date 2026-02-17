@@ -10,6 +10,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
+using namespace SHEngine;
+
 namespace {
 	std::string ExtensionSearcher(std::string directoryPath, std::vector<std::string> ext) {
 		if (ext.empty()) {

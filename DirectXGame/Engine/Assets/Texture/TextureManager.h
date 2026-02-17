@@ -28,24 +28,19 @@ namespace SHEngine {
 		 * @brief テクスチャマネージャーを初期化
 		 * @param device DirectX12デバイス
 		 * @param CmdListManager コマンドリストマネージャー
+		 * @param cmdObj コマンドオブジェクト(渡した後使用不可能になるため気を付けること)
 		 */
-		void Initialize(DXDevice* device);
+		void Initialize(DXDevice* device, Command::Manager* manager);
+
 		/**
 		 * @brief 全てのテクスチャをクリア
 		 */
-		void Clear();
+		void AllTextureClear();
 
 		/**
 		 * @brief すべてのテクスチャを読み込む
 		 */
 		void LoadAllTextures();
-
-		/**
-		 * @brief ファイルからテクスチャを取得（未読込のときerrorテクスチャを返す）
-		 * @param filePath テクスチャファイルのパス
-		 * @return テクスチャハンドル
-		 */
-		int GetTexture(std::string filePath) const;
 
 		/**
 		 * @brief ファイルからテクスチャを読み込む
@@ -74,7 +69,7 @@ namespace SHEngine {
 		 * @param resource スワップチェーンのリソース
 		 * @return テクスチャハンドル
 		 */
-		int CreateSwapChainTexture(ID3D12Resource* resource);
+		int CreateSwapChainTexture(ID3D12Resource* resource, uint32_t clearColor);
 
 		/**
 		 * @brief ビットマップテクスチャを作成
@@ -98,6 +93,13 @@ namespace SHEngine {
 		void DeleteTexture(TextureData* textureData);
 
 		/**
+		 * @brief ファイルからテクスチャを取得（未読込のときerrorテクスチャを返す）
+		 * @param filePath テクスチャファイルのパス
+		 * @return テクスチャハンドル
+		 */
+		TextureData* GetTextureData(std::string filePath);
+
+		/**
 		 * @brief テクスチャデータを取得
 		 * @param handle テクスチャハンドル
 		 * @return TextureDataへのポインタ
@@ -113,16 +115,7 @@ namespace SHEngine {
 			return textureDataList_[handle]->textureResource_;
 		}
 
-		/**
-		 * @brief テクスチャをGPUにアップロード
-		 * @param cmdList コマンドリスト
-		 */
-		void UploadTextures(ID3D12GraphicsCommandList* cmdList);
-
-		/**
-		 * @brief アップロード済みリソースをクリア
-		 */
-		void ClearUploadedResources();
+		void UploadResources();
 
 	private:
 
@@ -134,10 +127,12 @@ namespace SHEngine {
 
 		/// @brief DirectX12デバイスへのポインタ
 		DXDevice* device_ = nullptr;
+		/// @brief コマンドリスト
+		std::unique_ptr<Command::Object> cmdObject_ = nullptr;
+		/// @brief コマンドマネージャーへのポインタ
+		Command::Manager* manager_;
 		/// @brief SRVマネージャーへのポインタ
 		SRVManager* srvManager_ = nullptr;
-		/// @brief コマンドオブジェクト
-		std::shared_ptr<CommandObject> cmdObject_ = nullptr;
 
 		/// @brief 最大テクスチャ数
 		const int maxTextureCount = 1024;
@@ -145,14 +140,8 @@ namespace SHEngine {
 		/// @brief テクスチャデータのマップ（ハンドル → TextureData）
 		std::map<int, std::unique_ptr<TextureData>> textureDataList_;
 
-		/// @brief アップロード待ちリソース
-		std::vector< std::pair<ID3D12Resource*, DirectX::ScratchImage>> uploadResources_;
 		/// @brief 中間リソース
 		std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> intermediateResources_;
-		/// @brief ミップマップアップロードデータ
-		std::vector<TextureData::MipMapUploadData> mipUploadData_;
-		/// @brief ミップマップアップロードデータ（アップロード中）
-		std::vector<TextureData::MipMapUploadData> mipUploadingData_;
 		/// @brief 読み込んだテクスチャパスのマップ（ファイルパス → ハンドル）
 		std::unordered_map<std::string, int> loadedTexturePaths_;
 
