@@ -1,5 +1,6 @@
 #pragma once
 #include "Camera.h"
+#include <Input/Input.h>
 
 /**
  * @class DebugCamera
@@ -14,7 +15,7 @@ public:
 	/**
 	 * @brief カメラの初期化
 	 */
-	void Initialize();
+	void Initialize(SHEngine::Input* input);
 
 	/**
 	 * @brief カメラの更新
@@ -49,6 +50,9 @@ public:
 	}
 
 private:
+
+	/// @brief 入力システムへのポインタ
+	SHEngine::Input* input_;
 
 	/// @brief カメラの中心座標(カメラが注視する点)
 	Vector3 center_{};

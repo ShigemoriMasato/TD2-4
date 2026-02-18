@@ -7,14 +7,7 @@
 #pragma comment(lib, "xinput.lib")
 
 using XC = XBoxController;
-
-DIMOUSESTATE Input::mouseState = {};
-DIMOUSESTATE Input::preMouseState = {};
-BYTE Input::keyState[256] = {};
-BYTE Input::preKeyState[256] = {};
-bool Input::isInitialized_ = false;
-bool Input::xBoxButtonFlug_[int(XBoxController::kButtomCount)];
-Vector2 Input::xBoxStickState_[2];
+using namespace SHEngine;
 
 void Input::Initialize(HINSTANCE hInstance) {
 	if (isInitialized_) {

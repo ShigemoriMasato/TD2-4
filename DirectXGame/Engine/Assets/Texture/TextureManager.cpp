@@ -153,6 +153,11 @@ TextureData* TextureManager::GetTextureData(int handle) {
 }
 
 void TextureManager::UploadResources() {
+	//中間リソースがなければ何もしない
+	if (intermediateResources_.empty()) {
+		return;
+	}
+
 	//実行
 	manager_->Execute(Command::Type::Texture);
 	manager_->SendSignal(Command::Type::Texture);

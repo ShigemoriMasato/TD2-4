@@ -200,6 +200,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Render\Screen\SingleDisplay.cpp" />
     <ClCompile Include="Engine\Render\Screen\WindowsAPI.cpp" />
     <ClCompile Include="Engine\Render\Screen\SwapChain.cpp" />
+    <ClCompile Include="Engine\SHEngine.cpp" />
     <ClInclude Include="Engine\Assets\Model\ModelManager.h" />
     <ClInclude Include="Engine\Core\Command\Data\CommandObject.h" />
     <ClInclude Include="Engine\Core\Command\Data\CommandSet.h" />
@@ -227,6 +228,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Render\Screen\SingleDisplay.h" />
     <ClInclude Include="Engine\Render\Screen\WindowsAPI.h" />
     <ClInclude Include="Engine\Render\Screen\SwapChain.h" />
+    <ClInclude Include="Engine\SHEngine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

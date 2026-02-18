@@ -30,129 +30,133 @@ enum class XBoxController {
 	kButtomCount
 };
 
-/**
- * @class Input
- * @brief キーボード、マウス、XBoxコントローラーの入力を管理するクラス
- * 
- * DirectInputとXInputを使用して各種入力デバイスの状態を取得・管理する。
- * 現在フレームと前フレームの入力状態を保持し、入力判定を可能にする。
- */
-class Input {
-public:
-	/// @brief デフォルトコンストラクタ
-	Input() {}
-	/// @brief デストラクタ
-	~Input() = default;
+namespace SHEngine {
 
 	/**
-	 * @brief ウィンドウハンドルを設定
-	 * @param hwnd ウィンドウハンドル
+	 * @class Input
+	 * @brief キーボード、マウス、XBoxコントローラーの入力を管理するクラス
+	 *
+	 * DirectInputとXInputを使用して各種入力デバイスの状態を取得・管理する。
+	 * 現在フレームと前フレームの入力状態を保持し、入力判定を可能にする。
 	 */
-	void SetHWND(HWND hwnd) {
-		hwnd_ = hwnd;
-	}
+	class Input {
+	public:
+		/// @brief デフォルトコンストラクタ
+		Input() {}
+		/// @brief デストラクタ
+		~Input() = default;
 
-	/**
-	 * @brief ウィンドウを設定
-	 * @param hwnd ウィンドウハンドル
-	 */
-	void SetWindow(HWND hwnd);
+		/**
+		 * @brief ウィンドウハンドルを設定
+		 * @param hwnd ウィンドウハンドル
+		 */
+		void SetHWND(HWND hwnd) {
+			hwnd_ = hwnd;
+		}
 
-	/**
-	 * @brief 入力状態を更新する
-	 */
-	void Update();
+		/**
+		 * @brief ウィンドウを設定
+		 * @param hwnd ウィンドウハンドル
+		 */
+		void SetWindow(HWND hwnd);
 
-	/// @brief 現在のキーボード状態を取得
-	/// @return キー状態の配列
-	static BYTE* GetKeyState();
+		/**
+		 * @brief 入力状態を更新する
+		 */
+		void Update();
 
-	/// @brief 前フレームのキーボード状態を取得
-	/// @return キー状態の配列
-	static BYTE* GetPreKeyState();
+		/// @brief 現在のキーボード状態を取得
+		/// @return キー状態の配列
+		BYTE* GetKeyState();
 
-	/// @brief 指定キーの現在の状態を取得
-	/// @param keyCode キーコード
-	/// @return キーの状態
-	static BYTE GetKeyState(int keyCode);
+		/// @brief 前フレームのキーボード状態を取得
+		/// @return キー状態の配列
+		BYTE* GetPreKeyState();
 
-	/// @brief 指定キーの前フレームの状態を取得
-	/// @param keyCode キーコード
-	/// @return キーの状態
-	static BYTE GetPreKeyState(int keyCode);
+		/// @brief 指定キーの現在の状態を取得
+		/// @param keyCode キーコード
+		/// @return キーの状態
+		BYTE GetKeyState(int keyCode);
 
-	/// @brief マウスの移動量を取得
-	/// @return マウス移動量
-	static Vector2 GetMouseMove();
+		/// @brief 指定キーの前フレームの状態を取得
+		/// @param keyCode キーコード
+		/// @return キーの状態
+		BYTE GetPreKeyState(int keyCode);
 
-	/// @brief マウスホイールの回転量を取得
-	/// @return ホイール回転量
-	static float GetMouseWheel();
+		/// @brief マウスの移動量を取得
+		/// @return マウス移動量
+		Vector2 GetMouseMove();
 
-	/// @brief マウスボタンの現在の状態を取得
-	/// @return ボタン状態の配列
-	static BYTE* GetMouseButtonState();
+		/// @brief マウスホイールの回転量を取得
+		/// @return ホイール回転量
+		float GetMouseWheel();
 
-	/// @brief マウスボタンの前フレームの状態を取得
-	/// @return ボタン状態の配列
-	static BYTE* GetPreMouseButtonState();
+		/// @brief マウスボタンの現在の状態を取得
+		/// @return ボタン状態の配列
+		BYTE* GetMouseButtonState();
 
-	/// @brief XBoxコントローラーのボタン状態を取得
-	/// @return ボタン状態の配列
-	static bool* GetXBoxButtonState();
+		/// @brief マウスボタンの前フレームの状態を取得
+		/// @return ボタン状態の配列
+		BYTE* GetPreMouseButtonState();
 
-	/// @brief XBoxコントローラーの指定ボタンの状態を取得
-	/// @param button ボタン種別
-	/// @return ボタンが押されているかどうか
-	static bool GetXBoxButtonState(XBoxController button);
+		/// @brief XBoxコントローラーのボタン状態を取得
+		/// @return ボタン状態の配列
+		bool* GetXBoxButtonState();
 
-	/**
-	 * @brief XBoxコントローラーのスティック状態を取得
-	 * @param type 0:右スティック 1:左スティック
-	 * @return スティックの傾き
-	 */
-	static Vector2 GetXBoxStickState(int type);
+		/// @brief XBoxコントローラーの指定ボタンの状態を取得
+		/// @param button ボタン種別
+		/// @return ボタンが押されているかどうか
+		bool GetXBoxButtonState(XBoxController button);
 
-private:
+		/**
+		 * @brief XBoxコントローラーのスティック状態を取得
+		 * @param type 0:右スティック 1:左スティック
+		 * @return スティックの傾き
+		 */
+		Vector2 GetXBoxStickState(int type);
 
-/// @brief コントローラー入力状態をクリア
-void ControllerClear();
-/// @brief マウス・キーボード入力状態をクリア
-void MouseKeyboardClear();
+	private:
 
-friend class SHEngine;
-/**
-* @brief 入力システムを初期化
-* @param hInstance アプリケーションインスタンスハンドル
-*/
-void Initialize(HINSTANCE hInstance);
+		/// @brief コントローラー入力状態をクリア
+		void ControllerClear();
+		/// @brief マウス・キーボード入力状態をクリア
+		void MouseKeyboardClear();
 
-	Microsoft::WRL::ComPtr<IDirectInput8> directInput_ = nullptr;
-	Microsoft::WRL::ComPtr<IDirectInputDevice8> keyboard_ = nullptr;
-	Microsoft::WRL::ComPtr<IDirectInputDevice8> mouse_ = nullptr;
-	
-	XINPUT_STATE xBoxState_{};
-	/// @brief XBoxボタン状態フラグ
-	static bool xBoxButtonFlug_[int(XBoxController::kButtomCount)];
-	/// @brief XBoxスティック状態（0:右 1:左）
-	static Vector2 xBoxStickState_[2];
+		friend class SHEngine;
+		/**
+		* @brief 入力システムを初期化
+		* @param hInstance アプリケーションインスタンスハンドル
+		*/
+		void Initialize(HINSTANCE hInstance);
 
-	/// @brief 現在のキー状態（staticでどこからでもアクセス可能）
-	static BYTE keyState[256];
-	/// @brief 前フレームのキー状態
-	static BYTE preKeyState[256];
+		Microsoft::WRL::ComPtr<IDirectInput8> directInput_ = nullptr;
+		Microsoft::WRL::ComPtr<IDirectInputDevice8> keyboard_ = nullptr;
+		Microsoft::WRL::ComPtr<IDirectInputDevice8> mouse_ = nullptr;
 
-	/// @brief 前フレームのマウス状態
-	static DIMOUSESTATE preMouseState;
-	/// @brief 現在のマウス状態
-	static DIMOUSESTATE mouseState;
+		XINPUT_STATE xBoxState_{};
+		/// @brief XBoxボタン状態フラグ
+		bool xBoxButtonFlug_[int(XBoxController::kButtomCount)];
+		/// @brief XBoxスティック状態（0:右 1:左）
+		Vector2 xBoxStickState_[2];
 
-	/// @brief 初期化済みフラグ（static関数使用の為に必要）
-	static bool isInitialized_;
+		/// @brief 現在のキー状態（staticでどこからでもアクセス可能）
+		BYTE keyState[256];
+		/// @brief 前フレームのキー状態
+		BYTE preKeyState[256];
 
-	/// @brief アプリケーションインスタンスハンドル
-	HINSTANCE hInstance_ = nullptr;
-	/// @brief ウィンドウハンドル
-	HWND hwnd_ = nullptr;
+		/// @brief 前フレームのマウス状態
+		DIMOUSESTATE preMouseState;
+		/// @brief 現在のマウス状態
+		DIMOUSESTATE mouseState;
 
-};
+		/// @brief 初期化済みフラグ（static関数使用の為に必要）
+		bool isInitialized_;
+
+		/// @brief アプリケーションインスタンスハンドル
+		HINSTANCE hInstance_ = nullptr;
+		/// @brief ウィンドウハンドル
+		HWND hwnd_ = nullptr;
+
+	};
+
+}
