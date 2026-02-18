@@ -22,7 +22,7 @@ void ImGuiWrapper::Initialize(DXDevice* device, Command::Manager* manager, Scree
 	initInfo.Device = device->GetDevice();
 	initInfo.NumFramesInFlight = bufferNum_;
 	initInfo.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	initInfo.CommandQueue = manager->GetCommandQueue();
+	initInfo.CommandQueue = manager->GetCommandQueue(Command::Type::Direct);
 	initInfo.SrvDescriptorHeap = srv_->GetHeap();
 
 	for(int i = 0; i < bufferNum_; ++i) {
