@@ -55,6 +55,8 @@ void SHEngine::Screen::WindowsAPI::Initialize(WindowDesc& desc, HINSTANCE hInsta
 	// ウィンドウハンドルとWindowsAPIインスタンスのマップに登録
 	windowMap[hwnd_] = this;
 
+	desc_ = desc;
+
 	ShowWindow(hwnd_, SW_SHOW);
 }
 

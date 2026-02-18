@@ -7,7 +7,7 @@ namespace SHEngine {
 	class ImGuiWrapper {
 	public:
 
-		void Initialize(DXDevice* device, Command::Manager* manager, Screen::WindowsAPI* window);
+		void Initialize(DXDevice* device, Command::Manager* manager, Screen::WindowsAPI* window, Command::Object* cmdObject);
 
 		void NewFrame();
 
@@ -19,10 +19,13 @@ namespace SHEngine {
 
 		Logger logger_;
 
-		SRVManager* srv_;
+		float width_;
+		float height_;
+
+		DXDevice* device_;
 		std::vector<SRVHandle> srvHandles_;
 
-		std::unique_ptr<Command::Object> cmdObject_;
+		Command::Object* cmdObject_;
 
 		constexpr static int bufferNum_ = 3;
 	};

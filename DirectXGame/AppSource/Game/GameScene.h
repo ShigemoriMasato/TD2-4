@@ -1,4 +1,12 @@
 #pragma once
-class GameScene {
-};
 
+class GameScene {
+public:
+
+
+
+private:
+
+
+
+};

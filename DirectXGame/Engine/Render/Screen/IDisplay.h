@@ -1,5 +1,6 @@
 #pragma once
 #include <Core/Command/CommandManager.h>
+#include <Assets/Texture/TextureData.h>
 
 namespace SHEngine::Screen {
 
@@ -22,6 +23,8 @@ namespace SHEngine::Screen {
 		/// @brief 描画結果をテクスチャにコピーする
 		/// @param cmdObject コマンドオブジェクト
 		virtual void ToTexture(Command::Object* cmdObject) = 0;
+
+		virtual TextureData* GetTextureData() const = 0;
 
 		virtual DXGI_FORMAT D3D12GetRTVFormat() = 0;
 

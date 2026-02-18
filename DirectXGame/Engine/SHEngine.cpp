@@ -31,8 +31,6 @@ void Engine::Initialize(HINSTANCE hInstance) {
 	cmdManager_ = std::make_unique<Command::Manager>();
 	cmdManager_->Initialize(device_.get());
 
-	imGuiWrapper_ = std::make_unique<ImGuiWrapper>();
-
 	textureManager_ = std::make_unique<TextureManager>();
 	textureManager_->Initialize(device_.get(), cmdManager_.get());
 
@@ -64,6 +62,9 @@ bool Engine::IsLoop() {
 
 void Engine::BeginFrame() {
 	input_->Update();
+	if (imGuiWrapper_) {
+		imGuiWrapper_->NewFrame();
+	}
 }
 
 void Engine::PostDraw() {

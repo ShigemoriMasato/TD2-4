@@ -44,7 +44,7 @@ void SHEngine::Screen::SingleDisplay::Initialize(TextureManager* textureManager,
     ID3D12Device* device = device_->GetDevice();
     DSVManager* dsvManager = device_->GetDSVManager();
     RTVManager* rtvManager = device_->GetRTVManager();
-    rtvFormat_ = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+    rtvFormat_ = DXGI_FORMAT_R8G8B8A8_UNORM;
 
     //テクスチャの生成
     int textureHandle = textureManager->CreateWindowTexture(width, height, clearColor);

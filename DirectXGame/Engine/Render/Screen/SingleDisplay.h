@@ -24,6 +24,8 @@ namespace SHEngine::Screen {
 		void PostDraw(Command::Object* cmdObject) override;
 		void ToTexture(Command::Object* cmdObject) override;
 
+		TextureData* GetTextureData() const override { return textureData_; }
+
 		DXGI_FORMAT D3D12GetRTVFormat() override { return rtvFormat_; }
 
 	private:

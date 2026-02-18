@@ -29,8 +29,17 @@ namespace SHEngine {
 		void EndFrame();
 
 		// ImGuiの有効化
-		void ImGuiActivate(Screen::WindowsAPI* window) {
-			imGuiWrapper_->Initialize(device_.get(), cmdManager_.get(), window);
+		void ImGuiActivate(Screen::WindowsAPI* window, Command::Object* cmdObj) {
+			imGuiWrapper_ = std::make_unique<ImGuiWrapper>();
+			imGuiWrapper_->Initialize(device_.get(), cmdManager_.get(), window, cmdObj);
+			imGuiWrapper_->NewFrame();
+		}
+
+		//ImGuiの描画
+		void DrawImGui() {
+			if (imGuiWrapper_) {
+				imGuiWrapper_->Render();
+			}
 		}
 
 	public://Getter
@@ -62,9 +71,9 @@ namespace SHEngine {
 		std::unique_ptr<FontLoader> fontLoader_;
 		std::unique_ptr<ModelManager> modelManager_;
 		std::unique_ptr<DrawDataManager> drawDataManager_;
-		
+
 		std::unique_ptr<Input> input_;
-		
+
 	private: // その他系
 		HINSTANCE hInstance_;
 		MSG msg_{};

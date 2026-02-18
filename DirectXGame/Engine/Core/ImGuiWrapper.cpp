@@ -5,10 +5,8 @@
 
 using namespace SHEngine;
 
-void ImGuiWrapper::Initialize(DXDevice* device, Command::Manager* manager, Screen::WindowsAPI* window) {
+void ImGuiWrapper::Initialize(DXDevice* device, Command::Manager* manager, Screen::WindowsAPI* window, Command::Object* cmdObject) {
 	logger_ = getLogger("ImGui");
-
-	srv_ = device->GetSRVManager();
 
 #ifdef USE_IMGUI
 	IMGUI_CHECKVERSION();
@@ -23,17 +21,20 @@ void ImGuiWrapper::Initialize(DXDevice* device, Command::Manager* manager, Scree
 	initInfo.NumFramesInFlight = bufferNum_;
 	initInfo.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	initInfo.CommandQueue = manager->GetCommandQueue(Command::Type::Direct);
-	initInfo.SrvDescriptorHeap = srv_->GetHeap();
+	initInfo.SrvDescriptorHeap = device->GetSRVManager()->GetHeap();
 
-	for(int i = 0; i < bufferNum_; ++i) {
+	for (int i = 0; i < bufferNum_; ++i) {
 		srvHandles_.emplace_back();
-		srvHandles_.back().UpdateHandle(srv_);
+		srvHandles_.back().UpdateHandle(device->GetSRVManager(), 1024 + i);
 	}
 
 	initInfo.LegacySingleSrvCpuDescriptor = srvHandles_.front().GetCPU();
 	initInfo.LegacySingleSrvGpuDescriptor = srvHandles_.front().GetGPU();
 
 	ImGui_ImplDX12_Init(&initInfo);
+
+	device_ = device;
+	cmdObject_ = cmdObject;
 
 	logger_->info("ImGui Activate");
 
@@ -72,8 +73,6 @@ void ImGuiWrapper::NewFrame() {
 	ImGui::End();
 	ImGui::PopStyleVar(2);
 
-	cmdObject_->ResetCommandList();
-
 #endif
 }
 
@@ -81,7 +80,7 @@ void ImGuiWrapper::Render() {
 #ifdef USE_IMGUI
 
 	// ディスクリプタヒープをコマンドリストに設定
-	ID3D12DescriptorHeap* heaps[] = { srv_->GetHeap() };
+	ID3D12DescriptorHeap* heaps[] = { device_->GetSRVManager()->GetHeap()};
 	cmdObject_->GetCommandList()->SetDescriptorHeaps(1, heaps);
 
 	ImGui::Render();
