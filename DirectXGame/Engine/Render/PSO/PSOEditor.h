@@ -1,25 +1,25 @@
 #pragma once
 #include <Render/PSO/PSOManager.h>
 
-namespace SHEngine {
+namespace SHEngine::PSO {
 
 	/**
-	 * @class PSOEditor
+	 * @class Editor
 	 * @brief パイプラインステートオブジェクト（PSO）を編集・設定するクラス
 	 *
 	 * 現在設定されているPSOを変更し、PSOマネージャーを通して
 	 * パイプラインステートをコマンドリストに設定する。
 	 */
-	class PSOEditor {
+	class Editor {
 	public:
 
 		/**
 		 * @brief コンストラクタ
 		 * @param device DirectX12デバイス
 		 */
-		PSOEditor(ID3D12Device* device);
+		Editor(ID3D12Device* device);
 		/// @brief デストラクタ
-		~PSOEditor() = default;
+		~Editor() = default;
 
 		/**
 		 * @brief PSOエディタを初期化
@@ -40,15 +40,15 @@ namespace SHEngine {
 		 * @param commandList コマンドリスト
 		 * @param config PSO設定
 		 */
-		void SetPSO(ID3D12GraphicsCommandList* commandList, const PSOConfig& config);
+		void SetPSO(ID3D12GraphicsCommandList* commandList, const PSO::Config& config);
 
 	private:
 
 		/// @brief PSOマネージャー
-		std::unique_ptr<PSOManager> psoManager_;
+		std::unique_ptr<Manager> psoManager_;
 
 		/// @brief 現在のPSO設定
-		PSOConfig nowConfig_{};
+		PSO::Config nowConfig_{};
 
 		/// @brief ログ出力用logger
 		std::shared_ptr<spdlog::logger> logger_;

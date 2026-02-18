@@ -23,7 +23,7 @@ void RenderObject::StaticInitialize(DXDevice* device) {
 void RenderObject::Initialize() {
 	logger_->debug("RenderObject Initialized: {}", debugName_);
 	index_ = 0;
-	psoConfig_ = PSOConfig{};
+	psoConfig_ = PSO::Config{};
 }
 
 void RenderObject::SetDrawData(const DrawData& data) {

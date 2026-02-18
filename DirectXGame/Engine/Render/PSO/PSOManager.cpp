@@ -1,11 +1,11 @@
 #include "PSOManager.h"
 #include <cassert>
 
-using namespace SHEngine;
+using namespace SHEngine::PSO;
 
-std::unordered_map<D3D12_PRIMITIVE_TOPOLOGY, D3D12_PRIMITIVE_TOPOLOGY_TYPE> PSOManager::topologyMap_{};
+std::unordered_map<D3D12_PRIMITIVE_TOPOLOGY, D3D12_PRIMITIVE_TOPOLOGY_TYPE> Manager::topologyMap_{};
 
-PSOManager::PSOManager(ID3D12Device* device) {
+Manager::Manager(ID3D12Device* device) {
 	shaderShelf_ = std::make_unique<ShaderShelf>();
 	depthStencilShelf_ = std::make_unique<DepthStencilShelf>();
 	blendStateShelf_ = std::make_unique<BlendStateShelf>();
@@ -23,13 +23,13 @@ PSOManager::PSOManager(ID3D12Device* device) {
 	topologyMap_[D3D_PRIMITIVE_TOPOLOGY_POINTLIST] = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
 }
 
-PSOManager::~PSOManager() {
+Manager::~Manager() {
 	for(const auto& [config, pso] : psoMap_) {
 		pso->Release();
 	}
 }
 
-void PSOManager::Initialize() {
+void Manager::Initialize() {
 	//PSOをすべて廃棄
 	for (auto& [config, pso] : psoMap_) {
 		if (pso) {
@@ -39,7 +39,7 @@ void PSOManager::Initialize() {
 	psoMap_.clear();
 }
 
-void PSOManager::CreatePSO(PSOConfig config) {
+void Manager::CreatePSO(PSO::Config config) {
 	//defaultとして設定したPSOを持ってくる
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 	//あんまり変わらないやつ
@@ -71,7 +71,7 @@ void PSOManager::CreatePSO(PSOConfig config) {
 	psoMap_[config] = pso;
 }
 
-ID3D12PipelineState* PSOManager::GetPSO(const PSOConfig& config) {
+ID3D12PipelineState* Manager::GetPSO(const PSO::Config& config) {
 	auto it = psoMap_.find(config);
 	if (it != psoMap_.end()) {
 		return it->second;
@@ -81,6 +81,6 @@ ID3D12PipelineState* PSOManager::GetPSO(const PSOConfig& config) {
 	}
 }
 
-ID3D12RootSignature* PSOManager::GetRootSignature(const RootSignatureConfig& config) const {
+ID3D12RootSignature* Manager::GetRootSignature(const RootSignatureConfig& config) const {
 	return rootSignatureShelf_->GetRootSignature(config);
 }

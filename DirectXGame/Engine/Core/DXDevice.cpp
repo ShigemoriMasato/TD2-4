@@ -129,10 +129,10 @@ void DXDevice::Initialize() {
 
 #endif
 
-	psoEditor_ = std::make_unique<PSOEditor>(device_.Get());
+	psoEditor_ = std::make_unique<PSO::Editor>(device_.Get());
 	psoEditor_->Initialize(device_.Get());
 }
 
-void DXDevice::SetPSO(ID3D12GraphicsCommandList* commandList, const PSOConfig& config) {
+void DXDevice::SetPSO(ID3D12GraphicsCommandList* commandList, const PSO::Config& config) {
 	psoEditor_->SetPSO(commandList, config);
 }

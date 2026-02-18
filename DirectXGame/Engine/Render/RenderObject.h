@@ -83,7 +83,7 @@ namespace SHEngine {
 		void SetUseTexture(bool useTexture);
 
 		/// @brief パイプラインステート設定
-		PSOConfig psoConfig_{};
+		PSO::Config psoConfig_{};
 		/// @brief インスタンス数
 		uint32_t instanceNum_ = 1;
 

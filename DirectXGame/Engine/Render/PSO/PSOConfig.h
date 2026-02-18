@@ -6,7 +6,7 @@
 #include "Shelf/RootSignatureShelf.h"
 #include "Shelf/InputLayoutShelf.h"
 
-namespace SHEngine {
+namespace SHEngine::PSO {
 
 	/**
 	 * @struct PSOConfig
@@ -15,7 +15,7 @@ namespace SHEngine {
 	 * シェーダー、ブレンドステート、深度ステンシル、ラスタライザー、
 	 * ルートシグネチャ、入力レイアウトなどの描画パイプライン設定を保持する。
 	 */
-	struct PSOConfig {
+	struct Config {
 		/// @brief 頂点シェーダーファイル名
 		std::string vs = "Object3d.VS.hlsl";
 		/// @brief ピクセルシェーダーファイル名
@@ -40,7 +40,7 @@ namespace SHEngine {
 		* @param other 比較対象
 		* @return 全てのメンバが等しい場合true
 		*/
-		bool operator==(const PSOConfig& other) const {
+		bool operator==(const Config& other) const {
 			return vs == other.vs &&
 				ps == other.ps &&
 				blendID == other.blendID &&
@@ -57,7 +57,7 @@ namespace SHEngine {
 		 * @param other 比較対象
 		 * @return メンバが異なる場合true
 		 */
-		bool operator!=(const PSOConfig& other) const {
+		bool operator!=(const Config& other) const {
 			return !(*this == other);
 		}
 	};
@@ -69,20 +69,20 @@ namespace SHEngine {
  */
 namespace std {
 	template<>
-	struct hash<SHEngine::PSOConfig> {
+	struct hash<SHEngine::PSO::Config> {
 		/**
 		 * @brief ハッシュ値計算演算子
 		 * @param cfg PSOConfig設定
 		 * @return ハッシュ値
 		 */
-		size_t operator()(const SHEngine::PSOConfig& cfg) const {
+		size_t operator()(const SHEngine::PSO::Config& cfg) const {
 			size_t h = 0;
 			hash_combine(h, hash<string>()(cfg.vs));
 			hash_combine(h, hash<string>()(cfg.ps));
 			hash_combine(h, hash<int>()(static_cast<int>(cfg.blendID)));
 			hash_combine(h, hash<int>()(static_cast<int>(cfg.depthStencilID)));
 			hash_combine(h, hash<int>()(static_cast<int>(cfg.rasterizerID)));
-			hash_combine(h, hash<SHEngine::RootSignatureConfig>()((cfg.rootConfig)));
+			hash_combine(h, hash<SHEngine::PSO::RootSignatureConfig>()((cfg.rootConfig)));
 			hash_combine(h, hash<int>()(static_cast<int>(cfg.inputLayoutID)));
 			hash_combine(h, hash<int>()(static_cast<int>(cfg.topology)));
 			hash_combine(h, hash<bool>()(cfg.isSwapChain));

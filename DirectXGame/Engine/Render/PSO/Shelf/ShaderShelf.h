@@ -9,18 +9,18 @@
 #include <unordered_map>
 #include <filesystem>
 
-namespace SHEngine {
+/**
+ * @enum ShaderType
+ * @brief シェーダーの種類
+ */
+enum class ShaderType {
+	VERTEX_SHADER,  ///< 頂点シェーダー
+	PIXEL_SHADER,   ///< ピクセルシェーダー
 
-	/**
-	 * @enum ShaderType
-	 * @brief シェーダーの種類
-	 */
-	enum class ShaderType {
-		VERTEX_SHADER,  ///< 頂点シェーダー
-		PIXEL_SHADER,   ///< ピクセルシェーダー
+	Count           ///< シェーダータイプの総数
+};
 
-		Count           ///< シェーダータイプの総数
-	};
+namespace SHEngine::PSO {
 
 	/**
 	 * @class ShaderShelf

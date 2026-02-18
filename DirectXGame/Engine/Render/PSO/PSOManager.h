@@ -6,17 +6,17 @@
 #include <Tool/Binary/BinaryManager.h>
 #include <Render/PSO/PSOConfig.h>
 
-namespace SHEngine {
+namespace SHEngine::PSO {
 
 	/**
-	 * @class PSOManager
+	 * @class Manager
 	 * @brief パイプラインステートオブジェクト(PSO)を管理するクラス
 	 *
 	 * シェーダー、ブレンドステート、深度ステンシル、ラスタライザー、
 	 * ルートシグネチャ、入力レイアウトなどの設定を統合してPSOを生成、管理する。
 	 * 同じ設定のPSOはキャッシュされ、再利用される。
 	 */
-	class PSOManager {
+	class Manager {
 	public:
 
 		/**
@@ -24,12 +24,12 @@ namespace SHEngine {
 		 *
 		 * @param device DirectX12デバイス
 		 */
-		PSOManager(ID3D12Device* device);
+		Manager(ID3D12Device* device);
 
 		/**
 		 * @brief デストラクタ
 		 */
-		~PSOManager();
+		~Manager();
 
 		/**
 		 * @brief 初期化処理
@@ -46,7 +46,7 @@ namespace SHEngine {
 		 * @param config PSO設定
 		 * @return パイプラインステートオブジェクト
 		 */
-		ID3D12PipelineState* GetPSO(const PSOConfig& config);
+		ID3D12PipelineState* GetPSO(const PSO::Config& config);
 
 		/**
 		 * @brief ルートシグネチャの取得
@@ -72,13 +72,13 @@ namespace SHEngine {
 		 *
 		 * @param config PSOの設定
 		 */
-		void CreatePSO(PSOConfig config);
+		void CreatePSO(PSO::Config config);
 
 		/// @brief DirectX12デバイス
 		ID3D12Device* device_ = nullptr;
 
 		/// @brief PSOのキャッシュマップ(PSOConfig -> ID3D12PipelineState*)
-		std::unordered_map<PSOConfig, ID3D12PipelineState*> psoMap_;
+		std::unordered_map<PSO::Config, ID3D12PipelineState*> psoMap_;
 
 		/// @brief シェーダー管理
 		std::unique_ptr<ShaderShelf> shaderShelf_{};

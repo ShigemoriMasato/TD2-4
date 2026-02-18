@@ -1,6 +1,6 @@
 #include "RasterizerShelf.h"
 
-using namespace SHEngine;
+using namespace SHEngine::PSO;
 
 RasterizerShelf::RasterizerShelf() {
 	rasterizerDescs_.resize(int(RasterizerID::Count));

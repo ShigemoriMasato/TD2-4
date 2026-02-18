@@ -1,6 +1,6 @@
 #include "DepthStencilShelf.h"
 
-using namespace SHEngine;
+using namespace SHEngine::PSO;
 
 DepthStencilShelf::DepthStencilShelf() {
 

@@ -2,13 +2,13 @@
 #include <unordered_map>
 #include <Utility/ConvertString.h>
 
-using namespace SHEngine;
+using namespace SHEngine::Screen;
 
 namespace {
 	std::unordered_map<HWND, WindowsAPI*> windowMap;	///< ウィンドウハンドルとWindowsAPIインスタンスのマップ
 }
 
-SHEngine::WindowsAPI::~WindowsAPI() {
+SHEngine::Screen::WindowsAPI::~WindowsAPI() {
 	// ウィンドウの破棄
 	if (hwnd_) {
 		windowMap.erase(hwnd_);
@@ -17,7 +17,7 @@ SHEngine::WindowsAPI::~WindowsAPI() {
 	}
 }
 
-void SHEngine::WindowsAPI::Initialize(WindowDesc& desc, HINSTANCE hInstance) {
+void SHEngine::Screen::WindowsAPI::Initialize(WindowDesc& desc, HINSTANCE hInstance) {
 	logger_ = getLogger("Engine");
 
 	std::string logMsg = "Initializing WindowsAPI with width: " + std::to_string(desc.width) +
@@ -58,7 +58,7 @@ void SHEngine::WindowsAPI::Initialize(WindowDesc& desc, HINSTANCE hInstance) {
 	ShowWindow(hwnd_, SW_SHOW);
 }
 
-LRESULT CALLBACK SHEngine::WindowsAPI::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+LRESULT CALLBACK SHEngine::Screen::WindowsAPI::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 
 	auto it = windowMap.find(hwnd);
 	if (it != windowMap.end()) {
@@ -66,7 +66,7 @@ LRESULT CALLBACK SHEngine::WindowsAPI::WindowProc(HWND hwnd, UINT msg, WPARAM wp
 		if (msg == WM_DESTROY) {
 			it->second->logger_->info("Window is pushed Close Button.");
 			it->second->isPushCloseButton_ = true;
-			return 0;
+			PostQuitMessage(0);
 		}
 
 		//WndProcが登録されていない場合はDefWindowProcを呼び出す

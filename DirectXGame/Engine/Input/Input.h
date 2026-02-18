@@ -122,7 +122,7 @@ namespace SHEngine {
 		/// @brief マウス・キーボード入力状態をクリア
 		void MouseKeyboardClear();
 
-		friend class SHEngine;
+		friend class Engine;
 		/**
 		* @brief 入力システムを初期化
 		* @param hInstance アプリケーションインスタンスハンドル

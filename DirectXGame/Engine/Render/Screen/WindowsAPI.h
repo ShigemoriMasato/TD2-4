@@ -3,7 +3,7 @@
 #include <Core/DXDevice.h>
 #include <Core/Command/CommandManager.h>
 
-namespace SHEngine {
+namespace SHEngine::Screen {
 
 	/**
 	 * @class WindowsAPI

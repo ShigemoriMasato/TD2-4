@@ -1,7 +1,7 @@
 #include "RootSignatureShelf.h"
 #include <cassert>
 
-using namespace SHEngine;
+using namespace SHEngine::PSO;
 
 RootSignatureShelf::RootSignatureShelf(ID3D12Device* device) {
 	logger_ = getLogger("Engine");
@@ -172,7 +172,6 @@ ID3D12RootSignature* RootSignatureShelf::CreateRootSignature(const RootSignature
 	textureDescriptor[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	textureDescriptor[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 	if (config.useTexture) {
-
 		rootParameters.emplace_back();
 		rootParameters.back().ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;           //SRVを使う
 		rootParameters.back().ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;                       //全Shaderから見れる
@@ -220,7 +219,7 @@ ID3D12RootSignature* RootSignatureShelf::CreateRootSignature(const RootSignature
 	return rootSignature;
 }
 
-namespace SHEngine {
+namespace SHEngine::PSO {
 
 	uint32_t operator|(SamplerID a, SamplerID b) {
 		return uint32_t(a) | uint32_t(b);
@@ -234,7 +233,7 @@ namespace SHEngine {
 		return uint32_t(a) < uint32_t(b);
 	}
 
-} // namespace SHEngine
+}
 
 bool RootSignatureConfig::operator<(const RootSignatureConfig& other) const {
 	if (cbvNums != other.cbvNums) return cbvNums < other.cbvNums;

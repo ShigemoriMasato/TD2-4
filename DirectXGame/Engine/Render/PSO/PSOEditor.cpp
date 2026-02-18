@@ -1,18 +1,18 @@
 #include "PSOEditor.h"
 
-using namespace SHEngine;
+using namespace SHEngine::PSO;
 
-PSOEditor::PSOEditor(ID3D12Device* device) {
+Editor::Editor(ID3D12Device* device) {
 	logger_ = getLogger("Engine");
 
-	psoManager_ = std::make_unique<PSOManager>(device);
+	psoManager_ = std::make_unique<Manager>(device);
 }
 
-void PSOEditor::Initialize(ID3D12Device* device) {
+void Editor::Initialize(ID3D12Device* device) {
 	psoManager_->Initialize();
 }
 
-void PSOEditor::SetPSO(ID3D12GraphicsCommandList* commandList, const PSOConfig& config) {
+void Editor::SetPSO(ID3D12GraphicsCommandList* commandList, const PSO::Config& config) {
 	commandList->SetGraphicsRootSignature(psoManager_->GetRootSignature(config.rootConfig));
 	commandList->IASetPrimitiveTopology(config.topology);
 	commandList->SetPipelineState(psoManager_->GetPSO(config));
@@ -20,7 +20,7 @@ void PSOEditor::SetPSO(ID3D12GraphicsCommandList* commandList, const PSOConfig& 
 	nowConfig_ = config;
 }
 
-void PSOEditor::FrameInitialize(ID3D12GraphicsCommandList* commandList) {
+void Editor::FrameInitialize(ID3D12GraphicsCommandList* commandList) {
 	nowConfig_ = {};
 	commandList->SetGraphicsRootSignature(psoManager_->GetRootSignature(nowConfig_.rootConfig));
 	commandList->SetPipelineState(psoManager_->GetPSO(nowConfig_));

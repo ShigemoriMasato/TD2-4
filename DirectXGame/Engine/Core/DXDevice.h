@@ -64,7 +64,7 @@ namespace SHEngine {
 		 * @param commandList コマンドリスト
 		 * @param config PSO設定
 		 */
-		void SetPSO(ID3D12GraphicsCommandList* commandList, const PSOConfig& config);
+		void SetPSO(ID3D12GraphicsCommandList* commandList, const PSO::Config& config);
 
 	private:
 
@@ -85,7 +85,7 @@ namespace SHEngine {
 		std::unique_ptr<DSVManager> dsvManager_;
 
 		/// @brief パイプラインステートエディタ
-		std::unique_ptr<PSOEditor> psoEditor_;
+		std::unique_ptr<PSO::Editor> psoEditor_;
 
 	private:
 

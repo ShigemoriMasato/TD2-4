@@ -3,7 +3,7 @@
 #include <vector>
 #include <d3d12.h>
 
-namespace SHEngine {
+namespace SHEngine::PSO {
 
 	/**
 	 * @enum DepthStencilID

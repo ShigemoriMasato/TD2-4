@@ -1,6 +1,6 @@
 #include "InputLayoutShelf.h"
 
-using namespace SHEngine;
+using namespace SHEngine::PSO;
 
 InputLayoutShelf::InputLayoutShelf() {
 

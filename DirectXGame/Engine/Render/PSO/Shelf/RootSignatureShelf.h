@@ -6,7 +6,7 @@
 #include <Tool/Logger/Logger.h>
 #include "ShaderShelf.h"
 
-namespace SHEngine {
+namespace SHEngine::PSO {
 
 	/**
 	 * @enum SamplerID
@@ -97,13 +97,13 @@ namespace std {
 	* std::hashを特殊化しています。
 	*/
 	template<>
-	struct hash<SHEngine::RootSignatureConfig> {
+	struct hash<SHEngine::PSO::RootSignatureConfig> {
 		/**
 		* @brief ハッシュ値を計算
 		* @param cfg ハッシュ計算対象の設定
 		* @return 計算されたハッシュ値
 		*/
-		size_t operator()(const SHEngine::RootSignatureConfig& cfg) const {
+		size_t operator()(const SHEngine::PSO::RootSignatureConfig& cfg) const {
 			size_t h = 0;
 			hash_combine(h, hash<int>()(cfg.cbvNums.first));
 			hash_combine(h, hash<int>()(cfg.cbvNums.second));
@@ -125,7 +125,7 @@ namespace std {
 	};
 }
 
-namespace SHEngine {
+namespace SHEngine::PSO {
 	/**
 	 * @class RootSignatureShelf
 	 * @brief ルートシグネチャの管理クラス

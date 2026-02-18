@@ -3,7 +3,7 @@
 #include <Utility/SearchFile.h>
 #include <cassert>
 
-using namespace SHEngine;
+using namespace SHEngine::PSO;
 
 namespace {
 
