@@ -4,6 +4,8 @@
 #include <Utility/Color.h>
 #include <Camera/Camera.h>
 
+using CmdObj = SHEngine::Command::Object;
+
 namespace SHEngine {
 
 	/**

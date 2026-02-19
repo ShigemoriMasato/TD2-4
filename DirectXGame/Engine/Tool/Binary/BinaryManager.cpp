@@ -58,7 +58,7 @@ void BinaryManager::Write(const std::string& fileName) {
 BinaryData BinaryManager::Read(const std::string& fileName) {
 	std::ifstream file(fileName, std::ios::binary);
 	if (!file) {
-		throw std::runtime_error("Failed to open file for reading: " + fileName);
+		return {};
 	}
 
 	const auto fileSize = fs::file_size(fileName);

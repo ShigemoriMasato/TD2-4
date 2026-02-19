@@ -22,7 +22,7 @@ namespace SHEngine::Screen {
 			return displays_[currentDisplayIndex_]->GetTextureData();
 		}
 
-		DXGI_FORMAT D3D12GetRTVFormat() override { return DXGI_FORMAT_R8G8B8A8_UNORM; }
+		DXGI_FORMAT GetRTVFormat() override { return DXGI_FORMAT_R8G8B8A8_UNORM; }
 
 	private:
 

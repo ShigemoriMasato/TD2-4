@@ -152,7 +152,7 @@ void TextureData::Create(ID3D12Resource* resource, ID3D12Device* device, SRVMana
 	width_ = static_cast<uint32_t>(desc.Width);
 	height_ = static_cast<uint32_t>(desc.Height);
 
-	textureResource_->SetName(LPCWSTR(ConvertString("WindowTexture : " + std::to_string(debugTextureCount++)).c_str()));
+	textureResource_->SetName(LPCWSTR(ConvertString("SwapChainTexture : " + std::to_string(debugTextureCount++)).c_str()));
 }
 
 ComPtr<ID3D12Resource> TextureData::Create(uint32_t width, uint32_t height, std::vector<uint32_t> colorMap, ID3D12Device* device, SRVManager* srvManager, ID3D12GraphicsCommandList* cmdList) {
@@ -220,6 +220,8 @@ ComPtr<ID3D12Resource> TextureData::Create(uint32_t width, uint32_t height, std:
 	//コマンドリストにコピーコマンドを記録
 	intermediateResource.Attach(UploadTextureData(textureResource_.Get(), DirectX::ScratchImage(), device, cmdList));
 
+	textureResource_->SetName(LPCWSTR(ConvertString("BitMapTexture : " + std::to_string(debugTextureCount++)).c_str()));
+
 	return intermediateResource;
 }
 
@@ -250,6 +252,8 @@ ComPtr<ID3D12Resource> TextureData::Create(std::string filePath, ID3D12Device* d
 	//テクスチャデータをアップロードするためのリソースを作成し、コマンドリストにコピーコマンドを記録する
 	ComPtr<ID3D12Resource> intermediateResource;
 	intermediateResource.Attach(UploadTextureData(textureResource_.Get(), mipImages, device, cmdList));
+	
+	textureResource_->SetName(LPCWSTR(ConvertString("LoadTexture : " + std::to_string(debugTextureCount++)).c_str()));
 
 	return intermediateResource;
 }

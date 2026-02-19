@@ -8,6 +8,8 @@
 #include <Render/Screen/SwapChain.h>
 #include <Render/Screen/WindowsAPI.h>
 #include <Core/ImGuiWrapper.h>
+#include <Utility/DirectUtilFuncs.h>
+#include <Tool/FPS/FPSObserver.h>
 
 namespace SHEngine {
 
@@ -49,6 +51,7 @@ namespace SHEngine {
 		ModelManager* GetModelManager() { return modelManager_.get(); }
 		DrawDataManager* GetDrawDataManager() { return drawDataManager_.get(); }
 		Input* GetInput() { return input_.get(); }
+		FPSObserver* GetFPSObserver() { return fpsObserver_.get(); }
 
 		std::unique_ptr<Command::Object> CreateCommandObject(Command::Type type, int index = 0, int listNum = 3) {
 			auto cmdObj = cmdManager_->CreateCommandObject(type, index, listNum);
@@ -60,6 +63,8 @@ namespace SHEngine {
 		HINSTANCE GetHInstance() const { return hInstance_; }
 
 	private:// Engine内で完結するクラス
+
+		D3DResourceLeakChecker leakChecker_;
 
 		std::unique_ptr<DXDevice> device_;
 		std::unique_ptr<Command::Manager> cmdManager_;
@@ -73,10 +78,12 @@ namespace SHEngine {
 		std::unique_ptr<DrawDataManager> drawDataManager_;
 
 		std::unique_ptr<Input> input_;
+		std::unique_ptr<FPSObserver> fpsObserver_;
 
 	private: // その他系
 		HINSTANCE hInstance_;
 		MSG msg_{};
+		bool imguiDrawed_ = true;
 		Logger logger_;
 	};
 

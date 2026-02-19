@@ -101,4 +101,8 @@ void DXList::ResetCommandList() {
 	assert(SUCCEEDED(hr) && "Failed to reset Command Allocator");
 	hr = commandList_->Reset(commandAllocator_.Get(), nullptr);
 	assert(SUCCEEDED(hr) && "Failed to reset Command List");
+
+	//Heapのセット
+	auto srvHeap = device_->GetSRVManager()->GetHeap();
+	commandList_->SetDescriptorHeaps(1, &srvHeap);
 }

@@ -49,6 +49,8 @@ void Engine::Initialize(HINSTANCE hInstance) {
 	Screen::IDisplay::SetDevice(device_.get());
 	RenderObject::StaticInitialize(device_.get());
 
+	fpsObserver_ = std::make_unique<FPSObserver>();
+
 	hInstance_ = hInstance;
 }
 
@@ -62,12 +64,20 @@ bool Engine::IsLoop() {
 
 void Engine::BeginFrame() {
 	input_->Update();
+	fpsObserver_->TimeAdjustment();
 	if (imGuiWrapper_) {
 		imGuiWrapper_->NewFrame();
+		imguiDrawed_ = false;
 	}
 }
 
 void Engine::PostDraw() {
+
+	if (!imguiDrawed_) {
+		imGuiWrapper_->EndFrame();
+		imguiDrawed_ = true;
+	}
+
 	cmdManager_->Execute(Command::Type::Direct);
 }
 

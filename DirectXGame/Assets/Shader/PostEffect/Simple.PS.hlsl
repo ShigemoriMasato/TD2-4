@@ -12,9 +12,5 @@ PixelShaderOutput main(PixelShaderInput input)
 {
     PixelShaderOutput output;
     output.color = gTexture[textureIndex].Sample(gSampler, input.texcoord);
-    if (output.color.a < 0.01f)
-    {
-        discard;
-    }
     return output;
 }

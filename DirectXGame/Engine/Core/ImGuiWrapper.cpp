@@ -23,9 +23,9 @@ void ImGuiWrapper::Initialize(DXDevice* device, Command::Manager* manager, Scree
 	initInfo.CommandQueue = manager->GetCommandQueue(Command::Type::Direct);
 	initInfo.SrvDescriptorHeap = device->GetSRVManager()->GetHeap();
 
+	srvHandles_.resize(bufferNum_);
 	for (int i = 0; i < bufferNum_; ++i) {
-		srvHandles_.emplace_back();
-		srvHandles_.back().UpdateHandle(device->GetSRVManager(), 1024 + i);
+		srvHandles_[i].UpdateHandle(device->GetSRVManager());
 	}
 
 	initInfo.LegacySingleSrvCpuDescriptor = srvHandles_.front().GetCPU();
@@ -78,14 +78,15 @@ void ImGuiWrapper::NewFrame() {
 
 void ImGuiWrapper::Render() {
 #ifdef USE_IMGUI
-
-	// ディスクリプタヒープをコマンドリストに設定
-	ID3D12DescriptorHeap* heaps[] = { device_->GetSRVManager()->GetHeap()};
-	cmdObject_->GetCommandList()->SetDescriptorHeaps(1, heaps);
-
 	ImGui::Render();
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), cmdObject_->GetCommandList());
 
+#endif
+}
+
+void ImGuiWrapper::EndFrame() {
+#ifdef USE_IMGUI
+	ImGui::EndFrame();
 #endif
 }
 

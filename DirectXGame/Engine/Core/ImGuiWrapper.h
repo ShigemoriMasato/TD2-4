@@ -13,6 +13,8 @@ namespace SHEngine {
 
 		void Render();
 
+		void EndFrame();
+
 		void Finalize();
 
 	private:

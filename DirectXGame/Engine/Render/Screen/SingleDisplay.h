@@ -26,7 +26,7 @@ namespace SHEngine::Screen {
 
 		TextureData* GetTextureData() const override { return textureData_; }
 
-		DXGI_FORMAT D3D12GetRTVFormat() override { return rtvFormat_; }
+		DXGI_FORMAT GetRTVFormat() override { return rtvFormat_; }
 
 	private:
 

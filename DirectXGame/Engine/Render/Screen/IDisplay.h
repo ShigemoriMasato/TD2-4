@@ -26,7 +26,7 @@ namespace SHEngine::Screen {
 
 		virtual TextureData* GetTextureData() const = 0;
 
-		virtual DXGI_FORMAT D3D12GetRTVFormat() = 0;
+		virtual DXGI_FORMAT GetRTVFormat() = 0;
 
 	protected:
 
