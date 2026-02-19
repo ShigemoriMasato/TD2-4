@@ -21,6 +21,8 @@ void Object::Initialize(DXDevice* device, Manager* manager, Type type, int index
 	type_ = type;
 	queueIndex_ = index;
 	id_ = id;
+
+	ResetCommandList();
 }
 
 bool Object::CanExecute() {
@@ -34,10 +36,26 @@ void Object::WaitForCanExecute() {
 }
 
 void SHEngine::Command::Object::ResetCommandList() {
+	if(state_ == State::Open) {
+		// コマンドリストが開いている場合はリセットするとエラーになるのでリセットしない
+		return;
+	}
+
+	if(state_ == State::Execute) {
+		// コマンドリストが実行された後は、シグナルを送ってからリセットする
+		SendSignal(manager_->GetCommandQueue(type_, queueIndex_));
+	}
+
 	commandLists_[dxListIndex_].ResetCommandList();
+	state_ = State::Open;
 }
 
 void SHEngine::Command::Object::Execute(std::vector<ID3D12CommandList*>& cmdLists) {
+	if(state_ == State::Close) {
+		//実行できるようにリセットする
+		ResetCommandList();
+	}
+
 	// 現在のコマンドリストを取得
 	auto& currentDXList = commandLists_[dxListIndex_];
 
@@ -47,6 +65,8 @@ void SHEngine::Command::Object::Execute(std::vector<ID3D12CommandList*>& cmdList
 	assert(SUCCEEDED(hr) && "Failed to close Command List");
 	// コマンドリストを引数に追加
 	cmdLists.push_back(commandList);
+
+	state_ = State::Execute;
 }
 
 void SHEngine::Command::Object::SendSignal(ID3D12CommandQueue* executedCmdQueue) {
@@ -56,6 +76,8 @@ void SHEngine::Command::Object::SendSignal(ID3D12CommandQueue* executedCmdQueue)
 
 	// 次のコマンドリストに移動（3つのコマンドリストを循環）
 	dxListIndex_ = (dxListIndex_ + 1) % commandLists_.size();
+
+	state_ = State::Close;
 }
 
 std::string SHEngine::Command::Object::Log() const {

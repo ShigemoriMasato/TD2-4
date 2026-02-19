@@ -9,6 +9,14 @@ void SceneManager::Initialize(SHEngine::Engine* engine) {
 }
 
 void SceneManager::Update() {
+	//コマンドリストのリセットとキー入力の更新
+	if (commonData_->cmdObject) {
+		commonData_->cmdObject->ResetCommandList();
+	}
+	if (commonData_->keyManager) {
+		commonData_->keyManager->Update();
+	}
+
 	if (nextScene_) {
 		nextScene_->Ready(engine_, commonData_.get());
 		nextScene_->Initialize();

@@ -46,6 +46,13 @@ namespace SHEngine::Command {
 		Type type_;
 		int queueIndex_ = 0;
 		int id_ = 0;
+
+		//コマンドリストの状態管理
+		enum class State {
+			Close,
+			Open,
+			Execute
+		} state_;
 	};
 
 }

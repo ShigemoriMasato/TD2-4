@@ -45,8 +45,8 @@ void InitializeScene::Initialize() {
 
 
 	auto fpsObs = engine_->GetFPSObserver();
-	fpsObs->SetIsFix(true);
-	fpsObs->SetTargetFPS(164.0);
+	fpsObs->SetIsFix(false);
+	fpsObs->SetTargetFPS(60.0);
 
 	//KeyManager
 #pragma region 長いので折りたたみ
