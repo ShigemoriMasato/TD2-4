@@ -229,6 +229,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Assets\Fonts\FontLoader.cpp" />
     <ClCompile Include="Engine\Render\Screen\IDisplay.cpp" />
     <ClCompile Include="Engine\Core\ImGuiWrapper.cpp" />
+    <ClCompile Include="AppSource\Game\Item\Item.cpp" />
+    <ClCompile Include="AppSource\Game\Item\ItemManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
     <ClCompile Include="Engine\Utility\src\MatrixFactory.cpp" />
@@ -249,6 +251,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Scene\SceneManager.h" />
     <ClInclude Include="Engine\Core\ImGuiWrapper.h" />
     <ClInclude Include="AppSource\Common\MainDisplay.h" />
+    <ClInclude Include="AppSource\Game\Item\Item.h" />
+    <ClInclude Include="AppSource\Game\Item\ItemManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

@@ -19,6 +19,8 @@ private:
 
 	BinaryData binaryBuffer_;
 
+	static inline const std::string basePath = "Assets/Binary/";
+
 	static constexpr size_t idSize = sizeof(TypeID);
 	static constexpr size_t sizeSize = sizeof(size_t);
 	static constexpr size_t headerSize = idSize + sizeSize;

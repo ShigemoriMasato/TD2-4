@@ -44,7 +44,7 @@ std::string BinaryManager::Reverse<std::string>(BinaryData& buffer) {
 }
 
 void BinaryManager::Write(const std::string& fileName) {
-	std::ofstream file(fileName, std::ios::binary);
+	std::ofstream file(basePath + fileName, std::ios::binary);
 
 	if (!file) {
 		throw std::runtime_error("Failed to open file for writing: " + fileName);
@@ -56,7 +56,7 @@ void BinaryManager::Write(const std::string& fileName) {
 }
 
 BinaryData BinaryManager::Read(const std::string& fileName) {
-	std::ifstream file(fileName, std::ios::binary);
+	std::ifstream file(basePath + fileName, std::ios::binary);
 	if (!file) {
 		return {};
 	}
