@@ -1,4 +1,5 @@
 #include "ItemManager.h"
+#include "Item.h"
 #include <Utility/ConvertString.h>
 #include <imgui/imgui.h>
 
@@ -25,11 +26,63 @@ const Item& ItemManager::GetItem(std::wstring itemName) const {
 	throw std::runtime_error("Item not found: " + ConvertString(itemName));
 }
 
-void ItemManager::DrawImGui() {
+void ItemManager::DrawImGui()
+{
 #ifdef USE_IMGUI
 	ImGui::Begin("Item Manager");
 
-	ImGui::Button("Add");
+	//========================
+	// Item 追加
+	//========================
+	static char newItemName[64] = "NewItem";
+	ImGui::InputText("New Item Name", newItemName, sizeof(newItemName));
+
+	if (ImGui::Button("Add Item"))
+	{
+		Item item{};
+		item.name = ConvertString(std::string(newItemName));
+		item.category = Category::Item;
+		item.effect = 0u;
+		item.params = baseParam_;
+		items_.push_back(std::move(item));
+	}
+
+	ImGui::Separator();
+
+	//========================
+	// Item 選択
+	//========================
+	static int currentItemIndex = 0;
+	currentItemIndex = std::clamp(currentItemIndex, 0, static_cast<int>(items_.size()) - 1);
+
+	// Combo用に Item名のリストを作る
+	UpdateItemNameCache();
+
+	ImGui::Combo("Item", &currentItemIndex, itemNameCStr_.data(), static_cast<int>(itemNameCStr_.size()));
+
+	Item& currentItem = items_[currentItemIndex];
+
+	//========================
+	// Param 追加（ParamType Combo）
+	//========================
+	static int currentParamType = 0;
+	ImGui::Combo("ParamType", &currentParamType, GetParamTypeNames(), GetParamTypeCount());
+
+	if (ImGui::Button("Add Param To Item"))
+	{
+		const std::string paramName = GetParamTypeNames()[currentParamType];
+		// 既にあれば上書き、なければ追加
+		currentItem.params[paramName] = 0.0f;
+	}
+
+	//========================
+	// params 編集
+	//========================
+	ImGui::Text("Params:");
+	for (auto& [name, value] : currentItem.params)
+	{
+		ImGui::DragFloat(name.c_str(), &value, 0.1f);
+	}
 
 	ImGui::End();
 #endif
@@ -126,6 +179,7 @@ void ItemManager::SaveBaseParam() {
 		binaryManager_.RegisterOutput(&param.first);
 		binaryManager_.RegisterOutput(&param.second);
 	}
+	binaryManager_.Write(baseParamFile_);
 }
 
 void ItemManager::LoadBaseParam() {
@@ -138,5 +192,25 @@ void ItemManager::LoadBaseParam() {
 		std::string name = binaryManager_.Reverse<std::string>(data);
 		float value = binaryManager_.Reverse<float>(data);
 		baseParam_[name] = value;
+	}
+}
+
+
+void ItemManager::UpdateItemNameCache()
+{
+	itemNameUtf8_.clear();
+	itemNameCStr_.clear();
+
+	itemNameUtf8_.reserve(items_.size());
+	itemNameCStr_.reserve(items_.size());
+
+	for (const auto& item : items_)
+	{
+		itemNameUtf8_.push_back(ConvertString(item.name));
+	}
+
+	for (const auto& s : itemNameUtf8_)
+	{
+		itemNameCStr_.push_back(s.c_str());
 	}
 }
