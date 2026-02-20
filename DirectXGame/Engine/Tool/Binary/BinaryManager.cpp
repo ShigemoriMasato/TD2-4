@@ -15,6 +15,9 @@ void BinaryManager::Write(const std::string& fileName) {
 	file.write(binaryBuffer_.data(), binaryBuffer_.size());
 
 	file.close();
+
+	// 書き込み後はバッファをクリア
+	binaryBuffer_.clear();
 }
 
 BinaryData BinaryManager::Read(const std::string& fileName) {

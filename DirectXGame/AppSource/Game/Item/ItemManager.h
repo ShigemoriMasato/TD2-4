@@ -3,13 +3,33 @@
 #include <Tool/Binary/BinaryManager.h>
 #include <Assets/Model/ModelManager.h>
 
-enum class ParamType : int {
+enum class ParamType : int
+{
 	HP,
 	MP,
 	Attack,
 	Defense,
 	Speed,
+	Count,
 };
+
+inline const char* const* GetParamTypeNames()
+{
+	static const char* names[] = {
+		"HP",
+		"MP",
+		"Attack",
+		"Defense",
+		"Speed",
+	};
+	return names;
+}
+
+inline int GetParamTypeCount()
+{
+	return static_cast<int>(ParamType::Count);
+}
+
 
 class ItemManager {
 public:
@@ -31,6 +51,10 @@ private:
 
 	void SaveBaseParam();
 	void LoadBaseParam();
+
+	std::vector<std::string> itemNameUtf8_;
+	std::vector<const char*> itemNameCStr_;
+	void UpdateItemNameCache();
 
 	//パラメータ一覧と基礎値
 	std::unordered_map<std::string, float> baseParam_;
