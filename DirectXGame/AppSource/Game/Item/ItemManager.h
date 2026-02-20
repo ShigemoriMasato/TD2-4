@@ -3,6 +3,14 @@
 #include <Tool/Binary/BinaryManager.h>
 #include <Assets/Model/ModelManager.h>
 
+enum class ParamType : int {
+	HP,
+	MP,
+	Attack,
+	Defense,
+	Speed,
+};
+
 class ItemManager {
 public:
 
@@ -25,7 +33,7 @@ private:
 	void LoadBaseParam();
 
 	//パラメータ一覧と基礎値
-	std::vector<ItemParam> baseParam_;
+	std::unordered_map<std::string, float> baseParam_;
 	std::vector<Item> items_;
 
 	std::map<int, std::string> modelIDtoName_;

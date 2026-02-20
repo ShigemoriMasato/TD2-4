@@ -1,5 +1,6 @@
 #include "ItemManager.h"
 #include <Utility/ConvertString.h>
+#include <imgui/imgui.h>
 
 ItemManager::~ItemManager() {
 	SaveBaseParam();
@@ -21,9 +22,17 @@ const Item& ItemManager::GetItem(std::wstring itemName) const {
 			return item;
 		}
 	}
+	throw std::runtime_error("Item not found: " + ConvertString(itemName));
 }
 
 void ItemManager::DrawImGui() {
+#ifdef USE_IMGUI
+	ImGui::Begin("Item Manager");
+
+	ImGui::Button("Add");
+
+	ImGui::End();
+#endif
 }
 
 //=================================================================
@@ -57,7 +66,8 @@ void ItemManager::SaveItem() {
 	int size = static_cast<int>(items_.size());
 	binaryManager_.RegisterOutput(&size);
 	for (const auto& item : items_) {
-		binaryManager_.RegisterOutput(&ConvertString(item.name));
+		std::string tmp = ConvertString(item.name);
+		binaryManager_.RegisterOutput(&tmp);
 		int category = static_cast<int>(item.category);
 		binaryManager_.RegisterOutput(&category);
 		binaryManager_.RegisterOutput(&item.effect);
@@ -67,11 +77,11 @@ void ItemManager::SaveItem() {
 			binaryManager_.RegisterOutput(&x);
 			binaryManager_.RegisterOutput(&y);
 		}
-		int buffsSize = static_cast<int>(item.buffs.size());
+		int buffsSize = static_cast<int>(item.params.size());
 		binaryManager_.RegisterOutput(&buffsSize);
-		for (const auto& buff : item.buffs) {
-			binaryManager_.RegisterOutput(&buff.name);
-			binaryManager_.RegisterOutput(&buff.value);
+		for (const auto& buff : item.params) {
+			binaryManager_.RegisterOutput(&buff.first);
+			binaryManager_.RegisterOutput(&buff.second);
 		}
 		binaryManager_.RegisterOutput(&item.weaponID);
 	}
@@ -98,11 +108,11 @@ void ItemManager::LoadItem() {
 			item.mapData.emplace_back(x, y);
 		}
 		int buffsSize = binaryManager_.Reverse<int>(data);
+		item.params = baseParam_; // 基礎値をコピー
 		for (int j = 0; j < buffsSize; ++j) {
-			ItemParam buff;
-			buff.name = binaryManager_.Reverse<std::string>(data);
-			buff.value = binaryManager_.Reverse<float>(data);
-			item.buffs.push_back(buff);
+			std::string name = binaryManager_.Reverse<std::string>(data);
+			float value = binaryManager_.Reverse<float>(data);
+			item.params[name] = value;
 		}
 		item.weaponID = binaryManager_.Reverse<int>(data);
 		items_.push_back(item);
@@ -113,8 +123,8 @@ void ItemManager::SaveBaseParam() {
 	int size = static_cast<int>(baseParam_.size());
 	binaryManager_.RegisterOutput(&size);
 	for (const auto& param : baseParam_) {
-		binaryManager_.RegisterOutput(&param.name);
-		binaryManager_.RegisterOutput(&param.value);
+		binaryManager_.RegisterOutput(&param.first);
+		binaryManager_.RegisterOutput(&param.second);
 	}
 }
 
@@ -125,9 +135,8 @@ void ItemManager::LoadBaseParam() {
 	}
 	int size = binaryManager_.Reverse<int>(data);
 	for (int i = 0; i < size; ++i) {
-		ItemParam param;
-		param.name = binaryManager_.Reverse<std::string>(data);
-		param.value = binaryManager_.Reverse<float>(data);
-		baseParam_.push_back(param);
+		std::string name = binaryManager_.Reverse<std::string>(data);
+		float value = binaryManager_.Reverse<float>(data);
+		baseParam_[name] = value;
 	}
 }
