@@ -15,6 +15,12 @@ void ImGuiWrapper::Initialize(DXDevice* device, Command::Manager* manager, Scree
 	ImGui_ImplWin32_Init(window->GetHwnd());
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // ドッキングを有効化
+	io.IniFilename = "Assets/ImGui/imgui.ini"; // 設定ファイルのパスを指定
+	io.Fonts->AddFontDefault();
+
+	font_ = io.Fonts->AddFontFromFileTTF("Assets/.EngineResource/Fonts/MPLUS1p-Medium.ttf", 17.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
+
+	
 
 	ImGui_ImplDX12_InitInfo initInfo;
 	initInfo.Device = device->GetDevice();

@@ -21,6 +21,8 @@ namespace SHEngine {
 
 		Logger logger_;
 
+		ImFont* font_;
+
 		float width_;
 		float height_;
 
