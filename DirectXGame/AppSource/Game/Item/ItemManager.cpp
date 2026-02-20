@@ -9,12 +9,23 @@ ItemManager::~ItemManager() {
 	SaveModel();
 }
 
-void ItemManager::Initialize(SHEngine::ModelManager* modelManager) {
+void ItemManager::Initialize(SHEngine::ModelManager* modelManager)
+{
 	modelManager_ = modelManager;
 
 	LoadBaseParam();
 	LoadItem();
 	LoadModel();
+
+	if (items_.empty())
+	{
+		Item defaultItem{};
+		defaultItem.name = L"Default Item";
+		defaultItem.category = Category::Item;
+		defaultItem.effect = 0u;
+		defaultItem.params = baseParam_;
+		items_.push_back(std::move(defaultItem));
+	}
 }
 
 const Item& ItemManager::GetItem(std::wstring itemName) const {
@@ -31,6 +42,9 @@ void ItemManager::DrawImGui()
 #ifdef USE_IMGUI
 	ImGui::Begin("Item Manager");
 
+	// 追加結果メッセージ（フレームをまたいで表示）
+	static bool showDuplicateItemError = false;
+
 	//========================
 	// Item 追加
 	//========================
@@ -39,12 +53,31 @@ void ItemManager::DrawImGui()
 
 	if (ImGui::Button("Add Item"))
 	{
-		Item item{};
-		item.name = ConvertString(std::string(newItemName));
-		item.category = Category::Item;
-		item.effect = 0u;
-		item.params = baseParam_;
-		items_.push_back(std::move(item));
+		showDuplicateItemError = false;
+
+		const std::wstring newNameW = ConvertString(std::string(newItemName));
+
+		const bool exists = std::any_of(items_.begin(), items_.end(),
+			[&](const Item& it) { return it.name == newNameW; });
+
+		if (exists)
+		{
+			showDuplicateItemError = true;
+		}
+		else
+		{
+			Item item{};
+			item.name = newNameW;
+			item.category = Category::Item;
+			item.effect = 0u;
+			item.params = baseParam_;
+			items_.push_back(std::move(item));
+		}
+	}
+
+	if (showDuplicateItemError)
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "既に存在するアイテムです！");
 	}
 
 	ImGui::Separator();
