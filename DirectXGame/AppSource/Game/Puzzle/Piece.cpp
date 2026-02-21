@@ -1,7 +1,7 @@
 #include "Piece.h"
 
-void Piece::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager) {
-
+void Piece::Initialize() {
+	item_ = {};
 }
 
 void Piece::SetItem(const Item& item) {

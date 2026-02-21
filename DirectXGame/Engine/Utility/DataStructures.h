@@ -19,3 +19,18 @@ struct QuaternionTransform {
 	Quaternion rotate{};
 	Vector3 position{};
 };
+
+struct DirectionalLight {
+	Vector4 color;
+	Vector3 direction;
+	float intensity;
+};
+
+struct PointLight {
+	Vector4 color;
+	Vector3 position;
+	float intensity;
+	float radius;
+	float decay;
+	Vector2 padding;
+};

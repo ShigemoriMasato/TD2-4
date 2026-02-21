@@ -212,6 +212,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Game\Puzzle\Piece.cpp" />
     <ClCompile Include="AppSource\Game\Puzzle\PlayerBuild.cpp" />
     <ClCompile Include="AppSource\Game\Puzzle\Shop.cpp" />
+    <ClCompile Include="AppSource\Game\Puzzle\PieceRender.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\Scene\CommonData.h" />
     <ClInclude Include="Engine\Assets\Model\ModelManager.h" />
@@ -259,6 +260,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Game\Puzzle\Piece.h" />
     <ClInclude Include="AppSource\Game\Puzzle\PlayerBuild.h" />
     <ClInclude Include="AppSource\Game\Puzzle\Shop.h" />
+    <ClInclude Include="AppSource\Game\Puzzle\PieceRender.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
