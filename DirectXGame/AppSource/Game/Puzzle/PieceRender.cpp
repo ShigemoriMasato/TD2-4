@@ -37,11 +37,17 @@ void PieceRender::Initialize(SHEngine::ModelManager* modelManager, SHEngine::Dra
 		renderObjects_[i]->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 		renderObjects_[i]->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "DirectionalLight");
 	}
+
+
+	modelManager_ = modelManager;
+	drawDataManager_ = drawDataManager;
+
 }
 
 void PieceRender::SetPiece(const std::vector<Piece>& piece) {
-	for (auto& [id, matrices] : matrixMap_) {
-		matrices.clear();
+	for(const auto& [modelID, render] : modelRenderMap_) {
+		render->instanceNum_ = 0;
+		matrixMap_[modelID].clear();
 	}
 
 	for (const auto& p : piece) {
@@ -53,6 +59,32 @@ void PieceRender::SetPiece(const std::vector<Piece>& piece) {
 		}
 
 		matrixMap_[modelID].push_back(Matrix::MakeTranslationMatrix(p.GetPosition()));
+		modelRenderMap_[modelID]->instanceNum_++;
+	}
+}
+
+void PieceRender::Update(const Matrix4x4& viewProj) {
+	for (const auto& [modelID, render] : modelRenderMap_) {
+		const auto& matrices = matrixMap_[modelID];
+		if (matrices.empty()) continue;
+		render->CopyBufferData(0, matrices.data(), sizeof(Matrix4x4) * matrices.size());
+		render->CopyBufferData(1, &viewProj, sizeof(Matrix4x4));
+
+		auto model = modelManager_->GetNodeModelData(modelID);
+		auto material = model.materials[model.materialIndex.front()];
+		int textureIndex = material.textureIndex;
+		Vector4 color = material.color;
+
+		render->CopyBufferData(2, &textureIndex, sizeof(int));
+		render->CopyBufferData(3, &color, sizeof(Vector4));
+
+		render->CopyBufferData(4, &directionalLight_, sizeof(DirectionalLight));
+	}
+}
+
+void PieceRender::Draw(CmdObj* cmdObj) {
+	for (const auto& [modelID, render] : modelRenderMap_) {
+		render->Draw(cmdObj);
 	}
 }
 
@@ -84,5 +116,5 @@ void PieceRender::RegisterRenderObject(int modelID) {
 	render->SetDrawData(drawData);
 
 	modelRenderMap_[modelID] = render;
-	matrixMap_[modelID] = std::vector<Matrix4x4>(maxInstanceNum_, Matrix4x4::Identity());
+	matrixMap_[modelID].reserve(maxInstanceNum_);
 }

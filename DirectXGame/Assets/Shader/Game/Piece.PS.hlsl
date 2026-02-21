@@ -30,7 +30,7 @@ cbuffer Light : register(b2)
 Texture2D textures[] : register(t8);
 SamplerState gSampler : register(s0);
 
-PSOutput main(PSInput input) : SV_TARGET
+PSOutput main(PSInput input)
 {
     PSOutput output;
     

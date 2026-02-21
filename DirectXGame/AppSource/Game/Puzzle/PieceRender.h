@@ -12,7 +12,7 @@ public:
 	void SetPiece(const std::vector<Piece>& piece);
 	void Update(const Matrix4x4& viewProj);
 	
-	void Draw(const CmdObj* cmdObj);
+	void Draw(CmdObj* cmdObj);
 
 private:
 
@@ -34,5 +34,6 @@ private:
 
 	//Shaderへのデータ関係
 	std::map<int, std::vector<Matrix4x4>> matrixMap_;	//RenderObjectIndex->Matrixのマップ
-
+	
+	DirectionalLight directionalLight_ = {};
 };

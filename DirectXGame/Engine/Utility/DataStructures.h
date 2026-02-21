@@ -21,9 +21,9 @@ struct QuaternionTransform {
 };
 
 struct DirectionalLight {
-	Vector4 color;
-	Vector3 direction;
-	float intensity;
+	Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Vector3 direction = { 0.0f, -1.0f, 0.0f };
+	float intensity = 1.0f;
 };
 
 struct PointLight {
