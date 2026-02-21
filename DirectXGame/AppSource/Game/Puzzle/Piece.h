@@ -6,8 +6,6 @@
 class Piece {
 public:
 
-	Piece() : id_(nextID_++) {}
-
 	void SetItem(const Item& item);
 
 	void SetPosition(const Vector3& position) { position_ = position; }
@@ -19,7 +17,5 @@ private:
 
 	Item item_;
 	Vector3 position_;
-
-	static inline int nextID_ = 0;
 
 };

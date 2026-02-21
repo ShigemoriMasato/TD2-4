@@ -40,7 +40,10 @@ void PieceRender::Initialize(SHEngine::ModelManager* modelManager, SHEngine::Dra
 }
 
 void PieceRender::SetPiece(const std::vector<Piece>& piece) {
-	
+	for (auto& [id, matrices] : matrixMap_) {
+		matrices.clear();
+	}
+
 	for (const auto& p : piece) {
 		int modelID = p.GetModelID();
 
@@ -49,7 +52,7 @@ void PieceRender::SetPiece(const std::vector<Piece>& piece) {
 			RegisterRenderObject(modelID);
 		}
 
-
+		matrixMap_[modelID].push_back(Matrix::MakeTranslationMatrix(p.GetPosition()));
 	}
 }
 
@@ -81,5 +84,5 @@ void PieceRender::RegisterRenderObject(int modelID) {
 	render->SetDrawData(drawData);
 
 	modelRenderMap_[modelID] = render;
-	matrixMap_[modelID] = std::vector<Matrix>(maxInstanceNum_, Matrix());
+	matrixMap_[modelID] = std::vector<Matrix4x4>(maxInstanceNum_, Matrix4x4::Identity());
 }

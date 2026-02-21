@@ -2,6 +2,7 @@
 #include <Core/DXDevice.h>
 #include <Core/Command/CommandManager.h>
 #include <Render/Screen/WindowsAPI.h>
+#include <imgui/imgui.h>
 
 namespace SHEngine {
 	class ImGuiWrapper {

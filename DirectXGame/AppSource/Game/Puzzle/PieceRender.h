@@ -33,9 +33,6 @@ private:
 	int registerNum_ = 0;
 
 	//Shaderへのデータ関係
-	struct Matrix {
-		Matrix4x4 world = Matrix4x4::Identity();
-	};
-	std::map<int, std::vector<Matrix>> matrixMap_;	//RenderObjectIndex->Matrixのマップ
+	std::map<int, std::vector<Matrix4x4>> matrixMap_;	//RenderObjectIndex->Matrixのマップ
 
 };
