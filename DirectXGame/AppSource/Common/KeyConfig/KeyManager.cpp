@@ -1,7 +1,8 @@
 #include "KeyManager.h"
 
-void KeyManager::Initialize(SHEngine::Input* input) {
+void KeyManager::Initialize(SHEngine::Input* input, MainDisplay* display) {
 	input_ = input;
+	display_ = display;
 	keyHistory_.resize(kMaxHistory_);
 	buttonHistory_.resize(kMaxHistory_);
 	stickHistory_.resize(kMaxHistory_);
@@ -150,6 +151,13 @@ void KeyManager::Update() {
 		}
 	}
 
+}
+
+Vector2 KeyManager::GetCursorPos() const {
+#ifdef USE_IMGUI
+	return display_->GetCursorPos();
+#endif
+	return input_->GetCursorPos();
 }
 
 void KeyManager::SetKey(Key action, uint8_t DIK, KeyState state) {

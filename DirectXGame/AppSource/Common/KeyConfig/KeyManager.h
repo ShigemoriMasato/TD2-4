@@ -2,6 +2,7 @@
 #include <Input/Input.h>
 #include <unordered_map>
 #include <Tool/Binary/BinaryManager.h>
+#include <Common/MainDisplay.h>
 
 enum class Key {
 	// 移動系 -===========
@@ -11,18 +12,6 @@ enum class Key {
 	Up,
 	Down,
 	
-	// 動作系 -===========
-
-	HardDrop,
-	Hold,
-
-	// 回転系 -===========
-
-	LRotate,
-	RRotate,
-
-	// UI系 -===========
-
 	Correct,//確定キー
 	Reverse,//取消キー
 	Pause,//ポーズキー
@@ -53,10 +42,11 @@ public:
 	KeyManager() = default;
 	~KeyManager() = default;
 
-	void Initialize(SHEngine::Input* input);
+	void Initialize(SHEngine::Input* input, MainDisplay* display);
 	void Update();
 
 	std::unordered_map<Key, bool> GetKeyStates() const { return resultKeyFlugs_; }
+	Vector2 GetCursorPos() const;
 
 	void SetKey(Key action, uint8_t DIK, KeyState state = KeyState::Release);
 	void SetButton(Key action, XBoxController button, KeyState state);
@@ -64,6 +54,7 @@ public:
 
 private:
 
+	MainDisplay* display_ = nullptr;
 	SHEngine::Input* input_ = nullptr;
 
 	//スティックの方向

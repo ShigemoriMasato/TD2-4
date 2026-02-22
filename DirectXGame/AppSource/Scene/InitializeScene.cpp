@@ -55,7 +55,7 @@ void InitializeScene::Initialize() {
 	commonData_->keyManager = std::make_unique<KeyManager>();
 
 	auto keyManager = commonData_->keyManager.get();
-	keyManager->Initialize(input_);
+	keyManager->Initialize(input_, commonData_->display.get());
 
 	//KeyConfigの設定
 	keyManager->SetKey(Key::Right, DIK_D, KeyState::Hold);
@@ -77,34 +77,6 @@ void InitializeScene::Initialize() {
 	keyManager->SetKey(Key::Down, DIK_DOWNARROW, KeyState::Hold);
 	keyManager->SetButton(Key::Down, XBoxController::kDown, KeyState::Hold);
 	keyManager->SetStick(Key::Down, true, true, -0.5f);
-
-	//================================================================================
-
-	keyManager->SetKey(Key::HardDrop, DIK_W, KeyState::Trigger);
-	keyManager->SetKey(Key::HardDrop, DIK_SPACE, KeyState::Trigger);
-	keyManager->SetKey(Key::HardDrop, DIK_UPARROW, KeyState::Trigger);
-	keyManager->SetButton(Key::HardDrop, XBoxController::kUp, KeyState::Trigger);
-	keyManager->SetStick(Key::HardDrop, true, true, 0.5f);
-
-	keyManager->SetKey(Key::Hold, DIK_LSHIFT, KeyState::Trigger);
-	keyManager->SetKey(Key::Hold, DIK_C, KeyState::Trigger);
-	keyManager->SetKey(Key::Hold, DIK_H, KeyState::Trigger);
-	keyManager->SetKey(Key::Hold, DIK_L, KeyState::Trigger);
-	keyManager->SetKey(Key::Hold, DIK_RSHIFT, KeyState::Trigger);
-	keyManager->SetButton(Key::Hold, XBoxController::kLeftShoulder, KeyState::Trigger);
-	keyManager->SetButton(Key::Hold, XBoxController::kLeftTrigger, KeyState::Trigger);
-	keyManager->SetButton(Key::Hold, XBoxController::kRightShoulder, KeyState::Trigger);
-	keyManager->SetButton(Key::Hold, XBoxController::kLeftTrigger, KeyState::Trigger);
-
-	//================================================================================
-
-	keyManager->SetKey(Key::LRotate, DIK_Z, KeyState::Trigger);
-	keyManager->SetKey(Key::LRotate, DIK_J, KeyState::Trigger);
-	keyManager->SetButton(Key::LRotate, XBoxController::kX, KeyState::Trigger);
-
-	keyManager->SetKey(Key::RRotate, DIK_X, KeyState::Trigger);
-	keyManager->SetKey(Key::RRotate, DIK_K, KeyState::Trigger);
-	keyManager->SetButton(Key::RRotate, XBoxController::kY, KeyState::Trigger);
 
 	//================================================================================
 
@@ -136,7 +108,7 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	//更新処理
 	commonData_->cmdObject->ResetCommandList();
 
-	return std::make_unique<YokoyamaScene>();
+	return std::make_unique<ShigeScene>();
 }
 
 void InitializeScene::Draw() {

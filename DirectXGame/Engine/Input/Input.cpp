@@ -9,6 +9,12 @@
 using XC = XBoxController;
 using namespace SHEngine;
 
+namespace {
+	BOOL GetMouseCursorPos(POINT* pos) {
+		return GetCursorPos(pos);
+	}
+}
+
 void Input::Initialize(HINSTANCE hInstance) {
 	if (isInitialized_) {
 		return;
@@ -128,7 +134,7 @@ void Input::Update() {
 	assert(SUCCEEDED(hr));
 
 	POINT cursorPos;
-	if (GetCursorPos(&cursorPos)) {
+	if (GetMouseCursorPos(&cursorPos)) {
 		// スクリーン座標をクライアント座標に変換
 		ScreenToClient(hwnd_, &cursorPos);
 		// カーソル位置をワールド座標に変換
@@ -177,7 +183,7 @@ Vector2 Input::GetMouseMove() {
 	return Vector2(float(mouseState.lX), float(mouseState.lY));
 }
 
-Vector2 SHEngine::Input::GetMousePos() {
+Vector2 SHEngine::Input::GetCursorPos() {
 	return mousePos_;
 }
 

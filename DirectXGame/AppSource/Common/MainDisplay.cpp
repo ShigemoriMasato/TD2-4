@@ -31,7 +31,7 @@ void MainDisplay::DrawImGui() {
 		isHovering_ = true;
 
 		//マウスの左上をウィンドウに合わせる
-		cursorPos_ = input_->GetMousePos() - Vector2(windowPos.x, windowPos.y);
+		cursorPos_ = input_->GetCursorPos() - Vector2(windowPos.x, windowPos.y);
 
 		//正規化
 		cursorPos_.x *= windowSize.x / imageSize.x;
