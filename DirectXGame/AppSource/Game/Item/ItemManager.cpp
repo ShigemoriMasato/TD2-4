@@ -220,24 +220,33 @@ void ItemManager::LoadModel() {
 void ItemManager::SaveItem() {
 	int size = static_cast<int>(items_.size());
 	binaryManager_.RegisterOutput(&size);
-	for (const auto& item : items_) {
+	for (auto& item : items_) {
+
 		std::string tmp = ConvertString(item.name);
 		binaryManager_.RegisterOutput(&tmp);
+
 		int category = static_cast<int>(item.category);
 		binaryManager_.RegisterOutput(&category);
+
 		binaryManager_.RegisterOutput(&item.effect);
+
 		int mapDataSize = static_cast<int>(item.mapData.size());
 		binaryManager_.RegisterOutput(&mapDataSize);
-		for (const auto& [x, y] : item.mapData) {
+
+		for (auto& [x, y] : item.mapData) {
 			binaryManager_.RegisterOutput(&x);
 			binaryManager_.RegisterOutput(&y);
 		}
+
 		int buffsSize = static_cast<int>(item.params.size());
 		binaryManager_.RegisterOutput(&buffsSize);
-		for (const auto& buff : item.params) {
-			binaryManager_.RegisterOutput(&buff.first);
+
+		for (auto& buff : item.params) {
+			std::string tmp = buff.first;
+			binaryManager_.RegisterOutput(&tmp);
 			binaryManager_.RegisterOutput(&buff.second);
 		}
+
 		binaryManager_.RegisterOutput(&item.weaponID);
 	}
 	binaryManager_.Write(itemFile_);
@@ -253,22 +262,29 @@ void ItemManager::LoadItem() {
 	for (int i = 0; i < size; ++i) {
 		Item item;
 		item.name = ConvertString(binaryManager_.Reverse<std::string>(data));
+
 		int category = binaryManager_.Reverse<int>(data);
 		item.category = static_cast<Category>(category);
+
 		item.effect = binaryManager_.Reverse<uint32_t>(data);
+
 		int mapDataSize = binaryManager_.Reverse<int>(data);
+
 		for (int j = 0; j < mapDataSize; ++j) {
 			int x = binaryManager_.Reverse<int>(data);
 			int y = binaryManager_.Reverse<int>(data);
 			item.mapData.emplace_back(x, y);
 		}
+
 		int buffsSize = binaryManager_.Reverse<int>(data);
 		item.params = baseParam_; // 基礎値をコピー
+
 		for (int j = 0; j < buffsSize; ++j) {
 			std::string name = binaryManager_.Reverse<std::string>(data);
 			float value = binaryManager_.Reverse<float>(data);
 			item.params[name] = value;
 		}
+
 		item.weaponID = binaryManager_.Reverse<int>(data);
 		items_.push_back(item);
 	}

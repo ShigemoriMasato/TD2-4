@@ -24,7 +24,7 @@ void KeyManager::Update() {
 
 	stickHistory_.erase(stickHistory_.begin());
 	stickHistory_.emplace_back();
-	
+
 	//Keyの数だけループ
 	for (const auto& [action, keys] : keyMap_) {
 
@@ -36,7 +36,7 @@ void KeyManager::Update() {
 		}
 	}
 
-	for(const auto& [action, buttons] : buttonMap_) {
+	for (const auto& [action, buttons] : buttonMap_) {
 		//Keyに登録されているDIKの数だけループ
 		for (const auto& [button, buttonState] : buttons) {
 			//履歴を作成する
@@ -51,7 +51,7 @@ void KeyManager::Update() {
 	}
 
 	// ================- keyの最終的な状態の更新 -================
-	for(const auto& [action, key] : keyMap_) {
+	for (const auto& [action, key] : keyMap_) {
 
 		//すでにtrueになっていたらスキップ
 		if (resultKeyFlugs_[action]) {
@@ -88,7 +88,7 @@ void KeyManager::Update() {
 		}
 	}
 
-	for(const auto& [action, buttons] : buttonMap_) {
+	for (const auto& [action, buttons] : buttonMap_) {
 		//すでにtrueになっていたらスキップ
 		if (resultKeyFlugs_[action]) {
 			continue;
@@ -119,7 +119,7 @@ void KeyManager::Update() {
 		}
 	}
 
-	for(const auto & [action, stick] : stickMap_) {
+	for (const auto& [action, stick] : stickMap_) {
 		//すでにtrueになっていたらスキップ
 		if (resultKeyFlugs_[action]) {
 			continue;
@@ -139,8 +139,7 @@ void KeyManager::Update() {
 		if (toggleValue > 0) {
 			//右スティック
 			state = (currentValue > toggleValue);
-		}
-		else {
+		} else {
 			//左スティック
 			state = (currentValue < toggleValue);
 		}
