@@ -24,7 +24,6 @@ private:
 private:
 
 	//RenderObject関係
-
 	std::vector<std::unique_ptr<SHEngine::RenderObject>> renderObjects_;
 	//モデルIndex->RenderObjectのマップ
 	std::map<int, SHEngine::RenderObject*> modelRenderMap_;
