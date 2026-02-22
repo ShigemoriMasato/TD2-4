@@ -181,27 +181,25 @@ void ItemManager::DrawImGui()
 	{
 		ImGui::SeparatorText("Shape (mapData)");
 
-		// UI状態はstaticで保持（Releaseに影響を出さない方針）
 		static int gridW = 8;
 		static int gridH = 8;
 		static float cellSize = 22.0f;
 		static int paintMode = 0; // 0:none 1:add(L) 2:erase(R)
 
-		ImGui::SetNextItemWidth(80.0f);
-		ImGui::DragInt("GridW", &gridW, 1.0f, 1, 32);
+		// グリッドサイズ & セルサイズ
+		ImGui::SetNextItemWidth(80.0f);	// 程よく
+		ImGui::DragInt("横", &gridW, 1.0f, 1, 32);
 		ImGui::SameLine();
-		ImGui::SetNextItemWidth(80.0f);
-		ImGui::DragInt("GridH", &gridH, 1.0f, 1, 32);
+		ImGui::SetNextItemWidth(80.0f);	// 程よく
+		ImGui::DragInt("縦", &gridH, 1.0f, 1, 32);
 		ImGui::SameLine();
-		ImGui::SetNextItemWidth(80.0f);
-		ImGui::DragFloat("Cell", &cellSize, 0.5f, 10.0f, 60.0f, "%.1f");
+		ImGui::SetNextItemWidth(80.0f); // 程よく
+		ImGui::DragFloat("セルサイズ", &cellSize, 0.5f, 10.0f, 60.0f, "%.1f");
 
+		// 左上基準に正規化するボタン
 		auto normalizeMapData = [](std::vector<std::pair<int, int>>& cells)
 			{
-				if (cells.empty())
-				{
-					return;
-				}
+				if (cells.empty()) return;
 
 				int minX = cells.front().first;
 				int minY = cells.front().second;
@@ -220,12 +218,12 @@ void ItemManager::DrawImGui()
 				cells.erase(std::unique(cells.begin(), cells.end()), cells.end());
 			};
 
-		if (ImGui::Button("Normalize (Top-Left)"))
+		if (ImGui::Button("左上詰め"))
 		{
 			normalizeMapData(currentItem.mapData);
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Clear"))
+		if (ImGui::Button("削除"))
 		{
 			currentItem.mapData.clear();
 		}
@@ -233,7 +231,6 @@ void ItemManager::DrawImGui()
 		ImGui::Text("Cells: %d", (int)currentItem.mapData.size());
 		ImGui::Text("LeftDrag: Add   RightDrag: Erase");
 
-		// 一時的に set 化して編集（vectorのままだと exists/erase が面倒）
 		struct PairHash
 		{
 			size_t operator()(const std::pair<int, int>& p) const noexcept
