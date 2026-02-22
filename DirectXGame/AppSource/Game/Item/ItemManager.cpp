@@ -2,6 +2,8 @@
 #include "Item.h"
 #include <Utility/ConvertString.h>
 #include <imgui/imgui.h>
+#include <algorithm>
+#include <unordered_set>
 
 ItemManager::~ItemManager() {
 	SaveBaseParam();
@@ -161,29 +163,194 @@ void ItemManager::DrawImGui()
 
 #pragma region アイテムの基本情報編集
 
-	//ImGui::InputText("Name", &currentItem.name[0], 64);
+	//static char itemNameBuf[64] = { 0 };
+	//// 入力欄
+	//if (ImGui::InputText("Name##2", itemNameBuf, sizeof(itemNameBuf)))
+	//{
+	//	// 変更があったときだけ反映
+	//	currentItem.name = ConvertString(std::string(itemNameBuf));
+	//}
 	ImGui::Combo("Category##2", reinterpret_cast<int*>(&currentItem.category), "Weapon\0Armor\0Item\0");
+
+#pragma endregion
+
+
+#pragma region mapData（2Dタイル形状）編集
+
+	if (ImGui::TreeNode("----------------Shape---------------"))
+	{
+		ImGui::SeparatorText("Shape (mapData)");
+
+		// UI状態はstaticで保持（Releaseに影響を出さない方針）
+		static int gridW = 8;
+		static int gridH = 8;
+		static float cellSize = 22.0f;
+		static int paintMode = 0; // 0:none 1:add(L) 2:erase(R)
+
+		ImGui::SetNextItemWidth(80.0f);
+		ImGui::DragInt("GridW", &gridW, 1.0f, 1, 32);
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(80.0f);
+		ImGui::DragInt("GridH", &gridH, 1.0f, 1, 32);
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(80.0f);
+		ImGui::DragFloat("Cell", &cellSize, 0.5f, 10.0f, 60.0f, "%.1f");
+
+		auto normalizeMapData = [](std::vector<std::pair<int, int>>& cells)
+			{
+				if (cells.empty())
+				{
+					return;
+				}
+
+				int minX = cells.front().first;
+				int minY = cells.front().second;
+				for (const auto& [x, y] : cells)
+				{
+					minX = std::min(minX, x);
+					minY = std::min(minY, y);
+				}
+				for (auto& c : cells)
+				{
+					c.first -= minX;
+					c.second -= minY;
+				}
+
+				std::sort(cells.begin(), cells.end());
+				cells.erase(std::unique(cells.begin(), cells.end()), cells.end());
+			};
+
+		if (ImGui::Button("Normalize (Top-Left)"))
+		{
+			normalizeMapData(currentItem.mapData);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Clear"))
+		{
+			currentItem.mapData.clear();
+		}
+
+		ImGui::Text("Cells: %d", (int)currentItem.mapData.size());
+		ImGui::Text("LeftDrag: Add   RightDrag: Erase");
+
+		// 一時的に set 化して編集（vectorのままだと exists/erase が面倒）
+		struct PairHash
+		{
+			size_t operator()(const std::pair<int, int>& p) const noexcept
+			{
+				const uint64_t x = static_cast<uint32_t>(p.first);
+				const uint64_t y = static_cast<uint32_t>(p.second);
+				return static_cast<size_t>((x << 32) ^ y);
+			}
+		};
+
+		std::unordered_set<std::pair<int, int>, PairHash> filled;
+		filled.reserve(currentItem.mapData.size() * 2);
+		for (const auto& c : currentItem.mapData)
+		{
+			filled.insert(c);
+		}
+
+		// グリッド領域（InvisibleButtonで入力を取ってDrawListで描画）
+		ImDrawList* dl = ImGui::GetWindowDrawList();
+		const ImVec2 origin = ImGui::GetCursorScreenPos();
+		const ImVec2 gridSize(cellSize * gridW, cellSize * gridH);
+
+		ImGui::InvisibleButton("##shape_grid", gridSize,
+			ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+
+		const bool hovered = ImGui::IsItemHovered();
+
+		// クリック開始でモード決定
+		if (hovered)
+		{
+			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))  paintMode = 1;
+			if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) paintMode = 2;
+		}
+
+		// ボタンを離したらモード解除
+		if (!ImGui::IsMouseDown(ImGuiMouseButton_Left) && !ImGui::IsMouseDown(ImGuiMouseButton_Right))
+		{
+			paintMode = 0;
+		}
+
+		// ドラッグ中のセル編集
+		if (hovered && paintMode != 0)
+		{
+			const ImVec2 mp = ImGui::GetIO().MousePos;
+			const float localX = mp.x - origin.x;
+			const float localY = mp.y - origin.y;
+			const int cx = (int)(localX / cellSize);
+			const int cy = (int)(localY / cellSize);
+
+			if (0 <= cx && cx < gridW && 0 <= cy && cy < gridH)
+			{
+				const std::pair<int, int> cell(cx, cy);
+				if (paintMode == 1)
+				{
+					filled.insert(cell);
+				}
+				else if (paintMode == 2)
+				{
+					filled.erase(cell);
+				}
+			}
+		}
+
+		// 描画
+		const ImU32 colBg = IM_COL32(30, 30, 30, 255);
+		const ImU32 colGrid = IM_COL32(80, 80, 80, 255);
+		const ImU32 colFill = IM_COL32(120, 200, 120, 255);
+
+		dl->AddRectFilled(origin, ImVec2(origin.x + gridSize.x, origin.y + gridSize.y), colBg);
+
+		for (int y = 0; y < gridH; ++y)
+		{
+			for (int x = 0; x < gridW; ++x)
+			{
+				const ImVec2 p0(origin.x + x * cellSize, origin.y + y * cellSize);
+				const ImVec2 p1(p0.x + cellSize, p0.y + cellSize);
+
+				if (filled.contains({ x, y }))
+				{
+					dl->AddRectFilled(p0, p1, colFill);
+				}
+				dl->AddRect(p0, p1, colGrid);
+			}
+		}
+
+		// set -> vector に戻す（保存・比較を安定させるためソート）
+		currentItem.mapData.assign(filled.begin(), filled.end());
+		std::sort(currentItem.mapData.begin(), currentItem.mapData.end());
+
+
+		ImGui::TreePop();
+	}
 
 #pragma endregion
 
 
 #pragma region バフパラメータ編集
 
-	static int currentParamType = 0;
-	if (ImGui::Button("Add"))
+	if (ImGui::TreeNode("----------------parm---------------"))
 	{
-		const std::string paramName = GetParamTypeNames()[currentParamType];
-		currentItem.params[paramName] = 0.0f;
-	}
-	ImGui::SameLine();
-	ImGui::Combo("ParamType", &currentParamType, GetParamTypeNames(), GetParamTypeCount());
+		static int currentParamType = 0;
+		if (ImGui::Button("Add"))
+		{
+			const std::string paramName = GetParamTypeNames()[currentParamType];
+			currentItem.params[paramName] = 0.0f;
+		}
+		ImGui::SameLine();
+		ImGui::Combo("ParamType", &currentParamType, GetParamTypeNames(), GetParamTypeCount());
 
-	ImGui::Text("Params:");
-	for (auto& [name, value] : currentItem.params)
-	{
-		ImGui::DragFloat(name.c_str(), &value, 0.1f);
-	}
+		ImGui::Text("Params:");
+		for (auto& [name, value] : currentItem.params)
+		{
+			ImGui::DragFloat(name.c_str(), &value, 0.1f);
+		}
 
+		ImGui::TreePop();
+	}
 #pragma endregion
 
 	ImGui::End();
@@ -332,3 +499,4 @@ void ItemManager::UpdateItemNameCache()
 		itemNameCStr_.push_back(s.c_str());
 	}
 }
+
