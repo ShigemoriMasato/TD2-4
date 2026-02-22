@@ -216,6 +216,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\ShigeScene\ShigeScene.cpp" />
     <ClCompile Include="AppSource\Yokoyama\YokoyamaScene.cpp" />
     <ClCompile Include="AppSource\Common\KeyConfig\WorldCursor.cpp" />
+    <ClCompile Include="AppSource\Game\Puzzle\PieceManager.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\Scene\CommonData.h" />
     <ClInclude Include="Engine\Assets\Model\ModelManager.h" />
@@ -269,6 +270,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Tool\Grid\Grid.h" />
     <ClInclude Include="AppSource\Yokoyama\YokoyamaScene.h" />
     <ClInclude Include="AppSource\Common\KeyConfig\WorldCursor.h" />
+    <ClInclude Include="AppSource\Game\Puzzle\PieceManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
