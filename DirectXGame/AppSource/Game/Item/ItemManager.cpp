@@ -163,7 +163,6 @@ void ItemManager::DrawImGui()
 
 	//ImGui::InputText("Name", &currentItem.name[0], 64);
 	ImGui::Combo("Category##2", reinterpret_cast<int*>(&currentItem.category), "Weapon\0Armor\0Item\0");
-	ImGui::InputScalar("Effect", ImGuiDataType_U32, &currentItem.effect);
 
 #pragma endregion
 
