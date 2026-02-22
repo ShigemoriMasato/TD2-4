@@ -161,7 +161,7 @@ void ItemManager::DrawImGui()
 
 #pragma region アイテムの基本情報編集
 
-	ImGui::InputText("Name", &currentItem.name[0], 64);
+	//ImGui::InputText("Name", &currentItem.name[0], 64);
 	ImGui::Combo("Category", reinterpret_cast<int*>(&currentItem.category), "Weapon\0Armor\0Item\0");
 	ImGui::InputScalar("Effect", ImGuiDataType_U32, &currentItem.effect);
 
