@@ -216,7 +216,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Game\Player\PlayerHP.cpp" />
     <ClCompile Include="AppSource\Game\ScreenRaycaster\ScreenRaycaster.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
+    <ClInclude Include="AppSource\Game\EasingAnimation\AnimationBundle.h" />
     <ClInclude Include="AppSource\Scene\CommonData.h" />
+    <ClInclude Include="AppSource\Game\EasingAnimation\EasingAnimation.h" />
     <ClInclude Include="Engine\Assets\Model\ModelManager.h" />
     <ClInclude Include="Engine\Core\Command\Data\CommandObject.h" />
     <ClInclude Include="Engine\Core\Command\Data\CommandSet.h" />

@@ -16,7 +16,7 @@ void PlayerStateDash::Update(Player* player, float deltaTime) {
 	t.position.z += dir.y * player->GetDashSpeed() * deltaTime;
 
 	// タイマーの更新
-	dashTimer_ -= 1.0f / 60.0f;
+	dashTimer_ -= deltaTime;
 	if (dashTimer_ <= 0.0f) {
 		// ダッシュ終了時、クールダウンを開始して通常状態に戻る
 		player->StartDashCooldown();
