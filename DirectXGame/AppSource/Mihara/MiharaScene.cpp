@@ -23,6 +23,13 @@ void MiharaScene::Initialize() {
 	perspectiveDesc.farClip = 1000.0f;
 	camera_->SetProjectionMatrix(perspectiveDesc);
 
+	// 武器のパラメータ管理インスタンス生成&初期化
+	weaponManager_ = std::make_unique<WeaponManager>();
+	weaponManager_->InitializeData();
+
+	// 武器のパラメータ管理デバッガーの生成&初期化
+	weaponDebugger_ = std::make_unique<WeaponDebugger>(weaponManager_.get());
+
 	// カメラのトランスフォーム設定
 	cameraTransform_.position = {0.0f, -2.5f, 35.0f};
 	cameraTransform_.rotate = {-0.3f, 0.0f, 0.0f};
@@ -80,6 +87,9 @@ void MiharaScene::Draw() {
 	ImGui::DragFloat3("Rotate", &cameraTransform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("Position", &cameraTransform_.position.x, 0.01f);
 	ImGui::End();
+
+	// 武器のパラメータ管理デバッグ用描画
+	weaponDebugger_->Draw();
 #endif
 
 	engine_->DrawImGui();
