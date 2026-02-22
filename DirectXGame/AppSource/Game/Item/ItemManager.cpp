@@ -40,82 +40,152 @@ const Item& ItemManager::GetItem(std::wstring itemName) const {
 void ItemManager::DrawImGui()
 {
 #ifdef USE_IMGUI
+
 	ImGui::Begin("Item Manager");
 
-	// 追加結果メッセージ（フレームをまたいで表示）
-	static bool showDuplicateItemError = false;
+#pragma region Item追加
 
-	//========================
-	// Item 追加
-	//========================
+	// 追加に成功したかフラグ
+	static bool successAddItem = false;
+
+	// 新規追加するアイテムの名前
 	static char newItemName[64] = "NewItem";
-	ImGui::InputText("New Item Name", newItemName, sizeof(newItemName));
+	ImGui::InputText("NewItem Name", newItemName, sizeof(newItemName));
+	// 新規追加するアイテムのカテゴリ
+	static Category newItemCategory = Category::Item;
+	ImGui::Combo("Category", reinterpret_cast<int*>(&newItemCategory), "Weapon\0Armor\0Item\0");
 
+	// アイテム追加実行ボタン
 	if (ImGui::Button("Add Item"))
 	{
-		showDuplicateItemError = false;
+		// フラグリセット
+		successAddItem = false;
 
+		// 日本語対応
 		const std::wstring newNameW = ConvertString(std::string(newItemName));
 
+		// 重複チェック
 		const bool exists = std::any_of(items_.begin(), items_.end(),
 			[&](const Item& it) { return it.name == newNameW; });
-
+		// 重複してたら失敗フラグをたてる
 		if (exists)
 		{
-			showDuplicateItemError = true;
+			successAddItem = true;
 		}
+		// 重複してなければ追加
 		else
 		{
 			Item item{};
 			item.name = newNameW;
-			item.category = Category::Item;
+			item.category = newItemCategory;
 			item.effect = 0u;
-			item.params = baseParam_;
+			item.params.clear();
 			items_.push_back(std::move(item));
 		}
 	}
-
-	if (showDuplicateItemError)
+	// 失敗フラグがたってたら重複エラーを表示
+	if (successAddItem)
 	{
-		ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "既に存在するアイテムです！");
+		ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "Error : exists Item!");
 	}
+
+#pragma endregion
 
 	ImGui::Separator();
 
-	//========================
-	// Item 選択
-	//========================
+#pragma region Item一覧と削除
+
 	static int currentItemIndex = 0;
 	currentItemIndex = std::clamp(currentItemIndex, 0, static_cast<int>(items_.size()) - 1);
 
-	// Combo用に Item名のリストを作る
-	UpdateItemNameCache();
+	int deleteIndex = -1;
 
-	ImGui::Combo("Item", &currentItemIndex, itemNameCStr_.data(), static_cast<int>(itemNameCStr_.size()));
+	if (ImGui::BeginTable("ItemTable", 2, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_ScrollY, ImVec2(0, 160.0f)))
+	{
+		ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
+		ImGui::TableSetupColumn("##Del", ImGuiTableColumnFlags_WidthFixed, 70.0f);
+
+		for (int i = 0; i < static_cast<int>(items_.size()); ++i)
+		{
+			ImGui::PushID(i);
+			ImGui::TableNextRow();
+
+			// 名前表示
+			ImGui::TableSetColumnIndex(0);
+			const bool selected = (currentItemIndex == i);
+			const std::string label = ConvertString(items_[i].name);
+			if (ImGui::Selectable(label.c_str(), selected))
+			{
+				currentItemIndex = i;
+			}
+
+			// Deleteボタン
+			ImGui::TableSetColumnIndex(1);
+			if (ImGui::SmallButton("Delete"))
+			{
+				deleteIndex = i;
+			}
+
+			ImGui::PopID();
+		}
+
+		ImGui::EndTable();
+	}
+
+	if (deleteIndex >= 0)
+	{
+		items_.erase(items_.begin() + deleteIndex);
+
+		if (items_.empty())
+		{
+			Item defaultItem{};
+			defaultItem.name = L"Default Item";
+			defaultItem.category = Category::Item;
+			defaultItem.effect = 0u;
+			defaultItem.params = baseParam_;
+			items_.push_back(std::move(defaultItem));
+		}
+
+		if (currentItemIndex >= static_cast<int>(items_.size()))
+		{
+			currentItemIndex = static_cast<int>(items_.size()) - 1;
+		}
+	}
 
 	Item& currentItem = items_[currentItemIndex];
 
-	//========================
-	// Param 追加（ParamType Combo）
-	//========================
-	static int currentParamType = 0;
-	ImGui::Combo("ParamType", &currentParamType, GetParamTypeNames(), GetParamTypeCount());
 
-	if (ImGui::Button("Add Param To Item"))
+#pragma endregion
+
+	ImGui::Separator();
+
+#pragma region アイテムの基本情報編集
+
+	ImGui::InputText("Name", &currentItem.name[0], 64);
+	ImGui::Combo("Category", reinterpret_cast<int*>(&currentItem.category), "Weapon\0Armor\0Item\0");
+	ImGui::InputScalar("Effect", ImGuiDataType_U32, &currentItem.effect);
+
+#pragma endregion
+
+
+#pragma region バフパラメータ編集
+
+	static int currentParamType = 0;
+	if (ImGui::Button("Add"))
 	{
 		const std::string paramName = GetParamTypeNames()[currentParamType];
-		// 既にあれば上書き、なければ追加
 		currentItem.params[paramName] = 0.0f;
 	}
+	ImGui::SameLine();
+	ImGui::Combo("ParamType", &currentParamType, GetParamTypeNames(), GetParamTypeCount());
 
-	//========================
-	// params 編集
-	//========================
 	ImGui::Text("Params:");
 	for (auto& [name, value] : currentItem.params)
 	{
 		ImGui::DragFloat(name.c_str(), &value, 0.1f);
 	}
+
+#pragma endregion
 
 	ImGui::End();
 #endif
