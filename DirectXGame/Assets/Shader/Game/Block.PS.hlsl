@@ -14,22 +14,9 @@ PSOutput main(PSInput input)
     output.color = input.color;
     
     float2 texcoord = input.texCoord;
-    while (texcoord.x > 1.0f)
-    {
-        texcoord.x -= 1.0f;
-    }
-    while(texcoord.x < 0.0f)
-    {
-        texcoord.x += 1.0f;
-    }
-    while (texcoord.y > 1.0f)
-    {
-        texcoord.y -= 1.0f;
-    }
-    while (texcoord.y < 0.0f)
-    {
-        texcoord.y += 1.0f;
-    }
+    
+    texcoord.x = fmod(texcoord.x, 1.0f);
+    texcoord.y = fmod(texcoord.y, 1.0f);
     
     if (input.texCoord.x < outlineWidth || input.texCoord.x > 1.0f - outlineWidth ||
        input.texCoord.y < outlineWidth || input.texCoord.y > 1.0f - outlineWidth)

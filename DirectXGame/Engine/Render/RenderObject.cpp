@@ -24,6 +24,10 @@ void RenderObject::Initialize() {
 	logger_->debug("RenderObject Initialized: {}", debugName_);
 	index_ = 0;
 	psoConfig_ = PSO::Config{};
+	resources_.clear();
+	bufferDatas_.clear();
+	cbvAddresses_.clear();
+	srvHandles_.clear();
 }
 
 void RenderObject::SetDrawData(const DrawData& data) {

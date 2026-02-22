@@ -1,6 +1,7 @@
 #include "InitializeScene.h"
 #include <imgui/imgui.h>
 #include <Game/GameScene.h>
+#include <ShigeScene/ShigeScene.h>
 #include <Yokoyama/YokoyamaScene.h>
 
 #ifdef USE_IMGUI

@@ -209,6 +209,11 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Scene\InitializeScene.cpp" />
     <ClCompile Include="AppSource\Scene\SceneManager.cpp" />
     <ClCompile Include="AppSource\Common\MainDisplay.cpp" />
+    <ClCompile Include="AppSource\Game\Puzzle\Piece.cpp" />
+    <ClCompile Include="AppSource\Game\Puzzle\PlayerBuild.cpp" />
+    <ClCompile Include="AppSource\Game\Puzzle\Shop.cpp" />
+    <ClCompile Include="AppSource\Game\Puzzle\PieceRender.cpp" />
+    <ClCompile Include="AppSource\ShigeScene\ShigeScene.cpp" />
     <ClCompile Include="AppSource\Yokoyama\YokoyamaScene.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\Scene\CommonData.h" />
@@ -232,6 +237,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Core\ImGuiWrapper.cpp" />
     <ClCompile Include="AppSource\Game\Item\Item.cpp" />
     <ClCompile Include="AppSource\Game\Item\ItemManager.cpp" />
+    <ClCompile Include="Engine\Tool\Grid\Grid.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
     <ClCompile Include="Engine\Utility\src\MatrixFactory.cpp" />
@@ -254,6 +260,12 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Common\MainDisplay.h" />
     <ClInclude Include="AppSource\Game\Item\Item.h" />
     <ClInclude Include="AppSource\Game\Item\ItemManager.h" />
+    <ClInclude Include="AppSource\Game\Puzzle\Piece.h" />
+    <ClInclude Include="AppSource\Game\Puzzle\PlayerBuild.h" />
+    <ClInclude Include="AppSource\Game\Puzzle\Shop.h" />
+    <ClInclude Include="AppSource\Game\Puzzle\PieceRender.h" />
+    <ClInclude Include="AppSource\ShigeScene\ShigeScene.h" />
+    <ClInclude Include="Engine\Tool\Grid\Grid.h" />
     <ClInclude Include="AppSource\Yokoyama\YokoyamaScene.h" />
   </ItemGroup>
   <ItemGroup>
