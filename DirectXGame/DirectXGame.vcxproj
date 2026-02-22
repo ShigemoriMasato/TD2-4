@@ -209,6 +209,12 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Scene\InitializeScene.cpp" />
     <ClCompile Include="AppSource\Scene\SceneManager.cpp" />
     <ClCompile Include="AppSource\Common\MainDisplay.cpp" />
+    <ClCompile Include="AppSource\Game\Player\Player.cpp" />
+    <ClCompile Include="AppSource\Mihara\MiharaScene.cpp" />
+    <ClCompile Include="AppSource\Game\Player\State\PlayerStateNormal.cpp" />
+    <ClCompile Include="AppSource\Game\Player\State\PlayerStateDash.cpp" />
+    <ClCompile Include="AppSource\Game\Player\PlayerHP.cpp" />
+    <ClCompile Include="AppSource\Game\ScreenRaycaster\ScreenRaycaster.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\Scene\CommonData.h" />
     <ClInclude Include="Engine\Assets\Model\ModelManager.h" />
@@ -253,6 +259,13 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Common\MainDisplay.h" />
     <ClInclude Include="AppSource\Game\Item\Item.h" />
     <ClInclude Include="AppSource\Game\Item\ItemManager.h" />
+    <ClInclude Include="AppSource\Game\Player\Player.h" />
+    <ClInclude Include="AppSource\Mihara\MiharaScene.h" />
+    <ClInclude Include="AppSource\Game\Player\State\IPlayerState.h" />
+    <ClInclude Include="AppSource\Game\Player\State\PlayerStateNormal.h" />
+    <ClInclude Include="AppSource\Game\Player\State\PlayerStateDash.h" />
+    <ClInclude Include="AppSource\Game\Player\PlayerHP.h" />
+    <ClInclude Include="AppSource\Game\ScreenRaycaster\ScreenRaycaster.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
