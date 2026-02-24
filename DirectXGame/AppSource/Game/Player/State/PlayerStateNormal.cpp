@@ -5,7 +5,7 @@
 
 void PlayerStateNormal::Update(Player* player, float deltaTime) {
 	// クールダウンの更新
-	player->UpdateDashCooldown();
+	player->UpdateDashCooldown(deltaTime);
 
 	// 移動入力の取得
 	Vector2 dir = {0.0f, 0.0f};

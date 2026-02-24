@@ -30,4 +30,7 @@ private:
 
 	// カメラのTransform
 	Transform cameraTransform_{};
+
+	// FPSObserver
+	std::unique_ptr<FPSObserver> fpsObserver_ = nullptr;
 };

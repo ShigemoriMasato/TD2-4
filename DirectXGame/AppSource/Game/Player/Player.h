@@ -4,7 +4,6 @@
 #include "State/PlayerStateNormal.h"
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
-#include <Tool/FPS/FPSObserver.h>
 #include <assets/Model/ModelManager.h>
 
 /// <summary>
@@ -16,7 +15,7 @@ public:
 	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input);
 
 	// 更新
-	void Update(Matrix4x4 vpMatrix);
+	void Update(Matrix4x4 vpMatrix, float deltaTime);
 
 	// 描画
 	void Draw(CmdObj* cmdObj);
@@ -32,7 +31,7 @@ public:
 
 	bool CanDash() const { return dashCooldownTimer_ <= 0.0f; }
 	void StartDashCooldown() { dashCooldownTimer_ = dashCooldown_; }
-	void UpdateDashCooldown();
+	void UpdateDashCooldown(float deltaTime);
 
 	void SetDashDir(Vector2 dir) { dashDir_ = dir; }
 	Vector2 GetDashDir() const { return dashDir_; }
@@ -64,7 +63,4 @@ private:
 	float dashCooldown_ = 0.5f;      // ダッシュのクールダウン
 	float dashCooldownTimer_ = 0.0f; // クールダウン用のタイマー
 	Vector2 dashDir_ = {0.0f, 0.0f}; // ダッシュする方向
-
-	// FPSObserver
-	std::unique_ptr<FPSObserver> fpsObserver_ = nullptr;
 };

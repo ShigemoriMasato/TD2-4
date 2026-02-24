@@ -32,15 +32,12 @@ void Player::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawData
 
 	// 状態の初期化
 	currentState_ = std::make_unique<PlayerStateNormal>(); // 通常
-
-	// FPSObserver
-	fpsObserver_ = std::make_unique<FPSObserver>();
 }
 
-void Player::Update(Matrix4x4 vpMatrix) {
+void Player::Update(Matrix4x4 vpMatrix, float deltaTime) {
 	// 現在の状態の更新処理
 	if (currentState_) {
-		currentState_->Update(this, fpsObserver_->GetDeltatime());
+		currentState_->Update(this, deltaTime);
 	}
 
 	// 座標を行列に変換
@@ -91,9 +88,9 @@ void Player::ChangeState(std::unique_ptr<IPlayerState> newState) {
 	}
 }
 
-void Player::UpdateDashCooldown() {
+void Player::UpdateDashCooldown(float deltaTime) {
 	// ダッシュタイマーの減算
 	if (dashCooldownTimer_ > 0.0f) {
-		dashCooldownTimer_ -= fpsObserver_->GetDeltatime();
+		dashCooldownTimer_ -= deltaTime;
 	}
 }

@@ -34,6 +34,9 @@ void MiharaScene::Initialize() {
 	cameraTransform_.position = {0.0f, -2.5f, 35.0f};
 	cameraTransform_.rotate = {-0.3f, 0.0f, 0.0f};
 	cameraTransform_.scale = {1.0f, 1.0f, 1.0f};
+
+	// FPSObserver
+	fpsObserver_ = std::make_unique<FPSObserver>();
 }
 
 std::unique_ptr<IScene> MiharaScene::Update() {
@@ -42,10 +45,10 @@ std::unique_ptr<IScene> MiharaScene::Update() {
 	camera_->MakeMatrix();
 
 	// プレイヤーの更新
-	player_->Update(camera_->GetVPMatrix());
+	player_->Update(camera_->GetVPMatrix(), fpsObserver_->GetDeltatime());
 
 	// プレイヤーのHP更新
-	playerHP_->Update(camera_->GetVPMatrix());
+	playerHP_->Update(camera_->GetVPMatrix(), fpsObserver_->GetDeltatime());
 
 	return nullptr;
 }

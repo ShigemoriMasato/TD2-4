@@ -2,6 +2,7 @@
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
+#include "../AppSource/Game/EasingAnimation/AnimationBundle.h"
 
 class Player;
 
@@ -11,7 +12,7 @@ public:
 	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input);
 
 	// 更新関数
-	void Update(Matrix4x4 vpMatrix);
+	void Update(Matrix4x4 vpMatrix, float deltaTime);
 
 	// 描画関数
 	void Draw(CmdObj* cmdObj);
@@ -27,7 +28,7 @@ public:
 
 private:
 	// HPバーの構造体
-	struct HPBar{
+	struct HPBar {
 		std::unique_ptr<SHEngine::RenderObject> render = nullptr;
 		Matrix4x4 wvp;
 		Transform transform;
@@ -43,11 +44,14 @@ private:
 	// 描画用変数の初期化関数
 	void InitializeRenderHPBar(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, std::unique_ptr<SHEngine::RenderObject>& render);
 
+	// HPバー　減った量のアニメーション
+	void AnimationHPBarAfter(float deltaTime);
+
 private:
 	// 描画用変数
-	HPBar hpBarFill_; // 前面
+	HPBar hpBarFill_;  // 前面
 	HPBar hpBarAfter_; // 減った分
-	HPBar hpBarBG_; // 背景
+	HPBar hpBarBG_;    // 背景
 
 	// 現在のHP
 	float currentHP_ = 5.0f;
@@ -72,4 +76,12 @@ private:
 
 	// HPバーの横幅
 	const float kHPBarWidth = 5.0f;
+
+	SHEngine::ModelManager* modelManager_ = nullptr;
+
+	// HPバー初期座標
+	float hpBarPosX_ = -10.0f;
+
+	// HPバー　減った分のアニメーション用変数
+	AnimationBundle<float> scaleAnimationHPBarAfter_;
 };
