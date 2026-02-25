@@ -12,6 +12,14 @@ void MiharaScene::Initialize() {
 	playerHP_ = std::make_unique<PlayerHP>();
 	playerHP_->Initialize(modelManager_, drawDataManager_, input_);
 
+	// プレイヤーのレベルシステムの生成&初期化
+	playerLevelSystem_ = std::make_unique<PlayerLevelSystem>();
+	playerLevelSystem_->Initialize();
+
+	// プレイヤーのレベルUIの生成&初期化
+	playerLevelUI_ = std::make_unique<PlayerLevelUI>();
+	playerLevelUI_->Initialize(modelManager_, drawDataManager_, input_);
+
 	// デバッグカメラの生成&初期化
 	camera_ = std::make_unique<Camera>();
 
@@ -50,6 +58,16 @@ std::unique_ptr<IScene> MiharaScene::Update() {
 	// プレイヤーのHP更新
 	playerHP_->Update(camera_->GetVPMatrix(), fpsObserver_->GetDeltatime());
 
+#ifdef _DEBUG
+	// 経験値ゲージの増加 デバッグ用
+	if(input_->GetKeyState(DIK_3)){
+		playerLevelSystem_->AddExp(1.0f);
+	}
+#endif // DEBUG
+
+	// プレイヤーのレベルUIの更新
+	playerLevelUI_->Update(camera_->GetVPMatrix(), fpsObserver_->GetDeltatime(), playerLevelSystem_->GetCurrentExp(), playerLevelSystem_->GetNextExp());
+
 	return nullptr;
 }
 
@@ -65,6 +83,9 @@ void MiharaScene::Draw() {
 
 	// プレイヤーHPの描画
 	playerHP_->Draw(cmdObj);
+
+	// プレイヤーのEXPの描画
+	playerLevelUI_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 
@@ -90,6 +111,9 @@ void MiharaScene::Draw() {
 	ImGui::DragFloat3("Rotate", &cameraTransform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("Position", &cameraTransform_.position.x, 0.01f);
 	ImGui::End();
+
+	// プレイヤーのレベルシステム ImGui描画
+	playerLevelSystem_->DrawImGui();
 
 	// 武器のパラメータ管理デバッグ用描画
 	weaponDebugger_->Draw();

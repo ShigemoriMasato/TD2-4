@@ -1,6 +1,8 @@
 #pragma once
 #include "Game/Player/Player.h"
 #include "Game/Player/PlayerHP.h"
+#include "Game/Player/PlayerLevelSystem.h"
+#include "Game/Player/PlayerLevelUI.h"
 #include "Game/Weapon/WeaponDebugger.h"
 #include "Game/Weapon/WeaponManager.h"
 #include <Camera/Camera.h>
@@ -18,6 +20,12 @@ private:
 
 	// プレイヤーのHP
 	std::unique_ptr<PlayerHP> playerHP_ = nullptr;
+
+	// プレイヤーのレベルシステム
+	std::unique_ptr<PlayerLevelSystem> playerLevelSystem_ = nullptr;
+
+	// プレイヤーのレベルUI
+	std::unique_ptr<PlayerLevelUI> playerLevelUI_ = nullptr;
 
 	// カメラ
 	std::unique_ptr<Camera> camera_ = nullptr;

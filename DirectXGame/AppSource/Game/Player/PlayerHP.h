@@ -77,6 +77,7 @@ private:
 	// HPバーの横幅
 	const float kHPBarWidth = 5.0f;
 
+	// モデルマネージャ
 	SHEngine::ModelManager* modelManager_ = nullptr;
 
 	// HPバー初期座標

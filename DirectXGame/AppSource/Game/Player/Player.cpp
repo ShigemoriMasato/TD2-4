@@ -14,10 +14,6 @@ void Player::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawData
 	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
 
 	int modelHandle = modelManager->LoadModel("Assets/.EngineResource/Model/Cube");
-	// int modelHandle;
-	// modelHandle = 0; //Cube
-	// modelHandle = 1; //plane
-	// 詳しくはModelManagerのInitializeへ
 
 	// 描画するデータの読み込み
 	auto modelData = modelManager->GetNodeModelData(modelHandle);
