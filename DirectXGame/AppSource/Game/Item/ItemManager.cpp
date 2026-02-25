@@ -5,7 +5,8 @@
 #include <algorithm>
 #include <unordered_set>
 
-ItemManager::~ItemManager() {
+ItemManager::~ItemManager()
+{
 	SaveBaseParam();
 	SaveItem();
 	SaveModel();
@@ -30,9 +31,12 @@ void ItemManager::Initialize(SHEngine::ModelManager* modelManager)
 	}
 }
 
-const Item& ItemManager::GetItem(std::wstring itemName) const {
-	for(const auto& item : items_) {
-		if (item.name == itemName) {
+const Item& ItemManager::GetItem(std::wstring itemName) const
+{
+	for (const auto& item : items_)
+	{
+		if (item.name == itemName)
+		{
 			return item;
 		}
 	}
@@ -47,8 +51,6 @@ void ItemManager::DrawImGui()
 
 #pragma region Item追加
 
-	// 追加に成功したかフラグ
-	static bool successAddItem = false;
 
 	// 新規追加するアイテムの名前
 	static char newItemName[64] = "NewItem";
@@ -57,6 +59,8 @@ void ItemManager::DrawImGui()
 	static Category newItemCategory = Category::Item;
 	ImGui::Combo("Category", reinterpret_cast<int*>(&newItemCategory), "Weapon\0Armor\0Item\0");
 
+	// 追加に成功したかフラグ
+	static bool successAddItem = false;
 	// アイテム追加実行ボタン
 	if (ImGui::Button("Add Item"))
 	{
@@ -67,8 +71,8 @@ void ItemManager::DrawImGui()
 		const std::wstring newNameW = ConvertString(std::string(newItemName));
 
 		// 重複チェック
-		const bool exists = std::any_of(items_.begin(), items_.end(),
-			[&](const Item& it) { return it.name == newNameW; });
+		const bool exists = std::any_of(items_.begin(), items_.end(), [&](const Item& it) { return it.name == newNameW; });
+
 		// 重複してたら失敗フラグをたてる
 		if (exists)
 		{
@@ -88,7 +92,7 @@ void ItemManager::DrawImGui()
 	// 失敗フラグがたってたら重複エラーを表示
 	if (successAddItem)
 	{
-		ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "Error : exists Item!");
+		ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "Error : 既に存在する名前です");
 	}
 
 #pragma endregion
@@ -163,13 +167,55 @@ void ItemManager::DrawImGui()
 
 #pragma region アイテムの基本情報編集
 
-	//static char itemNameBuf[64] = { 0 };
-	//// 入力欄
-	//if (ImGui::InputText("Name##2", itemNameBuf, sizeof(itemNameBuf)))
-	//{
-	//	// 変更があったときだけ反映
-	//	currentItem.name = ConvertString(std::string(itemNameBuf));
-	//}
+	static int lastItemIndex = -1;
+	static char editItemName[64] = {};
+	static bool renameErrorExists = false;
+
+	// 選択が変わったら編集用バッファを同期
+	if (lastItemIndex != currentItemIndex)
+	{
+		lastItemIndex = currentItemIndex;
+		renameErrorExists = false;
+
+		const std::string curName = ConvertString(currentItem.name);
+		strncpy_s(editItemName, sizeof(editItemName), curName.c_str(), _TRUNCATE);
+	}
+
+	ImGui::InputText("Name##Edit", editItemName, sizeof(editItemName));
+	ImGui::SameLine();
+
+	if (ImGui::Button("Rename"))
+	{
+		renameErrorExists = false;
+
+		const std::wstring newNameW = ConvertString(std::string(editItemName));
+
+		// 空
+		const bool empty = newNameW.empty();
+
+		// 重複
+		const bool exists = std::any_of(items_.begin(), items_.end(),
+			[&](const Item& it)
+			{
+				return (&it != &currentItem) && (it.name == newNameW);
+			});
+
+		// 空 || 重複
+		if (empty || exists)
+		{
+			renameErrorExists = true;
+		}
+		else
+		{
+			currentItem.name = newNameW;
+		}
+	}
+
+	if (renameErrorExists)
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "Error : 既に存在する名前です");
+	}
+
 	ImGui::Combo("Category##2", reinterpret_cast<int*>(&currentItem.category), "Weapon\0Armor\0Item\0");
 
 #pragma endregion
@@ -186,41 +232,26 @@ void ItemManager::DrawImGui()
 		static float cellSize = 16.0f;
 		static int paintMode = 0; // 0:none 1:add(L) 2:erase(R)
 
-		//// グリッドサイズ & セルサイズ
-		//ImGui::SetNextItemWidth(80.0f);	// 程よく
-		//ImGui::DragInt("横", &gridW, 1.0f, 1, 32);
-		//ImGui::SameLine();
-		//ImGui::SetNextItemWidth(80.0f);	// 程よく
-		//ImGui::DragInt("縦", &gridH, 1.0f, 1, 32);
-		//ImGui::SameLine();
-		//ImGui::SetNextItemWidth(80.0f); // 程よく
-		//ImGui::DragFloat("セルサイズ", &cellSize, 0.5f, 10.0f, 60.0f, "%.1f");
-
 		// 左上基準に正規化するボタン
-		auto normalizeMapData = [](std::vector<std::pair<int, int>>& cells)
-			{
-				if (cells.empty()) return;
-
-				int minX = cells.front().first;
-				int minY = cells.front().second;
-				for (const auto& [x, y] : cells)
-				{
-					minX = std::min(minX, x);
-					minY = std::min(minY, y);
-				}
-				for (auto& c : cells)
-				{
-					c.first -= minX;
-					c.second -= minY;
-				}
-
-				std::sort(cells.begin(), cells.end());
-				cells.erase(std::unique(cells.begin(), cells.end()), cells.end());
-			};
-
 		if (ImGui::Button("左上詰め"))
 		{
-			normalizeMapData(currentItem.mapData);
+			if (currentItem.mapData.empty()) return;
+
+			int minX = currentItem.mapData.front().first;
+			int minY = currentItem.mapData.front().second;
+			for (const auto& [x, y] : currentItem.mapData)
+			{
+				minX = std::min(minX, x);
+				minY = std::min(minY, y);
+			}
+			for (auto& c : currentItem.mapData)
+			{
+				c.first -= minX;
+				c.second -= minY;
+			}
+
+			std::sort(currentItem.mapData.begin(), currentItem.mapData.end());
+			currentItem.mapData.erase(std::unique(currentItem.mapData.begin(), currentItem.mapData.end()), currentItem.mapData.end());
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("削除"))
@@ -358,33 +389,40 @@ void ItemManager::DrawImGui()
 // セーブとロード
 //=================================================================
 
-void ItemManager::SaveModel() {
+void ItemManager::SaveModel()
+{
 	int size = static_cast<int>(modelIDtoName_.size());
 	binaryManager_.RegisterOutput(&size);
-	for (const auto& [id, name] : modelIDtoName_) {
+	for (const auto& [id, name] : modelIDtoName_)
+	{
 		binaryManager_.RegisterOutput(&id);
 		binaryManager_.RegisterOutput(&name);
 	}
 	binaryManager_.Write(modelFile_);
 }
 
-void ItemManager::LoadModel() {
+void ItemManager::LoadModel()
+{
 	auto data = binaryManager_.Read(modelFile_);
-	if (data.empty()) {
+	if (data.empty())
+	{
 		return;
 	}
 	int size = binaryManager_.Reverse<int>(data);
-	for (int i = 0; i < size; ++i) {
+	for (int i = 0; i < size; ++i)
+	{
 		int id = binaryManager_.Reverse<int>(data);
 		std::string name = binaryManager_.Reverse<std::string>(data);
 		modelIDtoName_[id] = name;
 	}
 }
 
-void ItemManager::SaveItem() {
+void ItemManager::SaveItem()
+{
 	int size = static_cast<int>(items_.size());
 	binaryManager_.RegisterOutput(&size);
-	for (auto& item : items_) {
+	for (auto& item : items_)
+	{
 
 		std::string tmp = ConvertString(item.name);
 		binaryManager_.RegisterOutput(&tmp);
@@ -397,7 +435,8 @@ void ItemManager::SaveItem() {
 		int mapDataSize = static_cast<int>(item.mapData.size());
 		binaryManager_.RegisterOutput(&mapDataSize);
 
-		for (auto& [x, y] : item.mapData) {
+		for (auto& [x, y] : item.mapData)
+		{
 			binaryManager_.RegisterOutput(&x);
 			binaryManager_.RegisterOutput(&y);
 		}
@@ -405,7 +444,8 @@ void ItemManager::SaveItem() {
 		int buffsSize = static_cast<int>(item.params.size());
 		binaryManager_.RegisterOutput(&buffsSize);
 
-		for (auto& buff : item.params) {
+		for (auto& buff : item.params)
+		{
 			std::string tmp = buff.first;
 			binaryManager_.RegisterOutput(&tmp);
 			binaryManager_.RegisterOutput(&buff.second);
@@ -416,14 +456,17 @@ void ItemManager::SaveItem() {
 	binaryManager_.Write(itemFile_);
 }
 
-void ItemManager::LoadItem() {
+void ItemManager::LoadItem()
+{
 	auto data = binaryManager_.Read(itemFile_);
-	if (data.empty()) {
+	if (data.empty())
+	{
 		return;
 	}
 
 	int size = binaryManager_.Reverse<int>(data);
-	for (int i = 0; i < size; ++i) {
+	for (int i = 0; i < size; ++i)
+	{
 		Item item;
 		item.name = ConvertString(binaryManager_.Reverse<std::string>(data));
 
@@ -434,7 +477,8 @@ void ItemManager::LoadItem() {
 
 		int mapDataSize = binaryManager_.Reverse<int>(data);
 
-		for (int j = 0; j < mapDataSize; ++j) {
+		for (int j = 0; j < mapDataSize; ++j)
+		{
 			int x = binaryManager_.Reverse<int>(data);
 			int y = binaryManager_.Reverse<int>(data);
 			item.mapData.emplace_back(x, y);
@@ -443,7 +487,8 @@ void ItemManager::LoadItem() {
 		int buffsSize = binaryManager_.Reverse<int>(data);
 		item.params = baseParam_; // 基礎値をコピー
 
-		for (int j = 0; j < buffsSize; ++j) {
+		for (int j = 0; j < buffsSize; ++j)
+		{
 			std::string name = binaryManager_.Reverse<std::string>(data);
 			float value = binaryManager_.Reverse<float>(data);
 			item.params[name] = value;
@@ -454,23 +499,28 @@ void ItemManager::LoadItem() {
 	}
 }
 
-void ItemManager::SaveBaseParam() {
+void ItemManager::SaveBaseParam()
+{
 	int size = static_cast<int>(baseParam_.size());
 	binaryManager_.RegisterOutput(&size);
-	for (const auto& param : baseParam_) {
+	for (const auto& param : baseParam_)
+	{
 		binaryManager_.RegisterOutput(&param.first);
 		binaryManager_.RegisterOutput(&param.second);
 	}
 	binaryManager_.Write(baseParamFile_);
 }
 
-void ItemManager::LoadBaseParam() {
+void ItemManager::LoadBaseParam()
+{
 	auto data = binaryManager_.Read(baseParamFile_);
-	if (data.empty()) {
+	if (data.empty())
+	{
 		return;
 	}
 	int size = binaryManager_.Reverse<int>(data);
-	for (int i = 0; i < size; ++i) {
+	for (int i = 0; i < size; ++i)
+	{
 		std::string name = binaryManager_.Reverse<std::string>(data);
 		float value = binaryManager_.Reverse<float>(data);
 		baseParam_[name] = value;
