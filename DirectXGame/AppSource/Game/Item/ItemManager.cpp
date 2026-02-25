@@ -183,18 +183,18 @@ void ItemManager::DrawImGui()
 
 		static int gridW = 8;
 		static int gridH = 8;
-		static float cellSize = 22.0f;
+		static float cellSize = 16.0f;
 		static int paintMode = 0; // 0:none 1:add(L) 2:erase(R)
 
-		// グリッドサイズ & セルサイズ
-		ImGui::SetNextItemWidth(80.0f);	// 程よく
-		ImGui::DragInt("横", &gridW, 1.0f, 1, 32);
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(80.0f);	// 程よく
-		ImGui::DragInt("縦", &gridH, 1.0f, 1, 32);
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(80.0f); // 程よく
-		ImGui::DragFloat("セルサイズ", &cellSize, 0.5f, 10.0f, 60.0f, "%.1f");
+		//// グリッドサイズ & セルサイズ
+		//ImGui::SetNextItemWidth(80.0f);	// 程よく
+		//ImGui::DragInt("横", &gridW, 1.0f, 1, 32);
+		//ImGui::SameLine();
+		//ImGui::SetNextItemWidth(80.0f);	// 程よく
+		//ImGui::DragInt("縦", &gridH, 1.0f, 1, 32);
+		//ImGui::SameLine();
+		//ImGui::SetNextItemWidth(80.0f); // 程よく
+		//ImGui::DragFloat("セルサイズ", &cellSize, 0.5f, 10.0f, 60.0f, "%.1f");
 
 		// 左上基準に正規化するボタン
 		auto normalizeMapData = [](std::vector<std::pair<int, int>>& cells)
@@ -227,6 +227,7 @@ void ItemManager::DrawImGui()
 		{
 			currentItem.mapData.clear();
 		}
+		ImGui::SameLine();
 
 		ImGui::Text("Cells: %d", (int)currentItem.mapData.size());
 		ImGui::Text("LeftDrag: Add   RightDrag: Erase");
