@@ -372,9 +372,31 @@ void ItemManager::DrawImGui()
 		ImGui::Combo("ParamType", &currentParamType, GetParamTypeNames(), GetParamTypeCount());
 
 		ImGui::Text("Params:");
+
+		std::string deleteParamName;
+		bool doDelete = false;
+
 		for (auto& [name, value] : currentItem.params)
 		{
-			ImGui::DragFloat(name.c_str(), &value, 0.1f);
+			ImGui::PushID(name.c_str());
+
+			ImGui::DragFloat("##Value", &value, 0.1f);
+			ImGui::SameLine();
+			ImGui::Text(name.c_str());
+			ImGui::SameLine();
+
+			if (ImGui::SmallButton("Delete"))
+			{
+				deleteParamName = name;
+				doDelete = true;
+			}
+
+			ImGui::PopID();
+		}
+
+		if (doDelete && !deleteParamName.empty())
+		{
+			currentItem.params.erase(deleteParamName);
 		}
 
 		ImGui::TreePop();
