@@ -1,15 +1,11 @@
 #include "WeaponManager.h"
+#include "WeaponDatabase.h"
 
 void WeaponManager::InitializeData() {
-	database_[0] = {
-	    0,             // ID
-	    "Short_Sword", // 名前
-	    10.0f,         // 基本ダメージ
-	    1.0f,          // 攻撃速度
-	    30.0f,         // 値段
-	    4,             // サイズ
-	    1              // レア度
-	};
+	// WeaponDatabaseから武器のデータを取得する
+	for (int i = 0; i < kWeaponDatabaseCount; ++i) {
+		database_[kWeaponDatabase[i].id] = kWeaponDatabase[i];
+	}
 }
 
 WeaponData* WeaponManager::GetWeapon(int id) {
