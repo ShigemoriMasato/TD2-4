@@ -1,4 +1,5 @@
 #pragma once
+#include "Game/Player/LevelProgressTracker.h"
 #include "Game/Player/Player.h"
 #include "Game/Player/PlayerHP.h"
 #include "Game/Player/PlayerLevelSystem.h"
@@ -26,6 +27,9 @@ private:
 
 	// プレイヤーのレベルUI
 	std::unique_ptr<PlayerLevelUI> playerLevelUI_ = nullptr;
+
+	// ウェーブ中にどれくらいレベルが上がったかを管理するインスタンス
+	std::unique_ptr<LevelProgressTracker> levelProgressTracker_ = nullptr;
 
 	// カメラ
 	std::unique_ptr<Camera> camera_ = nullptr;

@@ -45,6 +45,9 @@ void MiharaScene::Initialize() {
 
 	// FPSObserver
 	fpsObserver_ = std::make_unique<FPSObserver>();
+
+	// ウェーブ中にどれくらいレベルが上がったかを管理するインスタンスの生成&初期化
+	levelProgressTracker_ = std::make_unique<LevelProgressTracker>();
 }
 
 std::unique_ptr<IScene> MiharaScene::Update() {
@@ -60,7 +63,7 @@ std::unique_ptr<IScene> MiharaScene::Update() {
 
 #ifdef _DEBUG
 	// 経験値ゲージの増加 デバッグ用
-	if(input_->GetKeyState(DIK_3)){
+	if (input_->GetKeyState(DIK_3)) {
 		playerLevelSystem_->AddExp(1.0f);
 	}
 #endif // DEBUG
