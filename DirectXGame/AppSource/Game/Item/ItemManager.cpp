@@ -316,7 +316,6 @@ void ItemManager::DrawImGui()
 			}
 		}
 
-		// set -> vector に戻す（保存・比較を安定させるためソート）
 		currentItem.mapData.assign(filled.begin(), filled.end());
 		std::sort(currentItem.mapData.begin(), currentItem.mapData.end());
 
