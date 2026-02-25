@@ -64,8 +64,6 @@ namespace SHEngine {
 
 	private:// Engine内で完結するクラス
 
-		D3DResourceLeakChecker leakChecker_;
-
 		std::unique_ptr<DXDevice> device_;
 		std::unique_ptr<Command::Manager> cmdManager_;
 		std::unique_ptr<ImGuiWrapper> imGuiWrapper_;
