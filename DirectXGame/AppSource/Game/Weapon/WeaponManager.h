@@ -1,4 +1,5 @@
 #pragma once
+#include <unordered_map>
 #include "WeaponData.h"
 #include <Tool/Binary/BinaryManager.h>
 
@@ -15,26 +16,15 @@ public:
 	// IDから武器データを取得する
 	WeaponData* GetWeapon(int id);
 
-private:
-	// モデルデータをバイナリにセーブする関数
-	void SaveModel();
+	// バイナリに保存する
+	void SaveWeaponData();
 
-	// モデルデータをバイナリからロードする関数
-	void LoadModel();
-
-	// 武器データをバイナリにセーブする関数
-	void SaveItem();
-
-	// 武器データをバイナリからロードする関数
-	void LoadItem();
-
-	// 武器のパラメータをバイナリにセーブする関数
-	void SaveBaseParam();
-
-	// モデルデータをバイナリにセーブする関数
-	void LoadBaseParam();
+	// バイナリから読み込む
+	void LoadWeaponData();
 
 private:
 	// バイナリマネージャ
 	BinaryManager binaryManager_;
+
+	static inline const std::string weaponDataFile_ = "WeaponData.bin";
 };
