@@ -3,6 +3,7 @@
 #include <Game/GameScene.h>
 #include <ShigeScene/ShigeScene.h>
 #include <Yokoyama/YokoyamaScene.h>
+#include <Yokoyama/BackPackBuildScene.h>
 
 #ifdef USE_IMGUI
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -136,7 +137,7 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	//更新処理
 	commonData_->cmdObject->ResetCommandList();
 
-	return std::make_unique<YokoyamaScene>();
+	return std::make_unique<BackPackBuildScene>();
 }
 
 void InitializeScene::Draw() {

@@ -159,6 +159,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
   <ItemGroup>
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
     <ClCompile Include="AppSource\Scene\CommonData.cpp" />
+    <ClCompile Include="AppSource\Yokoyama\BackPackBuildScene.cpp" />
     <ClCompile Include="Engine\Assets\Model\ModelManager.cpp" />
     <ClCompile Include="Engine\Core\Command\Data\CommandObject.cpp" />
     <ClCompile Include="Engine\Core\Command\Data\CommandSet.cpp" />
@@ -217,6 +218,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Yokoyama\YokoyamaScene.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\Scene\CommonData.h" />
+    <ClInclude Include="AppSource\Yokoyama\BackPackBuildScene.h" />
     <ClInclude Include="Engine\Assets\Model\ModelManager.h" />
     <ClInclude Include="Engine\Core\Command\Data\CommandObject.h" />
     <ClInclude Include="Engine\Core\Command\Data\CommandSet.h" />
