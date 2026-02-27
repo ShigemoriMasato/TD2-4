@@ -163,7 +163,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Game\WaveSystem\Wave.cpp" />
     <ClCompile Include="AppSource\Game\WaveSystem\WaveManager.cpp" />
     <ClCompile Include="AppSource\Scene\CommonData.cpp" />
-    <ClCompile Include="AppSource\Yokoyama\BackPackBuildScene.cpp" />
+    <ClCompile Include="AppSource\BackPackBuildScene\BackPackBuildScene.cpp" />
+    <ClCompile Include="AppSource\BackPackBuildScene\BackPack\BackPack.cpp" />
     <ClCompile Include="Engine\Assets\Model\ModelManager.cpp" />
     <ClCompile Include="Engine\Core\Command\Data\CommandObject.cpp" />
     <ClCompile Include="Engine\Core\Command\Data\CommandSet.cpp" />
@@ -242,7 +243,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Game\WaveSystem\WaveManager.h" />
     <ClInclude Include="AppSource\Scene\CommonData.h" />
     <ClInclude Include="AppSource\Game\EasingAnimation\EasingAnimation.h" />
-    <ClInclude Include="AppSource\Yokoyama\BackPackBuildScene.h" />
+    <ClInclude Include="AppSource\BackPackBuildScene\BackPackBuildScene.h" />
+    <ClInclude Include="AppSource\BackPackBuildScene\BackPack\BackPack.h" />
     <ClInclude Include="Engine\Assets\Model\ModelManager.h" />
     <ClInclude Include="Engine\Core\Command\Data\CommandObject.h" />
     <ClInclude Include="Engine\Core\Command\Data\CommandSet.h" />
