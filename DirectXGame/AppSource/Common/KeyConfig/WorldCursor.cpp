@@ -60,7 +60,6 @@ Vector3 GetWorldCursor(Camera* camera, Vector2 cursorPos) {
 
 	if (std::abs(rayDirection.y) < 0.0001f) {
 		return { 0.0f, 0.0f, 0.0f }; // レイが平面と平行な場合、適当な値を設定
-		return;
 	}
 
 	float t = -nearWorld.y / rayDirection.y;
