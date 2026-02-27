@@ -9,7 +9,8 @@
 /// <summary>
 /// プレイヤー
 /// </summary>
-class Player {
+namespace Player{
+class Base {
 public:
 	// 初期化
 	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input);
@@ -64,3 +65,4 @@ private:
 	float dashCooldownTimer_ = 0.0f; // クールダウン用のタイマー
 	Vector2 dashDir_ = {0.0f, 0.0f}; // ダッシュする方向
 };
+} // namespace

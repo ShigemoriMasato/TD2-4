@@ -1,6 +1,9 @@
 #pragma once
+#include "Game/Player/LevelProgressTracker.h"
 #include "Game/Player/Player.h"
 #include "Game/Player/PlayerHP.h"
+#include "Game/Player/PlayerLevelSystem.h"
+#include "Game/Player/PlayerLevelUI.h"
 #include "Game/Weapon/WeaponDebugger.h"
 #include "Game/Weapon/WeaponManager.h"
 #include <Camera/Camera.h>
@@ -14,10 +17,19 @@ public:
 
 private:
 	// プレイヤー
-	std::unique_ptr<Player> player_ = nullptr;
+	std::unique_ptr<Player::Base> player_ = nullptr;
 
 	// プレイヤーのHP
-	std::unique_ptr<PlayerHP> playerHP_ = nullptr;
+	std::unique_ptr<Player::HP> playerHP_ = nullptr;
+
+	// プレイヤーのレベルシステム
+	std::unique_ptr<Player::LevelSystem> playerLevelSystem_ = nullptr;
+
+	// プレイヤーのレベルUI
+	std::unique_ptr<Player::LevelUI> playerLevelUI_ = nullptr;
+
+	// ウェーブ中にどれくらいレベルが上がったかを管理するインスタンス
+	std::unique_ptr<LevelProgressTracker> levelProgressTracker_ = nullptr;
 
 	// カメラ
 	std::unique_ptr<Camera> camera_ = nullptr;
@@ -30,7 +42,4 @@ private:
 
 	// カメラのTransform
 	Transform cameraTransform_{};
-
-	// FPSObserver
-	std::unique_ptr<FPSObserver> fpsObserver_ = nullptr;
 };

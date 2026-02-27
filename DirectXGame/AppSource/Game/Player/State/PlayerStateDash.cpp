@@ -2,12 +2,14 @@
 #include "../AppSource/Game/Player/Player.h"
 #include "PlayerStateNormal.h"
 
-void PlayerStateDash::Enter(Player* player) {
+using namespace Player;
+
+void StateDash::Enter(Base* player) {
 	// ダッシュ開始時の設定
 	dashTimer_ = player->GetDashDuration();
 }
 
-void PlayerStateDash::Update(Player* player, float deltaTime) {
+void StateDash::Update(Base* player, float deltaTime) {
 	Vector2 dir = player->GetDashDir();    // ダッシュ方向
 	Transform& t = player->GetTransform(); // プレイヤーのSRT
 
@@ -20,6 +22,6 @@ void PlayerStateDash::Update(Player* player, float deltaTime) {
 	if (dashTimer_ <= 0.0f) {
 		// ダッシュ終了時、クールダウンを開始して通常状態に戻る
 		player->StartDashCooldown();
-		player->ChangeState(std::make_unique<PlayerStateNormal>());
+		player->ChangeState(std::make_unique<StateNormal>());
 	}
 }

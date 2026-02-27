@@ -3,7 +3,9 @@
 #include "PlayerStateDash.h"
 #include <cmath>
 
-void PlayerStateNormal::Update(Player* player, float deltaTime) {
+using namespace Player;
+
+void StateNormal::Update(Base* player, float deltaTime) {
 	// クールダウンの更新
 	player->UpdateDashCooldown(deltaTime);
 
@@ -30,7 +32,7 @@ void PlayerStateNormal::Update(Player* player, float deltaTime) {
 	if (input->GetKeyState(DIK_SPACE) && !input->GetPreKeyState(DIK_SPACE) && player->CanDash() && length > 0.0f) {
 		// ダッシュ方向をPlayerにセットして、状態をダッシュに切り替える
 		player->SetDashDir(dir);
-		player->ChangeState(std::make_unique<PlayerStateDash>());
+		player->ChangeState(std::make_unique<Player::StateDash>());
 		return; // 状態が変わったのでこのフレームの処理は終了
 	}
 
