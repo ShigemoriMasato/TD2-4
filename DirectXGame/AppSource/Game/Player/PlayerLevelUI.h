@@ -3,7 +3,8 @@
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
 
-class PlayerLevelUI {
+namespace Player{
+class LevelUI {
 public:
 	// 初期化
 	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input);
@@ -49,3 +50,4 @@ private:
 	// ゲージの座標X
 	float gaugePosX = -10.0f;
 };
+}

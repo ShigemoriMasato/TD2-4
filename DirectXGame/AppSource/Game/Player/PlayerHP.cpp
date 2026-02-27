@@ -5,8 +5,9 @@
 #include <imgui/imgui.h>
 
 using namespace SHEngine;
+using namespace Player;
 
-void PlayerHP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input) {
+void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input) {
 	// HPバーの生成
 	hpBarFill_.render = std::make_unique<RenderObject>();  // 前面
 	hpBarAfter_.render = std::make_unique<RenderObject>(); // 減った分
@@ -47,7 +48,7 @@ void PlayerHP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDa
 	modelManager_ = modelManager;
 }
 
-void PlayerHP::Update(Matrix4x4 vpMatrix, float deltaTime) {
+void HP::Update(Matrix4x4 vpMatrix, float deltaTime) {
 	// 無敵状態のカウントダウン
 	InvincibleTimerUpdate();
 
@@ -94,7 +95,7 @@ void PlayerHP::Update(Matrix4x4 vpMatrix, float deltaTime) {
 	hpBarBG_.render->CopyBufferData(1, &color, sizeof(Vector4));
 }
 
-void PlayerHP::Draw(CmdObj* cmdObj) {
+void HP::Draw(CmdObj* cmdObj) {
 	// 背景から前面の順に描画
 	hpBarBG_.render->Draw(cmdObj);
 	hpBarAfter_.render->Draw(cmdObj);
@@ -120,7 +121,7 @@ void PlayerHP::Draw(CmdObj* cmdObj) {
 	ImGui::End();
 }
 
-void PlayerHP::Damage(float amount) {
+void HP::Damage(float amount) {
 	// 不正値をガード
 	if (amount <= 0.0f || isInvincible_)
 		return;
@@ -135,7 +136,7 @@ void PlayerHP::Damage(float amount) {
 	HPBarScaleChange();
 }
 
-void PlayerHP::Heal(float amount) {
+void HP::Heal(float amount) {
 	// 不正値をガード
 	if (amount <= 0.0f)
 		return;
@@ -147,7 +148,7 @@ void PlayerHP::Heal(float amount) {
 	HPBarScaleChange();
 }
 
-void PlayerHP::HPBarScaleChange() {
+void HP::HPBarScaleChange() {
 	// 現在のHPの比率
 	float hpRatio = currentHP_ / maxHP;
 
@@ -166,7 +167,7 @@ void PlayerHP::HPBarScaleChange() {
 	hpBarAfter_.transform.position.x = hpBarPosX_ - offsetX;
 }
 
-void PlayerHP::InvincibleTimerUpdate() {
+void HP::InvincibleTimerUpdate() {
 	if (isInvincible_) {
 		invincibleTimer_ -= fpsObserver_->GetDeltatime(); // 無敵状態のカウントダウン
 
@@ -177,7 +178,7 @@ void PlayerHP::InvincibleTimerUpdate() {
 	}
 }
 
-void PlayerHP::InitializeRenderHPBar(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, std::unique_ptr<SHEngine::RenderObject>& render) {
+void HP::InitializeRenderHPBar(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, std::unique_ptr<SHEngine::RenderObject>& render) {
 	render->Initialize();
 	render->psoConfig_.vs = "Simple.VS.hlsl";
 	render->psoConfig_.ps = "Color.PS.hlsl";
@@ -193,7 +194,7 @@ void PlayerHP::InitializeRenderHPBar(SHEngine::ModelManager* modelManager, SHEng
 	render->SetDrawData(drawData);
 }
 
-void PlayerHP::AnimationHPBarAfter(float deltaTime) {
+void HP::AnimationHPBarAfter(float deltaTime) {
 	// スケールアニメーションの更新
 	scaleAnimationHPBarAfter_.anim.Update(deltaTime, scaleAnimationHPBarAfter_.temp);
 

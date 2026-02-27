@@ -4,9 +4,8 @@
 #include <assets/Model/ModelManager.h>
 #include "../AppSource/Game/EasingAnimation/AnimationBundle.h"
 
-class Player;
-
-class PlayerHP {
+namespace Player{
+class HP {
 public:
 	// 初期化関数
 	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input);
@@ -86,3 +85,4 @@ private:
 	// HPバー　減った分のアニメーション用変数
 	AnimationBundle<float> scaleAnimationHPBarAfter_;
 };
+}

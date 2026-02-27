@@ -1,14 +1,21 @@
 #pragma once
 #include "IPlayerState.h"
-class PlayerStateDash : public IPlayerState {
-public:
-	// 状態切り替え時に一度だけ呼ばれる関数
-	void Enter(Player* player) override;
 
-	// 更新処理
-	void Update(Player* player, float deltaTime) override;
+namespace Player {
 
-private:
-	// ダッシュ時間を記録する変数
-	float dashTimer_ = 0.0f;
-};
+	class Base;
+
+	class StateDash : public IPlayerState {
+	public:
+		// 状態切り替え時に一度だけ呼ばれる関数
+		void Enter(Base* player) override;
+	
+		// 更新処理
+		void Update(Base* player, float deltaTime) override;
+	
+	private:
+		// ダッシュ時間を記録する変数
+		float dashTimer_ = 0.0f;
+	};
+
+} // namespace Player

@@ -1,8 +1,9 @@
 #include "PlayerLevelUI.h"
 
 using namespace SHEngine;
+using namespace Player;
 
-void PlayerLevelUI::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input) {
+void LevelUI::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input) {
 	// HPバーの生成
 	expGaugeFill_.render = std::make_unique<RenderObject>(); // 前面
 	expGaugeBG_.render = std::make_unique<RenderObject>();   // 背景
@@ -43,7 +44,7 @@ void PlayerLevelUI::Initialize(SHEngine::ModelManager* modelManager, SHEngine::D
 	modelManager_ = modelManager;
 }
 
-void PlayerLevelUI::Update(Matrix4x4 vpMatrix, float deltaTime, float currentEXP, float maxEXP) {
+void LevelUI::Update(Matrix4x4 vpMatrix, float deltaTime, float currentEXP, float maxEXP) {
 	// ゲージのスケール変更
 	EXPGaugeScaleChange(currentEXP, maxEXP);
 
@@ -66,13 +67,13 @@ void PlayerLevelUI::Update(Matrix4x4 vpMatrix, float deltaTime, float currentEXP
 	expGaugeBG_.render->CopyBufferData(1, &color, sizeof(Vector4));
 }
 
-void PlayerLevelUI::Draw(CmdObj* cmdObj) {
+void LevelUI::Draw(CmdObj* cmdObj) {
 	// 背景から前面の順に描画
 	expGaugeBG_.render->Draw(cmdObj);
 	expGaugeFill_.render->Draw(cmdObj);
 }
 
-void PlayerLevelUI::InitializeRenderObj(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, std::unique_ptr<SHEngine::RenderObject>& render) {
+void LevelUI::InitializeRenderObj(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, std::unique_ptr<SHEngine::RenderObject>& render) {
 	render->Initialize();
 	render->psoConfig_.vs = "Simple.VS.hlsl";
 	render->psoConfig_.ps = "Color.PS.hlsl";
@@ -88,7 +89,7 @@ void PlayerLevelUI::InitializeRenderObj(SHEngine::ModelManager* modelManager, SH
 	render->SetDrawData(drawData);
 }
 
-void PlayerLevelUI::EXPGaugeScaleChange(float currentEXP, float maxEXP) {
+void LevelUI::EXPGaugeScaleChange(float currentEXP, float maxEXP) {
 	// 現在のEXPの比率
 	float expRatio = currentEXP / maxEXP;
 

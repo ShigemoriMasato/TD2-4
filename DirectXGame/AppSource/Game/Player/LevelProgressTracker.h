@@ -13,7 +13,7 @@ public:
 	int GetEndLevel() const { return endLevel_; }
 
 private:
-	float startLevel_;       // 開始時のレベル
-	float endLevel_;         // 終了時のレベル
-	float levelUpsThisWave_; // ウェーブ中にどれくらいレベルが上がったかを記録する変数
+	int startLevel_;       // 開始時のレベル
+	int endLevel_;         // 終了時のレベル
+	int levelUpsThisWave_; // ウェーブ中にどれくらいレベルが上がったかを記録する変数
 };

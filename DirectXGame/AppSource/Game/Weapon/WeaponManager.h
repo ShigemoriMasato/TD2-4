@@ -23,7 +23,7 @@ public:
 	void LoadWeaponData();
 
 private:
-	// バイナリマネージャ
+	// 読み込み用のバイナリマネージャ
 	BinaryManager binaryManager_;
 
 	static inline const std::string weaponDataFile_ = "WeaponData.bin";

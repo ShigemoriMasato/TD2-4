@@ -4,8 +4,9 @@
 #include <imgui/imgui.h>
 
 using namespace SHEngine;
+using namespace Player;
 
-void Player::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, Input* input) {
+void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, Input* input) {
 	render_ = std::make_unique<RenderObject>();
 	render_->Initialize();
 	render_->psoConfig_.vs = "Simple.VS.hlsl"; // WPだけ送るVS
@@ -27,10 +28,10 @@ void Player::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawData
 	input_ = input;
 
 	// 状態の初期化
-	currentState_ = std::make_unique<PlayerStateNormal>(); // 通常
+	currentState_ = std::make_unique<StateNormal>(); // 通常
 }
 
-void Player::Update(Matrix4x4 vpMatrix, float deltaTime) {
+void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 	// 現在の状態の更新処理
 	if (currentState_) {
 		currentState_->Update(this, deltaTime);
@@ -44,7 +45,7 @@ void Player::Update(Matrix4x4 vpMatrix, float deltaTime) {
 	render_->CopyBufferData(0, &wvp_, sizeof(Matrix4x4));
 }
 
-void Player::Draw(CmdObj* cmdObj) {
+void Base::Draw(CmdObj* cmdObj) {
 	// 描画
 	render_->Draw(cmdObj);
 
@@ -71,7 +72,7 @@ void Player::Draw(CmdObj* cmdObj) {
 #endif // USE_IMGUI
 }
 
-void Player::ChangeState(std::unique_ptr<IPlayerState> newState) {
+void Base::ChangeState(std::unique_ptr<IPlayerState> newState) {
 	if (currentState_) {
 		currentState_->Exit(this); // 古い状態の終了処理
 	}
@@ -84,7 +85,7 @@ void Player::ChangeState(std::unique_ptr<IPlayerState> newState) {
 	}
 }
 
-void Player::UpdateDashCooldown(float deltaTime) {
+void Base::UpdateDashCooldown(float deltaTime) {
 	// ダッシュタイマーの減算
 	if (dashCooldownTimer_ > 0.0f) {
 		dashCooldownTimer_ -= deltaTime;

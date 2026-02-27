@@ -2,7 +2,8 @@
 #include <functional>
 #include <imgui/imgui.h>
 
-class PlayerLevelSystem {
+namespace Player{
+class LevelSystem {
 public:
 	// 初期化関数
 	void Initialize(int startLevel = 1);
@@ -30,3 +31,4 @@ private:
 	// レベルアップに必要な経験値を求める
 	void UpdateNextExp();
 };
+}

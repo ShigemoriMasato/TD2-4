@@ -1,6 +1,8 @@
 #include "PlayerLevelSystem.h"
 
-void PlayerLevelSystem::Initialize(int startLevel) {
+using namespace Player;
+
+void LevelSystem::Initialize(int startLevel) {
 	// レベルの初期化
 	level_ = startLevel;
 
@@ -11,7 +13,7 @@ void PlayerLevelSystem::Initialize(int startLevel) {
 	UpdateNextExp();
 }
 
-void PlayerLevelSystem::AddExp(float amount) {
+void LevelSystem::AddExp(float amount) {
 	if (amount <= 0)
 		return;
 
@@ -37,12 +39,12 @@ void PlayerLevelSystem::AddExp(float amount) {
 	}
 }
 
-void PlayerLevelSystem::UpdateNextExp() {
+void LevelSystem::UpdateNextExp() {
 	// レベルアップに必要な経験値を更新
 	nextExp_ = 10.0f + level_ * 5.0f;
 }
 
-void PlayerLevelSystem::DrawImGui() {
+void LevelSystem::DrawImGui() {
 #ifdef _DEBUG
 	// ImGuiの描画
 	ImGui::Begin("PlayerLevelSyastem");
