@@ -1,5 +1,9 @@
 #pragma once
 #include <Scene/IScene.h>
+#include <SHEngine.h>
+#include <assets/Model/ModelManager.h>
+#include <Render/RenderObject.h>
+#include <Camera/DebugCamera.h>
 
 class ItemManager;
 
@@ -13,8 +17,16 @@ public:
 	void Draw() override;
 
 private:
+	// カメラ
+	std::unique_ptr<DebugCamera> camera_ = nullptr;
+
+	// Transform
+	Transform transform_{};
+	// WVP行列
+	Matrix4x4 wvp_;
 
 	std::unique_ptr<ItemManager> itemManager_;
 
+	std::unique_ptr<SHEngine::RenderObject> render_ = nullptr;
 };
 
