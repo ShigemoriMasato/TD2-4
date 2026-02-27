@@ -81,7 +81,7 @@ namespace SHEngine {
 
 		/// @brief マウスの現在位置を取得
 		/// @return マウス位置
-		Vector2 GetMousePos();
+		Vector2 GetCursorPos();
 
 		/// @brief マウスホイールの回転量を取得
 		/// @return ホイール回転量

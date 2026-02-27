@@ -35,7 +35,6 @@ void GameScene::Draw() {
 	ImGui::End();
 #endif
 
-
 	engine_->DrawImGui();
 	window->PostDraw(cmdObj);
 }

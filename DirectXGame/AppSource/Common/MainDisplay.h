@@ -13,7 +13,7 @@ public:
 	void DrawImGui();
 
 	bool IsHovering() const { return isHovering_; }
-	void GetCursorPos(Vector2& pos) const { pos = cursorPos_; }
+	Vector2 GetCursorPos() const { return cursorPos_; }
 
 	SHEngine::Screen::IDisplay* GetDisplay() { return mainDisplay_.get(); }
 	SHEngine::TextureData* GetTextureData() const { return mainDisplay_->GetTextureData(); }
