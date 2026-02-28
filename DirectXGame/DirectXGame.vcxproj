@@ -160,6 +160,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
     <ClCompile Include="AppSource\Game\Enemy\Enemy.cpp" />
     <ClCompile Include="AppSource\Game\Enemy\EnemyManager.cpp" />
+    <ClCompile Include="AppSource\Game\Player\Heatmap\PlayerHeatmap.cpp" />
     <ClCompile Include="AppSource\Game\WaveSystem\Wave.cpp" />
     <ClCompile Include="AppSource\Game\WaveSystem\WaveManager.cpp" />
     <ClCompile Include="AppSource\Scene\CommonData.cpp" />
@@ -230,8 +231,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\ShigeScene\ShigeScene.cpp" />
     <ClCompile Include="AppSource\Yokoyama\YokoyamaScene.cpp" />
     <ClCompile Include="AppSource\Game\Weapon\WeaponDatabase.cpp" />
-    <ClCompile Include="AppSource\Game\Player\PlayerLevelSystem.cpp" />
-    <ClCompile Include="AppSource\Game\Player\PlayerLevelUI.cpp" />
+    <ClCompile Include="AppSource\Game\Player\Level\PlayerLevelSystem.cpp" />
+    <ClCompile Include="AppSource\Game\Player\Level\PlayerLevelUI.cpp" />
     <ClCompile Include="AppSource\Common\KeyConfig\WorldCursor.cpp" />
     <ClCompile Include="AppSource\Game\Puzzle\PieceManager.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
@@ -266,7 +267,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Game\Item\Item.cpp" />
     <ClCompile Include="AppSource\Game\Item\ItemManager.cpp" />
     <ClCompile Include="Engine\Tool\Grid\Grid.cpp" />
-    <ClCompile Include="AppSource\Game\Player\LevelProgressTracker.cpp" />
+    <ClCompile Include="AppSource\Game\Player\Level\LevelProgressTracker.cpp" />
+    <ClCompile Include="AppSource\Game\Item\ItemEditor.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
     <ClCompile Include="Engine\Utility\src\MatrixFactory.cpp" />
@@ -306,11 +308,13 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Tool\Grid\Grid.h" />
     <ClInclude Include="AppSource\Yokoyama\YokoyamaScene.h" />
     <ClInclude Include="AppSource\Game\Weapon\WeaponDatabase.h" />
-    <ClInclude Include="AppSource\Game\Player\PlayerLevelSystem.h" />
-    <ClInclude Include="AppSource\Game\Player\PlayerLevelUI.h" />
-    <ClInclude Include="AppSource\Game\Player\LevelProgressTracker.h" />
+    <ClInclude Include="AppSource\Game\Player\Level\PlayerLevelSystem.h" />
+    <ClInclude Include="AppSource\Game\Player\Level\PlayerLevelUI.h" />
+    <ClInclude Include="AppSource\Game\Player\Level\LevelProgressTracker.h" />
     <ClInclude Include="AppSource\Common\KeyConfig\WorldCursor.h" />
     <ClInclude Include="AppSource\Game\Puzzle\PieceManager.h" />
+    <ClInclude Include="AppSource\Game\Item\ItemEditor.h" />
+    <ClInclude Include="AppSource\Game\Player\Heatmap\PlayerHeatmap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

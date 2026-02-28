@@ -6,6 +6,7 @@ void WeaponDebugger::Draw() {
 	if (!weaponManager_)
 		return;
 
+#ifdef USE_IMGUI
 	ImGui::Begin("Weapon Debugger");
 	ImGui::InputInt("Target Weapon ID", &currentWeaponId); // 編集したい武器のIDを入力
 	ImGui::Separator();
@@ -58,4 +59,5 @@ void WeaponDebugger::Draw() {
 	}
 
 	ImGui::End();
+#endif
 }

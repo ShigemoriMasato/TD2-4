@@ -17,6 +17,13 @@ void StateDash::Update(Base* player, float deltaTime) {
 	t.position.x += dir.x * player->GetDashSpeed() * deltaTime;
 	t.position.z += dir.y * player->GetDashSpeed() * deltaTime;
 
+	// 残像の生成処理
+	//spawnTimer_ -= deltaTime;
+	//if (spawnTimer_ <= 0.0f) {
+	//	player->SpawnAfterImage();
+	//	spawnTimer_ = 0.03f; // 残像の生成間隔を設定
+	//}
+
 	// タイマーの更新
 	dashTimer_ -= deltaTime;
 	if (dashTimer_ <= 0.0f) {
