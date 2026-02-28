@@ -51,6 +51,8 @@ public:
 
 private:
 
+	void MakeMatrix() override;
+
 	/// @brief 入力システムへのポインタ
 	SHEngine::Input* input_;
 

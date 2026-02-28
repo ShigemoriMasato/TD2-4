@@ -59,6 +59,9 @@ public:
 	void DrawImGui();
 
 	void SetTransform(Matrix4x4 mat);
+	void SetScale(Vector3 scale) { scale_ = scale; }
+	void SetRotation(Vector3 rotation) { rotation_ = rotation; }
+	void SetPosition(Vector3 position) { position_ = position; }
 
 	//VPMatrixを取得
 	virtual Matrix4x4 GetVPMatrix() const;
