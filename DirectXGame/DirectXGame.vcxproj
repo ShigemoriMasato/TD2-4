@@ -268,6 +268,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Game\Item\ItemManager.cpp" />
     <ClCompile Include="Engine\Tool\Grid\Grid.cpp" />
     <ClCompile Include="AppSource\Game\Player\Level\LevelProgressTracker.cpp" />
+    <ClCompile Include="AppSource\Game\Player\LevelProgressTracker.cpp" />
+    <ClCompile Include="AppSource\Game\Item\ItemEditor.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
     <ClCompile Include="Engine\Utility\src\MatrixFactory.cpp" />
@@ -312,6 +314,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Game\Player\Level\LevelProgressTracker.h" />
     <ClInclude Include="AppSource\Common\KeyConfig\WorldCursor.h" />
     <ClInclude Include="AppSource\Game\Puzzle\PieceManager.h" />
+    <ClInclude Include="AppSource\Game\Item\ItemEditor.h" />
     <ClInclude Include="AppSource\Game\Player\Heatmap\PlayerHeatmap.h" />
   </ItemGroup>
   <ItemGroup>
