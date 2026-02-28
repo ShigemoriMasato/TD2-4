@@ -16,6 +16,16 @@ public:
 	void Draw() override;
 
 private:
+	// フレームレートImGui表示
+	void DrawImGuiFPS();
+
+	// カメラのImGui表示
+	void DrawImGuiCamera();
+
+	// ポーズ中ImGui表示
+	void DrawImGuiPause();
+
+private:
 	// プレイヤー
 	std::unique_ptr<Player::Base> player_ = nullptr;
 
@@ -42,4 +52,7 @@ private:
 
 	// カメラのTransform
 	Transform cameraTransform_{};
+
+	// ポーズ状態を管理するフラグ
+	bool isPaused_ = false;
 };

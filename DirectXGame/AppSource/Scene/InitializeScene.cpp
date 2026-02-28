@@ -109,7 +109,7 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	//更新処理
 	commonData_->cmdObject->ResetCommandList();
 
-	return std::make_unique<ShigeScene>();
+	return std::make_unique<MiharaScene>();
 }
 
 void InitializeScene::Draw() {
