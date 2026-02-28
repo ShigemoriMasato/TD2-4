@@ -140,24 +140,29 @@ void MiharaScene::Draw() {
 }
 
 void MiharaScene::DrawImGuiFPS() {
+#ifdef USE_IMGUI
 	// フレームレート表示
 	ImGui::Begin("FPS");
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 	ImGui::Text("DeltaTime: %.3f ms", deltaTime * 1000.0f);
 	ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
 	ImGui::End();
+#endif
 }
 
 void MiharaScene::DrawImGuiCamera() {
+#ifdef USE_IMGUI
 	// カメラのImGUi
 	ImGui::Begin("Camera");
 	ImGui::DragFloat3("Scale", &cameraTransform_.scale.x, 0.01f);
 	ImGui::DragFloat3("Rotate", &cameraTransform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("Position", &cameraTransform_.position.x, 0.01f);
 	ImGui::End();
+#endif
 }
 
 void MiharaScene::DrawImGuiPause() {
+#ifdef USE_IMGUI
 	// ポーズ中ImGui表示
 	if (isPaused_) {
 		ImGui::Begin("Pause Menu", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
@@ -165,4 +170,5 @@ void MiharaScene::DrawImGuiPause() {
 		ImGui::Text("Press 'P' to Resume");
 		ImGui::End();
 	}
+#endif
 }

@@ -101,6 +101,7 @@ void HP::Draw(CmdObj* cmdObj) {
 	hpBarAfter_.render->Draw(cmdObj);
 	hpBarFill_.render->Draw(cmdObj);
 
+#ifdef USE_IMGUI
 	ImGui::Begin("PlayerHP");
 
 	// --- 基本パラメータ ---
@@ -119,6 +120,7 @@ void HP::Draw(CmdObj* cmdObj) {
 	}
 
 	ImGui::End();
+#endif
 }
 
 void HP::Damage(float amount) {
