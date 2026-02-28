@@ -45,6 +45,10 @@ void MiharaScene::Initialize() {
 
 	// ウェーブ中にどれくらいレベルが上がったかを管理するインスタンスの生成&初期化
 	levelProgressTracker_ = std::make_unique<LevelProgressTracker>();
+
+	// プレイヤーのヒートマップマネージャの生成&初期化
+	playerHeatmapManager_ = std::make_unique<Player::HeatmapManager>();
+	playerHeatmapManager_->Initialize(modelManager_, drawDataManager_, config_);
 }
 
 std::unique_ptr<IScene> MiharaScene::Update() {
@@ -76,6 +80,12 @@ std::unique_ptr<IScene> MiharaScene::Update() {
 
 		// プレイヤーのレベルUIの更新
 		playerLevelUI_->Update(camera_->GetVPMatrix(), deltaTime, playerLevelSystem_->GetCurrentExp(), playerLevelSystem_->GetNextExp());
+
+		// プレイヤーのヒートマップ更新処理
+		playerHeatmapManager_->Update(camera_->GetVPMatrix());
+
+		// プレイヤーの滞在時間を記録
+		playerHeatmapManager_->Record(player_->GetTransform().position, deltaTime);
 	}
 
 	return nullptr;
@@ -96,6 +106,9 @@ void MiharaScene::Draw() {
 
 	// プレイヤーのEXPの描画
 	playerLevelUI_->Draw(cmdObj);
+
+	// ヒートマップの描画
+	playerHeatmapManager_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 
@@ -146,7 +159,7 @@ void MiharaScene::DrawImGuiCamera() {
 
 void MiharaScene::DrawImGuiPause() {
 	// ポーズ中ImGui表示
-	if(isPaused_){
+	if (isPaused_) {
 		ImGui::Begin("Pause Menu", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 		ImGui::Text("===PAUSE===");
 		ImGui::Text("Press 'P' to Resume");

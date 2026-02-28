@@ -9,7 +9,12 @@
 /// <summary>
 /// プレイヤー
 /// </summary>
-namespace Player{
+namespace Player {
+struct AfterImage {
+	Transform transform;
+	float timer;
+};
+
 class Base {
 public:
 	// 初期化
@@ -23,6 +28,12 @@ public:
 
 	// 状態管理関数
 	void ChangeState(std::unique_ptr<IPlayerState> newState);
+
+	// 残像を追加する関数
+	void SpawnAfterImage();
+
+	// 残像の更新処理
+	void UpdateAfterImages(float deltaTime);
 
 	// StateからアクセスするためのGetter等
 	SHEngine::Input* GetInput() const { return input_; }
@@ -38,6 +49,8 @@ public:
 	Vector2 GetDashDir() const { return dashDir_; }
 	float GetDashSpeed() const { return dashSpeed_; }
 	float GetDashDuration() const { return dashDuration_; }
+
+	void SetPosition(Vector3 position) { transform_.position = position; }
 
 private:
 	// 描画用変数
@@ -64,5 +77,12 @@ private:
 	float dashCooldown_ = 0.5f;      // ダッシュのクールダウン
 	float dashCooldownTimer_ = 0.0f; // クールダウン用のタイマー
 	Vector2 dashDir_ = {0.0f, 0.0f}; // ダッシュする方向
+
+	// 残像関連の変数
+	std::vector<AfterImage> afterImages_; // 残像のステータス
+	float afterImageLifeTime_ = 0.3f;     // 残像が画面に残る時間
+
+	// VP行列
+	Matrix4x4 vpMatrix_;
 };
-} // namespace
+} // namespace Player

@@ -10,6 +10,10 @@ class StateNormal : public IPlayerState {
 public:
 	// 更新処理
 	void Update(Base* player, float deltaTime) override;
+
+private:
+	// 移動制限
+	void ClampPosition(Base* player);
 };
 
 } // namespace Player
