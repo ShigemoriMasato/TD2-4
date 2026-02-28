@@ -268,7 +268,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Game\Item\ItemManager.cpp" />
     <ClCompile Include="Engine\Tool\Grid\Grid.cpp" />
     <ClCompile Include="AppSource\Game\Player\Level\LevelProgressTracker.cpp" />
-    <ClCompile Include="AppSource\Game\Player\LevelProgressTracker.cpp" />
     <ClCompile Include="AppSource\Game\Item\ItemEditor.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
