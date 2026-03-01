@@ -68,15 +68,69 @@ BackPack::BackPack()
 		grids_.push_back(std::move(row));
 	}
 
-	lockedUnavailableGrid_ = std::make_unique<SHEngine::RenderObject>("BackPackLockedUnavailable");
-	lockedAvailableGrid_ = std::make_unique<SHEngine::RenderObject>("BackPackLockedAvailable");
-	unlockedEmptyGrid_ = std::make_unique<SHEngine::RenderObject>("BackPackUnlockedEmpty");
+	drawBackPack_ = std::make_unique<DrawBackPack>();
 }
 
 BackPack::~BackPack()
 {}
 
 void BackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager)
+{
+	const uint32_t maxInstance = uint32_t(GameConstants::kBackPackRowNum * GameConstants::kBackPackColNum);
+	const int modelHandle = modelManager->LoadModel("Assets/.EngineResource/Model/Cube");
+	const auto modelData = modelManager->GetNodeModelData(modelHandle);
+	const auto drawData = drawDataManager->GetDrawData(modelData.drawDataIndex);
+
+	drawBackPack_->Initialize(modelManager, drawDataManager);
+
+	// 初期マップ
+	for (size_t r = 0; r < GameConstants::kBackPackRowNum; ++r)
+	{
+		for (size_t c = 0; c < GameConstants::kBackPackColNum; ++c)
+		{
+			grids_[r][c]->Initialize(GridState::UnlockedEmpty);
+			grids_[r][c]->transform_.position = { float(c), 0.0f, float(r) };
+		}
+	}
+}
+
+void BackPack::Update(const Matrix4x4& viewProj)
+{
+	drawBackPack_->Update(viewProj, grids_);
+}
+
+void BackPack::Draw(SHEngine::Command::Object* cmdObject)
+{
+	drawBackPack_->Draw(cmdObject);
+}
+
+void BackPack::DrawImGui()
+{
+	ImGui::Begin("BackPack");
+
+
+	ImGui::End();
+
+
+}
+
+
+
+
+
+
+
+DrawBackPack::DrawBackPack()
+{
+	lockedUnavailableGrid_ = std::make_unique<SHEngine::RenderObject>("DrawBackPackLockedUnavailable");
+	lockedAvailableGrid_ = std::make_unique<SHEngine::RenderObject>("DrawBackPackLockedAvailable");
+	unlockedEmptyGrid_ = std::make_unique<SHEngine::RenderObject>("DrawBackPackUnlockedEmpty");
+}
+
+DrawBackPack::~DrawBackPack()
+{}
+
+void DrawBackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager)
 {
 	const uint32_t maxInstance = uint32_t(GameConstants::kBackPackRowNum * GameConstants::kBackPackColNum);
 	const int modelHandle = modelManager->LoadModel("Assets/.EngineResource/Model/Cube");
@@ -118,23 +172,13 @@ void BackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDa
 	initGridRender(lockedAvailableGrid_, bindLockedAvailable_);
 	initGridRender(unlockedEmptyGrid_, bindUnlockedEmpty_);
 
-	// 初期状態
-	for (size_t r = 0; r < GameConstants::kBackPackRowNum; ++r)
-	{
-		for (size_t c = 0; c < GameConstants::kBackPackColNum; ++c)
-		{
-			grids_[r][c]->Initialize(GridState::UnlockedEmpty);
-			grids_[r][c]->transform_.position = { float(c), 0.0f, float(r) };
-		}
-	}
-
 	// worlds の予約
 	lockedUnavailableWorlds_.reserve(maxInstance);
 	lockedAvailableWorlds_.reserve(maxInstance);
 	unlockedEmptyWorlds_.reserve(maxInstance);
 }
 
-void BackPack::UpdateRenderObject(
+void DrawBackPack::UpdateRenderObject(
 	SHEngine::RenderObject& ro,
 	const InstanceBinding& bind,
 	const Matrix4x4& viewProj,
@@ -156,7 +200,7 @@ void BackPack::UpdateRenderObject(
 }
 
 
-void BackPack::Update(const Matrix4x4& viewProj)
+void DrawBackPack::Update(const Matrix4x4& viewProj, const std::vector<std::vector<std::unique_ptr<BackPackGrid>>>& grids)
 {
 	lockedUnavailableWorlds_.clear();
 	lockedAvailableWorlds_.clear();
@@ -166,15 +210,15 @@ void BackPack::Update(const Matrix4x4& viewProj)
 	{
 		for (size_t c = 0; c < GameConstants::kBackPackColNum; ++c)
 		{
-			const auto& g = *grids_[r][c];
+			const auto& g = grids[r][c];
 
 			Matrix4x4 world = Matrix::MakeAffineMatrix(
-				g.transform_.scale,
-				g.transform_.rotate,
-				g.transform_.position
+				g->transform_.scale,
+				g->transform_.rotate,
+				g->transform_.position
 			);
 
-			switch (g.GetState())
+			switch (g->GetState())
 			{
 			case GridState::LockedUnavailable:
 				lockedUnavailableWorlds_.push_back(world);
@@ -199,7 +243,7 @@ void BackPack::Update(const Matrix4x4& viewProj)
 	UpdateRenderObject(*unlockedEmptyGrid_, bindUnlockedEmpty_, viewProj, unlockedEmptyWorlds_, unlockedEmptyColor_);
 }
 
-void BackPack::Draw(SHEngine::Command::Object* cmdObject)
+void DrawBackPack::Draw(SHEngine::Command::Object* cmdObject)
 {
 	if (lockedUnavailableGrid_)
 	{
@@ -215,9 +259,9 @@ void BackPack::Draw(SHEngine::Command::Object* cmdObject)
 	}
 }
 
-void BackPack::DrawImGui()
+void DrawBackPack::DrawImGui()
 {
-	ImGui::Begin("BackPack");
+	ImGui::Begin("DrawBackPack");
 
 
 	ImGui::End();

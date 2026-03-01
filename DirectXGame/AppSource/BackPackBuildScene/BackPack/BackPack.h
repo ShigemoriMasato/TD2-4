@@ -16,6 +16,23 @@ enum class GridState
 	UnlockedOccupied,
 };
 
+struct InstanceBinding
+{
+	int matricesSrvIndex = -1; // VS t0
+	int vpCbvIndex = -1;       // VS b0
+	int texCbvIndex = -1;      // PS b0
+	int colorCbvIndex = -1;    // PS b1
+	int lightCbvIndex = -1;    // PS b2
+};
+
+namespace GameConstants
+{
+	// バックパックの行数
+	inline constexpr size_t kBackPackRowNum = 8;
+	// バックパックの列数
+	inline constexpr size_t kBackPackColNum = 12;
+}
+
 
 /// <summary>
 /// バックパックの1マス
@@ -39,32 +56,20 @@ private:
 	GridState state_ = GridState::LockedUnavailable;
 };
 
-struct InstanceBinding
-{
-	int matricesSrvIndex = -1; // VS t0
-	int vpCbvIndex = -1;       // VS b0
-	int texCbvIndex = -1;      // PS b0
-	int colorCbvIndex = -1;    // PS b1
-	int lightCbvIndex = -1;    // PS b2
-};
-
 /// <summary>
-/// BackPackGridの集合体
+/// 描画部分が膨れすぎたので一旦分割
 /// </summary>
-class BackPack
+class DrawBackPack
 {
 public:
-	BackPack();
-	~BackPack();
+	DrawBackPack();
+	~DrawBackPack();
 	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager);
-	void Update(const Matrix4x4& viewProj);
+	void Update(const Matrix4x4& viewProj, const std::vector<std::vector<std::unique_ptr<BackPackGrid>>>& grids);
 	void Draw(SHEngine::Command::Object* cmdObject);
 	void DrawImGui();
 
 private:
-	// BackPackGridの2次元配列
-	std::vector<std::vector<std::unique_ptr<BackPackGrid>>> grids_;
-
 	int textureIndex_ = 0;
 	DirectionalLight light_{};
 
@@ -96,11 +101,23 @@ private:
 		const Vector4& color);
 };
 
-
-namespace GameConstants
+/// <summary>
+/// BackPackGridの集合体
+/// </summary>
+class BackPack
 {
-	// バックパックの行数
-	inline constexpr size_t kBackPackRowNum = 8;
-	// バックパックの列数
-	inline constexpr size_t kBackPackColNum = 12;
-}
+public:
+	BackPack();
+	~BackPack();
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager);
+	void Update(const Matrix4x4& viewProj);
+	void Draw(SHEngine::Command::Object* cmdObject);
+	void DrawImGui();
+
+private:
+
+	std::unique_ptr<DrawBackPack> drawBackPack_;
+
+	// BackPackGridの2次元配列
+	std::vector<std::vector<std::unique_ptr<BackPackGrid>>> grids_;
+};
