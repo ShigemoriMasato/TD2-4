@@ -15,6 +15,7 @@ ID3D12RootSignature* SHEngine::PSO::CSRootSignature::GetRootSignature(int cbv, i
 	}
 
 	std::vector<D3D12_ROOT_PARAMETER> rootParameters;
+	rootParameters.reserve(cbv + srv + uav);
 	for(int i = 0; i < cbv; ++i) {
 		auto& param = rootParameters.emplace_back();
 		param.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -23,6 +24,7 @@ ID3D12RootSignature* SHEngine::PSO::CSRootSignature::GetRootSignature(int cbv, i
 	}
 
 	std::vector<D3D12_DESCRIPTOR_RANGE> srvRanges;
+	srvRanges.reserve(srv);
 	for (int i = 0; i < srv; ++i) {
 		auto& range = srvRanges.emplace_back();
 		range.BaseShaderRegister = i;
@@ -38,6 +40,7 @@ ID3D12RootSignature* SHEngine::PSO::CSRootSignature::GetRootSignature(int cbv, i
 	}
 
 	std::vector<D3D12_DESCRIPTOR_RANGE> uavRanges;
+	uavRanges.reserve(uav);
 	for(int i = 0; i < uav; ++i) {
 		auto& range = uavRanges.emplace_back();
 		range.BaseShaderRegister = i;

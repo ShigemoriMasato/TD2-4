@@ -4,6 +4,7 @@
 using namespace SHEngine::Command;
 
 Object::~Object() {
+	WaitForCanExecute(); // コマンドリストが実行可能になるまで待機してから解放する
 	manager_->ReleaseObject(type_, queueIndex_, id_);
 }
 

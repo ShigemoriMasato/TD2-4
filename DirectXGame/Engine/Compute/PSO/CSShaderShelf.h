@@ -14,7 +14,7 @@ namespace SHEngine::PSO {
 
 		DXDevice* device_ = nullptr;
 		std::unordered_map<std::string, D3D12_SHADER_BYTECODE> shaderBytecodeMap_;
-
+		const std::string directory_ = "Assets/Shader/Compute/";
 	};
 
 }

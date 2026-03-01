@@ -188,7 +188,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Camera\Camera.cpp" />
     <ClCompile Include="Engine\Camera\DebugCamera.cpp" />
     <ClCompile Include="Engine\Input\Input.cpp" />
-    <ClCompile Include="Engine\Utility\src\DirectUtilFuncs.cpp" />
     <ClCompile Include="Engine\Core\View\DSVManager.cpp" />
     <ClCompile Include="Engine\Core\View\RTVManager.cpp" />
     <ClCompile Include="Engine\Core\View\SRVManager.cpp" />
@@ -207,6 +206,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Render\PSO\Shelf\ShaderShelf.cpp" />
     <ClCompile Include="Engine\Tool\FPS\FPSObserver.cpp" />
     <ClCompile Include="Engine\Utility\src\ConvertString.cpp" />
+    <ClCompile Include="Engine\Utility\src\DirectUtilFuncs.cpp" />
     <ClCompile Include="Engine\Utility\src\Easing.cpp" />
     <ClCompile Include="Engine\Utility\src\MyMath.cpp" />
     <ClCompile Include="Engine\Render\Screen\MultiDisplay.cpp" />
@@ -265,6 +265,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Assets\Audio\AudioManager.h" />
     <ClInclude Include="Engine\Tool\Binary\Value.h" />
     <ClInclude Include="Engine\Tool\Logger\CustomLogSetting.h" />
+    <ClInclude Include="Engine\Utility\DirectUtilFuncs.h" />
     <ClInclude Include="Engine\Utility\Quaternion.h" />
     <ClCompile Include="Engine\Utility\src\SearchFile.cpp" />
     <ClCompile Include="Engine\Assets\Fonts\FontLoader.cpp" />
@@ -339,7 +340,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Camera\Camera.h" />
     <ClInclude Include="Engine\Camera\DebugCamera.h" />
     <ClInclude Include="Engine\Input\Input.h" />
-    <ClInclude Include="Engine\Utility\DirectUtilFuncs.h" />
     <ClInclude Include="Engine\Core\View\ViewFunc.h" />
     <ClInclude Include="Engine\Core\View\DSVManager.h" />
     <ClInclude Include="Engine\Core\View\RTVManager.h" />
