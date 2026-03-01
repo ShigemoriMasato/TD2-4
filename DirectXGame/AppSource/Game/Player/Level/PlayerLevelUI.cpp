@@ -19,7 +19,7 @@ void LevelUI::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDat
 	// 前面
 	expGaugeFill_.transform.scale = {gaugeWidth_, 1.0f, 1.0f};
 	expGaugeFill_.transform.rotate = {0.3f, 0.0f, 0.0f};
-	expGaugeFill_.transform.position = {gaugePosX, 6.0f, 0.0f};
+	expGaugeFill_.transform.position = {gaugePosX, 8.0f, 0.0f};
 
 	Vector4 color = {1.0f, 1.0f, 0.0f, 1.0f};
 
@@ -28,7 +28,7 @@ void LevelUI::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDat
 	// 背景
 	expGaugeBG_.transform.scale = {gaugeWidth_, 1.0f, 1.0f};
 	expGaugeBG_.transform.rotate = {0.3f, 0.0f, 0.0f};
-	expGaugeBG_.transform.position = {gaugePosX, 6.0f, 0.0f};
+	expGaugeBG_.transform.position = {gaugePosX, 8.0f, 0.0f};
 
 	color = {0.0f, 0.0f, 0.0f, 1.0f};
 

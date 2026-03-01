@@ -51,10 +51,16 @@ public:
 	float GetDashDuration() const { return dashDuration_; }
 
 	void SetPosition(Vector3 position) { transform_.position = position; }
+	void SetRotate(Vector3 rotate) { transform_.rotate = rotate; }
+
+	float GetRotationSpeed() const { return rotationSpeed_; }
 
 private:
 	// 描画用変数
 	std::unique_ptr<SHEngine::RenderObject> render_ = nullptr;
+
+	// 残像描画用変数
+	std::unique_ptr<SHEngine::RenderObject> afterImageRender_ = nullptr;
 
 	// WVP行列
 	Matrix4x4 wvp_;
@@ -72,7 +78,7 @@ private:
 	std::unique_ptr<IPlayerState> currentState_ = nullptr;
 
 	// ダッシュ用のパラメータ
-	float dashSpeed_ = 15.0f;        // ダッシュスピード
+	float dashSpeed_ = 30.0f;        // ダッシュスピード
 	float dashDuration_ = 0.15f;     // ダッシュ時間
 	float dashCooldown_ = 0.5f;      // ダッシュのクールダウン
 	float dashCooldownTimer_ = 0.0f; // クールダウン用のタイマー
@@ -84,5 +90,14 @@ private:
 
 	// VP行列
 	Matrix4x4 vpMatrix_;
+
+	// テクスチャのインデックス
+	int textureIndex_;
+
+	// 回転の滑らかさ
+	float rotationSpeed_ = 10.0f;
+
+	// 残像・インスタンスの最大値
+	static const int kMaxInstanceAfterImage = 8;
 };
 } // namespace Player
