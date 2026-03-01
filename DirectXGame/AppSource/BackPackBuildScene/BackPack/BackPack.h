@@ -26,12 +26,26 @@ public:
 	BackPackGrid();
 	~BackPackGrid();
 	void Initialize(GridState state);
+	void ChangeState(GridState newState);
 	void Update();
 
+	GridState GetState() const { return state_; }
+	const Vector4& GetColor() const { return color_; }
+
 	Transform transform_{};
+
 private:
 	Vector4 color_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 	GridState state_ = GridState::LockedUnavailable;
+};
+
+struct InstanceBinding
+{
+	int matricesSrvIndex = -1; // VS t0
+	int vpCbvIndex = -1;       // VS b0
+	int texCbvIndex = -1;      // PS b0
+	int colorCbvIndex = -1;    // PS b1
+	int lightCbvIndex = -1;    // PS b2
 };
 
 /// <summary>
@@ -45,29 +59,41 @@ public:
 	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager);
 	void Update(const Matrix4x4& viewProj);
 	void Draw(SHEngine::Command::Object* cmdObject);
+	void DrawImGui();
 
 private:
-	std::vector<Matrix4x4> lockedWorlds_;
-	int lockedTextureIndex_ = 0;
-	Vector4 lockedColor_ = { 0.25f, 0.25f, 0.25f, 1.0f };
-	DirectionalLight lockedLight_{};
-
 	// BackPackGridの2次元配列
 	std::vector<std::vector<std::unique_ptr<BackPackGrid>>> grids_;
 
-	/// インスタンシング描画
+	int textureIndex_ = 0;
+	DirectionalLight light_{};
+
+
 	// ロック中・解放不可
 	std::unique_ptr<SHEngine::RenderObject> lockedUnavailableGrid_;
+	std::vector<Matrix4x4> lockedUnavailableWorlds_;
+	Vector4 lockedUnavailableColor_ = { 0.25f, 0.25f, 0.25f, 1.0f };
+	InstanceBinding bindLockedUnavailable_{};
+
 	// ロック中・解放可能
 	std::unique_ptr<SHEngine::RenderObject> lockedAvailableGrid_;
+	std::vector<Matrix4x4> lockedAvailableWorlds_;
+	Vector4 lockedAvailableColor_ = { 0.5f, 0.5f, 0.5f, 1.0f };
+	InstanceBinding bindLockedAvailable_{};
+
 	// 解放済み
 	std::unique_ptr<SHEngine::RenderObject> unlockedEmptyGrid_;
+	std::vector<Matrix4x4> unlockedEmptyWorlds_;
+	Vector4 unlockedEmptyColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+	InstanceBinding bindUnlockedEmpty_{};
 
-	int lockedMatricesSrvIndex_ = -1;   // SRV(Vt0)
-	int lockedVpCbvIndex_ = -1;         // CBV(Vb0)
-	int lockedTexIndexCbvIndex_ = -1;   // CBV(Pb0)
-	int lockedColorCbvIndex_ = -1;      // CBV(Pb1)
-	int lockedLightCbvIndex_ = -1;      // CBV(Pb2)
+	// 毎フレーム転送（3重バッファ対策）
+	void UpdateRenderObject(
+		SHEngine::RenderObject& ro,
+		const InstanceBinding& bind,
+		const Matrix4x4& viewProj,
+		const std::vector<Matrix4x4>& worlds,
+		const Vector4& color);
 };
 
 
