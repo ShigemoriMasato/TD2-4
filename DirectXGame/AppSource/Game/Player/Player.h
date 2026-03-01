@@ -51,6 +51,9 @@ public:
 	float GetDashDuration() const { return dashDuration_; }
 
 	void SetPosition(Vector3 position) { transform_.position = position; }
+	void SetRotate(Vector3 rotate) { transform_.rotate = rotate; }
+
+	float GetRotationSpeed() const { return rotationSpeed_; }
 
 private:
 	// 描画用変数
@@ -87,5 +90,8 @@ private:
 
 	// テクスチャのインデックス
 	int textureIndex_;
+
+	// 回転の滑らかさ
+	float rotationSpeed_ = 10.0f;
 };
 } // namespace Player

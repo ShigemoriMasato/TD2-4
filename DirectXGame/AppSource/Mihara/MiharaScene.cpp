@@ -39,7 +39,7 @@ void MiharaScene::Initialize() {
 	weaponDebugger_ = std::make_unique<WeaponDebugger>(weaponManager_.get());
 
 	// カメラのトランスフォーム設定
-	cameraTransform_.position = {0.0f, 3.0f, 70.0f};
+	cameraTransform_.position = cameraOffset_;
 	cameraTransform_.rotate = {-0.65f, 0.0f, 0.0f};
 	cameraTransform_.scale = {1.0f, 1.0f, 1.0f};
 

@@ -66,4 +66,7 @@ private:
 
 	// グリッドのパラメータ
 	GridConfig config_;
+
+	// カメラ・プレイヤーからのオフセット
+	Vector3 cameraOffset_ = {0.0f, 3.0f, 50.0f};
 };
