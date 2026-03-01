@@ -15,10 +15,6 @@ BackPackBuildScene::~BackPackBuildScene()
 
 void BackPackBuildScene::Initialize()
 {
-	int modelHandle = modelManager_->LoadModel("Assets/.EngineResource/Model/Cube");
-	auto modelData = modelManager_->GetNodeModelData(modelHandle);
-	auto drawData = drawDataManager_->GetDrawData(modelData.drawDataIndex);
-
 	grid_->Initialize(drawDataManager_);
 	itemManager_->Initialize(modelManager_);
 	camera_->Initialize(input_);
@@ -58,6 +54,8 @@ void BackPackBuildScene::Draw()
 	display->DrawImGui();
 
 	backPack_->DrawImGui();
+
+	itemManager_->DrawImGui();
 
 	engine_->DrawImGui();
 #endif

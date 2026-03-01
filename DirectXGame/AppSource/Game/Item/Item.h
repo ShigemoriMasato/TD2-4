@@ -46,7 +46,8 @@ struct Item {
 	Category category;		// カテゴリ
 	std::vector<std::pair<int, int>> mapData;	// 2Dタイルの形状データ
 	int weaponID = -1;						//武器ID (武器以外は-1)
-	int modelID = -1;						//モデルID
+	std::string modelPath;					// モデルパス
+	int modelID = -1;
 	Vector4 color = Vector4(1, 1, 1, 1);	//アイテムの色
 
 	/// ランクごとに変わるデータ  値段・効果・バフ

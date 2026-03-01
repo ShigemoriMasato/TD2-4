@@ -180,6 +180,9 @@ void ItemEditor::Draw(ItemManager& itemManager)
 
 		addItemState_ = 0;
 
+		const std::string curPath = currentItem.modelPath;
+		strncpy_s(editModelPath_, sizeof(editModelPath_), curPath.c_str(), _TRUNCATE);
+
 		const std::string curName = ConvertString(currentItem.name);
 		strncpy_s(editItemName_, sizeof(editItemName_), curName.c_str(), _TRUNCATE);
 	}
@@ -232,6 +235,11 @@ void ItemEditor::Draw(ItemManager& itemManager)
 	// カテゴリ編集
 	ImGui::Combo("Category##2", reinterpret_cast<int*>(&currentItem.category), "Weapon\0Armor\0Item\0");
 
+	// モデルパス編集
+	if (ImGui::InputText("Model Path", editModelPath_, sizeof(editModelPath_)))
+	{
+		currentItem.modelPath = editModelPath_;
+	}
 #pragma endregion
 
 #pragma region mapData（2Dタイル形状）編集

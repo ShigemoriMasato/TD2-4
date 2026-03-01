@@ -24,6 +24,9 @@ public:
 	const Item& GetItem(std::wstring itemName) const;
 	const Item& GetItem(int index) const;
 
+	// 描画等で必要になったときに ID を解決する
+	int ResolveModelID(const Item& item);
+
 #ifdef USE_IMGUI 
 
 	/// Editer用関数
@@ -45,6 +48,8 @@ private:
 
 	void SaveBaseParam();
 	void LoadBaseParam();
+
+	void ResolveAllModelIDs();
 
 	//パラメータ一覧と基礎値
 	std::unordered_map<std::string, float> baseParam_;

@@ -35,8 +35,11 @@ void ItemManager::Initialize(SHEngine::ModelManager* modelManager)
 			defaultItem.ranks[r].effect = 0u;
 			defaultItem.ranks[r].params = baseParam_;
 		}
+		defaultItem.modelPath = "Assets/EngineResource/Model/Cube";
 		items_.push_back(std::move(defaultItem));
 	}
+
+	ResolveAllModelIDs();
 }
 
 const Item& ItemManager::GetItem(std::wstring itemName) const
@@ -56,6 +59,23 @@ const Item& ItemManager::GetItem(int index) const
 	int targetIndex = index % static_cast<int>(items_.size());
 	return items_[targetIndex];
 }
+
+int ItemManager::ResolveModelID(const Item& item)
+{
+	// modelPathが空ならエラー
+	if (item.modelPath.empty()) return -1;
+
+	return modelManager_->LoadModel(item.modelPath);
+}
+
+void ItemManager::ResolveAllModelIDs()
+{
+	for (auto& item : items_)
+	{
+		item.modelID = ResolveModelID(item);
+	}
+}
+
 
 void ItemManager::DrawImGui()
 {
@@ -120,6 +140,10 @@ void ItemManager::SaveItem()
 			binaryManager_.RegisterOutput(&y);
 		}
 
+		// 見た目
+		binaryManager_.RegisterOutput(&item.modelPath);
+		binaryManager_.RegisterOutput(&item.weaponID);
+
 		// ranks（可変）
 		for (int r = 0; r < 4; ++r)
 		{
@@ -139,10 +163,6 @@ void ItemManager::SaveItem()
 				binaryManager_.RegisterOutput(&buff.second);
 			}
 		}
-
-		// 見た目
-		binaryManager_.RegisterOutput(&item.weaponID);
-		binaryManager_.RegisterOutput(&item.modelID);
 	}
 	binaryManager_.Write(itemFile_);
 }
@@ -176,6 +196,10 @@ void ItemManager::LoadItem()
 			item.mapData.emplace_back(x, y);
 		}
 
+		// 見た目
+		item.modelPath = binaryManager_.Reverse<std::string>(data);
+		item.weaponID = binaryManager_.Reverse<int>(data);
+
 		// ranks
 		for (int r = 0; r < 4; ++r)
 		{
@@ -193,10 +217,6 @@ void ItemManager::LoadItem()
 				rd.params[name] = value;
 			}
 		}
-
-		// 見た目
-		item.weaponID = binaryManager_.Reverse<int>(data);
-		item.modelID = binaryManager_.Reverse<int>(data);
 
 		items_.push_back(item);
 	}
