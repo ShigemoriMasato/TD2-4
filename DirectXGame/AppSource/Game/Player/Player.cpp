@@ -7,6 +7,7 @@ using namespace SHEngine;
 using namespace Player;
 
 void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, Input* input) {
+	// 本体描画用オブジェクトの生成&初期化
 	render_ = std::make_unique<RenderObject>();
 	render_->Initialize();
 
@@ -30,6 +31,23 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	render_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 	render_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
 
+	// 残像描画用オブジェクトの生成&初期化
+	afterImageRender_ = std::make_unique<RenderObject>();
+	afterImageRender_->Initialize();
+
+	// シェーダーの設定
+	afterImageRender_->psoConfig_.vs = "Game/AfterImage.VS.hlsl";
+	afterImageRender_->psoConfig_.ps = "Game/AfterImage.PS.hlsl";
+	afterImageRender_->SetUseTexture(true);
+	afterImageRender_->SetDrawData(drawData);
+
+	// CBVの設定
+	afterImageRender_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WorldMatrix");
+
+	// SRVの設定
+	afterImageRender_->CreateSRV(sizeof(Matrix4x4), kMaxInstanceAfterImage, ShaderType::VERTEX_SHADER, "ViwProj");
+	afterImageRender_->CreateSRV(sizeof(Vector4), kMaxInstanceAfterImage, ShaderType::PIXEL_SHADER, "Colors");
+
 	// 単位行列の代入
 	wvp_ = Matrix4x4::Identity();
 
@@ -49,6 +67,9 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 		currentState_->Update(this, deltaTime);
 	}
 
+	// 残像の更新
+	UpdateAfterImages(deltaTime);
+
 	// 座標を行列に変換
 	wvp_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 	wvp_ *= vpMatrix;
@@ -66,17 +87,30 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 
 void Base::Draw(CmdObj* cmdObj) {
 	// 残像の描画
-	// for (const auto& ai : afterImages_) {
-	//	if (dynamic_cast<Player::StateDash*>(currentState_.get()) != nullptr) {
-	//		// 残像のTransformからWVP行列を計算
-	//		Matrix4x4 aiWVP = Matrix::MakeAffineMatrix(ai.transform.scale, ai.transform.rotate, ai.transform.position);
-	//		aiWVP *= vpMatrix_;
+	if (!afterImages_.empty()) {
+		std::vector<Matrix4x4> worldMatrices;
+		std::vector<Vector4> colors;
 
-	//		// バッファに一時的に残像の行列を送って描画
-	//		render_->CopyBufferData(0, &aiWVP, sizeof(Matrix4x4));
-	//		render_->Draw(cmdObj);
-	//	}
-	//}
+		for (const auto& ai : afterImages_) {
+			// Transformからワールド行列を計算
+			Matrix4x4 world = Matrix::MakeAffineMatrix(ai.transform.scale, ai.transform.rotate, ai.transform.position);
+			worldMatrices.push_back(world);
+
+			// 寿命に応じて透明度を下げる
+			float alpha = ai.timer / afterImageLifeTime_;
+
+			colors.push_back(Vector4(1.0f, 1.0f, 1.0f, alpha));
+		}
+
+		afterImageRender_->CopyBufferData(0, &vpMatrix_, sizeof(Matrix4x4));
+		afterImageRender_->CopyBufferData(1, worldMatrices.data(), sizeof(Matrix4x4) * worldMatrices.size());
+		afterImageRender_->CopyBufferData(2, colors.data(), sizeof(Vector4) * colors.size());
+
+		afterImageRender_->instanceNum_ = static_cast<int>(worldMatrices.size());
+
+		// 描画
+		afterImageRender_->Draw(cmdObj);
+	}
 
 	// 本体の描画
 	render_->Draw(cmdObj);

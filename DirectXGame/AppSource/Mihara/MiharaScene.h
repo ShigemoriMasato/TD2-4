@@ -68,5 +68,5 @@ private:
 	GridConfig config_;
 
 	// カメラ・プレイヤーからのオフセット
-	Vector3 cameraOffset_ = {0.0f, 3.0f, 50.0f};
+	Vector3 cameraOffset_ = {0.0f, 3.0f, 70.0f};
 };
