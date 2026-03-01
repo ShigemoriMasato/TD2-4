@@ -1,4 +1,5 @@
 #pragma once
+#include "../AppSource/Game/Field/Field.h"
 #include "../AppSource/Game/Player/Heatmap/PlayerHeatmap.h"
 #include "../AppSource/Game/Player/Level/LevelProgressTracker.h"
 #include "../AppSource/Game/Player/Level/PlayerLevelSystem.h"
@@ -53,6 +54,9 @@ private:
 
 	// プレイヤーのヒートマップ
 	std::unique_ptr<Player::HeatmapManager> playerHeatmapManager_ = nullptr;
+
+	// フィールド
+	std::unique_ptr<Field> field_ = nullptr;
 
 	// カメラのTransform
 	Transform cameraTransform_{};

@@ -80,7 +80,7 @@ private:
 	SHEngine::ModelManager* modelManager_ = nullptr;
 
 	// HPバー初期座標
-	float hpBarPosX_ = -10.0f;
+	float hpBarPosX_ = -20.0f;
 
 	// HPバー　減った分のアニメーション用変数
 	AnimationBundle<float> scaleAnimationHPBarAfter_;

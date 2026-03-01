@@ -47,8 +47,8 @@ void StateNormal::Update(Base* player, float deltaTime) {
 
 void Player::StateNormal::ClampPosition(Base* player) {
 	// プレイヤーがステージ買いに出ないようにする
-	float posX = std::clamp(player->GetTransform().position.x, -10.0f, 10.0f);
-	float posZ = std::clamp(player->GetTransform().position.z, -10.0f, 10.0f);
+	float posX = std::clamp(player->GetTransform().position.x, -19.0f, 19.0f);
+	float posZ = std::clamp(player->GetTransform().position.z, -19.0f, 19.0f);
 
 	player->SetPosition(Vector3(posX, 0.0f, posZ));
 }

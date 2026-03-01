@@ -39,8 +39,8 @@ void MiharaScene::Initialize() {
 	weaponDebugger_ = std::make_unique<WeaponDebugger>(weaponManager_.get());
 
 	// カメラのトランスフォーム設定
-	cameraTransform_.position = {0.0f, -2.5f, 35.0f};
-	cameraTransform_.rotate = {-0.3f, 0.0f, 0.0f};
+	cameraTransform_.position = {0.0f, 3.0f, 70.0f};
+	cameraTransform_.rotate = {-0.65f, 0.0f, 0.0f};
 	cameraTransform_.scale = {1.0f, 1.0f, 1.0f};
 
 	// ウェーブ中にどれくらいレベルが上がったかを管理するインスタンスの生成&初期化
@@ -49,6 +49,10 @@ void MiharaScene::Initialize() {
 	// プレイヤーのヒートマップマネージャの生成&初期化
 	playerHeatmapManager_ = std::make_unique<Player::HeatmapManager>();
 	playerHeatmapManager_->Initialize(modelManager_, drawDataManager_, config_);
+
+	// フィールドの生成&初期化
+	field_ = std::make_unique<Field>();
+	field_->Initialize(modelManager_, drawDataManager_);
 }
 
 std::unique_ptr<IScene> MiharaScene::Update() {
@@ -86,6 +90,9 @@ std::unique_ptr<IScene> MiharaScene::Update() {
 
 		// プレイヤーの滞在時間を記録
 		playerHeatmapManager_->Record(player_->GetTransform().position, deltaTime);
+
+		// フィールドの更新
+		field_->Update(camera_->GetVPMatrix());
 	}
 
 	return nullptr;
@@ -109,6 +116,9 @@ void MiharaScene::Draw() {
 
 	// ヒートマップの描画
 	playerHeatmapManager_->Draw(cmdObj);
+
+	// フィールドの描画
+	field_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 
