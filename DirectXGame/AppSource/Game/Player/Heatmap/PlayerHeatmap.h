@@ -10,9 +10,9 @@
 /// グリッド生成用の構造体
 /// </summary>
 struct GridConfig {
-	float cellSize = 1.0f;      // グリッド1マスの大きさ
-	int width = 40;             // 横方向のマス数
-	int height = 40;            // 縦方向のマス数
+	float cellSize = 1.0f;                    // グリッド1マスの大きさ
+	int width = 40;                           // 横方向のマス数
+	int height = 40;                          // 縦方向のマス数
 	Vector3 origin = {-20.0f, -0.5f, -20.0f}; // グリッドの開始地点
 };
 
@@ -47,8 +47,11 @@ private:
 
 	// 最大閾値
 	float maxStayTime_ = 5.0f;
-	
+
 	// インスタンス数の最大値
 	static constexpr int maxInstanceNum_ = 2048;
+
+	// 表示切替用のフラグ
+	bool showHeatmap_ = true;
 };
 } // namespace Player

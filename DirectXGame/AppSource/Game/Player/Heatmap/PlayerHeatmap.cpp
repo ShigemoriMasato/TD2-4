@@ -84,7 +84,7 @@ void Player::HeatmapManager::Update(const Matrix4x4& viewProj) {
 }
 
 void Player::HeatmapManager::Draw(CmdObj* cmdObj) {
-	if (render_->instanceNum_ > 0) {
+	if (render_->instanceNum_ > 0 && showHeatmap_) {
 		render_->Draw(cmdObj);
 	}
 
@@ -94,6 +94,11 @@ void Player::HeatmapManager::Draw(CmdObj* cmdObj) {
 	if (ImGui::Button("Clear Heatmap")) {
 		std::fill(data_.begin(), data_.end(), 0.0f);
 	}
+
+	// 表示切替
+	ImGui::Checkbox("Show Heatmap", &showHeatmap_);
+	ImGui::SameLine();
+	ImGui::TextColored(showHeatmap_ ? ImVec4(0, 1, 0, 1) : ImVec4(1, 0, 0, 1), showHeatmap_ ? "ON" : "OFF");
 	ImGui::End();
 #endif
 }

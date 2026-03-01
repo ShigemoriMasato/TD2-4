@@ -53,6 +53,10 @@ void MiharaScene::Initialize() {
 	// フィールドの生成&初期化
 	field_ = std::make_unique<Field>();
 	field_->Initialize(modelManager_, drawDataManager_);
+
+	// グリッド
+	grid_ = std::make_unique<Grid>();
+	grid_->Initialize(drawDataManager_);
 }
 
 std::unique_ptr<IScene> MiharaScene::Update() {
@@ -93,6 +97,9 @@ std::unique_ptr<IScene> MiharaScene::Update() {
 
 		// フィールドの更新
 		field_->Update(camera_->GetVPMatrix());
+
+		// グリッドの更新
+		grid_->Update(cameraTransform_.position, camera_->GetVPMatrix());
 	}
 
 	return nullptr;
@@ -120,6 +127,11 @@ void MiharaScene::Draw() {
 	// フィールドの描画
 	field_->Draw(cmdObj);
 
+	// グリッドの描画
+	if (showGrid_) {
+		grid_->Draw(cmdObj);
+	}
+
 	display->PostDraw(cmdObj);
 
 	window->PreDraw(cmdObj);
@@ -132,8 +144,8 @@ void MiharaScene::Draw() {
 	// ポーズ中に表示するImGui
 	DrawImGuiPause();
 
-	// フレームレートImGui表示
-	DrawImGuiFPS();
+	// デバッグ機能ImGui表示
+	DrawDebugUI();
 
 	// カメラのImGui表示
 	DrawImGuiCamera();
@@ -149,16 +161,24 @@ void MiharaScene::Draw() {
 	window->PostDraw(cmdObj);
 }
 
-void MiharaScene::DrawImGuiFPS() {
+void MiharaScene::DrawDebugUI() {
 #ifdef USE_IMGUI
-	// フレームレート表示
-	ImGui::Begin("FPS");
-	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
-	ImGui::Text("DeltaTime: %.3f ms", deltaTime * 1000.0f);
-	ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
+	ImGui::Begin("Debug");
+
+	// FPS等
+	float dt = engine_->GetFPSObserver()->GetDeltatime();
+	ImGui::Text("DeltaTime: %.3f ms", dt * 1000.0f);
+	ImGui::Text("FPS: %.1f", 1.0f / dt);
+
+	// グリッド
+	ImGui::Checkbox("Show Grid", &showGrid_);
+	ImGui::SameLine();
+	ImGui::TextColored(showGrid_ ? ImVec4(0, 1, 0, 1) : ImVec4(1, 0, 0, 1), showGrid_ ? "ON" : "OFF");
+
 	ImGui::End();
 #endif
 }
+
 
 void MiharaScene::DrawImGuiCamera() {
 #ifdef USE_IMGUI

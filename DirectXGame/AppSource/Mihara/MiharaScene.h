@@ -10,6 +10,7 @@
 #include "Game/Weapon/WeaponManager.h"
 #include <Camera/Camera.h>
 #include <Scene/IScene.h>
+#include <Tool/Grid/Grid.h>
 
 class MiharaScene : public IScene {
 public:
@@ -18,8 +19,8 @@ public:
 	void Draw() override;
 
 private:
-	// フレームレートImGui表示
-	void DrawImGuiFPS();
+	// デバッグ機能ImGui表示
+	void DrawDebugUI();
 
 	// カメラのImGui表示
 	void DrawImGuiCamera();
@@ -58,6 +59,9 @@ private:
 	// フィールド
 	std::unique_ptr<Field> field_ = nullptr;
 
+	// グリッド
+	std::unique_ptr<Grid> grid_;
+
 	// カメラのTransform
 	Transform cameraTransform_{};
 
@@ -69,4 +73,7 @@ private:
 
 	// カメラ・プレイヤーからのオフセット
 	Vector3 cameraOffset_ = {0.0f, 3.0f, 70.0f};
+
+	// グリッドの描画・表示切り替え用のフラグ
+	bool showGrid_ = false;
 };
