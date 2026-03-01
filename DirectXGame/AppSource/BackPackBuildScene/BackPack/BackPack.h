@@ -116,8 +116,12 @@ public:
 
 private:
 
+	// バックパックの描画担当クラス
 	std::unique_ptr<DrawBackPack> drawBackPack_;
 
 	// BackPackGridの2次元配列
 	std::vector<std::vector<std::unique_ptr<BackPackGrid>>> grids_;
+
+	// ショップに並べるアイテム
+	std::vector<std::unique_ptr<SHEngine::RenderObject>> shopItems_;
 };

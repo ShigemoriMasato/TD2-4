@@ -69,6 +69,11 @@ BackPack::BackPack()
 	}
 
 	drawBackPack_ = std::make_unique<DrawBackPack>();
+
+	for (int i = 0; i < 5; ++i)
+	{
+		shopItems_.push_back(std::make_unique<SHEngine::RenderObject>());
+	}
 }
 
 BackPack::~BackPack()
@@ -76,12 +81,13 @@ BackPack::~BackPack()
 
 void BackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager)
 {
-	const uint32_t maxInstance = uint32_t(GameConstants::kBackPackRowNum * GameConstants::kBackPackColNum);
-	const int modelHandle = modelManager->LoadModel("Assets/.EngineResource/Model/Cube");
-	const auto modelData = modelManager->GetNodeModelData(modelHandle);
-	const auto drawData = drawDataManager->GetDrawData(modelData.drawDataIndex);
-
 	drawBackPack_->Initialize(modelManager, drawDataManager);
+
+	for (int i = 0; i < 5; ++i)
+	{
+		shopItems_.push_back(std::make_unique<SHEngine::RenderObject>());
+	}
+
 
 	// 初期マップ
 	for (size_t r = 0; r < GameConstants::kBackPackRowNum; ++r)

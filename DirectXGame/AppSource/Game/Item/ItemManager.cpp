@@ -51,6 +51,12 @@ const Item& ItemManager::GetItem(std::wstring itemName) const
 	throw std::runtime_error("Item not found: " + ConvertString(itemName));
 }
 
+const Item& ItemManager::GetItem(int index) const
+{
+	int targetIndex = index % static_cast<int>(items_.size());
+	return items_[targetIndex];
+}
+
 void ItemManager::DrawImGui()
 {
 #ifdef USE_IMGUI

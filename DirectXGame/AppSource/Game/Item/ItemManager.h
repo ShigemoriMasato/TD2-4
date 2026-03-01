@@ -22,7 +22,7 @@ public:
 
 	// アイテムの名前からアイテムデータを取得(名前リストがどこかにある想定)
 	const Item& GetItem(std::wstring itemName) const;
-
+	const Item& GetItem(int index) const;
 
 #ifdef USE_IMGUI 
 
