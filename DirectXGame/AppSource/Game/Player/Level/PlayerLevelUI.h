@@ -48,6 +48,6 @@ private:
 	float gaugeWidth_ = 5.0f;
 
 	// ゲージの座標X
-	float gaugePosX = -10.0f;
+	float gaugePosX = -20.0f;
 };
 }
