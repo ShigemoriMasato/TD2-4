@@ -7,6 +7,7 @@
 #include <imgui/imgui.h>
 #include <algorithm>
 #include <unordered_set>
+#include <cfloat>
 
 namespace
 {
@@ -69,8 +70,13 @@ void ItemEditor::Draw(ItemManager& itemManager)
 			Item item{};
 			item.name = newNameW;
 			item.category = static_cast<Category>(newItemCategory_);
-			item.effect = 0u;
-			item.params.clear();
+			for (int r = 0; r < 4; ++r)
+			{
+				item.ranks[r].price = 0;
+				item.ranks[r].effect = 0u;
+				item.ranks[r].params = baseParam;
+			}
+
 			items.push_back(std::move(item));
 		}
 	}
@@ -142,8 +148,14 @@ void ItemEditor::Draw(ItemManager& itemManager)
 			Item defaultItem{};
 			defaultItem.name = L"Default Item";
 			defaultItem.category = Category::Item;
-			defaultItem.effect = 0u;
-			defaultItem.params = baseParam;
+
+			for (int r = 0; r < 4; ++r)
+			{
+				defaultItem.ranks[r].price = 0;
+				defaultItem.ranks[r].effect = 0u;
+				defaultItem.ranks[r].params = baseParam;
+			}
+
 			items.push_back(std::move(defaultItem));
 		}
 
@@ -161,7 +173,7 @@ void ItemEditor::Draw(ItemManager& itemManager)
 
 #pragma region アイテムの基本情報編集
 
-	// 選択アイテムが変わったら編集用バッファを更新
+	// 選択アイテム変更時の初期化
 	if (lastItemIndex_ != currentItemIndex_)
 	{
 		lastItemIndex_ = currentItemIndex_;
@@ -221,6 +233,34 @@ void ItemEditor::Draw(ItemManager& itemManager)
 	ImGui::Combo("Category##2", reinterpret_cast<int*>(&currentItem.category), "Weapon\0Armor\0Item\0");
 
 #pragma endregion
+
+
+	static int rankTab = 0; // 0..3
+	rankTab = std::clamp(rankTab, 0, 3);
+
+	if (ImGui::BeginTabBar("RankTabs"))
+	{
+		for (int r = 0; r < 4; ++r)
+		{
+			ImGui::PushID(r);
+			char tabName[16];
+			sprintf_s(tabName, "Rank %d", r + 1);
+
+			if (ImGui::BeginTabItem(tabName))
+			{
+				rankTab = r;
+				ImGui::EndTabItem();
+			}
+			ImGui::PopID();
+		}
+		ImGui::EndTabBar();
+	}
+
+	ItemRankData& editRank = currentItem.ranks[rankTab];
+
+	ImGui::SeparatorText("Price");
+	ImGui::DragInt("price", &editRank.price, 1.0f, 0, 999999);
+
 
 #pragma region mapData（2Dタイル形状）編集
 
@@ -343,6 +383,7 @@ void ItemEditor::Draw(ItemManager& itemManager)
 
 #pragma endregion
 
+
 #pragma region バフパラメータ編集
 
 	// 今後増えていくだろうに固定なのが心底悔やまれる
@@ -355,7 +396,7 @@ void ItemEditor::Draw(ItemManager& itemManager)
 		if (ImGui::Button("Add"))
 		{
 			const std::string paramName = names[currentParamType];
-			currentItem.params[paramName] = 0.0f;
+			editRank.params[paramName] = 0.0f;
 		}
 		ImGui::SameLine();
 		ImGui::Combo("ParamType", &currentParamType, names, IM_ARRAYSIZE(names));
@@ -365,7 +406,7 @@ void ItemEditor::Draw(ItemManager& itemManager)
 		std::string deleteParamName;
 		bool doDelete = false;
 
-		for (auto& [name, value] : currentItem.params)
+		for (auto& [name, value] : editRank.params)
 		{
 			ImGui::PushID(name.c_str());
 
@@ -385,7 +426,7 @@ void ItemEditor::Draw(ItemManager& itemManager)
 
 		if (doDelete && !deleteParamName.empty())
 		{
-			currentItem.params.erase(deleteParamName);
+			editRank.params.erase(deleteParamName);
 		}
 
 		ImGui::TreePop();

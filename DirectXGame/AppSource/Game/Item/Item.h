@@ -3,6 +3,7 @@
 #include <vector>
 #include <unordered_map>
 #include <cstdint>
+#include <array>
 #include <Utility/Vector.h>
 
 enum class Category : int {
@@ -29,28 +30,25 @@ inline uint32_t operator~(Effect effect) {
 	return ~static_cast<uint32_t>(effect);
 }
 
-struct Item {
-	// 名前 ← アイテムの識別に使うため重複不可
-	std::wstring name;
-	// カテゴリ
-	Category category;
+struct ItemRankData
+{
 	// 値段
-	int price;
-	// ランク
-	int rank;
+	int price = 0;
 	// 効果
-	uint32_t effect;
-	// 2Dタイルの形状データ
-	std::vector<std::pair<int, int>> mapData;
-	//プレイヤーステータスバフの情報 例：{"HP", 10} -> HPを10上げる
-	std::unordered_map<std::string, float> params;	
-
-	//見た目	
-	int weaponID = -1;	//武器ID (武器以外は-1)
-	int modelID = -1;						//モデルID
-	Vector4 color = Vector4(1, 1, 1, 1);	//アイテムの色
+	uint32_t effect = 0u;
+	// バフ
+	std::unordered_map<std::string, float> params;
 };
 
-struct Weapon : public Item {
+struct Item {
+	/// ランクに関わらず共通のデータ
+	std::wstring name;		// 名前 ← アイテムの識別に使うため重複不可
+	Category category;		// カテゴリ
+	std::vector<std::pair<int, int>> mapData;	// 2Dタイルの形状データ
+	int weaponID = -1;						//武器ID (武器以外は-1)
+	int modelID = -1;						//モデルID
+	Vector4 color = Vector4(1, 1, 1, 1);	//アイテムの色
 
+	/// ランクごとに変わるデータ  値段・効果・バフ
+	std::array<ItemRankData, 4> ranks{};
 };
