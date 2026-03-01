@@ -34,6 +34,10 @@ struct Item {
 	std::wstring name;
 	// カテゴリ
 	Category category;
+	// 値段
+	int price;
+	// ランク
+	int rank;
 	// 効果
 	uint32_t effect;
 	// 2Dタイルの形状データ
