@@ -234,40 +234,10 @@ void ItemEditor::Draw(ItemManager& itemManager)
 
 #pragma endregion
 
-
-	static int rankTab = 0; // 0..3
-	rankTab = std::clamp(rankTab, 0, 3);
-
-	if (ImGui::BeginTabBar("RankTabs"))
-	{
-		for (int r = 0; r < 4; ++r)
-		{
-			ImGui::PushID(r);
-			char tabName[16];
-			sprintf_s(tabName, "Rank %d", r + 1);
-
-			if (ImGui::BeginTabItem(tabName))
-			{
-				rankTab = r;
-				ImGui::EndTabItem();
-			}
-			ImGui::PopID();
-		}
-		ImGui::EndTabBar();
-	}
-
-	ItemRankData& editRank = currentItem.ranks[rankTab];
-
-	ImGui::SeparatorText("Price");
-	ImGui::DragInt("price", &editRank.price, 1.0f, 0, 999999);
-
-
 #pragma region mapData（2Dタイル形状）編集
 
 	if (ImGui::TreeNode("----------------Shape---------------"))
 	{
-		ImGui::SeparatorText("Shape (mapData)");
-
 		if (ImGui::Button("左上詰め"))
 		{
 			if (!currentItem.mapData.empty())
@@ -383,6 +353,34 @@ void ItemEditor::Draw(ItemManager& itemManager)
 
 #pragma endregion
 
+#pragma region ランク毎価格
+
+	static int rankTab = 0;
+	rankTab = std::clamp(rankTab, 0, 3);
+
+	if (ImGui::BeginTabBar("RankTabs"))
+	{
+		for (int r = 0; r < 4; ++r)
+		{
+			ImGui::PushID(r);
+			char tabName[16];
+			sprintf_s(tabName, "Rank %d", r + 1);
+
+			if (ImGui::BeginTabItem(tabName))
+			{
+				rankTab = r;
+				ImGui::EndTabItem();
+			}
+			ImGui::PopID();
+		}
+		ImGui::EndTabBar();
+	}
+
+	ItemRankData& editRank = currentItem.ranks[rankTab];
+
+	ImGui::DragInt("price", &editRank.price, 1.0f, 0, 999999);
+
+#pragma endregion
 
 #pragma region バフパラメータ編集
 
@@ -395,8 +393,12 @@ void ItemEditor::Draw(ItemManager& itemManager)
 
 		if (ImGui::Button("Add"))
 		{
+			// 以降ランクに追加する方針に変更
 			const std::string paramName = names[currentParamType];
-			editRank.params[paramName] = 0.0f;
+			for (int r = rankTab; r < 4; ++r)
+			{
+				currentItem.ranks[r].params[paramName] = 0.0f;
+			}
 		}
 		ImGui::SameLine();
 		ImGui::Combo("ParamType", &currentParamType, names, IM_ARRAYSIZE(names));
@@ -431,6 +433,7 @@ void ItemEditor::Draw(ItemManager& itemManager)
 
 		ImGui::TreePop();
 	}
+
 #pragma endregion
 
 	ImGui::End();
