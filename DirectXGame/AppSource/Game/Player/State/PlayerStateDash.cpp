@@ -17,12 +17,16 @@ void StateDash::Update(Base* player, float deltaTime) {
 	t.position.x += dir.x * player->GetDashSpeed() * deltaTime;
 	t.position.z += dir.y * player->GetDashSpeed() * deltaTime;
 
+	// 移動制限
+	t.position.x = std::clamp(t.position.x, -19.0f, 19.0f);
+	t.position.z = std::clamp(t.position.z, -19.0f, 19.0f);
+
 	// 残像の生成処理
-	//spawnTimer_ -= deltaTime;
-	//if (spawnTimer_ <= 0.0f) {
-	//	player->SpawnAfterImage();
-	//	spawnTimer_ = 0.03f; // 残像の生成間隔を設定
-	//}
+	spawnTimer_ -= deltaTime;
+	if (spawnTimer_ <= 0.0f) {
+		player->SpawnAfterImage();
+		spawnTimer_ = 0.03f; // 残像の生成間隔を設定
+	}
 
 	// タイマーの更新
 	dashTimer_ -= deltaTime;

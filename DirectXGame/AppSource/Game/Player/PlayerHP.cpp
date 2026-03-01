@@ -26,17 +26,17 @@ void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMana
 	// 前面
 	hpBarFill_.transform.scale = {kHPBarWidth, 1.0f, 1.0f};
 	hpBarFill_.transform.rotate = {0.3f, 0.0f, 0.0f};
-	hpBarFill_.transform.position = {hpBarPosX_, 8.0f, 0.0f};
+	hpBarFill_.transform.position = {hpBarPosX_, 10.0f, 0.0f};
 
 	// 減った分
 	hpBarAfter_.transform.scale = {kHPBarWidth, 1.0f, 1.0f};
 	hpBarAfter_.transform.rotate = {0.3f, 0.0f, 0.0f};
-	hpBarAfter_.transform.position = {hpBarPosX_, 8.0f, 0.0f};
+	hpBarAfter_.transform.position = {hpBarPosX_, 10.0f, 0.0f};
 
 	// 背景
 	hpBarBG_.transform.scale = {kHPBarWidth, 1.0f, 1.0f};
 	hpBarBG_.transform.rotate = {0.3f, 0.0f, 0.0f};
-	hpBarBG_.transform.position = {hpBarPosX_, 8.0f, 0.0f};
+	hpBarBG_.transform.position = {hpBarPosX_, 10.0f, 0.0f};
 
 	// FPSObserver
 	fpsObserver_ = std::make_unique<FPSObserver>();

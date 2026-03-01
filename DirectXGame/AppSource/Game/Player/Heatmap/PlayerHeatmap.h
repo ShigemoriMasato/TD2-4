@@ -11,9 +11,9 @@
 /// </summary>
 struct GridConfig {
 	float cellSize = 1.0f;      // グリッド1マスの大きさ
-	int width = 20;             // 横方向のマス数
-	int height = 20;            // 縦方向のマス数
-	Vector3 origin = {-10.0f, 0.0f, -10.0f}; // グリッドの開始地点
+	int width = 40;             // 横方向のマス数
+	int height = 40;            // 縦方向のマス数
+	Vector3 origin = {-20.0f, -0.5f, -20.0f}; // グリッドの開始地点
 };
 
 namespace Player {
@@ -49,6 +49,6 @@ private:
 	float maxStayTime_ = 5.0f;
 	
 	// インスタンス数の最大値
-	static constexpr int maxInstanceNum_ = 512;
+	static constexpr int maxInstanceNum_ = 2048;
 };
 } // namespace Player

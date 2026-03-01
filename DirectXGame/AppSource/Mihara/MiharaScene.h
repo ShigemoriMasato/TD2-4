@@ -1,4 +1,5 @@
 #pragma once
+#include "../AppSource/Game/Field/Field.h"
 #include "../AppSource/Game/Player/Heatmap/PlayerHeatmap.h"
 #include "../AppSource/Game/Player/Level/LevelProgressTracker.h"
 #include "../AppSource/Game/Player/Level/PlayerLevelSystem.h"
@@ -54,6 +55,9 @@ private:
 	// プレイヤーのヒートマップ
 	std::unique_ptr<Player::HeatmapManager> playerHeatmapManager_ = nullptr;
 
+	// フィールド
+	std::unique_ptr<Field> field_ = nullptr;
+
 	// カメラのTransform
 	Transform cameraTransform_{};
 
@@ -62,4 +66,7 @@ private:
 
 	// グリッドのパラメータ
 	GridConfig config_;
+
+	// カメラ・プレイヤーからのオフセット
+	Vector3 cameraOffset_ = {0.0f, 3.0f, 70.0f};
 };
