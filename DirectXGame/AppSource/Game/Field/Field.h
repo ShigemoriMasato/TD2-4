@@ -26,6 +26,7 @@ private:
 	// モデル間隔
 	static constexpr float kModelSpacing = 20.0f;
 
+	// テクスチャのインデックス
 	int textureIndex_;
 
 	// 描画用変数

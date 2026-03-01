@@ -84,5 +84,8 @@ private:
 
 	// VP行列
 	Matrix4x4 vpMatrix_;
+
+	// テクスチャのインデックス
+	int textureIndex_;
 };
 } // namespace Player

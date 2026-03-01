@@ -9,17 +9,26 @@ using namespace Player;
 void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, Input* input) {
 	render_ = std::make_unique<RenderObject>();
 	render_->Initialize();
-	render_->psoConfig_.vs = "Simple.VS.hlsl"; // WPだけ送るVS
-	render_->psoConfig_.ps = "White.PS.hlsl";  // とりあえず白で返すPS
 
-	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
-
-	int modelHandle = modelManager->LoadModel("Assets/.EngineResource/Model/Cube");
+	// シェーダーの設定
+	render_->psoConfig_.vs = "Game/Field.VS.hlsl";
+	render_->psoConfig_.ps = "Game/Field.PS.hlsl";
+	render_->SetUseTexture(true);
 
 	// 描画するデータの読み込み
+	int modelHandle = modelManager->LoadModel("Assets/Model/player");
 	auto modelData = modelManager->GetNodeModelData(modelHandle);
 	auto drawData = drawDataManager->GetDrawData(modelData.drawDataIndex);
 	render_->SetDrawData(drawData);
+
+	// テクスチャインデックスを保存
+	auto& material = modelData.materials[modelData.materialIndex.front()];
+	textureIndex_ = material.textureIndex;
+
+	// CBVの設定
+	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
+	render_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+	render_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
 
 	// 単位行列の代入
 	wvp_ = Matrix4x4::Identity();
@@ -46,11 +55,18 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 
 	// wvp行列を描画に適用
 	render_->CopyBufferData(0, &wvp_, sizeof(Matrix4x4));
+
+	// 色の指定
+	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
+	render_->CopyBufferData(1, &color, sizeof(Vector4));
+
+	// テクスチャ
+	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
 }
 
 void Base::Draw(CmdObj* cmdObj) {
 	// 残像の描画
-	//for (const auto& ai : afterImages_) {
+	// for (const auto& ai : afterImages_) {
 	//	if (dynamic_cast<Player::StateDash*>(currentState_.get()) != nullptr) {
 	//		// 残像のTransformからWVP行列を計算
 	//		Matrix4x4 aiWVP = Matrix::MakeAffineMatrix(ai.transform.scale, ai.transform.rotate, ai.transform.position);

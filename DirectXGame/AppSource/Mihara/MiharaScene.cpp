@@ -175,9 +175,9 @@ void MiharaScene::DrawImGuiPause() {
 #ifdef USE_IMGUI
 	// ポーズ中ImGui表示
 	if (isPaused_) {
-		ImGui::Begin("Pause Menu", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-		ImGui::Text("===PAUSE===");
-		ImGui::Text("Press 'P' to Resume");
+		ImGui::Begin("ポーズメニュー", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+		ImGui::Text("=== ポーズ中 ===");
+		ImGui::Text("Pキーで戻る");
 		ImGui::End();
 	}
 #endif

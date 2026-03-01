@@ -8,7 +8,7 @@ void Field::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataM
 	auto modelData = modelManager->GetNodeModelData(modelHandle);
 	auto drawData = drawDataManager->GetDrawData(modelData.drawDataIndex);
 
-	auto material = modelData.materials[modelData.materialIndex.front()];
+	auto& material = modelData.materials[modelData.materialIndex.front()];
 	textureIndex_ = material.textureIndex;
 
 	// 4つのモデルを初期化
