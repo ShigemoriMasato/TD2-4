@@ -13,33 +13,27 @@ enum class ParamType : int
 	Count,
 };
 
-inline const char* const* GetParamTypeNames()
-{
-	static const char* names[] = {
-		"HP",
-		"MP",
-		"Attack",
-		"Defense",
-		"Speed",
-	};
-	return names;
-}
-
-inline int GetParamTypeCount()
-{
-	return static_cast<int>(ParamType::Count);
-}
-
-
 class ItemManager {
 public:
 
 	~ItemManager();
-
 	void Initialize(SHEngine::ModelManager* modelManager);
+	void DrawImGui();
+
+	// アイテムの名前からアイテムデータを取得(名前リストがどこかにある想定)
 	const Item& GetItem(std::wstring itemName) const;
 
-	void DrawImGui();
+
+#ifdef USE_IMGUI 
+
+	/// Editer用関数
+	std::vector<Item>& GetItemsForEdit() { return items_; }
+	const std::vector<Item>& GetItemsForEdit() const { return items_; }
+
+	std::unordered_map<std::string, float>& GetBaseParamsForEdit() { return baseParam_; }
+	const std::unordered_map<std::string, float>& GetBaseParamsForEdit() const { return baseParam_; }
+
+#endif
 
 private:
 
@@ -52,14 +46,11 @@ private:
 	void SaveBaseParam();
 	void LoadBaseParam();
 
-	std::vector<std::string> itemNameUtf8_;
-	std::vector<const char*> itemNameCStr_;
-	void UpdateItemNameCache();
-
 	//パラメータ一覧と基礎値
 	std::unordered_map<std::string, float> baseParam_;
 	std::vector<Item> items_;
 
+	// モデルIDとパスのマップ
 	std::map<int, std::string> modelIDtoName_;
 
 	SHEngine::ModelManager* modelManager_ = nullptr;

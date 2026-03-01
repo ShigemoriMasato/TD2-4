@@ -5,18 +5,18 @@ using namespace SHEngine::PSO;
 
 std::unordered_map<D3D12_PRIMITIVE_TOPOLOGY, D3D12_PRIMITIVE_TOPOLOGY_TYPE> Manager::topologyMap_{};
 
-Manager::Manager(ID3D12Device* device) {
-	shaderShelf_ = std::make_unique<ShaderShelf>();
+Manager::Manager(DXDevice* device) {
+	shaderShelf_ = std::make_unique<ShaderShelf>(device);
 	depthStencilShelf_ = std::make_unique<DepthStencilShelf>();
 	blendStateShelf_ = std::make_unique<BlendStateShelf>();
 	rasterizerShelf_ = std::make_unique<RasterizerShelf>();
-	rootSignatureShelf_ = std::make_unique<RootSignatureShelf>(device);
+	rootSignatureShelf_ = std::make_unique<RootSignatureShelf>(device->GetDevice());
 	inputLayoutShelf_ = std::make_unique<InputLayoutShelf>();
 	binaryManager_ = std::make_unique<BinaryManager>();
 
 	logger_ = getLogger("Engine");
 
-	device_ = device;
+	device_ = device->GetDevice();
 
 	topologyMap_[D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST] = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	topologyMap_[D3D_PRIMITIVE_TOPOLOGY_LINELIST] = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;

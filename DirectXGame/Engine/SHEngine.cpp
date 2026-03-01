@@ -46,8 +46,11 @@ void Engine::Initialize(HINSTANCE hInstance) {
 	input_ = std::make_unique<Input>();
 	input_->Initialize(hInstance);
 
+	psoEditor_ = std::make_unique<PSO::Editor>();
+	psoEditor_->Initialize(device_.get());
+
 	Screen::IDisplay::SetDevice(device_.get());
-	RenderObject::StaticInitialize(device_.get());
+	RenderObject::StaticInitialize(device_.get(), psoEditor_.get());
 
 	fpsObserver_ = std::make_unique<FPSObserver>();
 

@@ -3,6 +3,9 @@
 #include <Tool/Logger/Logger.h>
 #include <Core/Command/Data/CommandObject.h>
 
+//コマンドオブジェクトのエイリアス
+using CmdObj = SHEngine::Command::Object;
+
 namespace SHEngine::Command {
 
 	class Manager {

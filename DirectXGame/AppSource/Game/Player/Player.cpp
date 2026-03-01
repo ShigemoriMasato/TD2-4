@@ -32,6 +32,9 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 }
 
 void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
+	// 描画用にVP行列を保存
+	vpMatrix_ = vpMatrix;
+
 	// 現在の状態の更新処理
 	if (currentState_) {
 		currentState_->Update(this, deltaTime);
@@ -46,7 +49,20 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 }
 
 void Base::Draw(CmdObj* cmdObj) {
-	// 描画
+	// 残像の描画
+	//for (const auto& ai : afterImages_) {
+	//	if (dynamic_cast<Player::StateDash*>(currentState_.get()) != nullptr) {
+	//		// 残像のTransformからWVP行列を計算
+	//		Matrix4x4 aiWVP = Matrix::MakeAffineMatrix(ai.transform.scale, ai.transform.rotate, ai.transform.position);
+	//		aiWVP *= vpMatrix_;
+
+	//		// バッファに一時的に残像の行列を送って描画
+	//		render_->CopyBufferData(0, &aiWVP, sizeof(Matrix4x4));
+	//		render_->Draw(cmdObj);
+	//	}
+	//}
+
+	// 本体の描画
 	render_->Draw(cmdObj);
 
 #ifdef USE_IMGUI
@@ -82,6 +98,25 @@ void Base::ChangeState(std::unique_ptr<IPlayerState> newState) {
 
 	if (currentState_) {
 		currentState_->Enter(this); // 新しい状態の開始処理
+	}
+}
+
+void Player::Base::SpawnAfterImage() {
+	AfterImage ai;
+	ai.transform = transform_;      // 現在のプレイヤーの姿勢を代入
+	ai.timer = afterImageLifeTime_; // 寿命をセット
+	afterImages_.push_back(ai);
+}
+
+void Player::Base::UpdateAfterImages(float deltaTime) {
+	// 残像のタイマーを減らし0以下になったらリストから削除
+	for (auto it = afterImages_.begin(); it != afterImages_.end();) {
+		it->timer -= deltaTime;
+		if (it->timer <= 0.0f) {
+			it = afterImages_.erase(it); // 削除
+		} else {
+			++it;
+		}
 	}
 }
 

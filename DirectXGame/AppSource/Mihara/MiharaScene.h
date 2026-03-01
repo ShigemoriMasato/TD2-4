@@ -1,9 +1,10 @@
 #pragma once
-#include "Game/Player/LevelProgressTracker.h"
+#include "../AppSource/Game/Player/Heatmap/PlayerHeatmap.h"
+#include "../AppSource/Game/Player/Level/LevelProgressTracker.h"
+#include "../AppSource/Game/Player/Level/PlayerLevelSystem.h"
+#include "../AppSource/Game/Player/Level/PlayerLevelUI.h"
 #include "Game/Player/Player.h"
 #include "Game/Player/PlayerHP.h"
-#include "Game/Player/PlayerLevelSystem.h"
-#include "Game/Player/PlayerLevelUI.h"
 #include "Game/Weapon/WeaponDebugger.h"
 #include "Game/Weapon/WeaponManager.h"
 #include <Camera/Camera.h>
@@ -14,6 +15,16 @@ public:
 	void Initialize() override;
 	std::unique_ptr<IScene> Update() override;
 	void Draw() override;
+
+private:
+	// フレームレートImGui表示
+	void DrawImGuiFPS();
+
+	// カメラのImGui表示
+	void DrawImGuiCamera();
+
+	// ポーズ中ImGui表示
+	void DrawImGuiPause();
 
 private:
 	// プレイヤー
@@ -40,6 +51,15 @@ private:
 	// 武器のパラメータ管理デバッガー 描画用インスタンス
 	std::unique_ptr<WeaponDebugger> weaponDebugger_ = nullptr;
 
+	// プレイヤーのヒートマップ
+	std::unique_ptr<Player::HeatmapManager> playerHeatmapManager_ = nullptr;
+
 	// カメラのTransform
 	Transform cameraTransform_{};
+
+	// ポーズ状態を管理するフラグ
+	bool isPaused_ = false;
+
+	// グリッドのパラメータ
+	GridConfig config_;
 };

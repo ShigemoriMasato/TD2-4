@@ -160,11 +160,15 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
     <ClCompile Include="AppSource\Game\Enemy\Enemy.cpp" />
     <ClCompile Include="AppSource\Game\Enemy\EnemyManager.cpp" />
+    <ClCompile Include="AppSource\Game\Player\Heatmap\PlayerHeatmap.cpp" />
     <ClCompile Include="AppSource\Game\WaveSystem\Wave.cpp" />
     <ClCompile Include="AppSource\Game\WaveSystem\WaveManager.cpp" />
     <ClCompile Include="AppSource\Scene\CommonData.cpp" />
     <ClCompile Include="AppSource\BackPackBuildScene\BackPackBuildScene.cpp" />
     <ClCompile Include="AppSource\BackPackBuildScene\BackPack\BackPack.cpp" />
+    <ClCompile Include="Engine\Compute\PSO\CSPSOManager.cpp" />
+    <ClCompile Include="Engine\Compute\PSO\CSRootSignature.cpp" />
+    <ClCompile Include="Engine\Compute\PSO\CSShaderShelf.cpp" />
     <ClCompile Include="Engine\Assets\Model\ModelManager.cpp" />
     <ClCompile Include="Engine\Core\Command\Data\CommandObject.cpp" />
     <ClCompile Include="Engine\Core\Command\Data\CommandSet.cpp" />
@@ -230,8 +234,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\ShigeScene\ShigeScene.cpp" />
     <ClCompile Include="AppSource\Yokoyama\YokoyamaScene.cpp" />
     <ClCompile Include="AppSource\Game\Weapon\WeaponDatabase.cpp" />
-    <ClCompile Include="AppSource\Game\Player\PlayerLevelSystem.cpp" />
-    <ClCompile Include="AppSource\Game\Player\PlayerLevelUI.cpp" />
+    <ClCompile Include="AppSource\Game\Player\Level\PlayerLevelSystem.cpp" />
+    <ClCompile Include="AppSource\Game\Player\Level\PlayerLevelUI.cpp" />
     <ClCompile Include="AppSource\Common\KeyConfig\WorldCursor.cpp" />
     <ClCompile Include="AppSource\Game\Puzzle\PieceManager.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
@@ -245,6 +249,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Game\EasingAnimation\EasingAnimation.h" />
     <ClInclude Include="AppSource\BackPackBuildScene\BackPackBuildScene.h" />
     <ClInclude Include="AppSource\BackPackBuildScene\BackPack\BackPack.h" />
+    <ClInclude Include="Engine\Compute\PSO\CSPSOManager.h" />
+    <ClInclude Include="Engine\Compute\PSO\CSRootSignature.h" />
+    <ClInclude Include="Engine\Compute\PSO\CSShaderShelf.h" />
     <ClInclude Include="Engine\Assets\Model\ModelManager.h" />
     <ClInclude Include="Engine\Core\Command\Data\CommandObject.h" />
     <ClInclude Include="Engine\Core\Command\Data\CommandSet.h" />
@@ -266,8 +273,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Game\Item\Item.cpp" />
     <ClCompile Include="AppSource\Game\Item\ItemManager.cpp" />
     <ClCompile Include="Engine\Tool\Grid\Grid.cpp" />
-    <ClCompile Include="AppSource\Game\Player\LevelProgressTracker.cpp" />
     <ClCompile Include="Engine\Tool\Json\JsonManager.cpp" />
+    <ClCompile Include="AppSource\Game\Player\Level\LevelProgressTracker.cpp" />
+    <ClCompile Include="AppSource\Game\Item\ItemEditor.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
     <ClCompile Include="Engine\Utility\src\MatrixFactory.cpp" />
@@ -307,12 +315,14 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Tool\Grid\Grid.h" />
     <ClInclude Include="AppSource\Yokoyama\YokoyamaScene.h" />
     <ClInclude Include="AppSource\Game\Weapon\WeaponDatabase.h" />
-    <ClInclude Include="AppSource\Game\Player\PlayerLevelSystem.h" />
-    <ClInclude Include="AppSource\Game\Player\PlayerLevelUI.h" />
-    <ClInclude Include="AppSource\Game\Player\LevelProgressTracker.h" />
+    <ClInclude Include="AppSource\Game\Player\Level\PlayerLevelSystem.h" />
+    <ClInclude Include="AppSource\Game\Player\Level\PlayerLevelUI.h" />
+    <ClInclude Include="AppSource\Game\Player\Level\LevelProgressTracker.h" />
     <ClInclude Include="AppSource\Common\KeyConfig\WorldCursor.h" />
     <ClInclude Include="AppSource\Game\Puzzle\PieceManager.h" />
     <ClInclude Include="Engine\Tool\Json\JsonManager.h" />
+    <ClInclude Include="AppSource\Game\Item\ItemEditor.h" />
+    <ClInclude Include="AppSource\Game\Player\Heatmap\PlayerHeatmap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

@@ -10,6 +10,7 @@
 #include <Render/Screen/WindowsAPI.h>
 #include <Tool/FPS/FPSObserver.h>
 #include <Utility/DirectUtilFuncs.h>
+#include <Render/PSO/PSOEditor.h>
 
 namespace SHEngine {
 
@@ -65,6 +66,7 @@ private: // Engine内で完結するクラス
 	std::unique_ptr<DXDevice> device_;
 	std::unique_ptr<Command::Manager> cmdManager_;
 	std::unique_ptr<ImGuiWrapper> imGuiWrapper_;
+	std::unique_ptr<PSO::Editor> psoEditor_;
 
 private: // Engine外部からアクセスするクラス
 	std::unique_ptr<TextureManager> textureManager_;
