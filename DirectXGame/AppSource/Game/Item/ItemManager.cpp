@@ -29,8 +29,12 @@ void ItemManager::Initialize(SHEngine::ModelManager* modelManager)
 		Item defaultItem{};
 		defaultItem.name = L"Default Item";
 		defaultItem.category = Category::Item;
-		defaultItem.effect = 0u;
-		defaultItem.params = baseParam_;
+		for (int r = 0; r < 4; ++r)
+		{
+			defaultItem.ranks[r].price = 0;
+			defaultItem.ranks[r].effect = 0u;
+			defaultItem.ranks[r].params = baseParam_;
+		}
 		items_.push_back(std::move(defaultItem));
 	}
 }
@@ -93,35 +97,46 @@ void ItemManager::SaveItem()
 	binaryManager_.RegisterOutput(&size);
 	for (auto& item : items_)
 	{
+		// name
+		std::string tmpName = ConvertString(item.name);
+		binaryManager_.RegisterOutput(&tmpName);
 
-		std::string tmp = ConvertString(item.name);
-		binaryManager_.RegisterOutput(&tmp);
-
+		// category
 		int category = static_cast<int>(item.category);
 		binaryManager_.RegisterOutput(&category);
 
-		binaryManager_.RegisterOutput(&item.effect);
-
+		// mapData
 		int mapDataSize = static_cast<int>(item.mapData.size());
 		binaryManager_.RegisterOutput(&mapDataSize);
-
 		for (auto& [x, y] : item.mapData)
 		{
 			binaryManager_.RegisterOutput(&x);
 			binaryManager_.RegisterOutput(&y);
 		}
 
-		int buffsSize = static_cast<int>(item.params.size());
-		binaryManager_.RegisterOutput(&buffsSize);
-
-		for (auto& buff : item.params)
+		// ranks（可変）
+		for (int r = 0; r < 4; ++r)
 		{
-			std::string tmp = buff.first;
-			binaryManager_.RegisterOutput(&tmp);
-			binaryManager_.RegisterOutput(&buff.second);
+			// price
+			binaryManager_.RegisterOutput(&item.ranks[r].price);
+			// effect
+			binaryManager_.RegisterOutput(&item.ranks[r].effect);
+
+			int buffsSize = static_cast<int>(item.ranks[r].params.size());
+			binaryManager_.RegisterOutput(&buffsSize);
+
+			// params
+			for (auto& buff : item.ranks[r].params)
+			{
+				std::string key = buff.first;
+				binaryManager_.RegisterOutput(&key);
+				binaryManager_.RegisterOutput(&buff.second);
+			}
 		}
 
+		// 見た目
 		binaryManager_.RegisterOutput(&item.weaponID);
+		binaryManager_.RegisterOutput(&item.modelID);
 	}
 	binaryManager_.Write(itemFile_);
 }
@@ -137,16 +152,17 @@ void ItemManager::LoadItem()
 	int size = binaryManager_.Reverse<int>(data);
 	for (int i = 0; i < size; ++i)
 	{
-		Item item;
+		Item item{};
+
+		// name
 		item.name = ConvertString(binaryManager_.Reverse<std::string>(data));
 
+		// category
 		int category = binaryManager_.Reverse<int>(data);
 		item.category = static_cast<Category>(category);
 
-		item.effect = binaryManager_.Reverse<uint32_t>(data);
-
+		// mapData
 		int mapDataSize = binaryManager_.Reverse<int>(data);
-
 		for (int j = 0; j < mapDataSize; ++j)
 		{
 			int x = binaryManager_.Reverse<int>(data);
@@ -154,17 +170,28 @@ void ItemManager::LoadItem()
 			item.mapData.emplace_back(x, y);
 		}
 
-		int buffsSize = binaryManager_.Reverse<int>(data);
-		item.params = baseParam_; // 基礎値をコピー
-
-		for (int j = 0; j < buffsSize; ++j)
+		// ranks
+		for (int r = 0; r < 4; ++r)
 		{
-			std::string name = binaryManager_.Reverse<std::string>(data);
-			float value = binaryManager_.Reverse<float>(data);
-			item.params[name] = value;
+			auto& rd = item.ranks[r];
+
+			rd.price = binaryManager_.Reverse<int>(data);
+			rd.effect = binaryManager_.Reverse<uint32_t>(data);
+
+			int buffsSize = binaryManager_.Reverse<int>(data);
+			rd.params = baseParam_;
+			for (int j = 0; j < buffsSize; ++j)
+			{
+				std::string name = binaryManager_.Reverse<std::string>(data);
+				float value = binaryManager_.Reverse<float>(data);
+				rd.params[name] = value;
+			}
 		}
 
+		// 見た目
 		item.weaponID = binaryManager_.Reverse<int>(data);
+		item.modelID = binaryManager_.Reverse<int>(data);
+
 		items_.push_back(item);
 	}
 }
