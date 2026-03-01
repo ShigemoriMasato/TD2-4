@@ -1,5 +1,6 @@
 #include "BackPack.h"
 #include <Utility/Matrix.h>
+#include "Game/Item/ItemManager.h"
 
 
 
@@ -15,7 +16,7 @@ void BackPackGrid::Initialize(GridState state)
 
 void BackPackGrid::ChangeState(GridState newState)
 {
-	switch (state_)
+	switch (newState)
 	{
 	// ロック中・解放不可
 	case GridState::LockedUnavailable:
@@ -43,6 +44,8 @@ void BackPackGrid::ChangeState(GridState newState)
 	default:
 		break;
 	}
+
+	state_ = newState;
 }
 
 void BackPackGrid::Update()
@@ -69,25 +72,17 @@ BackPack::BackPack()
 	}
 
 	drawBackPack_ = std::make_unique<DrawBackPack>();
-
-	for (int i = 0; i < 5; ++i)
-	{
-		shopItems_.push_back(std::make_unique<SHEngine::RenderObject>());
-	}
 }
 
 BackPack::~BackPack()
 {}
 
-void BackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager)
+void BackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, ItemManager* itemManager)
 {
 	drawBackPack_->Initialize(modelManager, drawDataManager);
 
-	for (int i = 0; i < 5; ++i)
-	{
-		shopItems_.push_back(std::make_unique<SHEngine::RenderObject>());
-	}
-
+	// 追加：ショップ5個をここで確定
+	InitializeShopItems_(modelManager, drawDataManager, itemManager);
 
 	// 初期マップ
 	for (size_t r = 0; r < GameConstants::kBackPackRowNum; ++r)
@@ -103,11 +98,31 @@ void BackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDa
 void BackPack::Update(const Matrix4x4& viewProj)
 {
 	drawBackPack_->Update(viewProj, grids_);
+
+	// shop: 毎フレーム 3重バッファ面へ CBV 転送
+	const int count = static_cast<int>(shopItems_.size());
+	for (int i = 0; i < count; ++i)
+	{
+		auto& ro = shopItems_[i];
+		if (!ro) continue;
+
+		const Matrix4x4 wvp = shopWvps_[i] * viewProj;
+		ro->CopyBufferData(shopBindings_[i].wvpVsCbvIndex, &wvp, sizeof(Matrix4x4));
+		ro->CopyBufferData(shopBindings_[i].colorPsCbvIndex, &shopColors_[i], sizeof(Vector4));
+	}
 }
 
 void BackPack::Draw(SHEngine::Command::Object* cmdObject)
 {
 	drawBackPack_->Draw(cmdObject);
+
+	for (auto& ro : shopItems_)
+	{
+		if (ro)
+		{
+			ro->Draw(cmdObject);
+		}
+	}
 }
 
 void BackPack::DrawImGui()
@@ -118,6 +133,96 @@ void BackPack::DrawImGui()
 	ImGui::End();
 
 
+}
+
+void BackPack::InitializeShopItems_(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, ItemManager* itemManager)
+{
+	constexpr int kShopNum = 5;
+
+	shopItems_.clear();
+	shopItems_.reserve(kShopNum);
+
+	shopBindings_.clear();
+	shopBindings_.resize(kShopNum);
+
+	shopWvps_.assign(kShopNum, Matrix4x4::Identity());
+	shopColors_.assign(kShopNum, Vector4(1, 1, 1, 1));
+
+	// ショップ表示のワールド行列
+	std::array<Matrix4x4, kShopNum> worlds{};
+	for (int i = 0; i < kShopNum; ++i)
+	{
+		Transform t{};
+		t.scale = { 0.7f, 0.7f, 0.7f };
+
+		// 奇数の時は左、偶数の時は右に配置
+		if (i % 2 == 0)
+		{
+			t.position.x = -4.0f;
+		}
+		else
+		{
+			t.position.x = -8.0f;
+		}
+		t.position.y = 0.5f;
+		t.position.z = float(i) * 1.5f;
+		worlds[i] = Matrix::MakeAffineMatrix(t.scale, t.rotate, t.position);
+	}
+
+	for (int i = 0; i < kShopNum; ++i)
+	{
+		const Item& item = itemManager->GetItem(i);
+		const int modelID = item.modelID;
+
+		if (modelID < 0)
+		{
+			// modelID 未解決なら cube フォールバック
+			const int fallback = modelManager->LoadModel("Assets/.EngineResource/Model/Cube");
+			const auto mdl = modelManager->GetNodeModelData(fallback);
+			const auto dd = drawDataManager->GetDrawData(mdl.drawDataIndex);
+
+			auto ro = std::make_unique<SHEngine::RenderObject>();
+			ro->Initialize();
+			ro->SetDrawData(dd);
+			ro->SetUseTexture(false);
+
+			ro->psoConfig_.vs = "Simple.VS.hlsl";
+			ro->psoConfig_.ps = "Color.PS.hlsl";
+
+			shopBindings_[i].wvpVsCbvIndex = ro->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+			shopBindings_[i].colorPsCbvIndex = ro->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+
+			shopColors_[i] = item.color;
+
+			shopItems_.push_back(std::move(ro));
+			continue;
+		}
+
+		const auto modelData = modelManager->GetNodeModelData(modelID);
+		const auto drawData = drawDataManager->GetDrawData(modelData.drawDataIndex);
+
+		auto ro = std::make_unique<SHEngine::RenderObject>("ShopItem_" + std::to_string(i));
+		ro->Initialize();
+		ro->SetDrawData(drawData);
+		ro->SetUseTexture(false);
+
+		ro->psoConfig_.vs = "Simple.VS.hlsl";
+		ro->psoConfig_.ps = "Color.PS.hlsl";
+
+		shopBindings_[i].wvpVsCbvIndex = ro->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+		shopBindings_[i].colorPsCbvIndex = ro->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+
+		shopColors_[i] = item.color;
+
+		shopItems_.push_back(std::move(ro));
+	}
+
+	// world は Update 内で viewProj と掛ける必要があるため、ここで shopWvps_ に「world」を一旦入れておく
+	// Update で wvp=world*viewProj に上書きする
+	for (int i = 0; i < kShopNum; ++i)
+	{
+		shopWvps_[i] = worlds[i];
+	}
 }
 
 
@@ -237,6 +342,7 @@ void DrawBackPack::Update(const Matrix4x4& viewProj, const std::vector<std::vect
 				break;
 			case GridState::UnlockedOccupied:
 				unlockedEmptyWorlds_.push_back(world);
+				break;
 			default:
 				break;
 			}

@@ -3,6 +3,7 @@
 #include <assets/Model/ModelManager.h>
 #include <Render/RenderObject.h>
 
+class ItemManager;
 
 enum class GridState
 {
@@ -109,7 +110,7 @@ class BackPack
 public:
 	BackPack();
 	~BackPack();
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager);
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, ItemManager* itemManager);
 	void Update(const Matrix4x4& viewProj);
 	void Draw(SHEngine::Command::Object* cmdObject);
 	void DrawImGui();
@@ -122,6 +123,20 @@ private:
 	// BackPackGridの2次元配列
 	std::vector<std::vector<std::unique_ptr<BackPackGrid>>> grids_;
 
+
+
 	// ショップに並べるアイテム
 	std::vector<std::unique_ptr<SHEngine::RenderObject>> shopItems_;
+	// shop 描画用（Simple.VS / Color.PS 用）
+	struct ShopItemBinding
+	{
+		int wvpVsCbvIndex = -1;   // VS b0: MatrixBuffer(wvp)
+		int colorPsCbvIndex = -1; // PS b0: ColorBuffer(color)
+	};
+	std::vector<ShopItemBinding> shopBindings_;
+
+	// 毎フレーム送るデータ
+	std::vector<Matrix4x4> shopWvps_;
+	std::vector<Vector4> shopColors_;
+	void InitializeShopItems_(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, ItemManager* itemManager);
 };

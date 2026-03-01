@@ -18,7 +18,7 @@ void BackPackBuildScene::Initialize()
 	grid_->Initialize(drawDataManager_);
 	itemManager_->Initialize(modelManager_);
 	camera_->Initialize(input_);
-	backPack_->Initialize(modelManager_, drawDataManager_);
+	backPack_->Initialize(modelManager_, drawDataManager_, itemManager_.get());
 }
 
 std::unique_ptr<IScene> BackPackBuildScene::Update()
