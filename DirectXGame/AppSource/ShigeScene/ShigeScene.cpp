@@ -36,6 +36,14 @@ void ShigeScene::Initialize() {
 	render_->psoConfig_.ps = "White.PS.hlsl";
 	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "ObjectCBV");
 
+	drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(3).drawDataIndex);
+	desc_ = std::make_unique<SHEngine::RenderObject>("TestDesc");
+	desc_->Initialize();
+	desc_->SetDrawData(drawData);
+	desc_->psoConfig_.vs = "Simple.VS.hlsl";
+	desc_->psoConfig_.ps = "White.PS.hlsl";
+	desc_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "ObjectCBV");
+
 	computeCmdObj_ = engine_->CreateCommandObject(SHEngine::Command::Type::Compute, 0, 1);
 
 	skinnedVertices_.resize(sneekWalk_.vertices.size());
@@ -48,6 +56,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	Matrix4x4 world = Matrix4x4::Identity() * camera_->GetVPMatrix();
 	render_->CopyBufferData(0, &world, sizeof(world));
+	desc_->CopyBufferData(0, &world, sizeof(world));
 
 	float deltaTime = engine_->GetDeltaTime();
 	time_ = std::fmod(time_ + deltaTime, animation_.duration);
@@ -81,6 +90,7 @@ void ShigeScene::Draw() {
 
 	grid_->Draw(cmdObj);
 	render_->Draw(cmdObj);
+	desc_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 
