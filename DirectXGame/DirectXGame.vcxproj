@@ -169,6 +169,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Scene\CommonData.cpp" />
     <ClCompile Include="AppSource\Scene\04_BackPackBuild\BackPackBuildScene.cpp" />
     <ClCompile Include="AppSource\GameObject\BackPack\BackPack.cpp" />
+    <ClCompile Include="AppSource\GameObject\BackPack\BackPackPiece\BackPackPiece.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSPSOManager.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSRootSignature.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSShaderShelf.cpp" />
@@ -245,6 +246,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Player\Status\Status.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Status\StatusManager.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
+    <ClInclude Include="AppSource\GameObject\BackPack\GameConstants.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponData.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\Enemy.h" />
@@ -258,6 +260,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\EasingAnimation\EasingAnimation.h" />
     <ClInclude Include="AppSource\Scene\04_BackPackBuild\BackPackBuildScene.h" />
     <ClInclude Include="AppSource\GameObject\BackPack\BackPack.h" />
+    <ClInclude Include="AppSource\GameObject\BackPack\BackPackPiece\BackPackPiece.h" />
     <ClInclude Include="Engine\Compute\PSO\CSPSOManager.h" />
     <ClInclude Include="Engine\Compute\PSO\CSRootSignature.h" />
     <ClInclude Include="Engine\Compute\PSO\CSShaderShelf.h" />

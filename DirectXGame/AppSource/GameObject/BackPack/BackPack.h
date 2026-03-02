@@ -7,57 +7,9 @@
 #include "GameObject/Item/Item.h"
 
 class ItemManager;
-
-enum class GridState
-{
-	// ロック中・解放不可
-	LockedUnavailable,
-	// ロック中・解放可能
-	LockedAvailable,
-	// 解放済み・空
-	UnlockedEmpty,
-	// 解放済み・アイテムあり
-	UnlockedOccupied,
-};
-
-struct InstanceBinding
-{
-	int matricesSrvIndex = -1; // VS t0
-	int vpCbvIndex = -1;       // VS b0
-	int texCbvIndex = -1;      // PS b0
-	int colorCbvIndex = -1;    // PS b1
-	int lightCbvIndex = -1;    // PS b2
-};
-
-namespace GameConstants
-{
-	// バックパックの行数
-	inline constexpr size_t kBackPackRowNum = 8;
-	// バックパックの列数
-	inline constexpr size_t kBackPackColNum = 12;
-}
+class BackPackPiece;
 
 
-/// <summary>
-/// バックパックの1マス
-/// </summary>
-class BackPackGrid
-{
-public:
-	BackPackGrid();
-	~BackPackGrid();
-	void Initialize(GridState state);
-	void ChangeState(GridState newState);
-
-	GridState GetState() const { return state_; }
-	const Vector4& GetColor() const { return color_; }
-
-	Transform transform_{};
-
-private:
-	Vector4 color_ = { 1.0f, 1.0f, 1.0f, 1.0f };
-	GridState state_ = GridState::LockedUnavailable;
-};
 
 /// <summary>
 /// 描画部分が膨れすぎたので一旦分割
@@ -180,7 +132,7 @@ private:
 	std::unique_ptr<DrawBackPack> drawBackPack_;
 
 	// BackPackGridのデータ部分
-	std::vector<std::vector<std::unique_ptr<BackPackGrid>>> grids_;
+	std::vector<std::vector<std::unique_ptr<BackPackPiece>>> pieces_;
 
 	// ショップアイテムのデータと描画部分
 	std::unique_ptr<ItemLineup> itemLineup_;
