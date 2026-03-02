@@ -1,14 +1,14 @@
 #pragma once
+#include "../AppSource/Game/EasingAnimation/AnimationBundle.h"
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
-#include "../AppSource/Game/EasingAnimation/AnimationBundle.h"
 
-namespace Player{
+namespace Player {
 class HP {
 public:
 	// 初期化関数
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input);
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input, float hp);
 
 	// 更新関数
 	void Update(Matrix4x4 vpMatrix, float deltaTime);
@@ -52,11 +52,14 @@ private:
 	HPBar hpBarAfter_; // 減った分
 	HPBar hpBarBG_;    // 背景
 
+	// 説明用のUI
+	std::unique_ptr<SHEngine::RenderObject> uiRender_ = nullptr;
+
 	// 現在のHP
-	float currentHP_ = 5.0f;
+	float currentHP_{};
 
 	// HPの最大値
-	float maxHP = currentHP_;
+	float maxHP_{};
 
 	// 無敵フラグ
 	bool isInvincible_ = false;
@@ -85,4 +88,4 @@ private:
 	// HPバー　減った分のアニメーション用変数
 	AnimationBundle<float> scaleAnimationHPBarAfter_;
 };
-}
+} // namespace Player

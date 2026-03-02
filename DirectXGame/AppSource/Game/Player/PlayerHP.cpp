@@ -7,7 +7,7 @@
 using namespace SHEngine;
 using namespace Player;
 
-void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input) {
+void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input, float hp) {
 	// HPバーの生成
 	hpBarFill_.render = std::make_unique<RenderObject>();  // 前面
 	hpBarAfter_.render = std::make_unique<RenderObject>(); // 減った分
@@ -41,11 +41,34 @@ void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMana
 	// FPSObserver
 	fpsObserver_ = std::make_unique<FPSObserver>();
 
+	//// 説明用UI
+	// uiRender_ = std::make_unique<RenderObject>();
+
+	// uiRender_->Initialize();
+	// uiRender_->psoConfig_.vs = "Game/Field.VS.hlsl";
+	// uiRender_->psoConfig_.ps = "Game/Field.PS.hlsl";
+	// uiRender_->SetUseTexture(true);
+
+	//// CBVの生成
+	// uiRender_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
+	// uiRender_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+	// uiRender_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+
+	// int modelHandle = modelManager->LoadModel("Assets/.EngineResource/Model/Plane");
+	//// 描画するデータの読み込み
+	// auto modelData = modelManager->GetNodeModelData(modelHandle);
+	// auto drawData = drawDataManager->GetDrawData(modelData.drawDataIndex);
+	// uiRender_->SetDrawData(drawData);
+
 	// 入力
 	input_ = input;
 
 	// モデルマネージャー
 	modelManager_ = modelManager;
+
+	// HP
+	currentHP_ = hp;
+	maxHP_ = hp;
 }
 
 void HP::Update(Matrix4x4 vpMatrix, float deltaTime) {
@@ -144,7 +167,7 @@ void HP::Heal(float amount) {
 		return;
 
 	// HPの加算
-	currentHP_ = std::min(currentHP_ + amount, maxHP);
+	currentHP_ = std::min(currentHP_ + amount, maxHP_);
 
 	// HPバーの変更
 	HPBarScaleChange();
@@ -152,11 +175,11 @@ void HP::Heal(float amount) {
 
 void HP::HPBarScaleChange() {
 	// 現在のHPの比率
-	float hpRatio = currentHP_ / maxHP;
+	float hpRatio = currentHP_ / maxHP_;
 
 	// 新しいスケール
 	float newScale = hpRatio * kHPBarWidth;
-	
+
 	// HPバー　減った分のアニメーション用変数の初期化
 	scaleAnimationHPBarAfter_.anim.Start(hpBarFill_.transform.scale.x, newScale, 1.0f, EaseType::EaseOutCubic);
 

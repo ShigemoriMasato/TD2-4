@@ -56,6 +56,9 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 
 	// 状態の初期化
 	currentState_ = std::make_unique<StateNormal>(); // 通常
+
+	// ステータスマネージャの生成&初期化
+	statusManager_ = std::make_unique<StatusManager>();
 }
 
 void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {

@@ -10,7 +10,7 @@ void MiharaScene::Initialize() {
 
 	// プレイヤーHPの生成&初期化
 	playerHP_ = std::make_unique<Player::HP>();
-	playerHP_->Initialize(modelManager_, drawDataManager_, input_);
+	playerHP_->Initialize(modelManager_, drawDataManager_, input_, player_->GetMaxHP());
 
 	// プレイヤーのレベルシステムの生成&初期化
 	playerLevelSystem_ = std::make_unique<Player::LevelSystem>();
@@ -174,6 +174,12 @@ void MiharaScene::DrawDebugUI() {
 	ImGui::Checkbox("Show Grid", &showGrid_);
 	ImGui::SameLine();
 	ImGui::TextColored(showGrid_ ? ImVec4(0, 1, 0, 1) : ImVec4(1, 0, 0, 1), showGrid_ ? "ON" : "OFF");
+
+	// 基本操作
+	ImGui::Text("操作方法");
+	ImGui::Text("WASDで移動");
+	ImGui::Text("Spaceでダッシュ");
+	ImGui::Text("Pでポーズ");
 
 	ImGui::End();
 #endif
