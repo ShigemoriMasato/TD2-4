@@ -18,8 +18,8 @@ struct AfterImage {
 
 class Base {
 public:
-	// 初期化
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input);
+	// 初期化（デフォルトキャラクターID: 0）
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input, CharacterID characterID = 0);
 
 	// 更新
 	void Update(Matrix4x4 vpMatrix, float deltaTime);
@@ -56,7 +56,7 @@ public:
 
 	float GetRotationSpeed() const { return rotationSpeed_; }
 
-	float GetMaxHP() const { return statusManager_->GetStatusValue(StatusType::MaxHP); }
+	StatusManager* GetStatusManager() const { return statusManager_.get(); }
 
 private:
 	// 描画用変数

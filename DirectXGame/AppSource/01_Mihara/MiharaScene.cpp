@@ -10,7 +10,7 @@ void MiharaScene::Initialize() {
 
 	// プレイヤーHPの生成&初期化
 	playerHP_ = std::make_unique<Player::HP>();
-	playerHP_->Initialize(modelManager_, drawDataManager_, input_, player_->GetMaxHP());
+	playerHP_->Initialize(modelManager_, drawDataManager_, input_, player_->GetStatusManager());
 
 	// プレイヤーのレベルシステムの生成&初期化
 	playerLevelSystem_ = std::make_unique<Player::LevelSystem>();

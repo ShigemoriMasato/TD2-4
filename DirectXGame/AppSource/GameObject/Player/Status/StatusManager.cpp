@@ -2,7 +2,17 @@
 
 StatusManager::StatusManager() {
 	jsonManager_ = std::make_unique<JsonManager>();
-	jsonManager_->Boot("PlayerStatus");
+}
+
+void StatusManager::Initialize(CharacterID characterID) {
+	currentCharacterID_ = characterID;
+	LoadCharacterStatus(characterID);
+}
+
+void StatusManager::LoadCharacterStatus(CharacterID characterID) {
+	// キャラクターIDに応じたJSONファイル名を生成
+	std::string characterKey = "Character_" + std::to_string(characterID);
+	jsonManager_->Boot(characterKey);
 
 	// 初期ステータスのセットアップ
 	statuses_[StatusType::MaxHP] = Status(jsonManager_->Get<float>("MaxHP"));                             // 最大HP
