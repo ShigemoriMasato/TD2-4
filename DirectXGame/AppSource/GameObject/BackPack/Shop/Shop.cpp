@@ -97,7 +97,11 @@ void Shop::Draw(SHEngine::Command::Object* cmdObject)
 void Shop::DrawImGui()
 {
 	Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
-	ImGui::Text("Cursor Position: (%.1f, %.1f)", cursorPos.x, cursorPos.y);
+	for (int i = 0; i < lineupSum; ++i)
+	{
+		auto& data = lineupItems_[i];
+		ImGui::DragFloat3(("Item " + std::to_string(i)).c_str(), &data.hoverPos.x, 0.1f);
+	}
 }
 
 bool Shop::IsCollision(const Ray& r, const AABB& aabb)

@@ -75,7 +75,7 @@ void DrawBackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::Dr
 	// 共通ライト
 	light_ = {};
 	light_.color = { 1,1,1,1 };
-	light_.direction = { 0,1,0 };
+	light_.direction = { 0,-1,0 };
 	light_.intensity = 1.0f;
 
 	auto initGridRender = [&](std::unique_ptr<SHEngine::RenderObject>& ro, InstanceBinding& bind)
