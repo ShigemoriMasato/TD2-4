@@ -5,6 +5,8 @@
 #include <Utility/Matrix.h>
 #include <Utility/DataStructures.h>
 #include <Utility/MatrixFactory.h>
+#include "GameObject/Item/Item.h"
+#include "GameObject/Item/ItemManager.h"
 
 class ItemManager;
 
@@ -37,3 +39,22 @@ struct InstanceBinding
 	int lightCbvIndex = -1;    // PS b2
 };
 
+
+struct LineupItemData
+{
+	// なんのアイテムか
+	Item item;
+	// 描画オブジェクト
+	std::unique_ptr<SHEngine::RenderObject> renderObject;
+	// 色
+	Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	// tier
+	int rank = 0;
+
+	// 初期位置
+	Vector3 InitPos{};
+	// マウスでホバーしているときの位置
+	Vector3 hoverPos{};
+
+	Matrix4x4 wvp{};
+};

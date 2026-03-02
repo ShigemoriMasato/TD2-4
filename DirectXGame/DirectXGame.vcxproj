@@ -233,7 +233,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Weapon\WeaponDebugger.cpp" />
     <ClCompile Include="AppSource\GameObject\Puzzle\Piece.cpp" />
     <ClCompile Include="AppSource\GameObject\Puzzle\PlayerBuild.cpp" />
-    <ClCompile Include="AppSource\GameObject\Puzzle\Shop.cpp" />
+    <ClCompile Include="AppSource\GameObject\BackPack\Shop\Shop.cpp" />
     <ClCompile Include="AppSource\GameObject\Puzzle\PieceRender.cpp" />
     <ClCompile Include="AppSource\02_ShigeScene\ShigeScene.cpp" />
     <ClCompile Include="AppSource\03_Yokoyama\YokoyamaScene.cpp" />
@@ -323,7 +323,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponDebugger.h" />
     <ClInclude Include="AppSource\GameObject\Puzzle\Piece.h" />
     <ClInclude Include="AppSource\GameObject\Puzzle\PlayerBuild.h" />
-    <ClInclude Include="AppSource\GameObject\Puzzle\Shop.h" />
+    <ClInclude Include="AppSource\GameObject\BackPack\Shop\Shop.h" />
     <ClInclude Include="AppSource\GameObject\Puzzle\PieceRender.h" />
     <ClInclude Include="AppSource\02_ShigeScene\ShigeScene.h" />
     <ClInclude Include="Engine\Tool\Grid\Grid.h" />
