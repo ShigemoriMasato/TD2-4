@@ -1,7 +1,7 @@
 #pragma once
 #include <Render/RenderObject.h>
 #include <Assets/Model/ModelManager.h>
-#include <Game/Item/Item.h>
+#include <GameObject/Item/Item.h>
 
 class Piece {
 public:

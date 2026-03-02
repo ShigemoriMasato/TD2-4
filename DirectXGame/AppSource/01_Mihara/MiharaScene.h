@@ -1,13 +1,13 @@
 #pragma once
-#include "../AppSource/Game/Field/Field.h"
-#include "../AppSource/Game/Player/Heatmap/PlayerHeatmap.h"
-#include "../AppSource/Game/Player/Level/LevelProgressTracker.h"
-#include "../AppSource/Game/Player/Level/PlayerLevelSystem.h"
-#include "../AppSource/Game/Player/Level/PlayerLevelUI.h"
-#include "Game/Player/Player.h"
-#include "Game/Player/PlayerHP.h"
-#include "Game/Weapon/WeaponDebugger.h"
-#include "Game/Weapon/WeaponManager.h"
+#include "../AppSource/GameObject/Field/Field.h"
+#include "../AppSource/GameObject/Player/Heatmap/PlayerHeatmap.h"
+#include "../AppSource/GameObject/Player/Level/LevelProgressTracker.h"
+#include "../AppSource/GameObject/Player/Level/PlayerLevelSystem.h"
+#include "../AppSource/GameObject/Player/Level/PlayerLevelUI.h"
+#include "GameObject/Player/Player.h"
+#include "GameObject/Player/PlayerHP.h"
+#include "GameObject/Weapon/WeaponDebugger.h"
+#include "GameObject/Weapon/WeaponManager.h"
 #include <Camera/Camera.h>
 #include <Scene/IScene.h>
 

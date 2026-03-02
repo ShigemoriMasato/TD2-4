@@ -2,7 +2,7 @@
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
-#include "../AppSource/Game/EasingAnimation/AnimationBundle.h"
+#include "../AppSource/GameObject/EasingAnimation/AnimationBundle.h"
 
 namespace Player{
 class HP {
