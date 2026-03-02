@@ -1,6 +1,7 @@
 #pragma once
 #include <Utility/Matrix.h>
 #include <Utility/Vector.h>
+#include <optional>
 
 struct Ray {
 	Vector3 origin;
