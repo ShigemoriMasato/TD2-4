@@ -59,8 +59,176 @@ void BackPackGrid::Update()
 
 
 
+
+
+ItemLineup::ItemLineup()
+{
+}
+
+ItemLineup::~ItemLineup()
+{}
+
+void ItemLineup::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, ItemManager* itemManager, CommonData* commonData)
+{
+	itemManager_ = itemManager;
+	modelManager_ = modelManager;
+	drawDataManager_ = drawDataManager;
+
+
+	auto [w, h] = commonData->mainWindow.first->GetWindowSize();
+	screenRaycaster_ = std::make_unique<ScreenRaycaster>(static_cast<float>(w), static_cast<float>(h));
+
+
+	for (int i = 0; i < lineupSum; ++i)
+	{
+		LineupItemData data;
+		data.renderObject = std::make_unique<SHEngine::RenderObject>();
+		data.renderObject->Initialize();
+		data.renderObject->psoConfig_.vs = "Simple.VS.hlsl";
+		data.renderObject->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
+		data.renderObject->psoConfig_.ps = "Color.PS.hlsl";
+		data.renderObject->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER);
+		data.transform.scale = { 0.1f, 0.1f, 0.1f };
+		if (i % 2 == 0) data.transform.position.x = -4.0f;
+		else data.transform.position.x = -8.0f;
+		data.transform.position.y = 0.5f;
+		data.transform.position.z = float(i) * 1.5f;
+		lineupItems_.push_back(std::move(data));
+	}
+
+	RandomPickup();
+}
+
+void ItemLineup::RandomPickup()
+{
+	for (int i = 0; i < lineupSum; ++i)
+	{
+		// アイテムをランダムに選択してラインナップに追加
+		int randomIndex = rand();
+		Item pickItem = itemManager_->GetItem(randomIndex);
+
+		const auto modelData = modelManager_->GetNodeModelData(pickItem.modelID);
+		const auto drawData = drawDataManager_->GetDrawData(modelData.drawDataIndex);
+		lineupItems_[i].renderObject->SetDrawData(drawData);
+		lineupItems_[i].item = pickItem;
+		lineupItems_[i].color = pickItem.color;
+	}
+}
+
+void ItemLineup::Update(const Matrix4x4& viewProj, SHEngine::Input* input)
+{
+	screenRaycaster_->SetInverseVP(viewProj.Inverse());
+	mouseRay_ = screenRaycaster_->ScreenToRay(input->GetCursorPos().x, input->GetCursorPos().x);
+
+	for (int i = 0; i < lineupSum; ++i)
+	{
+		auto& data = lineupItems_[i];
+
+		if (IsCollision(mouseRay_, data.item.aabb))
+		{
+			auto intersectPoint = IntersectRayAABB(mouseRay_, data.item.aabb);
+			if (intersectPoint.has_value())
+			{
+				data.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+			}
+		}
+
+		data.wvp = Matrix::MakeAffineMatrix(data.transform.position, data.transform.rotate, data.transform.scale) * viewProj;
+
+		data.renderObject->CopyBufferData(0, &lineupItems_[i].wvp, sizeof(Matrix4x4));
+		data.renderObject->CopyBufferData(1, &lineupItems_[i].color, sizeof(Vector4));
+	}
+}
+
+void ItemLineup::Draw(SHEngine::Command::Object* cmdObject)
+{
+	for (auto& itemRender : lineupItems_)
+	{
+		itemRender.renderObject->Draw(cmdObject);
+	}
+}
+
+void ItemLineup::DrawImGui()
+{}
+
+bool ItemLineup::IsCollision(const Ray& r, const AABB& aabb)
+{
+	float tmin = (aabb.min.x - r.origin.x) / r.direction.x;
+	float tmax = (aabb.max.x - r.origin.x) / r.direction.x;
+	if (tmin > tmax) std::swap(tmin, tmax);
+
+	float tymin = (aabb.min.y - r.origin.y) / r.direction.y;
+	float tymax = (aabb.max.y - r.origin.y) / r.direction.y;
+	if (tymin > tymax) std::swap(tymin, tymax);
+
+	if ((tmin > tymax) || (tymin > tmax))
+		return false;
+
+	if (tymin > tmin)
+		tmin = tymin;
+	if (tymax < tmax)
+		tmax = tymax;
+
+	float tzmin = (aabb.min.z - r.origin.z) / r.direction.z;
+	float tzmax = (aabb.max.z - r.origin.z) / r.direction.z;
+	if (tzmin > tzmax) std::swap(tzmin, tzmax);
+
+	if ((tmin > tzmax) || (tzmin > tmax))
+		return false;
+
+	return true;
+}
+
+std::optional<Vector3> ItemLineup::IntersectRayAABB(const Ray& ray, const AABB& box)
+{
+	const float EPSILON = 1e-8f;
+	float tmin = 0.0f;
+	float tmax = std::numeric_limits<float>::infinity();
+
+	// スラブ（軸ごとの射線区間）を更新するラムダ
+	auto slab = [&](float origin, float dir, float bmin, float bmax) -> bool
+		{
+			// X方向のベクトルが０に限りなく近ければ、X平面で見た時レイは点のように見える。
+			if (std::fabs(dir) < EPSILON)
+			{
+				// その点がAABBのＸ軸から見た平面内だったら衝突しているといえる。Ｙ軸Ｚ軸についても同様のことであってくれ
+				return (origin >= bmin && origin <= bmax);
+			}
+
+
+			float invD = 1.0f / dir;
+			float t1 = (bmin - origin) * invD;
+			float t2 = (bmax - origin) * invD;
+			// 
+			if (t1 > t2) std::swap(t1, t2);
+			tmin = std::max(tmin, t1);
+			tmax = std::min(tmax, t2);
+			return (tmax >= tmin);
+		};
+
+	if (!slab(ray.origin.x, ray.direction.x, box.min.x, box.max.x)) return std::nullopt;
+	if (!slab(ray.origin.y, ray.direction.y, box.min.y, box.max.y)) return std::nullopt;
+	if (!slab(ray.origin.z, ray.direction.z, box.min.z, box.max.z)) return std::nullopt;
+
+	// レイがボックスの後方にしかない場合は衝突なし
+	if (tmax < 0.0f) return std::nullopt;
+
+	// tmin が正なら最初の交差、負ならボックス内スタート → tmax を使う
+	float tHit = (tmin >= 0.0f) ? tmin : tmax;
+	return ray.origin + ray.direction * tHit;
+}
+
+
+
+
+
+
 BackPack::BackPack()
 {
+	drawBackPack_ = std::make_unique<DrawBackPack>();
+
+	itemLineup_ = std::make_unique<ItemLineup>();
+
 	for (int i = 0; i < GameConstants::kBackPackRowNum; ++i)
 	{
 		std::vector<std::unique_ptr<BackPackGrid>> row;
@@ -70,19 +238,15 @@ BackPack::BackPack()
 		}
 		grids_.push_back(std::move(row));
 	}
-
-	drawBackPack_ = std::make_unique<DrawBackPack>();
 }
 
-BackPack::~BackPack()
-{}
+BackPack::~BackPack() {};
 
-void BackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, ItemManager* itemManager)
+void BackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, ItemManager* itemManager, CommonData* commonData)
 {
 	drawBackPack_->Initialize(modelManager, drawDataManager);
 
-	// 追加：ショップ5個をここで確定
-	InitializeShopItems_(modelManager, drawDataManager, itemManager);
+	itemLineup_->Initialize(modelManager, drawDataManager, itemManager, commonData);
 
 	// 初期マップ
 	for (size_t r = 0; r < GameConstants::kBackPackRowNum; ++r)
@@ -95,34 +259,18 @@ void BackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDa
 	}
 }
 
-void BackPack::Update(const Matrix4x4& viewProj)
+void BackPack::Update(const Matrix4x4& viewProj, SHEngine::Input* input)
 {
 	drawBackPack_->Update(viewProj, grids_);
 
-	// shop: 毎フレーム 3重バッファ面へ CBV 転送
-	const int count = static_cast<int>(shopItems_.size());
-	for (int i = 0; i < count; ++i)
-	{
-		auto& ro = shopItems_[i];
-		if (!ro) continue;
-
-		const Matrix4x4 wvp = shopWvps_[i] * viewProj;
-		ro->CopyBufferData(shopBindings_[i].wvpVsCbvIndex, &wvp, sizeof(Matrix4x4));
-		ro->CopyBufferData(shopBindings_[i].colorPsCbvIndex, &shopColors_[i], sizeof(Vector4));
-	}
+	itemLineup_->Update(viewProj, input);
 }
 
 void BackPack::Draw(SHEngine::Command::Object* cmdObject)
 {
 	drawBackPack_->Draw(cmdObject);
 
-	for (auto& ro : shopItems_)
-	{
-		if (ro)
-		{
-			ro->Draw(cmdObject);
-		}
-	}
+	itemLineup_->Draw(cmdObject);
 }
 
 void BackPack::DrawImGui()
@@ -134,98 +282,6 @@ void BackPack::DrawImGui()
 
 
 }
-
-void BackPack::InitializeShopItems_(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, ItemManager* itemManager)
-{
-	constexpr int kShopNum = 5;
-
-	shopItems_.clear();
-	shopItems_.reserve(kShopNum);
-
-	shopBindings_.clear();
-	shopBindings_.resize(kShopNum);
-
-	shopWvps_.assign(kShopNum, Matrix4x4::Identity());
-	shopColors_.assign(kShopNum, Vector4(1, 1, 1, 1));
-
-	// ショップ表示のワールド行列
-	std::array<Matrix4x4, kShopNum> worlds{};
-	for (int i = 0; i < kShopNum; ++i)
-	{
-		Transform t{};
-		t.scale = { 0.7f, 0.7f, 0.7f };
-
-		// 奇数の時は左、偶数の時は右に配置
-		if (i % 2 == 0)
-		{
-			t.position.x = -4.0f;
-		}
-		else
-		{
-			t.position.x = -8.0f;
-		}
-		t.position.y = 0.5f;
-		t.position.z = float(i) * 1.5f;
-		worlds[i] = Matrix::MakeAffineMatrix(t.scale, t.rotate, t.position);
-	}
-
-	for (int i = 0; i < kShopNum; ++i)
-	{
-		const Item& item = itemManager->GetItem(i);
-		const int modelID = item.modelID;
-
-		if (modelID < 0)
-		{
-			// modelID 未解決なら cube フォールバック
-			const int fallback = modelManager->LoadModel("Assets/.EngineResource/Model/Cube");
-			const auto mdl = modelManager->GetNodeModelData(fallback);
-			const auto dd = drawDataManager->GetDrawData(mdl.drawDataIndex);
-
-			auto ro = std::make_unique<SHEngine::RenderObject>();
-			ro->Initialize();
-			ro->SetDrawData(dd);
-			ro->SetUseTexture(false);
-
-			ro->psoConfig_.vs = "Simple.VS.hlsl";
-			ro->psoConfig_.ps = "Color.PS.hlsl";
-
-			shopBindings_[i].wvpVsCbvIndex = ro->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
-			shopBindings_[i].colorPsCbvIndex = ro->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
-
-			shopColors_[i] = item.color;
-
-			shopItems_.push_back(std::move(ro));
-			continue;
-		}
-
-		const auto modelData = modelManager->GetNodeModelData(modelID);
-		const auto drawData = drawDataManager->GetDrawData(modelData.drawDataIndex);
-
-		auto ro = std::make_unique<SHEngine::RenderObject>("ShopItem_" + std::to_string(i));
-		ro->Initialize();
-		ro->SetDrawData(drawData);
-		ro->SetUseTexture(false);
-
-		ro->psoConfig_.vs = "Simple.VS.hlsl";
-		ro->psoConfig_.ps = "Color.PS.hlsl";
-
-		shopBindings_[i].wvpVsCbvIndex = ro->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
-		shopBindings_[i].colorPsCbvIndex = ro->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
-
-		shopColors_[i] = item.color;
-
-		shopItems_.push_back(std::move(ro));
-	}
-
-	// world は Update 内で viewProj と掛ける必要があるため、ここで shopWvps_ に「world」を一旦入れておく
-	// Update で wvp=world*viewProj に上書きする
-	for (int i = 0; i < kShopNum; ++i)
-	{
-		shopWvps_[i] = worlds[i];
-	}
-}
-
-
 
 
 

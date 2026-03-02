@@ -14,9 +14,11 @@ class ScreenRaycaster {
 public:
 	// コンストラクタ
 	ScreenRaycaster(float screenWidth, float screenHeight);
+	~ScreenRaycaster() {};
 
 	// カメラの設定
 	void SetCamera(const Matrix4x4& view, const Matrix4x4& proj);
+	void SetInverseVP(const Matrix4x4& invVP) { invVP_ = invVP; }
 
 	// スクリーン座標からカメラ座標への変換
 	Vector2 ScreenToNDC(float screenX,float screenY);

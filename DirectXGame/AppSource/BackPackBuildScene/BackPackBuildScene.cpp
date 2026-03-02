@@ -18,16 +18,19 @@ void BackPackBuildScene::Initialize()
 	grid_->Initialize(drawDataManager_);
 	itemManager_->Initialize(modelManager_);
 	camera_->Initialize(input_);
-	backPack_->Initialize(modelManager_, drawDataManager_, itemManager_.get());
+	backPack_->Initialize(modelManager_, drawDataManager_, itemManager_.get(), commonData_);
 }
 
 std::unique_ptr<IScene> BackPackBuildScene::Update()
 {
+	// カメラの更新
 	camera_->Update();
-	Vector3 cameraPos = camera_->GetCenter();
 
-	grid_->Update(cameraPos, camera_->GetVPMatrix());
-	backPack_->Update(camera_->GetVPMatrix());
+	// グリッド
+	grid_->Update(camera_->GetCenter(), camera_->GetVPMatrix());
+	
+	// ビルドシーンのメイン
+	backPack_->Update(camera_->GetVPMatrix(), input_);
 
 	return nullptr;
 }
@@ -45,8 +48,8 @@ void BackPackBuildScene::Draw()
 
 	display->PostDraw(cmdObj);
 
-	window->PreDraw(cmdObj);
 
+	window->PreDraw(cmdObj);
 
 	//ここ以外で記述する場合、ifdefを忘れないようにすること
 #ifdef USE_IMGUI

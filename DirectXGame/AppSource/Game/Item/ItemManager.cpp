@@ -65,7 +65,24 @@ int ItemManager::ResolveModelID(const Item& item)
 	// modelPathが空ならエラー
 	if (item.modelPath.empty()) return -1;
 
-	return modelManager_->LoadModel(item.modelPath);
+	int tempID = modelManager_->LoadModel(item.modelPath);
+
+	// ここでAABB
+	auto& modelData = modelManager_->GetNodeModelData(tempID);
+	Vector4 firstPos = modelData.vertices[0].position;
+	Vector3 min = Vector3(firstPos.x, firstPos.y, firstPos.z);
+	Vector3 max = Vector3(firstPos.x, firstPos.y, firstPos.z);
+	for (const auto& vertex : modelData.vertices)
+	{
+		min.x = std::min(min.x, vertex.position.x);
+		min.y = std::min(min.y, vertex.position.y);
+		min.z = std::min(min.z, vertex.position.z);
+		max.x = std::max(max.x, vertex.position.x);
+		max.y = std::max(max.y, vertex.position.y);
+		max.z = std::max(max.z, vertex.position.z);
+	}
+
+	return tempID;
 }
 
 void ItemManager::ResolveAllModelIDs()

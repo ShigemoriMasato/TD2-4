@@ -83,3 +83,9 @@ private: // その他系
 };
 
 } // namespace SHEngine
+
+struct AABB
+{
+	Vector3 min;
+	Vector3 max;
+};

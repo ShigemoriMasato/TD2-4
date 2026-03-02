@@ -6,7 +6,6 @@
 #include <Camera/DebugCamera.h>
 #include <Tool/Grid/Grid.h>
 
-
 class BackPack;
 class ItemManager;
 
@@ -31,19 +30,17 @@ private:
 	Vector4 color_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 
-	std::unique_ptr<ItemManager> itemManager_;
 
+	// バックパック
 	std::unique_ptr<BackPack> backPack_;
 
+	// マップgrid
 	std::unique_ptr<Grid> grid_;
-
-	// 商品ラインナップ
-	std::vector<std::unique_ptr<SHEngine::RenderObject>> itemRenders_;
-
-
-
+	
 	// カメラ
 	std::unique_ptr<DebugCamera> camera_ = nullptr;
 
+	// アイテムマネージャー(多分いずれどこからかポインタを持ってくる)
+	std::unique_ptr<ItemManager> itemManager_;
 };
 
