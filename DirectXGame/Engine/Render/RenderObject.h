@@ -3,8 +3,7 @@
 #include <Core/Command/CommandManager.h>
 #include <Utility/Color.h>
 #include <Camera/Camera.h>
-
-using CmdObj = SHEngine::Command::Object;
+#include <Render/PSO/PSOEditor.h>
 
 namespace SHEngine {
 
@@ -32,7 +31,7 @@ namespace SHEngine {
 		 * @brief 静的初期化（デバイスの設定）
 		 * @param device DirectX12デバイス
 		 */
-		static void StaticInitialize(DXDevice* device);
+		static void StaticInitialize(DXDevice* device, PSO::Editor* psoEditor);
 
 		/**
 		 * @brief レンダーオブジェクトを初期化
@@ -97,6 +96,8 @@ namespace SHEngine {
 
 		/// @brief DirectX12デバイス（全インスタンスで共有）
 		static DXDevice* device_;
+		/// @brief PSOエディタ
+		static PSO::Editor* psoEditor_;
 		/// @brief ロガー
 		static Logger logger_;
 		/// @brief バッファ数

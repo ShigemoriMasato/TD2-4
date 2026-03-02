@@ -325,6 +325,7 @@ void SkeletonUpdate(Skeleton& skeleton) {
 }
 
 void SkinningUpdate(std::vector<WellForGPU>& result, std::map<std::string, JointWeightData> skinCluster, const Skeleton& skeleton) {
+	result.resize(skeleton.joints.size());
 	for (size_t jointIndex = 0; jointIndex < skeleton.joints.size(); ++jointIndex) {
 		assert(jointIndex < skeleton.joints.size());
 		std::string key = skeleton.joints[jointIndex].name;

@@ -10,6 +10,8 @@
 #include <Render/Screen/WindowsAPI.h>
 #include <Tool/FPS/FPSObserver.h>
 #include <Utility/DirectUtilFuncs.h>
+#include <Render/PSO/PSOEditor.h>
+#include <Compute/PSO/CSPSOManager.h>
 
 namespace SHEngine {
 
@@ -28,6 +30,12 @@ public:
 	void PostDraw();
 	// コマンドの実行
 	void EndFrame();
+
+	// コマンドの実行(Signalも送る)
+	void ExecuteCommand(Command::Type type, int index = 0) {
+		cmdManager_->Execute(type, index);
+		cmdManager_->SendSignal(type, index);
+	}
 
 	// ImGuiの有効化
 	void ImGuiActivate(Screen::WindowsAPI* window, Command::Object* cmdObj) {
@@ -65,6 +73,8 @@ private: // Engine内で完結するクラス
 	std::unique_ptr<DXDevice> device_;
 	std::unique_ptr<Command::Manager> cmdManager_;
 	std::unique_ptr<ImGuiWrapper> imGuiWrapper_;
+	std::unique_ptr<PSO::Editor> psoEditor_;
+	std::unique_ptr<PSO::CSPSOManager> csPsoManager_;
 
 private: // Engine外部からアクセスするクラス
 	std::unique_ptr<TextureManager> textureManager_;

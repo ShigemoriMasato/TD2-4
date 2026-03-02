@@ -1,9 +1,9 @@
 #include "InitializeScene.h"
 #include <imgui/imgui.h>
 #include <Game/GameScene.h>
-#include <Mihara/MiharaScene.h>
-#include <ShigeScene/ShigeScene.h>
-#include <Yokoyama/YokoyamaScene.h>
+#include <01_Mihara/MiharaScene.h>
+#include <02_ShigeScene/ShigeScene.h>
+#include <03_Yokoyama/YokoyamaScene.h>
 #include <BackPackBuildScene/BackPackBuildScene.h>
 
 #ifdef USE_IMGUI
@@ -111,7 +111,7 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	commonData_->cmdObject->ResetCommandList();
 
 	//return std::make_unique<MiharaScene>();
-	return std::make_unique<BackPackBuildScene>();
+	return std::make_unique<ShigeScene>();
 }
 
 void InitializeScene::Draw() {

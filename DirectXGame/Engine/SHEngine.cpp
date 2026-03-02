@@ -2,6 +2,7 @@
 #include <Tool/Dump/CreateDump.h>
 #include <Render/Screen/IDisplay.h>
 #include <Render/RenderObject.h>
+#include <Compute/ComputeObject.h>
 
 #pragma comment(lib, "Dbghelp.lib")
 
@@ -46,8 +47,15 @@ void Engine::Initialize(HINSTANCE hInstance) {
 	input_ = std::make_unique<Input>();
 	input_->Initialize(hInstance);
 
+	psoEditor_ = std::make_unique<PSO::Editor>();
+	psoEditor_->Initialize(device_.get());
+
+	csPsoManager_ = std::make_unique<PSO::CSPSOManager>();
+	csPsoManager_->Initialize(device_.get());
+
 	Screen::IDisplay::SetDevice(device_.get());
-	RenderObject::StaticInitialize(device_.get());
+	RenderObject::StaticInitialize(device_.get(), psoEditor_.get());
+	ComputeObject::StaticInitialize(device_.get(), csPsoManager_.get());
 
 	fpsObserver_ = std::make_unique<FPSObserver>();
 
