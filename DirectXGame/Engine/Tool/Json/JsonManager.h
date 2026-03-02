@@ -67,12 +67,7 @@ T JsonManager::Get(const std::string& key) {
 		throw std::runtime_error("Unsupported type for JsonManager::Get");
 	}
 
-	const nlohmann::json_abi_v3_12_0::json& j;
-    try {
-        j = jsonData_.at(key);
-    } catch (nlohmann::json::out_of_range) {
-		throw std::runtime_error("Key not found for JsonManager::Get");
-    }
+	const nlohmann::json_abi_v3_12_0::json& j = jsonData_.at(key);
 
     if constexpr (id == TypeID::Vector2) {
         auto v = j.get<std::array<float, 2>>();
