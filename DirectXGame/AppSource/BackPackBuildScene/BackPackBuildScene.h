@@ -4,7 +4,7 @@
 #include <assets/Model/ModelManager.h>
 #include <Render/RenderObject.h>
 #include <Camera/DebugCamera.h>
-
+#include <Tool/Grid/Grid.h>
 
 class BackPack;
 class ItemManager;
@@ -19,21 +19,17 @@ public:
 	void Draw() override;
 
 private:
+
+	// バックパック
+	std::unique_ptr<BackPack> backPack_;
+
+	// マップgrid
+	std::unique_ptr<Grid> grid_;
+	
 	// カメラ
 	std::unique_ptr<DebugCamera> camera_ = nullptr;
 
-	// Transform
-	Transform transform_{};
-	// WVP行列
-	Matrix4x4 wvp_;
-
+	// アイテムマネージャー(多分いずれどこからかポインタを持ってくる)
 	std::unique_ptr<ItemManager> itemManager_;
-
-	std::unique_ptr<BackPack> backPack_;
-
-
-
-	// 商品ラインナップ
-	std::vector<std::unique_ptr<SHEngine::RenderObject>> itemRenders_;
 };
 

@@ -63,7 +63,7 @@ void Engine::Initialize(HINSTANCE hInstance) {
 }
 
 bool Engine::IsLoop() {
-	if (PeekMessage(&msg_, nullptr, 0, 0, PM_REMOVE)) {
+	while (PeekMessage(&msg_, nullptr, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&msg_);
 		DispatchMessage(&msg_);
 	}

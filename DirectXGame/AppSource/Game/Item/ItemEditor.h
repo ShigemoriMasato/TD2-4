@@ -27,6 +27,8 @@ private:
 	// アイテム名変更したときの状態 0:成功 1:重複 2:空
 	int renameItemState_ = 0;
 
+	// モデルパス編集用バッファ
+	char editModelPath_[256] = {};
 
 	//　mapData編集用
 	int gridW_ = 8;

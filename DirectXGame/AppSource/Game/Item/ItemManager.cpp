@@ -35,8 +35,11 @@ void ItemManager::Initialize(SHEngine::ModelManager* modelManager)
 			defaultItem.ranks[r].effect = 0u;
 			defaultItem.ranks[r].params = baseParam_;
 		}
+		defaultItem.modelPath = "Assets/EngineResource/Model/Cube";
 		items_.push_back(std::move(defaultItem));
 	}
+
+	ResolveAllModelIDs();
 }
 
 const Item& ItemManager::GetItem(std::wstring itemName) const
@@ -50,6 +53,49 @@ const Item& ItemManager::GetItem(std::wstring itemName) const
 	}
 	throw std::runtime_error("Item not found: " + ConvertString(itemName));
 }
+
+const Item& ItemManager::GetItem(int index) const
+{
+	int targetIndex = index % static_cast<int>(items_.size());
+	return items_[targetIndex];
+}
+
+int ItemManager::ResolveModelID(Item& item)
+{
+	// modelPathが空ならエラー
+	if (item.modelPath.empty()) return -1;
+
+	int tempID = modelManager_->LoadModel(item.modelPath);
+
+	// ここでAABB
+	auto& modelData = modelManager_->GetNodeModelData(tempID);
+	Vector4 firstPos = modelData.vertices[0].position;
+	AABB tempAABB;
+	tempAABB.min = Vector3(firstPos.x, firstPos.y, firstPos.z);
+	tempAABB.max = Vector3(firstPos.x, firstPos.y, firstPos.z);
+	for (const auto& vertex : modelData.vertices)
+	{
+		tempAABB.min.x = std::min(tempAABB.min.x, vertex.position.x);
+		tempAABB.min.y = std::min(tempAABB.min.y, vertex.position.y);
+		tempAABB.min.z = std::min(tempAABB.min.z, vertex.position.z);
+		tempAABB.max.x = std::max(tempAABB.max.x, vertex.position.x);
+		tempAABB.max.y = std::max(tempAABB.max.y, vertex.position.y);
+		tempAABB.max.z = std::max(tempAABB.max.z, vertex.position.z);
+	}
+
+	item.aabb = tempAABB;
+
+	return tempID;
+}
+
+void ItemManager::ResolveAllModelIDs()
+{
+	for (auto& item : items_)
+	{
+		item.modelID = ResolveModelID(item);
+	}
+}
+
 
 void ItemManager::DrawImGui()
 {
@@ -114,6 +160,10 @@ void ItemManager::SaveItem()
 			binaryManager_.RegisterOutput(&y);
 		}
 
+		// 見た目
+		binaryManager_.RegisterOutput(&item.modelPath);
+		binaryManager_.RegisterOutput(&item.weaponID);
+
 		// ranks（可変）
 		for (int r = 0; r < 4; ++r)
 		{
@@ -133,10 +183,6 @@ void ItemManager::SaveItem()
 				binaryManager_.RegisterOutput(&buff.second);
 			}
 		}
-
-		// 見た目
-		binaryManager_.RegisterOutput(&item.weaponID);
-		binaryManager_.RegisterOutput(&item.modelID);
 	}
 	binaryManager_.Write(itemFile_);
 }
@@ -170,6 +216,10 @@ void ItemManager::LoadItem()
 			item.mapData.emplace_back(x, y);
 		}
 
+		// 見た目
+		item.modelPath = binaryManager_.Reverse<std::string>(data);
+		item.weaponID = binaryManager_.Reverse<int>(data);
+
 		// ranks
 		for (int r = 0; r < 4; ++r)
 		{
@@ -187,10 +237,6 @@ void ItemManager::LoadItem()
 				rd.params[name] = value;
 			}
 		}
-
-		// 見た目
-		item.weaponID = binaryManager_.Reverse<int>(data);
-		item.modelID = binaryManager_.Reverse<int>(data);
 
 		items_.push_back(item);
 	}
