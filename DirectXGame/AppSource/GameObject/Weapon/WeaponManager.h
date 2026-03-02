@@ -1,7 +1,9 @@
 #pragma once
-#include <unordered_map>
 #include "WeaponData.h"
+#include <../Engine/Tool/Json/JsonManager.h>
 #include <Tool/Binary/BinaryManager.h>
+#include <memory>
+#include <unordered_map>
 
 /// <summary>
 /// 武器のパラメータ管理用クラス
@@ -16,15 +18,13 @@ public:
 	// IDから武器データを取得する
 	WeaponData* GetWeapon(int id);
 
-	// バイナリに保存する
+	// Jsonに保存する
 	void SaveWeaponData();
 
-	// バイナリから読み込む
+	// Jsonから読み込む
 	void LoadWeaponData();
 
 private:
-	// 読み込み用のバイナリマネージャ
-	BinaryManager binaryManager_;
-
-	static inline const std::string weaponDataFile_ = "WeaponData.bin";
+	// JsonManager
+	std::unique_ptr<JsonManager> jsonManager_ = nullptr;
 };
