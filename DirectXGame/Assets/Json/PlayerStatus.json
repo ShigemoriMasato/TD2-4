@@ -1,0 +1,15 @@
+{
+    "AttackSpeedPercent": 0.0,
+    "CriticalRatePercent": 0.0,
+    "DamagePercent": 0.0,
+    "Defense": 0.0,
+    "DodgeRatePercent": 0.0,
+    "ExpBonusPercent": 0.0,
+    "HPRegen": 0.0,
+    "LifeStealPercent": 0.0,
+    "MaxHP": 50.0,
+    "MeleeDamage": 0.0,
+    "MoneyBonusPercent": 0.0,
+    "MoveSpeedPercent": 0.0,
+    "RangedDamage": 0.0
+}

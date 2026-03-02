@@ -1,6 +1,7 @@
 #pragma once
 #include "Status.h"
 #include "StatusModifier.h"
+#include <../Engine/Tool/Json/JsonManager.h>
 #include <unordered_map>
 
 class StatusManager {
@@ -26,4 +27,7 @@ public:
 private:
 	// StatusTypeをキーにしたハッシュマップ
 	std::unordered_map<StatusType, Status> statuses_;
+
+	// JsonManager
+	std::unique_ptr<JsonManager> jsonManager_ = nullptr;
 };
