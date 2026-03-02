@@ -18,24 +18,6 @@ StatusManager::StatusManager() {
 	statuses_[StatusType::MoveSpeedPercent] = Status(jsonManager_->Get<float>("MoveSpeedPercent"));       // 移動速度％
 	statuses_[StatusType::ExpBonusPercent] = Status(jsonManager_->Get<float>("ExpBonusPercent"));         // 経験値ボーナス％
 	statuses_[StatusType::MoneyBonusPercent] = Status(jsonManager_->Get<float>("MoneyBonusPercent"));     // お金ボーナス％
-
-	// Jsonにパラメータの情報を追加
-	/*jsonManager_->Add("MaxHP", statuses_[StatusType::MaxHP].GetValue());
-	jsonManager_->Add("HPRegen", statuses_[StatusType::HPRegen].GetValue());
-	jsonManager_->Add("LifeStealPercent", statuses_[StatusType::LifeStealPercent].GetValue());
-	jsonManager_->Add("DamagePercent", statuses_[StatusType::DamagePercent].GetValue());
-	jsonManager_->Add("MeleeDamage", statuses_[StatusType::MeleeDamage].GetValue());
-	jsonManager_->Add("RangedDamage", statuses_[StatusType::RangedDamage].GetValue());
-	jsonManager_->Add("AttackSpeedPercent", statuses_[StatusType::AttackSpeedPercent].GetValue());
-	jsonManager_->Add("CriticalRatePercent", statuses_[StatusType::CriticalRatePercent].GetValue());
-	jsonManager_->Add("DodgeRatePercent", statuses_[StatusType::DodgeRatePercent].GetValue());
-	jsonManager_->Add("Defense", statuses_[StatusType::Defense].GetValue());
-	jsonManager_->Add("MoveSpeedPercent", statuses_[StatusType::MoveSpeedPercent].GetValue());
-	jsonManager_->Add("ExpBonusPercent", statuses_[StatusType::ExpBonusPercent].GetValue());
-	jsonManager_->Add("MoneyBonusPercent", statuses_[StatusType::MoneyBonusPercent].GetValue());*/
-
-	// 保存
-	jsonManager_->Save();
 }
 
 void StatusManager::AddModifier(StatusType type, const StatusModifier& modifier) {
