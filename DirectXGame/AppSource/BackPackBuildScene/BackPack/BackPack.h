@@ -48,7 +48,6 @@ public:
 	~BackPackGrid();
 	void Initialize(GridState state);
 	void ChangeState(GridState newState);
-	void Update();
 
 	GridState GetState() const { return state_; }
 	const Vector4& GetColor() const { return color_; }
@@ -107,12 +106,20 @@ private:
 
 struct LineupItemData
 {
+	// なんのアイテムか
 	Item item;
+	// 描画オブジェクト
 	std::unique_ptr<SHEngine::RenderObject> renderObject;
+	// 色
 	Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	// tier
 	int rank = 0;
 
-	Transform transform{};
+	// 初期位置
+	Vector3 InitPos{};
+	// マウスでホバーしているときの位置
+	Vector3 hoverPos{};
+	
 	Matrix4x4 wvp{};
 };
 

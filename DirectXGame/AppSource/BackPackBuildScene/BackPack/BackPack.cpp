@@ -48,11 +48,6 @@ void BackPackGrid::ChangeState(GridState newState)
 	state_ = newState;
 }
 
-void BackPackGrid::Update()
-{
-}
-
-
 
 
 
@@ -89,11 +84,10 @@ void ItemLineup::Initialize(SHEngine::ModelManager* modelManager, SHEngine::Draw
 		data.renderObject->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
 		data.renderObject->psoConfig_.ps = "Color.PS.hlsl";
 		data.renderObject->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER);
-		data.transform.scale = { 1.0f, 1.0f, 1.0f };
-		if (i % 2 == 0) data.transform.position.x = -4.0f;
-		else data.transform.position.x = -8.0f;
-		data.transform.position.y = 0.5f;
-		data.transform.position.z = float(i) * 15.0f;
+		if (i % 2 == 0) data.InitPos.x = -4.0f;
+		else data.InitPos.x = -8.0f;
+		data.InitPos.y = 0.5f;
+		data.InitPos.z = float(i) * 15.0f;
 		lineupItems_.push_back(std::move(data));
 	}
 
@@ -126,7 +120,7 @@ void ItemLineup::Update(const Matrix4x4& viewProj)
 	{
 		auto& data = lineupItems_[i];
 
-		Matrix4x4 worldMatrix = Matrix::MakeAffineMatrix(data.transform.scale, data.transform.rotate, data.transform.position);
+		Matrix4x4 worldMatrix = Matrix::MakeAffineMatrix(Vector3(1.0f,1.0f,1.0f), Vector3(0.0f,0.0f,0.0f), data.hoverPos);
 		AABB worldAABB = data.item.aabb.Transform(worldMatrix);
 
 		if (IsCollision(mouseRay_, worldAABB))
