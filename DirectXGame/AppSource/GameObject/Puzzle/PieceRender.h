@@ -1,5 +1,5 @@
 #pragma once
-#include <Game/Puzzle/Piece.h>
+#include <GameObject/Puzzle/Piece.h>
 #include <Render/RenderObject.h>
 #include <Assets/Model/ModelManager.h>
 #include <Utility/DataStructures.h>

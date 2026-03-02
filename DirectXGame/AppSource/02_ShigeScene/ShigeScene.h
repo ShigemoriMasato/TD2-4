@@ -1,6 +1,6 @@
 #pragma once
 #include <Scene/IScene.h>
-#include <Game/Puzzle/PieceRender.h>
+#include <GameObject/Puzzle/PieceRender.h>
 #include <Camera/DebugCamera.h>
 #include <Tool/Grid/Grid.h>
 #include <Compute/ComputeObject.h>

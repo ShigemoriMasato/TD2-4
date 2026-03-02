@@ -1,5 +1,5 @@
 #pragma once
-#include "../AppSource/Game/Player/Status/StatusManager.h"
+#include "../AppSource/GameObject/Player/Status/StatusManager.h"
 #include "State/IPlayerState.h"
 #include "State/PlayerStateDash.h"
 #include "State/PlayerStateNormal.h"

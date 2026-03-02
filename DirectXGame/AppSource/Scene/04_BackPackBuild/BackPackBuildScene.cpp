@@ -1,5 +1,5 @@
 #include "BackPackBuildScene.h"
-#include "BackPackBuildScene/BackPack/BackPack.h"
+#include "BackPack/BackPack.h"
 #include <Game/Item/ItemManager.h>
 
 BackPackBuildScene::BackPackBuildScene()

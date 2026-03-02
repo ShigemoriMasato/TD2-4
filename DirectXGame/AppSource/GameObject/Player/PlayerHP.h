@@ -1,5 +1,5 @@
 #pragma once
-#include "../AppSource/Game/EasingAnimation/AnimationBundle.h"
+#include "../AppSource/GameObject/EasingAnimation/AnimationBundle.h"
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>

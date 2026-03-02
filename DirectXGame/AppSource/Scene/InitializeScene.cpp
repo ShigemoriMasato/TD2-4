@@ -1,10 +1,15 @@
 #include "InitializeScene.h"
 #include <imgui/imgui.h>
-#include <Game/GameScene.h>
+
+#include <Scene/01_Title/TitleScene.h>
+#include <Scene/02_CharaSelect/CharaSelectScene.h>
+#include <Scene/03_Game/GameScene.h>
+#include <Scene/04_BackPackBuild/BackPackBuildScene.h>
+#include <Scene/05_Result/ResultScene.h>
+
 #include <01_Mihara/MiharaScene.h>
 #include <02_ShigeScene/ShigeScene.h>
 #include <03_Yokoyama/YokoyamaScene.h>
-#include <BackPackBuildScene/BackPackBuildScene.h>
 
 #ifdef USE_IMGUI
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
