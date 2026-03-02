@@ -47,7 +47,7 @@ namespace SHEngine {
 		void GetUAVBuffer(int uavIndex, void* data, size_t dataSize);
 
 		// @brief 登録したCBV/SRV/UAVをComputeShaderにセットして、ComputeShaderを実行する。
-		// @param cmdObj コマンドオブジェクト。この関数の後にengine_->Execute、cmdObj->WaitForCanExecuteを呼び出すこと。
+		// @param cmdObj コマンドオブジェクト。この関数の後にengine_->ExecuteCommandを呼び出すこと。
 		void Execute(CmdObj* cmdObj);
 
 	private:
