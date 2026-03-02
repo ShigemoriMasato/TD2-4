@@ -1,5 +1,6 @@
 #pragma once
 #include <SHEngine.h>
+#include <Render/RenderObject.h>
 #include <Utility/Vector.h>
 #include <Utility/Matrix.h>
 #include <Utility/DataStructures.h>

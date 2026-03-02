@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject/BackPack/GameConstants.h"
 
+// バックパックの1マス
 class BackPackPiece
 {
 public:
@@ -28,3 +29,45 @@ private:
 
 };
 
+// バックパックの全マスの描画
+class DrawBackPack
+{
+public:
+	DrawBackPack();
+	~DrawBackPack();
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager);
+	void Update(const Matrix4x4& viewProj, const std::vector<std::vector<std::unique_ptr<BackPackPiece>>>& grids);
+	void Draw(SHEngine::Command::Object* cmdObject);
+	void DrawImGui();
+
+private:
+	int textureIndex_ = 0;
+	DirectionalLight light_{};
+
+
+	// ロック中・解放不可
+	std::unique_ptr<SHEngine::RenderObject> lockedUnavailableGrid_;
+	std::vector<Matrix4x4> lockedUnavailableWorlds_;
+	Vector4 lockedUnavailableColor_ = { 0.25f, 0.25f, 0.25f, 1.0f };
+	InstanceBinding bindLockedUnavailable_{};
+
+	// ロック中・解放可能
+	std::unique_ptr<SHEngine::RenderObject> lockedAvailableGrid_;
+	std::vector<Matrix4x4> lockedAvailableWorlds_;
+	Vector4 lockedAvailableColor_ = { 0.5f, 0.5f, 0.5f, 1.0f };
+	InstanceBinding bindLockedAvailable_{};
+
+	// 解放済み
+	std::unique_ptr<SHEngine::RenderObject> unlockedEmptyGrid_;
+	std::vector<Matrix4x4> unlockedEmptyWorlds_;
+	Vector4 unlockedEmptyColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+	InstanceBinding bindUnlockedEmpty_{};
+
+	// 毎フレーム転送（3重バッファ対策）
+	void UpdateRenderObject(
+		SHEngine::RenderObject& ro,
+		const InstanceBinding& bind,
+		const Matrix4x4& viewProj,
+		const std::vector<Matrix4x4>& worlds,
+		const Vector4& color);
+};
