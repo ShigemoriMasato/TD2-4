@@ -168,7 +168,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Scene\05_Result\ResultScene.cpp" />
     <ClCompile Include="AppSource\Scene\CommonData.cpp" />
     <ClCompile Include="AppSource\Scene\04_BackPackBuild\BackPackBuildScene.cpp" />
-    <ClCompile Include="AppSource\Scene\04_BackPackBuild\BackPack\BackPack.cpp" />
+    <ClCompile Include="AppSource\GameObject\BackPack\BackPack.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSPSOManager.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSRootSignature.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSShaderShelf.cpp" />
@@ -257,7 +257,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Scene\CommonData.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\EasingAnimation.h" />
     <ClInclude Include="AppSource\Scene\04_BackPackBuild\BackPackBuildScene.h" />
-    <ClInclude Include="AppSource\Scene\04_BackPackBuild\BackPack\BackPack.h" />
+    <ClInclude Include="AppSource\GameObject\BackPack\BackPack.h" />
     <ClInclude Include="Engine\Compute\PSO\CSPSOManager.h" />
     <ClInclude Include="Engine\Compute\PSO\CSRootSignature.h" />
     <ClInclude Include="Engine\Compute\PSO\CSShaderShelf.h" />

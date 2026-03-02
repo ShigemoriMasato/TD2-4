@@ -1,5 +1,5 @@
 #include "PlayerStateNormal.h"
-#include "../AppSource/Game/Player/Player.h"
+#include "../AppSource/GameObject/Player/Player.h"
 #include "PlayerStateDash.h"
 #include <cmath>
 #include <numbers>

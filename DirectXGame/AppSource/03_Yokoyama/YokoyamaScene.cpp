@@ -1,7 +1,7 @@
 #include "YokoyamaScene.h"
 #include <imgui/imgui.h>
 #include <Utility/Color.h>
-#include <Game/Item/ItemManager.h>
+#include <GameObject/Item/ItemManager.h>
 
 YokoyamaScene::YokoyamaScene()
 {

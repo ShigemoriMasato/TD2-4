@@ -1,5 +1,5 @@
 #pragma once
-#include <Game/Item/Item.h>
+#include <GameObject/Item/Item.h>
 #include "Piece.h"
 
 class PieceManager {

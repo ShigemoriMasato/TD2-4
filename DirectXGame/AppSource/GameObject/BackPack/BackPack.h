@@ -2,9 +2,9 @@
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
 #include <Render/RenderObject.h>
-#include <Game/ScreenRaycaster/ScreenRaycaster.h>
+#include <GameObject/ScreenRaycaster/ScreenRaycaster.h>
 #include "scene/CommonData.h"
-#include "Game/Item/Item.h"
+#include "GameObject/Item/Item.h"
 
 class ItemManager;
 

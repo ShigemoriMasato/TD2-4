@@ -1,5 +1,5 @@
 #include "PlayerStateDash.h"
-#include "../AppSource/Game/Player/Player.h"
+#include "../AppSource/GameObject/Player/Player.h"
 #include "PlayerStateNormal.h"
 
 using namespace Player;
