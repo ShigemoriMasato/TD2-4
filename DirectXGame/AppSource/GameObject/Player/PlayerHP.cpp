@@ -1,5 +1,7 @@
 #include "PlayerHP.h"
 #include "Player.h"
+#include "Status/StatusManager.h"
+#include "Status/StatusModifier.h"
 #include <Utility/Matrix.h>
 #include <Utility/MatrixFactory.h>
 #include <imgui/imgui.h>
@@ -7,7 +9,13 @@
 using namespace SHEngine;
 using namespace Player;
 
-void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input, float hp) {
+void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input, StatusManager* statusManager) {
+	// ステータスマネージャを保存
+	statusManager_ = statusManager;
+
+	// StatusManagerからMaxHPを取得
+	InitializeHPFromStatus();
+
 	// HPバーの生成
 	hpBarFill_.render = std::make_unique<RenderObject>();  // 前面
 	hpBarAfter_.render = std::make_unique<RenderObject>(); // 減った分
@@ -41,25 +49,6 @@ void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMana
 	// FPSObserver
 	fpsObserver_ = std::make_unique<FPSObserver>();
 
-	//// 説明用UI
-	// uiRender_ = std::make_unique<RenderObject>();
-
-	// uiRender_->Initialize();
-	// uiRender_->psoConfig_.vs = "Game/Field.VS.hlsl";
-	// uiRender_->psoConfig_.ps = "Game/Field.PS.hlsl";
-	// uiRender_->SetUseTexture(true);
-
-	//// CBVの生成
-	// uiRender_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
-	// uiRender_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
-	// uiRender_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
-
-	// int modelHandle = modelManager->LoadModel("Assets/.EngineResource/Model/Plane");
-	//// 描画するデータの読み込み
-	// auto modelData = modelManager->GetNodeModelData(modelHandle);
-	// auto drawData = drawDataManager->GetDrawData(modelData.drawDataIndex);
-	// uiRender_->SetDrawData(drawData);
-
 	// 入力
 	input_ = input;
 
@@ -67,8 +56,7 @@ void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMana
 	modelManager_ = modelManager;
 
 	// HP
-	currentHP_ = hp;
-	maxHP_ = hp;
+	currentHP_ = maxHP_;
 }
 
 void HP::Update(Matrix4x4 vpMatrix, float deltaTime) {
@@ -140,6 +128,12 @@ void HP::Draw(CmdObj* cmdObj) {
 		ImGui::DragFloat3("BG - scale", &hpBarBG_.transform.scale.x, 0.01f);
 		ImGui::DragFloat3("BG - rotate", &hpBarBG_.transform.rotate.x, 0.01f);
 		ImGui::DragFloat3("BG - translate", &hpBarBG_.transform.position.x, 0.01f);
+	}
+
+	// --- ステータス情報 ---
+	if (ImGui::CollapsingHeader("Status Information")) {
+		ImGui::Text("Current HP: %.1f / %.1f", currentHP_, maxHP_);
+		ImGui::Text("IsInvincible: %s", isInvincible_ ? "True" : "False");
 	}
 
 	ImGui::End();
@@ -229,4 +223,12 @@ void HP::AnimationHPBarAfter(float deltaTime) {
 	// 座標の変更
 	float offsetX = (kHPBarWidth - hpBarAfter_.transform.scale.x) / 2.0f;
 	hpBarAfter_.transform.position.x = hpBarPosX_ - offsetX;
+}
+
+void HP::InitializeHPFromStatus() {
+	if (statusManager_) {
+		// StatusManagerからMaxHPを取得
+		maxHP_ = statusManager_->GetStatusValue(StatusType::MaxHP);
+		currentHP_ = maxHP_;
+	}
 }

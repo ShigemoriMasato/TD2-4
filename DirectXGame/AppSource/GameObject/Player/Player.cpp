@@ -6,7 +6,7 @@
 using namespace SHEngine;
 using namespace Player;
 
-void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, Input* input) {
+void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, Input* input, CharacterID characterID) {
 	// 本体描画用オブジェクトの生成&初期化
 	render_ = std::make_unique<RenderObject>();
 	render_->Initialize();
@@ -59,6 +59,7 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 
 	// ステータスマネージャの生成&初期化
 	statusManager_ = std::make_unique<StatusManager>();
+	statusManager_->Initialize(characterID);
 }
 
 void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
