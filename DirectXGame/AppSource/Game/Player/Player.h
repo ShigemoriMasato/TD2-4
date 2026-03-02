@@ -1,4 +1,5 @@
 #pragma once
+#include "../AppSource/Game/Player/Status/StatusManager.h"
 #include "State/IPlayerState.h"
 #include "State/PlayerStateDash.h"
 #include "State/PlayerStateNormal.h"
@@ -55,6 +56,8 @@ public:
 
 	float GetRotationSpeed() const { return rotationSpeed_; }
 
+	float GetMaxHP() const { return statusManager_->GetStatusValue(StatusType::MaxHP); }
+
 private:
 	// 描画用変数
 	std::unique_ptr<SHEngine::RenderObject> render_ = nullptr;
@@ -99,5 +102,8 @@ private:
 
 	// 残像・インスタンスの最大値
 	static const int kMaxInstanceAfterImage = 8;
+
+	// ステータスマネージャ
+	std::unique_ptr<StatusManager> statusManager_ = nullptr;
 };
 } // namespace Player

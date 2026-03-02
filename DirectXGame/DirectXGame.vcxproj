@@ -238,6 +238,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Game\Player\Level\PlayerLevelUI.cpp" />
     <ClCompile Include="AppSource\Common\KeyConfig\WorldCursor.cpp" />
     <ClCompile Include="AppSource\Game\Puzzle\PieceManager.cpp" />
+    <ClCompile Include="AppSource\Game\Player\Status\StatusModifier.cpp" />
+    <ClCompile Include="AppSource\Game\Player\Status\Status.cpp" />
+    <ClCompile Include="AppSource\Game\Player\Status\StatusManager.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\Game\EasingAnimation\AnimationBundle.h" />
     <ClInclude Include="AppSource\Game\Weapon\WeaponData.h" />
@@ -326,6 +329,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Game\Item\ItemEditor.h" />
     <ClInclude Include="AppSource\Game\Player\Heatmap\PlayerHeatmap.h" />
     <ClInclude Include="AppSource\Game\Field\Field.h" />
+    <ClInclude Include="AppSource\Game\Player\Status\StatusModifier.h" />
+    <ClInclude Include="AppSource\Game\Player\Status\Status.h" />
+    <ClInclude Include="AppSource\Game\Player\Status\StatusManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
