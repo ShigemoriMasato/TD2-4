@@ -19,6 +19,7 @@ private:
 
 	std::unique_ptr<SHEngine::ComputeObject> computeObject_;
 	std::unique_ptr<SHEngine::RenderObject> render_;
+	std::unique_ptr<SHEngine::RenderObject> desc_;
 
 	SkinningModelData sneekWalk_;
 	Animation animation_;
