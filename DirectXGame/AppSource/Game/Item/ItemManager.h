@@ -25,7 +25,7 @@ public:
 	const Item& GetItem(int index) const;
 
 	// 描画等で必要になったときに ID を解決する
-	int ResolveModelID(const Item& item);
+	int ResolveModelID(Item& item);
 
 #ifdef USE_IMGUI 
 

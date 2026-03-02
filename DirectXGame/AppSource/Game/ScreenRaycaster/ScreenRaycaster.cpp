@@ -31,34 +31,30 @@ Vector3 ScreenRaycaster::ScreenToWorldGround(float screenX, float screenY) {
 }
 
 Ray ScreenRaycaster::ScreenToRay(float screenX, float screenY) {
-	// スクリーン座標からカメラ座標に変換
-	Vector2 ndc = ScreenToNDC(screenX, screenY);
 
-	// NDC上のNearとFarの点を作成
-	Vector4 nearPos = {ndc.x, ndc.y, 0.0f, 1.0f};
-	Vector4 farPos = {ndc.x, ndc.y, 1.0f, 1.0f};
+	// 左下が０、右上が１とした時のマウスポジション
+	float ndcX = (screenX / screenWidth_) * 2.0f - 1.0f;
+	float ndcY = 1.0f - (screenY / screenHeight_) * 2.0f; // Yは上下反転
 
-	// ビュープロジェクション逆行列でカメラNDCからワールド空間へ変換
-	Vector4 worldNear4 = Transform(nearPos, invVP_);
-	Vector4 worldFar4 = Transform(farPos, invVP_);
+	// クリップ空間でZ=0(near)とZ=1(far)の2点を作る
+	Vector4 nearPoint = { ndcX, ndcY, 0.0f, 1.0f };
+	Vector4 farPoint = { ndcX, ndcY, 1.0f, 1.0f };
 
-	// w除算
-	Vector3 vNear = {
-	    worldNear4.x / worldNear4.w,
-	    worldNear4.y / worldNear4.w,
-	    worldNear4.z / worldNear4.w,
-	};
+	// 逆射影行列
+	Matrix4x4 inverseViewProj = invVP_;
 
-	Vector3 vFar = {
-	    worldFar4.x / worldFar4.w,
-	    worldFar4.y / worldFar4.w,
-	    worldFar4.z / worldFar4.w,
-	};
+	// ワールド空間に変換
+	Vector4 nearWorld = Transform(nearPoint, inverseViewProj);
+	Vector4 farWorld = Transform(farPoint, inverseViewProj);
 
-	// レイの生成
+	// マウスレイの始点・方向
 	Ray ray;
-	ray.origin = vNear;
-	ray.direction = Vector3(vFar - vNear).Normalize();
+	ray.origin = { nearWorld.x / nearWorld.w, nearWorld.y / nearWorld.w, nearWorld.z / nearWorld.w };
+	ray.direction = Vector3{
+	(farWorld.x / farWorld.w) - ray.origin.x,
+	(farWorld.y / farWorld.w) - ray.origin.y,
+	(farWorld.z / farWorld.w) - ray.origin.z
+	}.Normalize();
 
 	return ray;
 }

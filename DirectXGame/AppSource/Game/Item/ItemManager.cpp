@@ -60,7 +60,7 @@ const Item& ItemManager::GetItem(int index) const
 	return items_[targetIndex];
 }
 
-int ItemManager::ResolveModelID(const Item& item)
+int ItemManager::ResolveModelID(Item& item)
 {
 	// modelPathが空ならエラー
 	if (item.modelPath.empty()) return -1;
@@ -70,17 +70,20 @@ int ItemManager::ResolveModelID(const Item& item)
 	// ここでAABB
 	auto& modelData = modelManager_->GetNodeModelData(tempID);
 	Vector4 firstPos = modelData.vertices[0].position;
-	Vector3 min = Vector3(firstPos.x, firstPos.y, firstPos.z);
-	Vector3 max = Vector3(firstPos.x, firstPos.y, firstPos.z);
+	AABB tempAABB;
+	tempAABB.min = Vector3(firstPos.x, firstPos.y, firstPos.z);
+	tempAABB.max = Vector3(firstPos.x, firstPos.y, firstPos.z);
 	for (const auto& vertex : modelData.vertices)
 	{
-		min.x = std::min(min.x, vertex.position.x);
-		min.y = std::min(min.y, vertex.position.y);
-		min.z = std::min(min.z, vertex.position.z);
-		max.x = std::max(max.x, vertex.position.x);
-		max.y = std::max(max.y, vertex.position.y);
-		max.z = std::max(max.z, vertex.position.z);
+		tempAABB.min.x = std::min(tempAABB.min.x, vertex.position.x);
+		tempAABB.min.y = std::min(tempAABB.min.y, vertex.position.y);
+		tempAABB.min.z = std::min(tempAABB.min.z, vertex.position.z);
+		tempAABB.max.x = std::max(tempAABB.max.x, vertex.position.x);
+		tempAABB.max.y = std::max(tempAABB.max.y, vertex.position.y);
+		tempAABB.max.z = std::max(tempAABB.max.z, vertex.position.z);
 	}
+
+	item.aabb = tempAABB;
 
 	return tempID;
 }

@@ -30,7 +30,7 @@ std::unique_ptr<IScene> BackPackBuildScene::Update()
 	grid_->Update(camera_->GetCenter(), camera_->GetVPMatrix());
 	
 	// ビルドシーンのメイン
-	backPack_->Update(camera_->GetVPMatrix(), input_);
+	backPack_->Update(camera_->GetVPMatrix());
 
 	return nullptr;
 }

@@ -20,17 +20,6 @@ public:
 
 private:
 
-
-	// Transform
-	Transform transform_{};
-	// WVP行列
-	Matrix4x4 wvp_;
-
-	// 色
-	Vector4 color_ = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-
-
 	// バックパック
 	std::unique_ptr<BackPack> backPack_;
 

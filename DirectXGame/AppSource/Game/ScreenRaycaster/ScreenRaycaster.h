@@ -5,6 +5,26 @@
 struct Ray {
 	Vector3 origin;
 	Vector3 direction;
+
+	// Y座標を指定してXZ平面上の座標を取得
+	std::optional<Vector3> GetXZ(float y)
+	{
+		// direction.y が 0 の場合、XZ 平面と交差しない（平行）
+		if (direction.y == 0.0f) return std::nullopt;
+
+		// origin.y + t * direction.y = y を解く
+		float t = (y - origin.y) / direction.y;
+
+		// レイ上の点を求める
+		Vector3 p = {
+			origin.x + t * direction.x,
+			y, // Y は指定値
+			origin.z + t * direction.z
+		};
+
+		return p;
+	}
+
 };
 
 /// <summary>

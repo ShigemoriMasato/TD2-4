@@ -73,9 +73,10 @@ void ItemLineup::Initialize(SHEngine::ModelManager* modelManager, SHEngine::Draw
 	itemManager_ = itemManager;
 	modelManager_ = modelManager;
 	drawDataManager_ = drawDataManager;
+	commonData_ = commonData;
 
 
-	auto [w, h] = commonData->mainWindow.first->GetWindowSize();
+	auto [w, h] = commonData_->mainWindow.first->GetWindowSize();
 	screenRaycaster_ = std::make_unique<ScreenRaycaster>(static_cast<float>(w), static_cast<float>(h));
 
 
@@ -88,11 +89,11 @@ void ItemLineup::Initialize(SHEngine::ModelManager* modelManager, SHEngine::Draw
 		data.renderObject->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
 		data.renderObject->psoConfig_.ps = "Color.PS.hlsl";
 		data.renderObject->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER);
-		data.transform.scale = { 0.1f, 0.1f, 0.1f };
+		data.transform.scale = { 1.0f, 1.0f, 1.0f };
 		if (i % 2 == 0) data.transform.position.x = -4.0f;
 		else data.transform.position.x = -8.0f;
 		data.transform.position.y = 0.5f;
-		data.transform.position.z = float(i) * 1.5f;
+		data.transform.position.z = float(i) * 15.0f;
 		lineupItems_.push_back(std::move(data));
 	}
 
@@ -115,25 +116,29 @@ void ItemLineup::RandomPickup()
 	}
 }
 
-void ItemLineup::Update(const Matrix4x4& viewProj, SHEngine::Input* input)
+void ItemLineup::Update(const Matrix4x4& viewProj)
 {
 	screenRaycaster_->SetInverseVP(viewProj.Inverse());
-	mouseRay_ = screenRaycaster_->ScreenToRay(input->GetCursorPos().x, input->GetCursorPos().x);
+	Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
+	mouseRay_ = screenRaycaster_->ScreenToRay(cursorPos.x, cursorPos.y);
 
 	for (int i = 0; i < lineupSum; ++i)
 	{
 		auto& data = lineupItems_[i];
 
-		if (IsCollision(mouseRay_, data.item.aabb))
+		Matrix4x4 worldMatrix = Matrix::MakeAffineMatrix(data.transform.scale, data.transform.rotate, data.transform.position);
+		AABB worldAABB = data.item.aabb.Transform(worldMatrix);
+
+		if (IsCollision(mouseRay_, worldAABB))
 		{
-			auto intersectPoint = IntersectRayAABB(mouseRay_, data.item.aabb);
-			if (intersectPoint.has_value())
-			{
-				data.color = { 1.0f, 0.0f, 0.0f, 1.0f };
-			}
+			data.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+		}
+		else
+		{
+			data.color = data.item.color;
 		}
 
-		data.wvp = Matrix::MakeAffineMatrix(data.transform.position, data.transform.rotate, data.transform.scale) * viewProj;
+		data.wvp = worldMatrix * viewProj;
 
 		data.renderObject->CopyBufferData(0, &lineupItems_[i].wvp, sizeof(Matrix4x4));
 		data.renderObject->CopyBufferData(1, &lineupItems_[i].color, sizeof(Vector4));
@@ -149,7 +154,10 @@ void ItemLineup::Draw(SHEngine::Command::Object* cmdObject)
 }
 
 void ItemLineup::DrawImGui()
-{}
+{
+	Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
+	ImGui::Text("Cursor Position: (%.1f, %.1f)", cursorPos.x, cursorPos.y);
+}
 
 bool ItemLineup::IsCollision(const Ray& r, const AABB& aabb)
 {
@@ -259,11 +267,11 @@ void BackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDa
 	}
 }
 
-void BackPack::Update(const Matrix4x4& viewProj, SHEngine::Input* input)
+void BackPack::Update(const Matrix4x4& viewProj)
 {
 	drawBackPack_->Update(viewProj, grids_);
 
-	itemLineup_->Update(viewProj, input);
+	itemLineup_->Update(viewProj);
 }
 
 void BackPack::Draw(SHEngine::Command::Object* cmdObject)
@@ -277,10 +285,9 @@ void BackPack::DrawImGui()
 {
 	ImGui::Begin("BackPack");
 
+	itemLineup_->DrawImGui();
 
 	ImGui::End();
-
-
 }
 
 
