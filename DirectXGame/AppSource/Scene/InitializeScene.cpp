@@ -1,9 +1,9 @@
 #include "InitializeScene.h"
 #include <imgui/imgui.h>
 #include <Game/GameScene.h>
-#include <Mihara/MiharaScene.h>
-#include <ShigeScene/ShigeScene.h>
-#include <Yokoyama/YokoyamaScene.h>
+#include <01_Mihara/MiharaScene.h>
+#include <02_ShigeScene/ShigeScene.h>
+#include <03_Yokoyama/YokoyamaScene.h>
 
 #ifdef USE_IMGUI
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
