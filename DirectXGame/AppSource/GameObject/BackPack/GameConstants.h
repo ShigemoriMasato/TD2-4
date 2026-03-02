@@ -3,6 +3,7 @@
 #include <Utility/Vector.h>
 #include <Utility/Matrix.h>
 #include <Utility/DataStructures.h>
+#include <Utility/MatrixFactory.h>
 
 class ItemManager;
 

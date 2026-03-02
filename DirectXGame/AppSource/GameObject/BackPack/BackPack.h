@@ -5,6 +5,7 @@
 #include <GameObject/ScreenRaycaster/ScreenRaycaster.h>
 #include "scene/CommonData.h"
 #include "GameObject/Item/Item.h"
+#include "GameObject/BackPack/GameConstants.h"
 
 class ItemManager;
 class BackPackPiece;
@@ -20,7 +21,7 @@ public:
 	DrawBackPack();
 	~DrawBackPack();
 	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager);
-	void Update(const Matrix4x4& viewProj, const std::vector<std::vector<std::unique_ptr<BackPackGrid>>>& grids);
+	void Update(const Matrix4x4& viewProj, const std::vector<std::vector<std::unique_ptr<BackPackPiece>>>& grids);
 	void Draw(SHEngine::Command::Object* cmdObject);
 	void DrawImGui();
 

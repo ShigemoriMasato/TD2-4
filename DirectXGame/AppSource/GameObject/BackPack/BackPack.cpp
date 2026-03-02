@@ -186,12 +186,12 @@ BackPack::BackPack()
 
 	for (int i = 0; i < GameConstants::kBackPackRowNum; ++i)
 	{
-		std::vector<std::unique_ptr<BackPackGrid>> row;
+		std::vector<std::unique_ptr<BackPackPiece>> row;
 		for (int j = 0; j < GameConstants::kBackPackColNum; ++j)
 		{
-			row.push_back(std::make_unique<BackPackGrid>());
+			row.push_back(std::make_unique<BackPackPiece>());
 		}
-		grids_.push_back(std::move(row));
+		pieces_.push_back(std::move(row));
 	}
 }
 
@@ -208,15 +208,15 @@ void BackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDa
 	{
 		for (size_t c = 0; c < GameConstants::kBackPackColNum; ++c)
 		{
-			grids_[r][c]->Initialize(GridState::UnlockedEmpty);
-			grids_[r][c]->transform_.position = { float(c), 0.0f, float(r) };
+			pieces_[r][c]->Initialize(GridState::UnlockedEmpty);
+			pieces_[r][c]->SetPosition(Vector3(float(c), 0.0f, float(r)));
 		}
 	}
 }
 
 void BackPack::Update(const Matrix4x4& viewProj)
 {
-	drawBackPack_->Update(viewProj, grids_);
+	drawBackPack_->Update(viewProj, pieces_);
 
 	itemLineup_->Update(viewProj);
 }
@@ -321,7 +321,7 @@ void DrawBackPack::UpdateRenderObject(
 }
 
 
-void DrawBackPack::Update(const Matrix4x4& viewProj, const std::vector<std::vector<std::unique_ptr<BackPackGrid>>>& grids)
+void DrawBackPack::Update(const Matrix4x4& viewProj, const std::vector<std::vector<std::unique_ptr<BackPackPiece>>>& grids)
 {
 	lockedUnavailableWorlds_.clear();
 	lockedAvailableWorlds_.clear();
@@ -333,11 +333,7 @@ void DrawBackPack::Update(const Matrix4x4& viewProj, const std::vector<std::vect
 		{
 			const auto& g = grids[r][c];
 
-			Matrix4x4 world = Matrix::MakeAffineMatrix(
-				g->transform_.scale,
-				g->transform_.rotate,
-				g->transform_.position
-			);
+			Matrix4x4 world = grids[r][c]->GetWorldMatrix();
 
 			switch (g->GetState())
 			{

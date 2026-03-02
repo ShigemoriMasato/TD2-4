@@ -8,7 +8,7 @@ BackPackPiece::~BackPackPiece()
 
 void BackPackPiece::Initialize(GridState state)
 {
-	ChangeState(state_);
+	ChangeState(state);
 }
 
 void BackPackPiece::ChangeState(GridState newState)
