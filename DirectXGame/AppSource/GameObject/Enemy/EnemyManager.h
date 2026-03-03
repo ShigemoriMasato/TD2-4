@@ -14,15 +14,18 @@ public:
 	/// @brief EnemyManagerを初期化
 	/// @param modelManager モデルマネージャー
 	/// @param drawDataManager 描画データマネージャー
-	void Initialize();
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager);
 
 	/// @brief EnemyManagerを更新
 	/// @param deltaTime デルタタイム（秒）
-	void Update(float deltaTime);
+	/// @param currentWave 現在のWave番号
+	/// @param playerPosition プレイヤーの位置
+	/// @param vpMatrix VP行列
+	void Update(float deltaTime, uint32_t currentWave, const Vector3& playerPosition, const Matrix4x4& vpMatrix);
 
 	/// @brief 敵を描画
 	/// @param cmdObj コマンドオブジェクト
-	void Draw();
+	void Draw(CmdObj* cmdObj);
 
 	/// @brief ImGuiでデバッグ情報を表示
 	void DrawImGui();
@@ -37,6 +40,13 @@ public:
 	/// @brief ターゲット位置を設定
 	/// @param target ターゲット位置
 	void SetTarget(const Vector3& target) { targetPosition_ = target; }
+
+	/// @brief マップの境界を設定
+	/// @param minX X方向の最小値
+	/// @param maxX X方向の最大値
+	/// @param minZ Z方向の最小値
+	/// @param maxZ Z方向の最大値
+	void SetMapBounds(float minX, float maxX, float minZ, float maxZ);
 
 	/// @brief 生存している敵の数を取得
 	/// @return 生存している敵の数
@@ -63,10 +73,21 @@ private:
 	/// @return 生成位置
 	Vector3 CalculateConcentrationPosition(const Vector3& basePosition, int index, int count);
 
+	/// @brief 座標をマップ境界内にクランプする
+	/// @param position 座標
+	/// @return クランプされた座標
+	Vector3 ClampToMapBounds(const Vector3& position) const;
+
 private:
 
 	// 敵のリスト
 	std::vector<std::unique_ptr<Enemy>> enemies_;
+
+	// モデルマネージャー
+	SHEngine::ModelManager* modelManager_ = nullptr;
+
+	// 描画データマネージャー
+	SHEngine::DrawDataManager* drawDataManager_ = nullptr;
 
 	// ターゲット位置（Playerの位置など）
 	Vector3 targetPosition_ = { 0.0f, 0.0f, 0.0f };
@@ -74,6 +95,16 @@ private:
 	// 生成範囲
 	float spawnRangeMin_ = 20.0f;
 	float spawnRangeMax_ = 30.0f;
+
+	// マップの境界
+	float mapMinX_ = -20.0f;
+	float mapMaxX_ = 20.0f;
+	float mapMinZ_ = -20.0f;
+	float mapMaxZ_ = 20.0f;
+
+	// Wave1の自動生成タイマー
+	float wave1SpawnTimer_ = 0.0f;
+	const float wave1SpawnInterval_ = 2.0f; // 2秒ごとに生成
 
 	// 乱数生成器
 	std::random_device rd_;
