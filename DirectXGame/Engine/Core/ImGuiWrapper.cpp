@@ -6,7 +6,7 @@
 using namespace SHEngine;
 
 void ImGuiWrapper::Initialize(DXDevice* device, Command::Manager* manager, Screen::WindowsAPI* window, Command::Object* cmdObject) {
-	logger_ = getLogger("ImGui");
+	logger_ = getLogger("ImGui", LoggerFlag::UseDebugString);
 
 #ifdef USE_IMGUI
 	IMGUI_CHECKVERSION();

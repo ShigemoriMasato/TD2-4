@@ -248,6 +248,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Player\Status\Status.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Status\StatusManager.cpp" />
     <ClInclude Include="AppSource\04_Asakawa\AsakawaScene.h" />
+    <ClCompile Include="Engine\Render\Screen\ShadowMap.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\BackPack\GameConstants.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
@@ -344,6 +345,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Player\Status\StatusModifier.h" />
     <ClInclude Include="AppSource\GameObject\Player\Status\Status.h" />
     <ClInclude Include="AppSource\GameObject\Player\Status\StatusManager.h" />
+    <ClInclude Include="Engine\Render\Screen\ShadowMap.h" />
     <ClInclude Include="AppSource\GameObject\LineDrawer\PrimitiveLineDrawer.h" />
   </ItemGroup>
   <ItemGroup>

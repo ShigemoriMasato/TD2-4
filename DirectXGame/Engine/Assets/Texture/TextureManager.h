@@ -72,6 +72,13 @@ namespace SHEngine {
 		int CreateSwapChainTexture(ID3D12Resource* resource, uint32_t clearColor);
 
 		/**
+		* @brief 深度テクスチャを作成
+		* @param resource 深度テクスチャのリソース
+		* @return テクスチャハンドル
+		*/
+		int CreateDepthTexture(ID3D12Resource* resource);
+
+		/**
 		 * @brief ビットマップテクスチャを作成
 		 * @param width 幅
 		 * @param height 高さ

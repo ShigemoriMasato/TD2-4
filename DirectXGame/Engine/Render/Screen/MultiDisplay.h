@@ -21,6 +21,9 @@ namespace SHEngine::Screen {
 		TextureData* GetTextureData() const override {
 			return displays_[currentDisplayIndex_]->GetTextureData();
 		}
+		TextureData* GetDepthTexture() const override {
+			return displays_[currentDisplayIndex_]->GetDepthTexture();
+		}
 
 		DXGI_FORMAT GetRTVFormat() override { return DXGI_FORMAT_R8G8B8A8_UNORM; }
 

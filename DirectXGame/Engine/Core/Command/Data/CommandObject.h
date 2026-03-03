@@ -19,6 +19,9 @@ namespace SHEngine::Command {
 		/// @brief コマンドを積めるようになるまで待機する
 		void WaitForCanExecute();
 
+		/// @brief GPUの処理がすべて終わるのを待機する
+		void WaitForStopGPU();
+
 		/// @brief コマンドリストをリセットして、コマンドを積める状態にする(実行できる状態でなかったら実行できるまで待つ)
 		void ResetCommandList();
 
