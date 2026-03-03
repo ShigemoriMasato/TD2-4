@@ -9,8 +9,6 @@ BackPack::BackPack()
 {
 	drawBackPack_ = std::make_unique<DrawBackPack>();
 
-	shop_ = std::make_unique<Shop>();
-
 	for (int i = 0; i < GameConstants::kBackPackRowNum; ++i)
 	{
 		std::vector<std::unique_ptr<BackPackPiece>> row;
@@ -24,11 +22,9 @@ BackPack::BackPack()
 
 BackPack::~BackPack() {};
 
-void BackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, ItemManager* itemManager, CommonData* commonData)
+void BackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, ItemManager* itemManager, CommonData* commonData, SHEngine::Input* input)
 {
 	drawBackPack_->Initialize(modelManager, drawDataManager);
-
-	shop_->Initialize(modelManager, drawDataManager, itemManager, commonData);
 
 	// 初期マップ
 	for (size_t r = 0; r < GameConstants::kBackPackRowNum; ++r)
@@ -36,7 +32,7 @@ void BackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDa
 		for (size_t c = 0; c < GameConstants::kBackPackColNum; ++c)
 		{
 			pieces_[r][c]->Initialize(GridState::UnlockedEmpty);
-			pieces_[r][c]->SetPosition(Vector3(float(c), 0.0f, float(r)));
+			pieces_[r][c]->SetPosition(Vector3(float(c) * 2.0f, 0.0f, float(r) * 2.0f));
 		}
 	}
 }
@@ -44,24 +40,20 @@ void BackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDa
 void BackPack::Update(const Matrix4x4& viewProj)
 {
 	drawBackPack_->Update(viewProj, pieces_);
-
-	shop_->Update(viewProj);
 }
 
 void BackPack::Draw(SHEngine::Command::Object* cmdObject)
 {
 	drawBackPack_->Draw(cmdObject);
-
-	shop_->Draw(cmdObject);
 }
 
 void BackPack::DrawImGui()
 {
+#ifdef USE_IMGUI
 	ImGui::Begin("BackPack");
 
-	shop_->DrawImGui();
-
 	ImGui::End();
+#endif // USE_IMGUI
 }
 
 

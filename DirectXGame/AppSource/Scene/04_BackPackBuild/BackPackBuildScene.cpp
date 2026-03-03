@@ -1,13 +1,16 @@
 #include "BackPackBuildScene.h"
 #include "GameObject/BackPack/BackPack.h"
+#include "GameObject/BackPack/Shop/Shop.h"
 #include "GameObject/Item/ItemManager.h"
 
 BackPackBuildScene::BackPackBuildScene()
 {
-	itemManager_ = std::make_unique<ItemManager>();
 	camera_ = std::make_unique<DebugCamera>();
-	backPack_ = std::make_unique<BackPack>();
 	grid_ = std::make_unique<Grid>();
+
+	itemManager_ = std::make_unique<ItemManager>();
+	backPack_ = std::make_unique<BackPack>();
+	shop_ = std::make_unique<Shop>();
 }
 
 BackPackBuildScene::~BackPackBuildScene()
@@ -15,10 +18,12 @@ BackPackBuildScene::~BackPackBuildScene()
 
 void BackPackBuildScene::Initialize()
 {
-	grid_->Initialize(drawDataManager_);
-	itemManager_->Initialize(modelManager_);
 	camera_->Initialize(input_);
-	backPack_->Initialize(modelManager_, drawDataManager_, itemManager_.get(), commonData_);
+	grid_->Initialize(drawDataManager_);
+
+	itemManager_->Initialize(modelManager_);
+	backPack_->Initialize(modelManager_, drawDataManager_, itemManager_.get(), commonData_, input_);
+	shop_->Initialize(modelManager_, drawDataManager_, itemManager_.get(), commonData_, input_);
 }
 
 std::unique_ptr<IScene> BackPackBuildScene::Update()
@@ -28,8 +33,11 @@ std::unique_ptr<IScene> BackPackBuildScene::Update()
 
 	// グリッド
 	grid_->Update(camera_->GetCenter(), camera_->GetVPMatrix());
+
+	// ショップ
+	shop_->Update(camera_->GetVPMatrix());
 	
-	// ビルドシーンのメイン
+	// バックパック
 	backPack_->Update(camera_->GetVPMatrix());
 
 	return nullptr;
@@ -45,6 +53,7 @@ void BackPackBuildScene::Draw()
 
 	grid_->Draw(cmdObj);
 	backPack_->Draw(cmdObj);
+	shop_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 

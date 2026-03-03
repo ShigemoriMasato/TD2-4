@@ -15,7 +15,7 @@ class BackPack
 public:
 	BackPack();
 	~BackPack();
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, ItemManager* itemManager, CommonData* commonData);
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, ItemManager* itemManager, CommonData* commonData, SHEngine::Input* input);
 	void Update(const Matrix4x4& viewProj);
 	void Draw(SHEngine::Command::Object* cmdObject);
 	void DrawImGui();
@@ -27,9 +27,4 @@ private:
 
 	// バックパックのデータ部分
 	std::vector<std::vector<std::unique_ptr<BackPackPiece>>> pieces_;
-
-	// ショップアイテムのデータと描画部分
-	std::unique_ptr<Shop> shop_;
-
-
 };

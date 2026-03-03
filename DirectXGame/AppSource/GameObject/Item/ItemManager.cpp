@@ -76,14 +76,14 @@ int ItemManager::ResolveModelID(Item& item)
 	for (const auto& vertex : modelData.vertices)
 	{
 		tempAABB.min.x = std::min(tempAABB.min.x, vertex.position.x);
-		tempAABB.min.y = std::min(tempAABB.min.y, vertex.position.y);
 		tempAABB.min.z = std::min(tempAABB.min.z, vertex.position.z);
 		tempAABB.max.x = std::max(tempAABB.max.x, vertex.position.x);
-		tempAABB.max.y = std::max(tempAABB.max.y, vertex.position.y);
 		tempAABB.max.z = std::max(tempAABB.max.z, vertex.position.z);
 	}
 
-	item.aabb = tempAABB;
+	item.boundyPlane.center = Vector3((tempAABB.min.x + tempAABB.max.x) / 2.0f, 0.0f, (tempAABB.min.z + tempAABB.max.z) / 2.0f);
+	item.boundyPlane.height = tempAABB.max.z - tempAABB.min.z;
+	item.boundyPlane.width = tempAABB.max.x - tempAABB.min.x;
 
 	return tempID;
 }

@@ -6,8 +6,9 @@
 #include <Camera/DebugCamera.h>
 #include <Tool/Grid/Grid.h>
 
-class BackPack;
 class ItemManager;
+class BackPack;
+class Shop;
 
 class BackPackBuildScene : public IScene
 {
@@ -22,6 +23,9 @@ private:
 
 	// バックパック
 	std::unique_ptr<BackPack> backPack_;
+
+	// ショップ
+	std::unique_ptr<Shop> shop_;
 
 	// マップgrid
 	std::unique_ptr<Grid> grid_;

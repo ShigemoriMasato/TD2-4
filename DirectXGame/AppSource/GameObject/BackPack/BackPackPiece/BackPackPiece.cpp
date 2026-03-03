@@ -60,7 +60,8 @@ DrawBackPack::~DrawBackPack()
 void DrawBackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager)
 {
 	const uint32_t maxInstance = uint32_t(GameConstants::kBackPackRowNum * GameConstants::kBackPackColNum);
-	const int modelHandle = modelManager->LoadModel("Assets/.EngineResource/Model/Cube");
+	//const int modelHandle = modelManager->LoadModel("Assets/.EngineResource/Model/Cube");
+	const int modelHandle = modelManager->LoadModel("Assets/Model/Demo/BasePuzzlePiece");
 	const auto modelData = modelManager->GetNodeModelData(modelHandle);
 	const auto drawData = drawDataManager->GetDrawData(modelData.drawDataIndex);
 
@@ -98,7 +99,7 @@ void DrawBackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::Dr
 	initGridRender(lockedUnavailableGrid_, bindLockedUnavailable_);
 	initGridRender(lockedAvailableGrid_, bindLockedAvailable_);
 	initGridRender(unlockedEmptyGrid_, bindUnlockedEmpty_);
-
+	
 	// worlds の予約
 	lockedUnavailableWorlds_.reserve(maxInstance);
 	lockedAvailableWorlds_.reserve(maxInstance);
@@ -185,8 +186,10 @@ void DrawBackPack::Draw(SHEngine::Command::Object* cmdObject)
 
 void DrawBackPack::DrawImGui()
 {
+#ifdef USE_IMGUI
 	ImGui::Begin("DrawBackPack");
 
 
 	ImGui::End();
+#endif // USE_IMGUI
 }
