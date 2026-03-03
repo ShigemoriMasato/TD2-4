@@ -194,7 +194,7 @@ void ItemManager::LoadItem()
 	// 指定したファイルを読み込み
 	jsonManager_.Boot(itemFile_);
 
-	jsonManager_.Get("Items", items_);
+	//jsonManager_.Get("Items", items_);
 
 
 	///////////////////////////////////////////
@@ -261,14 +261,14 @@ void ItemManager::LoadItem()
 
 void ItemManager::SaveBaseParam()
 {
-	//int size = static_cast<int>(baseParam_.size());
-	//binaryManager_.RegisterOutput(&size);
-	//for (const auto& param : baseParam_)
-	//{
-	//	binaryManager_.RegisterOutput(&param.first);
-	//	binaryManager_.RegisterOutput(&param.second);
-	//}
-	//binaryManager_.Write(baseParamFile_);
+	int size = static_cast<int>(baseParam_.size());
+	binaryManager_.RegisterOutput(&size);
+	for (const auto& param : baseParam_)
+	{
+		binaryManager_.RegisterOutput(&param.first);
+		binaryManager_.RegisterOutput(&param.second);
+	}
+	binaryManager_.Write(baseParamFile_);
 }
 
 void ItemManager::LoadBaseParam()

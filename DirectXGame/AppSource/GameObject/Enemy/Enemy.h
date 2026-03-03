@@ -87,6 +87,9 @@ public:
 	/// @return 状態
 	EnemyState GetState() const { return state_; }
 
+	/// @brief 敵のID を取得
+    /// @return 敵の一意なID
+	int GetID() const { return id_; }
 private:
 
 	/// @brief 敵のタイプに応じたパラメータを取得
@@ -118,4 +121,7 @@ private:
 	const float spawnWaitTime_ = 1.0f;
 	bool canMove_ = false;
 
+	// ID（一意に敵を識別するため）
+	static int nextID_;
+	int id_;
 };

@@ -1,8 +1,8 @@
 #include "WaveManager.h"
 #include <imgui/imgui.h>
 
-void WaveManager::Initialize(float waveTime, float waitTime) {
-	wave_.Initialize(waveTime, waitTime);
+void WaveManager::Initialize() {
+	wave_.Initialize();
 
 	// コールバックを設定
 	wave_.SetOnWaveStartCallback([this](uint32_t waveNumber) {

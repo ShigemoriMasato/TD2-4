@@ -22,7 +22,7 @@ public:
 	// @brief Waveシステムを初期化
 	// @param waveTime 各Waveの実行時間（秒）
 	// @param waitTime Wave終了後の待機時間（秒）
-	void Initialize(float waveTime = 30.0f, float waitTime = 10.0f);
+	void Initialize();
 
 	// @brief Waveシステムを更新
 	// @param deltaTime デルタタイム（秒）

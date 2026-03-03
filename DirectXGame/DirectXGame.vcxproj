@@ -157,9 +157,11 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AppSource\04_Asakawa\AsakawaScene.cpp" />
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\Enemy.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\EnemyManager.cpp" />
+    <ClCompile Include="AppSource\GameObject\LineDrawer\PrimitiveLineDrawer.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Heatmap\PlayerHeatmap.cpp" />
     <ClCompile Include="AppSource\GameObject\WaveSystem\Wave.cpp" />
     <ClCompile Include="AppSource\GameObject\WaveSystem\WaveManager.cpp" />
@@ -245,7 +247,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Player\Status\StatusModifier.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Status\Status.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Status\StatusManager.cpp" />
-    <ClCompile Include="AppSource\GameObject\LineDrawer\PrimitiveLineDrawer.cpp" />
+    <ClInclude Include="AppSource\04_Asakawa\AsakawaScene.h" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\BackPack\GameConstants.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
