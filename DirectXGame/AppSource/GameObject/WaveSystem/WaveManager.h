@@ -12,7 +12,7 @@ public:
 	// @brief WaveManagerを初期化
 	// @param waveTime 各Waveの実行時間（秒）
 	// @param waitTime Wave終了後の待機時間（秒）
-	void Initialize(float waveTime = 30.0f, float waitTime = 10.0f);
+	void Initialize();
 
 	// @brief WaveManagerを更新
 	// @param deltaTime デルタタイム（秒）
@@ -32,6 +32,18 @@ public:
 	// @brief Waveをリセット
 	void Reset() { wave_.Reset(); }
 
+	// @brief 実行中のWaveが終了したかを確認
+	// @return Wave終了（Complete状態）ならtrue
+	bool IsWaveComplete() const { return wave_.IsWaveComplete(); }
+
+	// @brief Waveが実行中かを確認
+	// @return Wave実行中（InProgress状態）ならtrue
+	bool IsWaveInProgress() const { return wave_.IsWaveInProgress(); }
+
+	// @brief Waveが開始待機中かを確認
+	// @return Wave開始待機中（Ready状態）ならtrue
+	bool IsWaveReady() const { return wave_.IsWaveReady(); }
+
 private:
 
 	// @brief Wave開始時のコールバック
@@ -46,5 +58,4 @@ private:
 
 	/// @brief Waveシステム
 	Wave wave_;
-
 };
