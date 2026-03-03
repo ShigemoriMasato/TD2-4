@@ -36,23 +36,6 @@ void WeaponDebugger::Draw() {
 		ImGui::SliderInt("貫通回数", &weapon->penetration, 1, 10, "%d");
 		ImGui::SliderInt("バックパック内でのサイズ", &weapon->size, 1, 9);
 
-		struct WeaponData {
-			int id;                   // ID
-			int rarity;               // レア度（WeaponRarityのint値）
-			float gold;               // 値段
-			float baseDamage;         // 基本ダメージ数
-			float criticalChance;     // クリティカル発生確率
-			float criticalMultiplier; // クリティカルダメージ倍率
-			float lifeStealChance;    // ライフスティール確率
-			float attackSpeed;        // 攻撃速度
-			float knockbackPower;     // ノックバックの強さ
-			float range;              // 射程距離
-			int penetration;          // 貫通
-			float spreadAngle;        // 拡散角度
-			int size;                 // バックパック上でのサイズ
-			char nameBuffer[64];      // ImGuiのInputText用の固定長のバッファ
-		};
-
 		ImGui::Separator();
 
 		// 保存ボタン
