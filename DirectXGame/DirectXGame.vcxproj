@@ -244,8 +244,11 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Player\Status\StatusModifier.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Status\Status.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Status\StatusManager.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\WeaponController.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\WeaponInstance.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\DamageInfo.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponData.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\Enemy.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\EnemyManager.h" />
@@ -287,6 +290,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Player\Level\LevelProgressTracker.cpp" />
     <ClCompile Include="AppSource\GameObject\Item\ItemEditor.cpp" />
     <ClCompile Include="AppSource\GameObject\Field\Field.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\AttackObject\IAttackObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Utility\src\Operator.cpp" />
     <ClCompile Include="Engine\Utility\src\MatrixFactory.cpp" />
@@ -338,6 +342,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Player\Status\StatusModifier.h" />
     <ClInclude Include="AppSource\GameObject\Player\Status\Status.h" />
     <ClInclude Include="AppSource\GameObject\Player\Status\StatusManager.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\WeaponController.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\WeaponInstance.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\AttackObject\IAttackObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
