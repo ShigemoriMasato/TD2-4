@@ -10,6 +10,7 @@
 #include <01_Mihara/MiharaScene.h>
 #include <02_ShigeScene/ShigeScene.h>
 #include <03_Yokoyama/YokoyamaScene.h>
+#include <04_Asakawa/AsakawaScene.h>
 
 #ifdef USE_IMGUI
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -116,7 +117,7 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	commonData_->cmdObject->ResetCommandList();
 
 	//return std::make_unique<MiharaScene>();
-	return std::make_unique<BackPackBuildScene>();
+	return std::make_unique<TitleScene>();
 }
 
 void InitializeScene::Draw() {

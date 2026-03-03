@@ -1,8 +1,6 @@
 #include "Wave.h"
 
-void Wave::Initialize(float waveTime, float waitTime) {
-	waveTime_ = waveTime;
-	waitTime_ = waitTime;
+void Wave::Initialize() {
 	currentWave_ = 1;
 	waveState_ = WaveState::Ready;
 	currentTimer_ = waitTime_;
