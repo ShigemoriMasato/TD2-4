@@ -66,6 +66,11 @@ void BackPackBuildScene::Draw()
 	ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
 	ImGui::End();
 
+	ImGui::Begin("Depth");
+	auto depthTexture = display->GetDisplay()->GetDepthTexture();
+	ImGui::Image(ImTextureRef(depthTexture->GetGPUHandle().ptr), { 640, 360 });
+	ImGui::End();
+
 	engine_->DrawImGui();
 #endif
 
