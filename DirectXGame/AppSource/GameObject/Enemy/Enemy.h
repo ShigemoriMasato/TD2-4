@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <Utility/Vector.h>
 #include <memory>
+#include <Render/RenderObject.h>
+#include <Assets/Model/ModelManager.h>
 
 /// @brief 敵の種類
 enum class EnemyType : int {
@@ -43,15 +45,19 @@ public:
 	~Enemy();
 
 	/// @brief 敵を初期化
-	void Initialize();
+	/// @param modelManager モデルマネージャー
+	/// @param drawDataManager 描画データマネージャー
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager);
 
 	/// @brief 敵を更新
 	/// @param deltaTime デルタタイム（秒）
-	void Update(float deltaTime);
+	/// @param playerPosition プレイヤーの位置
+	/// @param vpMatrix VP行列
+	void Update(float deltaTime, const Vector3& playerPosition, const Matrix4x4& vpMatrix);
 
 	/// @brief 敵を描画
 	/// @param cmdObj コマンドオブジェクト
-	void Draw();
+	void Draw(CmdObj* cmdObj);
 
 	/// @brief 敵の生成設定
 	/// @param type 敵の種類
@@ -90,6 +96,7 @@ public:
 	/// @brief 敵のID を取得
     /// @return 敵の一意なID
 	int GetID() const { return id_; }
+
 private:
 
 	/// @brief 敵のタイプに応じたパラメータを取得
@@ -102,6 +109,16 @@ private:
 	void Move(float deltaTime);
 
 private:
+
+	// 描画用変数
+	std::unique_ptr<SHEngine::RenderObject> render_ = nullptr;
+	int colorIndex_ = -1;
+
+	// Transform
+	Transform transform_{};
+
+	// WVP行列
+	Matrix4x4 wvp_;
 
 	// パラメータ
 	EnemyType type_ = EnemyType::Normal;

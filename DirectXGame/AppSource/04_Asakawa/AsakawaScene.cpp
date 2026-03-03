@@ -60,6 +60,15 @@ void AsakawaScene::Initialize() {
 	grid_ = std::make_unique<Grid>();
 	grid_->Initialize(drawDataManager_);
 
+	// マップの生成&初期化
+	map_ = std::make_unique<Map>();
+	map_->Initialize(-20.0f, 20.0f, -20.0f, 20.0f);
+
+	// 敵管理の生成&初期化
+	enemyManager_ = std::make_unique<EnemyManager>();
+	enemyManager_->Initialize(modelManager_, drawDataManager_);
+	enemyManager_->SetMapBounds(map_->GetMinX(), map_->GetMaxX(), map_->GetMinZ(), map_->GetMaxZ());
+
 	waveManager_ = std::make_unique<WaveManager>();
 	waveManager_->Initialize();
 }
@@ -107,6 +116,12 @@ std::unique_ptr<IScene> AsakawaScene::Update() {
 		// グリッドの更新
 		grid_->Update(cameraTransform_.position, camera_->GetVPMatrix());
 
+		// マップの更新
+		map_->Update();
+
+		// 敵管理の更新（Wave番号、プレイヤー位置、VP行列を渡す）
+		enemyManager_->Update(deltaTime, waveManager_->GetCurrentWave(), player_->GetTransform().position, camera_->GetVPMatrix());
+
 		waveManager_->Update(deltaTime);
 	}
 
@@ -116,7 +131,7 @@ std::unique_ptr<IScene> AsakawaScene::Update() {
 #ifdef _DEBUG
 		OutputDebugStringA("AsakawaScene: Creating TitleScene for transition...\n");
 #endif
-		return std::make_unique<ResultScene>();
+		return std::make_unique<TitleScene>();
 	}
 
 	return nullptr;
@@ -149,6 +164,9 @@ void AsakawaScene::Draw() {
 	// フィールドの描画
 	field_->Draw(cmdObj);
 
+	// 敵の描画
+	enemyManager_->Draw(cmdObj);
+
 	// グリッドの描画
 	if (showGrid_) {
 		grid_->Draw(cmdObj);
@@ -180,6 +198,9 @@ void AsakawaScene::Draw() {
 
 	// ウェーブシステム管理クラスのImGui描画
 	waveManager_->DrawImGui();
+
+	// 敵管理のImGui描画
+	enemyManager_->DrawImGui();
 #endif
 
 	engine_->DrawImGui();
