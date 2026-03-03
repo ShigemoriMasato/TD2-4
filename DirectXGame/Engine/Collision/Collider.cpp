@@ -2,7 +2,7 @@
 #include "ColliderManager.h"
 
 ColliderManager* Collider::colliderManager_ = nullptr;
-Logger Collider::logger_ = getLogger("Collider");
+Logger Collider::logger_ = getLogger("Collider", LoggerFlag::UseDebugString);
 
 uint32_t operator|(CollTag a, CollTag b) {
     return static_cast<uint32_t>(a) | static_cast<uint32_t>(b);

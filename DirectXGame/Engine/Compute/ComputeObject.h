@@ -89,7 +89,7 @@ namespace SHEngine {
 		//実行が終わったか確認する用。絶対に実行には使用しない
 		CmdObj* cmdObj_ = nullptr;
 
-		Logger logger_ = getLogger("Compute");
+		Logger logger_ = getLogger("Engine");
 		std::string debugName_;
 	};
 

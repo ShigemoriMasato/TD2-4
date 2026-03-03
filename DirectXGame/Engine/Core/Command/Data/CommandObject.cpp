@@ -36,6 +36,12 @@ void Object::WaitForCanExecute() {
 	commandLists_[dxListIndex_].WaitForCanExecute();
 }
 
+void SHEngine::Command::Object::WaitForStopGPU() {
+	for(auto& cmdList : commandLists_) {
+		cmdList.WaitForCanExecute();
+	}
+}
+
 void SHEngine::Command::Object::ResetCommandList() {
 	if(state_ == State::Open) {
 		// コマンドリストが開いている場合はリセットするとエラーになるのでリセットしない

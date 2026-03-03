@@ -3,6 +3,7 @@
 #include <Utility/ConvertString.h>
 #include <Assets/Texture/TextureManager.h>
 #include <Utility/DirectUtilFuncs.h>
+#include <Utility/Color.h>
 
 using namespace Microsoft::WRL;
 using namespace SHEngine;
@@ -130,7 +131,7 @@ void TextureData::Create(uint32_t width, uint32_t height, Vector4 clearColor, ID
 	textureResource_->SetName(LPCWSTR(ConvertString("WindowTexture : " + std::to_string(debugTextureCount++)).c_str()));
 }
 
-void TextureData::Create(ID3D12Resource* resource, ID3D12Device* device, SRVManager* manager) {
+void TextureData::Create(ID3D12Resource* resource, ID3D12Device* device, SRVManager* manager, uint32_t clearColor) {
 	textureResource_.Attach(resource);
 
 	// metadataがないのでフォーマットとミップ数は手動設定
@@ -151,8 +152,34 @@ void TextureData::Create(ID3D12Resource* resource, ID3D12Device* device, SRVMana
 
 	width_ = static_cast<uint32_t>(desc.Width);
 	height_ = static_cast<uint32_t>(desc.Height);
+	clearColor_ = ConvertColor(clearColor);
 
 	textureResource_->SetName(LPCWSTR(ConvertString("SwapChainTexture : " + std::to_string(debugTextureCount++)).c_str()));
+}
+
+void TextureData::Create(ID3D12Resource* resource, ID3D12Device* device, SRVManager* manager) {
+	textureResource_.Attach(resource);
+
+	// metadataがないのでフォーマットとミップ数は手動設定
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	//!mipmapを使うかどうかは今後要検討
+	srvDesc.Texture2D.MipLevels = 1;
+
+	// SRV用ディスクリプタ位置を確保
+	srvHandle_.UpdateHandle(manager, 0);
+
+	// SRVを作成
+	device->CreateShaderResourceView(textureResource_.Get(), &srvDesc, srvHandle_.GetCPU());
+
+	auto desc = resource->GetDesc();
+
+	width_ = static_cast<uint32_t>(desc.Width);
+	height_ = static_cast<uint32_t>(desc.Height);
+
+	textureResource_->SetName(LPCWSTR(ConvertString("DepthTexture : " + std::to_string(debugTextureCount++)).c_str()));
 }
 
 ComPtr<ID3D12Resource> TextureData::Create(uint32_t width, uint32_t height, std::vector<uint32_t> colorMap, ID3D12Device* device, SRVManager* srvManager, ID3D12GraphicsCommandList* cmdList) {

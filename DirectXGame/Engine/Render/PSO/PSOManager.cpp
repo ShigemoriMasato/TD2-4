@@ -46,7 +46,7 @@ void Manager::CreatePSO(PSO::Config config) {
 	psoDesc.NumRenderTargets = 1;
 	psoDesc.SampleDesc.Count = 1;
 	psoDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
-	psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
 	//Configにあるやつ
 	psoDesc.pRootSignature = rootSignatureShelf_->GetRootSignature(config.rootConfig);
