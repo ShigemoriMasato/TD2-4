@@ -116,7 +116,7 @@ std::unique_ptr<IScene> AsakawaScene::Update() {
 #ifdef _DEBUG
 		OutputDebugStringA("AsakawaScene: Creating TitleScene for transition...\n");
 #endif
-		return std::make_unique<ResultScene>();
+		return std::make_unique<TitleScene>();
 	}
 
 	return nullptr;
