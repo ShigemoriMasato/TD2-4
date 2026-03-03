@@ -46,10 +46,10 @@ void BackPackBuildScene::Draw()
 	grid_->Draw(cmdObj);
 	backPack_->Draw(cmdObj);
 
-	display->PostDraw(cmdObj);
-
 
 	window->PreDraw(cmdObj);
+
+	display->PostDraw(cmdObj);
 
 	//ここ以外で記述する場合、ifdefを忘れないようにすること
 #ifdef USE_IMGUI
@@ -59,6 +59,12 @@ void BackPackBuildScene::Draw()
 	backPack_->DrawImGui();
 
 	itemManager_->DrawImGui();
+
+	ImGui::Begin("FPS");
+	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
+	ImGui::Text("DeltaTime: %.3f ms", deltaTime * 1000.0f);
+	ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
+	ImGui::End();
 
 	engine_->DrawImGui();
 #endif

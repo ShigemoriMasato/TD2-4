@@ -18,6 +18,9 @@ void SceneManager::Update() {
 	}
 
 	if (nextScene_) {
+		if (commonData_->cmdObject) {
+			commonData_->cmdObject->WaitForStopGPU();
+		}
 		nextScene_->Ready(engine_, commonData_.get());
 		nextScene_->Initialize();
 		currentScene_ = std::move(nextScene_);
