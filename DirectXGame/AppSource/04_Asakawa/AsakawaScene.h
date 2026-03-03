@@ -10,6 +10,8 @@
 #include "GameObject/Weapon/WeaponManager.h"
 
 #include "GameObject/WaveSystem/WaveManager.h"
+#include "GameObject/Enemy/EnemyManager.h"
+#include "GameObject/Map/Map.h"
 
 #include <Camera/Camera.h>
 #include <Scene/IScene.h>
@@ -64,6 +66,12 @@ private:
 
 	// グリッド
 	std::unique_ptr<Grid> grid_;
+
+	// マップ
+	std::unique_ptr<Map> map_ = nullptr;
+
+	// 敵管理
+	std::unique_ptr<EnemyManager> enemyManager_ = nullptr;
 
 	// カメラのTransform
 	Transform cameraTransform_{};

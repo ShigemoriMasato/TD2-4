@@ -2,12 +2,15 @@
 #include <Assets/Model/ModelManager.h>
 #include <numbers>
 #include <cmath>
+#include <algorithm>
 
 #ifdef USE_IMGUI
 #include <imgui/imgui.h>
 #endif
 
-void EnemyManager::Initialize() {
+void EnemyManager::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager) {
+	modelManager_ = modelManager;
+	drawDataManager_ = drawDataManager;
 
 	// 乱数生成器の初期化
 	gen_ = std::mt19937(rd_());
@@ -18,14 +21,30 @@ void EnemyManager::Initialize() {
 	// 初期ターゲット位置設定
 	targetPosition_ = { 0.0f, 0.0f, 0.0f };
 
+	// Wave1タイマーをリセット
+	wave1SpawnTimer_ = 0.0f;
+
 	enemies_.clear();
 }
 
-void EnemyManager::Update(float deltaTime) {
-	// 全ての敵を更新
+void EnemyManager::Update(float deltaTime, uint32_t currentWave, const Vector3& playerPosition, const Matrix4x4& vpMatrix) {
+	// プレイヤーの位置をターゲットに設定
+	targetPosition_ = playerPosition;
+
+	// Wave1の場合、2秒ごとに敵を生成
+	if (currentWave == 1) {
+		wave1SpawnTimer_ += deltaTime;
+		if (wave1SpawnTimer_ >= wave1SpawnInterval_) {
+			wave1SpawnTimer_ = 0.0f;
+			// 1体ずつScatter方式で生成
+			Generate(EnemyType::Normal, SpawnType::Scatter, 1, currentWave);
+		}
+	}
+
+	// 全ての敵を更新し、プレイヤー位置とVP行列を渡す
 	for (auto& enemy : enemies_) {
 		if (enemy) {
-			enemy->Update(deltaTime);
+			enemy->Update(deltaTime, playerPosition, vpMatrix);
 		}
 	}
 
@@ -39,8 +58,12 @@ void EnemyManager::Update(float deltaTime) {
 	);
 }
 
-void EnemyManager::Draw() {
-	
+void EnemyManager::Draw(CmdObj* cmdObj) {
+	for (auto& enemy : enemies_) {
+		if (enemy) {
+			enemy->Draw(cmdObj);
+		}
+	}
 }
 
 void EnemyManager::DrawImGui() {
@@ -100,7 +123,7 @@ void EnemyManager::Generate(EnemyType type, SpawnType spawnType, int count, uint
 			Vector3 spawnPos = CalculateScatterPosition(currentWave);
 
 			auto enemy = std::make_unique<Enemy>();
-			enemy->Initialize();
+			enemy->Initialize(modelManager_, drawDataManager_);
 			enemy->Setup(type, spawnPos, targetPosition_);
 
 			enemies_.push_back(std::move(enemy));
@@ -116,7 +139,7 @@ void EnemyManager::Generate(EnemyType type, SpawnType spawnType, int count, uint
 			Vector3 spawnPos = CalculateConcentrationPosition(basePos, i, count);
 
 			auto enemy = std::make_unique<Enemy>();
-			enemy->Initialize();
+			enemy->Initialize(modelManager_, drawDataManager_);
 			enemy->Setup(type, spawnPos, targetPosition_);
 
 			enemies_.push_back(std::move(enemy));
@@ -139,6 +162,13 @@ void EnemyManager::Clear() {
 	enemies_.clear();
 }
 
+void EnemyManager::SetMapBounds(float minX, float maxX, float minZ, float maxZ) {
+	mapMinX_ = minX;
+	mapMaxX_ = maxX;
+	mapMinZ_ = minZ;
+	mapMaxZ_ = maxZ;
+}
+
 Vector3 EnemyManager::CalculateScatterPosition(uint32_t currentWave) {
 	// ターゲット位置を中心にランダムな角度と距離で生成位置を決定
 	float angle = angleDist_(gen_);
@@ -151,6 +181,9 @@ Vector3 EnemyManager::CalculateScatterPosition(uint32_t currentWave) {
 	spawnPos.x = targetPosition_.x + std::cos(angle) * range;
 	spawnPos.y = targetPosition_.y;
 	spawnPos.z = targetPosition_.z + std::sin(angle) * range;
+
+	// マップ境界内にクランプ
+	spawnPos = ClampToMapBounds(spawnPos);
 
 	return spawnPos;
 }
@@ -171,5 +204,15 @@ Vector3 EnemyManager::CalculateConcentrationPosition(const Vector3& basePosition
 	spawnPos.y = basePosition.y;
 	spawnPos.z = basePosition.z + std::sin(angle) * radius + randomZ;
 
+	// マップ境界内にクランプ
+	spawnPos = ClampToMapBounds(spawnPos);
+
 	return spawnPos;
+}
+
+Vector3 EnemyManager::ClampToMapBounds(const Vector3& position) const {
+	Vector3 clamped = position;
+	clamped.x = std::clamp(clamped.x, mapMinX_, mapMaxX_);
+	clamped.z = std::clamp(clamped.z, mapMinZ_, mapMaxZ_);
+	return clamped;
 }

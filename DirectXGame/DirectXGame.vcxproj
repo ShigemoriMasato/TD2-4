@@ -161,6 +161,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\Enemy.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\EnemyManager.cpp" />
+    <ClCompile Include="AppSource\GameObject\Map\Map.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Heatmap\PlayerHeatmap.cpp" />
     <ClCompile Include="AppSource\GameObject\WaveSystem\Wave.cpp" />
     <ClCompile Include="AppSource\GameObject\WaveSystem\WaveManager.cpp" />
@@ -249,6 +250,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Render\Screen\ShadowMap.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
+    <ClInclude Include="AppSource\GameObject\Map\Map.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponData.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\Enemy.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\EnemyManager.h" />
