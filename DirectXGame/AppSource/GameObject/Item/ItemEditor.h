@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef USE_IMGUI
-
 class ItemManager;
 
 class ItemEditor
@@ -36,14 +34,3 @@ private:
 	float cellSize_ = 16.0f;
 	int paintMode_ = 0; // 0:none 1:add(L) 2:erase(R)
 };
-
-#else
-
-class ItemManager;
-class ItemEditor
-{
-public:
-	void Draw(ItemManager&) {}
-};
-
-#endif

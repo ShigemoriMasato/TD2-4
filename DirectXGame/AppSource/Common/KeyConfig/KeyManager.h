@@ -11,6 +11,8 @@ enum class Key {
 	Left,
 	Up,
 	Down,
+
+	Hold,//Chip持ち運び
 	
 	Correct,//確定キー
 	Reverse,//取消キー

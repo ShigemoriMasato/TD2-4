@@ -17,8 +17,9 @@ enum class CollTag : uint32_t {
 	Player = 1 << 0,   ///< プレイヤー
 	Enemy = 1 << 1,    ///< 敵
 	Item = 1 << 2,     ///< アイテム
-	Stage = 1 << 3,    ///< ステージ
-	Unit = 1 << 4      ///< ユニット
+	Slot = 1 << 3,     ///< バックパックの秋スロット
+	Chip = 1 << 4,     ///< Pieceのチップ
+	Cursor = 1 << 5,   ///< カーソル
 };
 
 /**
@@ -38,6 +39,18 @@ uint32_t operator|(uint32_t a, CollTag b);
  * @return ビットANDの結果
  */
 uint32_t operator&(uint32_t a, CollTag b);
+
+/**
+ * @brief CollTagとuint32_tのビットAND演算子
+ * @return ビットANDの結果
+ */
+uint32_t operator&(CollTag a, uint32_t b);
+
+/**
+ * @brief CollTagのビットAND演算子
+ * @return ビットANDの結果
+ */
+uint32_t operator&(CollTag a, CollTag b);
 
 /**
  * @brief CollTagのビットNOT演算子
@@ -81,7 +94,9 @@ public:
 	 * 
 	 * @param other 衝突相手のCollider
 	 */
-	virtual void OnCollision(Collider* other) = 0;
+	virtual void OnCollision(Collider* other) {};
+
+	virtual void NonCollision(Collider* other) {};
 
 	// 自分のタグ
 	virtual CollTag GetOwnTag() { return ownTag_; }

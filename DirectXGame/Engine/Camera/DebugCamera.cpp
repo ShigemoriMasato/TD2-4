@@ -8,7 +8,7 @@ using namespace SHEngine;
 void DebugCamera::Initialize(Input* input) {
 	input_ = input;
 
-	center_ = {0.0f, 2.0f, 0.0f};
+	center_ = {0.0f, -2.0f, 0.0f};
 
 	scale_ = Vector3(1.0f, 1.0f, 1.0f);
 	position_= Vector3(0.0f, 0.0f, -20.0f);
@@ -34,7 +34,7 @@ void DebugCamera::Update() {
 	float mouseWheel = -input_->GetMouseWheel();
 
 	if (input_->GetMouseButtonState()[2] || input_->GetKeyState(DIK_LSHIFT)) {
-		float speed = spherical_.x * 0.05f;
+		float speed = spherical_.x * 0.2f;
 		center_ += Vector3(mouseMove.x * speed_, mouseMove.y * speed_, mouseWheel * 0.05f) * speed * MakeRotationMatrix(rotation_);
 	} else {
 		spherical_ += Vector3(mouseWheel * 0.05f, mouseMove.y * speed_, -mouseMove.x * speed_);
@@ -48,10 +48,10 @@ void DebugCamera::Update() {
 
 	position_ *= spherical_.x; // 半径を適用
 
-	rotation_ = { spherical_.y - std::numbers::pi_v<float> / 2, spherical_.z + std::numbers::pi_v<float> / 2, 0.0f };
+	rotation_ = { -spherical_.y + std::numbers::pi_v<float> / 2, -spherical_.z - std::numbers::pi_v<float> / 2, 0.0f };
 
 	// Actual camera position in world space
-	position_ += center_;
+	position_ -= center_;
 
 	//===================
 	//座標の適用
@@ -65,6 +65,6 @@ Vector3 DebugCamera::GetCenter() const {
 }
 
 void DebugCamera::MakeMatrix() {
-	transformMatrix_ = MakeTranslationMatrix(-position_) * MakeRotationYMatrix(rotation_.y) * MakeRotationXMatrix(rotation_.x) * MakeScaleMatrix(scale_);
+	transformMatrix_ = MakeTranslationMatrix(-position_) * MakeRotationYMatrix(-rotation_.y) * MakeRotationXMatrix(-rotation_.x) * MakeScaleMatrix(scale_);
 	vpMatrix_ = transformMatrix_ * projectionMatrix_;
 }

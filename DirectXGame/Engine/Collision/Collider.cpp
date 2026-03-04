@@ -16,6 +16,14 @@ uint32_t operator&(uint32_t a, CollTag b) {
     return a & static_cast<uint32_t>(b);
 }
 
+uint32_t operator&(CollTag a, uint32_t b) {
+	return static_cast<uint32_t>(a) & b;
+}
+
+uint32_t operator&(CollTag a, CollTag b) {
+	return static_cast<uint32_t>(a) & static_cast<uint32_t>(b);
+}
+
 uint32_t operator~(CollTag a) {
     return ~static_cast<uint32_t>(a);
 }

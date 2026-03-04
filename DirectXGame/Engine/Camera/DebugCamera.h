@@ -66,5 +66,5 @@ private:
 	float distance_ = -10.0f;
 
 	/// @brief カメラの回転速度
-	const float speed_ = 0.003f;
+	const float speed_ = 0.005f;
 };

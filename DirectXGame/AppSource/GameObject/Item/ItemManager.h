@@ -3,16 +3,6 @@
 #include <Tool/Binary/BinaryManager.h>
 #include <Assets/Model/ModelManager.h>
 
-enum class ParamType : int
-{
-	HP,
-	MP,
-	Attack,
-	Defense,
-	Speed,
-	Count,
-};
-
 class ItemManager {
 public:
 
@@ -27,16 +17,12 @@ public:
 	// 描画等で必要になったときに ID を解決する
 	int ResolveModelID(Item& item);
 
-#ifdef USE_IMGUI 
-
 	/// Editer用関数
 	std::vector<Item>& GetItemsForEdit() { return items_; }
 	const std::vector<Item>& GetItemsForEdit() const { return items_; }
 
 	std::unordered_map<std::string, float>& GetBaseParamsForEdit() { return baseParam_; }
 	const std::unordered_map<std::string, float>& GetBaseParamsForEdit() const { return baseParam_; }
-
-#endif
 
 private:
 

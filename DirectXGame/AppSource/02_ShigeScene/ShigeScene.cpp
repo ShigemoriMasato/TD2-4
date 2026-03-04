@@ -1,6 +1,7 @@
 #include "ShigeScene.h"
 #include <imgui/imgui.h>
 #include <Utility/Color.h>
+#include "ShopScene.h"
 
 void ShigeScene::Initialize() {
 	camera_ = std::make_unique<DebugCamera>();
@@ -9,74 +10,50 @@ void ShigeScene::Initialize() {
 	grid_ = std::make_unique<Grid>();
 	grid_->Initialize(drawDataManager_);
 
-	computeObject_ = std::make_unique<SHEngine::ComputeObject>("TestCompute");
-	computeObject_->Initialize();
+	colliderManager_ = std::make_unique<ColliderManager>();
+	Collider::SetColliderManager(colliderManager_.get());
 
-	sneekWalk_ = modelManager_->GetSkinningModelData(modelManager_->LoadModel("SneekWalk"));
-	animation_ = modelManager_->LoadAnimation("SneekWalk", 0);
+	player_ = std::make_unique<Player>();
+	player_->Initialize(commonData_->keyManager.get());
+	
+	enemyManager_ = std::make_unique<EnemyManager>();
+	enemyManager_->Initialize(player_->GetPositionPtr());
 
-	computeObject_->CreateSRV(sizeof(WellForGPU), int(sneekWalk_.skeleton.joints.size()));
-	computeObject_->CreateSRV(sizeof(VertexData), int(sneekWalk_.vertices.size()));
-	computeObject_->CreateSRV(sizeof(VertexInfluence), int(sneekWalk_.vertexInfluences.size()));
-	computeObject_->CreateCBV(sizeof(uint32_t));
-	computeObject_->CreateUAV(sizeof(VertexData), int(sneekWalk_.vertices.size()));
-	computeObject_->SetShader("Skinning.CS.hlsl");
-	computeObject_->SetThreadGroupSize(int(sneekWalk_.vertices.size()));
-
-	drawDataManager_->AddVertexBuffer(sneekWalk_.vertices);
-	drawDataManager_->AddIndexBuffer(sneekWalk_.indices);
-	int drawDataIndex = drawDataManager_->CreateDrawData();
-	auto drawData = drawDataManager_->GetDrawData(drawDataIndex);
-	sneekWalk_.drawDataIndex = drawDataIndex;
-
-	render_ = std::make_unique<SHEngine::RenderObject>("TestRender");
-	render_->Initialize();
-	render_->SetDrawData(drawData);
-	render_->psoConfig_.vs = "Simple.VS.hlsl";
-	render_->psoConfig_.ps = "White.PS.hlsl";
-	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "ObjectCBV");
-
-	drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(3).drawDataIndex);
-	desc_ = std::make_unique<SHEngine::RenderObject>("TestDesc");
-	desc_->Initialize();
-	desc_->SetDrawData(drawData);
-	desc_->psoConfig_.vs = "Simple.VS.hlsl";
-	desc_->psoConfig_.ps = "White.PS.hlsl";
-	desc_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "ObjectCBV");
-
-	computeCmdObj_ = engine_->CreateCommandObject(SHEngine::Command::Type::Compute, 0, 1);
-
-	skinnedVertices_.resize(sneekWalk_.vertices.size());
+	objectRender_ = std::make_unique<ObjectRender>();
+	objectRender_->Initialize(drawDataManager_, modelManager_);
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
 	camera_->Update();
 	Vector3 cameraPos = camera_->GetCenter();
 	grid_->Update(cameraPos, camera_->GetVPMatrix());
+	auto key = commonData_->keyManager->GetKeyStates();
 
-	Matrix4x4 world = Matrix4x4::Identity() * camera_->GetVPMatrix();
-	render_->CopyBufferData(0, &world, sizeof(world));
-	desc_->CopyBufferData(0, &world, sizeof(world));
+	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 
-	float deltaTime = engine_->GetDeltaTime();
-	time_ = std::fmod(time_ + deltaTime, animation_.duration);
-	AnimationUpdate(animation_, time_, sneekWalk_.skeleton);
-	SkeletonUpdate(sneekWalk_.skeleton);
-	SkinningUpdate(well_, sneekWalk_.skinClusterData, sneekWalk_.skeleton);
+	worldTimer_ += deltaTime;
+	if(worldTimer_ > 2.0f) {
+		worldTimer_ = 0.0f;
+		Vector3 initPos = { float(rand() % 20 - 10), 0.0f, float(rand() % 20 - 10) };
+		enemyManager_->PopEnemy(initPos);
+	}
 
-	computeObject_->CopyBufferData(0, well_.data(), sizeof(WellForGPU) * well_.size());
-	computeObject_->CopyBufferData(1, sneekWalk_.vertices.data(), sizeof(VertexData) * sneekWalk_.vertices.size());
-	computeObject_->CopyBufferData(2, sneekWalk_.vertexInfluences.data(), sizeof(VertexInfluence) * sneekWalk_.vertexInfluences.size());
-	uint32_t vertexNum = uint32_t(sneekWalk_.vertices.size());
-	computeObject_->CopyBufferData(3, &vertexNum, sizeof(vertexNum));
+	player_->Update(deltaTime);
+	enemyManager_->Update(deltaTime);
 
-	computeCmdObj_->ResetCommandList();
-	computeObject_->Execute(computeCmdObj_.get());
-	engine_->ExecuteCommand(SHEngine::Command::Type::Compute, 0);
-	computeCmdObj_->WaitForCanExecute();
+	colliderManager_->CollisionCheckAll();
 
-	computeObject_->GetUAVBuffer(0, skinnedVertices_.data(), sizeof(VertexData) * skinnedVertices_.size());
-	drawDataManager_->CopyBufferData(sneekWalk_.drawDataIndex, skinnedVertices_.data(), sizeof(VertexData) * sneekWalk_.vertices.size());
+	//DrawInfoを収集して描画クラスに渡す
+	drawInfos_.clear();
+	drawInfos_.push_back(player_->GetDrawInfo());
+	auto enemyDI = enemyManager_->GetEnemyDrawInfos();
+	drawInfos_.insert(drawInfos_.end(), enemyDI.begin(), enemyDI.end());
+
+	objectRender_->SetDrawInfo(drawInfos_.data(), drawInfos_.size(), camera_->GetVPMatrix());
+
+	if (key[Key::Debug1]) {
+		return std::make_unique<ShopScene>();
+	}
 
 	return nullptr;
 }
@@ -89,8 +66,7 @@ void ShigeScene::Draw() {
 	display->PreDraw(cmdObj, true);
 
 	grid_->Draw(cmdObj);
-	render_->Draw(cmdObj);
-	desc_->Draw(cmdObj);
+	objectRender_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 

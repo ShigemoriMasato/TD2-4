@@ -67,24 +67,6 @@ int ItemManager::ResolveModelID(Item& item)
 
 	int tempID = modelManager_->LoadModel(item.modelPath);
 
-	// ここでAABB
-	auto& modelData = modelManager_->GetNodeModelData(tempID);
-	Vector4 firstPos = modelData.vertices[0].position;
-	AABB tempAABB;
-	tempAABB.min = Vector3(firstPos.x, firstPos.y, firstPos.z);
-	tempAABB.max = Vector3(firstPos.x, firstPos.y, firstPos.z);
-	for (const auto& vertex : modelData.vertices)
-	{
-		tempAABB.min.x = std::min(tempAABB.min.x, vertex.position.x);
-		tempAABB.min.y = std::min(tempAABB.min.y, vertex.position.y);
-		tempAABB.min.z = std::min(tempAABB.min.z, vertex.position.z);
-		tempAABB.max.x = std::max(tempAABB.max.x, vertex.position.x);
-		tempAABB.max.y = std::max(tempAABB.max.y, vertex.position.y);
-		tempAABB.max.z = std::max(tempAABB.max.z, vertex.position.z);
-	}
-
-	item.aabb = tempAABB;
-
 	return tempID;
 }
 

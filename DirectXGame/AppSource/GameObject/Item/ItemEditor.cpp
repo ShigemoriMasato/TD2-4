@@ -1,7 +1,5 @@
 #include "ItemEditor.h"
 
-#ifdef USE_IMGUI
-
 #include "ItemManager.h"
 #include <Utility/ConvertString.h>
 #include <imgui/imgui.h>
@@ -24,6 +22,8 @@ namespace
 
 void ItemEditor::Draw(ItemManager& itemManager)
 {
+#ifdef USE_IMGUI
+
 	auto& items = itemManager.GetItemsForEdit();
 	auto& baseParam = itemManager.GetBaseParamsForEdit();
 
@@ -445,6 +445,6 @@ void ItemEditor::Draw(ItemManager& itemManager)
 #pragma endregion
 
 	ImGui::End();
-}
 
 #endif
+}
