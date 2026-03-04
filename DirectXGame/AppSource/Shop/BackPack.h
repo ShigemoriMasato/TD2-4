@@ -3,6 +3,7 @@
 #include <vector>
 
 enum class Slot {
+	Unknown,
 	Locked,
 	Empty,
 	Rank1,

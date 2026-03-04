@@ -13,14 +13,29 @@ void BackPack::Initialize() {
 }
 
 void BackPack::AddSlot(std::pair<int, int> pos) {
+	if(pos.first < 0 || pos.first >= static_cast<int>(slots_[0].size()) ||
+	   pos.second < 0 || pos.second >= static_cast<int>(slots_.size())) {
+		return; // 範囲外の位置は無視
+	}
+
 	slots_[pos.second][pos.first] = Slot::Empty;
 }
 
 Slot BackPack::GetSlot(std::pair<int, int> pos) const {
+	if(pos.first < 0 || pos.first >= static_cast<int>(slots_[0].size()) ||
+	   pos.second < 0 || pos.second >= static_cast<int>(slots_.size())) {
+		return Slot::Unknown; // 範囲外の位置はUnknownを返す
+	}
+
 	return slots_[pos.second][pos.first];
 }
 
 void BackPack::SetSlot(std::pair<int, int> pos, Slot slot) {
+	if(pos.first < 0 || pos.first >= static_cast<int>(slots_[0].size()) ||
+	   pos.second < 0 || pos.second >= static_cast<int>(slots_.size())) {
+		return; // 範囲外の位置は無視
+	}
+
 	if (slots_[pos.second][pos.first] != Slot::Locked) {
 		slots_[pos.second][pos.first] = slot;
 	}
@@ -47,7 +62,10 @@ std::vector<DrawInfo> BackPack::GetSlotDrawInfos() const {
 					break;
 				case Slot::Rank1:
 					info.color = 0xFFFFFFFF; // 白
-
+					break;
+				default:
+					info.color = 0xff;//黒
+					break;
 			}
 			drawInfos.push_back(info);
 		}

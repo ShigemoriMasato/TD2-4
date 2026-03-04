@@ -20,12 +20,15 @@ void ShopScene::Initialize() {
 	backPack_ = std::make_unique<BackPack>();
 	backPack_->Initialize();
 
+	shopCursor_ = std::make_unique<ShopCursor>();
+	shopCursor_->Initialize(commonData_->keyManager.get());
+
 	pieces_.resize(1);
 	for (auto& piece : pieces_) {
 		piece = std::make_unique<Piece>();
 		auto item = itemManager_->GetItem(0);
 		piece->Initialize(item);
-		piece->SetPosition({ 2.0f, 0.0f, 2.0f });
+		piece->SetPosition({ 0.0f, 0.0f, 0.0f });
 	}
 }
 
@@ -35,10 +38,17 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	debugCamera_->Update();
 	grid_->Update(debugCamera_->GetCenter(), debugCamera_->GetVPMatrix());
 
+	shopCursor_->Update(debugCamera_.get());
+	shopCursor_->EditPiece(pieces_, backPack_.get());
+
 	colliderManager_->CollisionCheckAll();
 
 	//DrawInfo集め
 	std::vector<DrawInfo> drawInfos = backPack_->GetSlotDrawInfos();
+	for(const auto& piece : pieces_) {
+		auto pieceDrawInfos = piece->GetDrawInfos();
+		drawInfos.insert(drawInfos.end(), pieceDrawInfos.begin(), pieceDrawInfos.end());
+	}
 	objectRender_->SetDrawInfo(drawInfos.data(), drawInfos.size(), debugCamera_->GetVPMatrix());
 
 	if (key[Key::Debug1]) {

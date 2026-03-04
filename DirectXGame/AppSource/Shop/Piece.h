@@ -9,12 +9,13 @@ public:
 
 	void Initialize(Item& item);
 
-	void SetPosition(const Vector3& pos) { position_ = pos; }
+	void SetPosition(const Vector3& pos);
 
 	Vector3 GetPosition() const { return position_; }
-	bool CanPut(BackPack* backPack) const;
+	bool CanPut(BackPack* backPack) ;
 	bool Put(BackPack* backPack);
-	bool IsHovered(const Vector3& cursorPos, BackPack* backPack) const;
+	bool IsHovered(const Vector3& cursorPos, BackPack* backPack) ;
+	std::vector<DrawInfo> GetDrawInfos() const;
 
 private:
 
@@ -24,5 +25,8 @@ private:
 	Vector3 position_{};
 
 	Vector2 maxLocalPos_{};
+
+	bool isHovered_ = false;
+	bool isPlaced_ = false;
 
 };

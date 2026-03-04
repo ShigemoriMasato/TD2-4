@@ -10,12 +10,15 @@ void Piece::Initialize(Item& item) {
 	SetPosition({ 0.0f, 0.0f, 0.0f });
 }
 
-bool Piece::CanPut(BackPack* backPack) const {
+bool Piece::CanPut(BackPack* backPack)  {
 	for (const auto& chip : chips_) {
-		if (backPack->GetSlot(chip) != Slot::Empty) {
+		std::pair<int, int> slotPos = { static_cast<int>(position_.x) + chip.first, static_cast<int>(position_.z) + chip.second };
+		if (backPack->GetSlot(slotPos) != Slot::Empty) {
+			isPlaced_ = false;
 			return false;
 		}
 	}
+	isPlaced_ = true;
 	return true;
 }
 
@@ -27,16 +30,48 @@ bool Piece::Put(BackPack* backPack) {
 	for (const auto& chip : chips_) {
 		backPack->SetSlot(chip, Slot::Rank1);
 	}
+
+	return true;
 }
 
-bool Piece::IsHovered(const Vector3& cursorPos, BackPack* backPack) const {
+void Piece::SetPosition(const Vector3& pos) {
+	//愚かしいことにもワールドポジションが送られてくるため、マップチップ番号に変換してから入力する
+	Vector3 mappedPos = pos - Vector3(0.5f, 0.0f, 0.5f);
+	position_ = Vector3(std::round(mappedPos.x), 0.0f, std::round(mappedPos.z));
+}	
+
+bool Piece::IsHovered(const Vector3& cursorPos, BackPack* backPack)  {
 	for (const auto& chip : chips_) {
-		Vector3 slotWorldPos = backPack->GetWorldPos(chip);
+		std::pair<int, int> slotPos = { static_cast<int>(position_.x) + chip.first, static_cast<int>(position_.z) + chip.second };
+		Vector3 slotWorldPos = backPack->GetWorldPos(slotPos);
 		if (std::abs(cursorPos.x - slotWorldPos.x) < 0.5f &&
 			std::abs(cursorPos.z - slotWorldPos.z) < 0.5f) {
+			isHovered_ = true;
 			return true;
 		}
 	}
+	isHovered_ = false;
 	return false;
+}
+
+std::vector<DrawInfo> Piece::GetDrawInfos() const {
+	std::vector<DrawInfo> drawInfos;
+	for (const auto& chip : chips_) {
+		DrawInfo info;
+		info.position = position_ + Vector3(static_cast<float>(chip.first) + 0.5f, 0.0f, static_cast<float>(chip.second) + 0.5f);
+		info.scale = Vector3(1.0f, 0.2f, 1.0f);
+		info.modelIndex = 0;
+
+		info.color = 0x2020b0ff; // 青色
+		if (isHovered_) {
+			info.color = 0xffff00ff; // 黄色
+		}
+		if(isPlaced_) {
+			info.color = 0x00ffffff; // シアン
+		}
+
+		drawInfos.push_back(info);
+	}
+	return drawInfos;
 }
 
