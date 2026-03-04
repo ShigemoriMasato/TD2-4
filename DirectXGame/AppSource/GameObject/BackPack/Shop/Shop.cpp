@@ -26,6 +26,9 @@ void Shop::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	debugLineDrawer_ = std::make_unique<PrimitiveLineDrawer>();
 	debugLineDrawer_->Initialize(drawDataManager_, 256);
 
+	lineupItems_.clear();
+	lineupItems_.reserve(lineupSum);
+
 	for (int i = 0; i < lineupSum; ++i)
 	{
 		LineupItemData data;
@@ -80,6 +83,9 @@ void Shop::Update(const Matrix4x4& viewProj)
 	Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
 	mouseRay_ = screenRaycaster_->ScreenToRay(cursorPos.x, cursorPos.y);
 
+	// XZ平面( y=0 )との交点は各アイテムで共通なので、1回だけ求める
+	const auto mousePosOnXZ = mouseRay_.GetXZ(0.0f);
+
 	// ラインナップ商品の更新
 	for (int i = 0; i < lineupSum; ++i)
 	{
@@ -92,17 +98,19 @@ void Shop::Update(const Matrix4x4& viewProj)
 		// 商品とマウスレイが衝突している && 左クリックした && なにも持っていない
 		if (IsCollision(mouseRay_, worldPlane) && leftTrigger && !haveItem_.has_value())
 		{
-			// ホバー状態する
+			// 他のhoverを解除（多重ホバー防止）
+			for (auto& other : lineupItems_) other.isHover = false;
+
+			// ホバー状態にする
 			data.isHover = true;
 			// 手に掴む
 			haveItem_ = data.item;
 		}
 
-		// ホバー状態ならレイ上に移動
+		// ホバー状態のとき
 		if (data.isHover)
 		{
 			// ホバー位置をマウスレイのXZ平面上座標にする
-			auto mousePosOnXZ = mouseRay_.GetXZ(0.0f);
 			if (mousePosOnXZ.has_value())
 			{
 				data.hoverPos = mousePosOnXZ.value();
@@ -139,8 +147,8 @@ void Shop::Update(const Matrix4x4& viewProj)
 		// CBV更新
 		Matrix4x4 worldMatrix = Matrix::MakeAffineMatrix(Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), data.hoverPos);
 		data.wvp = worldMatrix * viewProj;
-		data.renderObject->CopyBufferData(0, &lineupItems_[i].wvp, sizeof(Matrix4x4));
-		data.renderObject->CopyBufferData(1, &lineupItems_[i].color, sizeof(Vector4));
+		data.renderObject->CopyBufferData(0, &data.wvp, sizeof(Matrix4x4));
+		data.renderObject->CopyBufferData(1, &data.color, sizeof(Vector4));
 	}
 
 	// デバッグライン描画の更新
@@ -179,7 +187,7 @@ bool Shop::PlaceHaveItem(LineupItemData& lineupData)
 	const auto mousePosOpt = mouseRay_.GetXZ(0.0f);
 	if (!mousePosOpt.has_value()) return false;
 	// XZ平面上マウスレイ座標から
-	const Vector3 modelLeftTopPos = Vector3(0.0f, 0.0f, haveItem_->boundyPlane.center.z + (haveItem_->boundyPlane.height / 2.0f));
+	const Vector3 modelLeftTopPos = Vector3(haveItem_->boundyPlane.center.x + (haveItem_->boundyPlane.width / 2.0f), 0.0f, haveItem_->boundyPlane.center.z + (haveItem_->boundyPlane.height / 2.0f));
 	// 置く位置の左上
 	const Vector3 dropPosOpt = mousePosOpt.value() - modelLeftTopPos;
 
@@ -195,7 +203,6 @@ bool Shop::PlaceHaveItem(LineupItemData& lineupData)
 	{
 		const Vector2int worldIndex = Vector2int(anchorF.x + dx, anchorF.y + dy);
 
-		// 範囲外は置けない
 		if (worldIndex.x < 0 || worldIndex.y < 0 ||
 			worldIndex.x >= GameConstants::kBackPackColNum ||
 			worldIndex.y >= GameConstants::kBackPackRowNum)
