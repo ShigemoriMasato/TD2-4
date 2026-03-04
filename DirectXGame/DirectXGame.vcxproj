@@ -163,6 +163,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Player\Heatmap\PlayerHeatmap.cpp" />
     <ClCompile Include="AppSource\GameObject\WaveSystem\Wave.cpp" />
     <ClCompile Include="AppSource\GameObject\WaveSystem\WaveManager.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\AttackObject\Projectile.cpp" />
     <ClCompile Include="AppSource\Scene\01_Title\TitleScene.cpp" />
     <ClCompile Include="AppSource\Scene\02_CharaSelect\CharaSelectScene.cpp" />
     <ClCompile Include="AppSource\Scene\05_Result\ResultScene.cpp" />
@@ -248,6 +249,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Weapon\WeaponInstance.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\AttackObject\Projectile.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\DamageInfo.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponData.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\Enemy.h" />
