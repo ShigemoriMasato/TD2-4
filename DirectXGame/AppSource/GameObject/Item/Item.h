@@ -54,6 +54,9 @@ public:
 	Vector4 color = Vector4(1, 1, 1, 1);	//アイテムの色
 	PlaneXZ boundyPlane;						//アイテムの当たり判定用の平面
 
+	// 違和感なく見えるモデル位置にするためのオフセット
+	Vector2int visualOffsetCells{ 0, 0 };
+
 	/// ランクごとに変わるデータ  値段・効果・バフ
 	std::array<ItemRankData, 4> ranks{};
 };

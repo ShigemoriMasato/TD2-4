@@ -2,6 +2,7 @@
 #include "Item.h"
 #include <Tool/Binary/BinaryManager.h>
 #include <Assets/Model/ModelManager.h>
+#include <Tool/Json/JsonManager.h>
 
 enum class ParamType : int
 {
@@ -16,6 +17,7 @@ enum class ParamType : int
 class ItemManager {
 public:
 
+	ItemManager();
 	~ItemManager();
 	void Initialize(SHEngine::ModelManager* modelManager);
 	void DrawImGui();
@@ -40,6 +42,7 @@ public:
 
 private:
 
+
 	void SaveModel();
 	void LoadModel();
 
@@ -60,8 +63,9 @@ private:
 
 	SHEngine::ModelManager* modelManager_ = nullptr;
 	BinaryManager binaryManager_;
+	JsonManager jsonManager_;
 
-	static inline const std::string modelFile_ = "ModelIDMap.bin";
-	static inline const std::string itemFile_ = "ItemData.bin";
-	static inline const std::string baseParamFile_ = "BaseParamData.bin";
+	static inline const std::string modelFile_ = "ModelIDMap";
+	static inline const std::string itemFile_ = "ItemData";
+	static inline const std::string baseParamFile_ = "BaseParamData";
 };

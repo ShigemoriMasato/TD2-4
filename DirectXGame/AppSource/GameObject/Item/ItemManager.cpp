@@ -9,6 +9,8 @@
 #include "ItemEditor.h"
 #endif
 
+ItemManager::ItemManager() {}
+
 ItemManager::~ItemManager()
 {
 	SaveBaseParam();
@@ -189,6 +191,21 @@ void ItemManager::SaveItem()
 
 void ItemManager::LoadItem()
 {
+	// 指定したファイルを読み込み
+	jsonManager_.Boot(itemFile_);
+
+	jsonManager_.Get("Items", items_);
+
+
+	///////////////////////////////////////////
+	// ⇩修正前バイナリ　↑修正後Json
+	///////////////////////////////////////////
+
+
+
+
+
+
 	auto data = binaryManager_.Read(itemFile_);
 	if (data.empty())
 	{
@@ -244,14 +261,14 @@ void ItemManager::LoadItem()
 
 void ItemManager::SaveBaseParam()
 {
-	int size = static_cast<int>(baseParam_.size());
-	binaryManager_.RegisterOutput(&size);
-	for (const auto& param : baseParam_)
-	{
-		binaryManager_.RegisterOutput(&param.first);
-		binaryManager_.RegisterOutput(&param.second);
-	}
-	binaryManager_.Write(baseParamFile_);
+	//int size = static_cast<int>(baseParam_.size());
+	//binaryManager_.RegisterOutput(&size);
+	//for (const auto& param : baseParam_)
+	//{
+	//	binaryManager_.RegisterOutput(&param.first);
+	//	binaryManager_.RegisterOutput(&param.second);
+	//}
+	//binaryManager_.Write(baseParamFile_);
 }
 
 void ItemManager::LoadBaseParam()

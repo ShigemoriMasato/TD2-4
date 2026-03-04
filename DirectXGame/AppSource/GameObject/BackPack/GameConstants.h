@@ -5,6 +5,7 @@
 #include <Utility/Matrix.h>
 #include <Utility/DataStructures.h>
 #include <Utility/MatrixFactory.h>
+#include <Tool/Json/JsonManager.h>
 
 // XZ平面に平行な四角形の構造体
 struct PlaneXZ
