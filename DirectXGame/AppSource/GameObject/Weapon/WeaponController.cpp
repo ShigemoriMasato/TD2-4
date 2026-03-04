@@ -1,68 +1,47 @@
 #include "WeaponController.h"
-#include "AttackObject/IAttackObject.h"
-#include "AttackObject/Projectile.h"
-#include <GameObject/Enemy/EnemyManager.h>
-#include <SHEngine.h>
 
-void WeaponController::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager) {
-	modelManager_ = modelManager;
-	drawDataManager_ = drawDataManager;
-}
-
-void WeaponController::AddWeapon(const WeaponData* data) {
-	auto weapon = std::make_unique<WeaponInstance>(data);
-	weapon->SetEnemyManager(enemyManager_);
-	weapon->Initialize(modelManager_, drawDataManager_);
-	activeWeapons_.emplace_back(std::move(weapon));
-}
-
-void WeaponController::Update(const Vector3& playerPos, float deltaTime) {
-	for (auto& weapon : activeWeapons_) {
-		weapon->Update(playerPos, deltaTime);
-	}
-
-	// 敵との当たり判定をチェック
-	CheckCollisionsWithEnemies();
-}
-
-void WeaponController::SetEnemyManager(EnemyManager* enemyManager) {
-	enemyManager_ = enemyManager;
-	for (auto& weapon : activeWeapons_) {
-		weapon->SetEnemyManager(enemyManager);
-	}
-}
-
-void WeaponController::CheckCollisionsWithEnemies() {
-	if (!enemyManager_) {
+void WeaponController::EquipWeapon(int weaponID) {
+	// WeaponManagerからベースとなるデータを取得する
+	const WeaponData* data = weaponManager_->GetWeapon(weaponID);
+	if (!data)
 		return;
-	}
 
-	const auto& enemies = enemyManager_->GetEnemies();
-
-	// すべての武器の攻撃オブジェクトについて当たり判定をチェック
-	for (auto& weapon : activeWeapons_) {
-		const auto& attackObjects = weapon->GetAttackObjects();
-		for (const auto& attackObj : attackObjects) {
-			if (!attackObj || !attackObj->IsActive()) {
-				continue;
-			}
-
-			// Projectile型の当たり判定処理
-			if (auto projectile = dynamic_cast<Projectile*>(attackObj.get())) {
-				projectile->CheckCollisionWithEnemies(enemies);
-			}
-		}
-	}
+	// データに基づいて武器の実体を生成
+	// 例として直接push_back
+	//weapons_.push_back(std::make_unique<BaseWeapon>(*data));
 }
 
-void WeaponController::DrawAllAttackObjects() {
-	// すべての武器の攻撃オブジェクトを描画
-	for (auto& weapon : activeWeapons_) {
-		const auto& attackObjects = weapon->GetAttackObjects();
-		for (const auto& obj : attackObjects) {
-			if (obj && obj->IsActive()) {
-				obj->Draw();
-			}
+void WeaponController::AddAttackObject(std::unique_ptr<IAttackObject> attackObj) { activeAttacks_.push_back(std::move(attackObj)); }
+
+void WeaponController::Update(float deltaTime) {
+	// 武器の更新
+	for (auto& weapon : weapons_) {
+		weapon->Update(deltaTime, this);
+	}
+
+	// 攻撃オブジェクトの更新
+	for (auto it = activeAttacks_.begin(); it != activeAttacks_.end();) {
+		(*it)->Update(deltaTime);
+
+		// 非アクティブな攻撃オブジェクトを削除
+		if (!(*it)->IsActive()) {
+			it = activeAttacks_.erase(it);
+		} else {
+			++it;
 		}
+	}
+
+	// 無効な攻撃オブジェクトを削除
+	activeAttacks_.erase(std::remove_if(activeAttacks_.begin(), activeAttacks_.end(), [](const std::unique_ptr<IAttackObject>& attack) { return !attack->IsActive(); }), activeAttacks_.end());
+}
+
+void WeaponController::Draw(CmdObj* cmdObj) {
+	// 武器そのものの描画
+	for (auto& weapon : weapons_) {
+		weapon->Draw(cmdObj);
+	}
+	// 攻撃エフェクトや弾の描画
+	for (auto& attack : activeAttacks_) {
+		attack->Draw(cmdObj);
 	}
 }

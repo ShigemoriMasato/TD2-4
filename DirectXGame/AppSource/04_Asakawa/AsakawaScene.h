@@ -8,6 +8,7 @@
 #include "GameObject/Player/PlayerHP.h"
 #include "GameObject/Weapon/WeaponDebugger.h"
 #include "GameObject/Weapon/WeaponManager.h"
+#include "GameObject/Weapon/WeaponController.h"
 
 #include "GameObject/WaveSystem/WaveManager.h"
 #include "GameObject/Enemy/EnemyManager.h"
@@ -60,6 +61,9 @@ private:
 
 	// プレイヤーのヒートマップ
 	std::unique_ptr<Player::HeatmapManager> playerHeatmapManager_ = nullptr;
+
+	// 武器コントローラー
+	std::unique_ptr<WeaponController> weaponController_ = nullptr;
 
 	// フィールド
 	std::unique_ptr<Field> field_ = nullptr;

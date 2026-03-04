@@ -73,6 +73,9 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 
 	// 残像の更新
 	UpdateAfterImages(deltaTime);
+	
+	// プレイヤーの移動制限
+	ClampPosition();
 
 	// 座標を行列に変換
 	wvp_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
@@ -172,6 +175,14 @@ void Player::Base::UpdateAfterImages(float deltaTime) {
 			++it;
 		}
 	}
+}
+
+void Player::Base::ClampPosition() {
+	// プレイヤーがステージ買いに出ないようにする
+	float posX = std::clamp(transform_.position.x, minX_, maxX_);
+	float posZ = std::clamp(transform_.position.z, minZ_, maxZ_);
+
+	transform_.position = Vector3(posX, 0.0f, posZ);
 }
 
 void Base::UpdateDashCooldown(float deltaTime) {

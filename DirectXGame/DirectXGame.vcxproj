@@ -165,13 +165,14 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Player\Heatmap\PlayerHeatmap.cpp" />
     <ClCompile Include="AppSource\GameObject\WaveSystem\Wave.cpp" />
     <ClCompile Include="AppSource\GameObject\WaveSystem\WaveManager.cpp" />
-    <ClCompile Include="AppSource\GameObject\Weapon\AttackObject\Projectile.cpp" />
     <ClCompile Include="AppSource\Scene\01_Title\TitleScene.cpp" />
     <ClCompile Include="AppSource\Scene\02_CharaSelect\CharaSelectScene.cpp" />
     <ClCompile Include="AppSource\Scene\05_Result\ResultScene.cpp" />
     <ClCompile Include="AppSource\Scene\CommonData.cpp" />
     <ClCompile Include="AppSource\Scene\04_BackPackBuild\BackPackBuildScene.cpp" />
     <ClCompile Include="AppSource\GameObject\BackPack\BackPack.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\WeaponInstance\BaseWeapon.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\WeaponInstance\BatWeapon.cpp" />
     <ClCompile Include="AppSource\GameObject\BackPack\BackPackPiece\BackPackPiece.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSPSOManager.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSRootSignature.cpp" />
@@ -248,6 +249,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Player\Status\StatusModifier.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Status\Status.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Status\StatusManager.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\WeaponController.cpp" />
+    <ClCompile Include="AppSource\GameObject\Random\Random.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\AttackObject\SlashAttack.cpp" />
     <ClInclude Include="AppSource\04_Asakawa\AsakawaScene.h" />
     <ClCompile Include="Engine\Render\Screen\ShadowMap.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
@@ -268,6 +272,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\EasingAnimation\EasingAnimation.h" />
     <ClInclude Include="AppSource\Scene\04_BackPackBuild\BackPackBuildScene.h" />
     <ClInclude Include="AppSource\GameObject\BackPack\BackPack.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\WeaponInstance\BaseWeapon.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\WeaponInstance\BatWeapon.h" />
     <ClInclude Include="AppSource\GameObject\BackPack\BackPackPiece\BackPackPiece.h" />
     <ClInclude Include="Engine\Compute\PSO\CSPSOManager.h" />
     <ClInclude Include="Engine\Compute\PSO\CSRootSignature.h" />
@@ -355,6 +361,10 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponController.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponInstance.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\AttackObject\IAttackObject.h" />
+    <ClInclude Include="Engine\Render\Screen\ShadowMap.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\WeaponController.h" />
+    <ClInclude Include="AppSource\GameObject\Random\Random.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\AttackObject\SlashAttack.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
