@@ -27,12 +27,12 @@ void BackPack::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDa
 	drawBackPack_->Initialize(modelManager, drawDataManager);
 
 	// 初期マップ
-	for (size_t r = 0; r < GameConstants::kBackPackRowNum; ++r)
+	for (int y = 0; y < GameConstants::kBackPackRowNum; ++y)
 	{
-		for (size_t c = 0; c < GameConstants::kBackPackColNum; ++c)
+		for (int x = 0; x < GameConstants::kBackPackColNum; ++x)
 		{
-			pieces_[r][c]->Initialize(GridState::UnlockedEmpty);
-			pieces_[r][c]->SetPosition(Vector3(float(c) * 2.0f, 0.0f, float(r) * 2.0f));
+			pieces_[y][x]->Initialize(GridState::UnlockedEmpty);
+			pieces_[y][x]->SetPosition(GetPositionByIndex(Vector2int(x, y)));
 		}
 	}
 }
@@ -57,5 +57,43 @@ void BackPack::DrawImGui()
 }
 
 
+bool BackPack::SetItem(Vector2int mapIndex, Item* item, const int itemlocalShapeIndex)
+{
+	return pieces_[mapIndex.y][mapIndex.x]->SetItem(item, itemlocalShapeIndex);
+}
 
+bool BackPack::IsEmpty(const Vector2int& index) const
+{
+	if (pieces_[index.y][index.x]->GetState() == GridState::UnlockedEmpty)
+	{
+		return true;
+	}
+	return false;
+}
+bool BackPack::IsEmpty(const Vector3& pos) const
+{
+	return IsEmpty(GetIndexByPosition(pos));
+}
+
+
+Vector2int BackPack::GetIndexByPosition(const Vector3& pos) const
+{
+	const float cellSize = GameConstants::kBackPackCellSize;
+	const float spacing = GameConstants::kBackPackCellSpacing;
+
+	float xIndex = pos.x / (cellSize + spacing);
+	float yIndex = pos.z / (cellSize + spacing);
+
+	return Vector2int{ int(xIndex), int(yIndex) };
+}
+Vector3 BackPack::GetPositionByIndex(const Vector2int& index) const
+{
+	const float cellSize = GameConstants::kBackPackCellSize;
+	const float spacing = GameConstants::kBackPackCellSpacing;
+
+	const float x = float(index.x) * (cellSize + spacing);
+	const float z = float(index.y) * (cellSize + spacing);
+
+	return Vector3(x, 0.0f, z);
+}
 

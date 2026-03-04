@@ -13,30 +13,23 @@ void BackPackPiece::Initialize(GridState state)
 
 void BackPackPiece::ChangeState(GridState newState)
 {
+	transform_.scale = { GameConstants::kBackPackCellSize - 0.1f, 0.1f, GameConstants::kBackPackCellSize - 0.1f };
+	color_ = { 1.0f, 0.0f, 0.0f, 1.0f };
+	transform_.position.y = -1.0f;
 	switch (newState)
 	{
 	// ロック中・解放不可
 	case GridState::LockedUnavailable:
 		transform_.scale = { 0.0f, 0.0f, 0.0f };
-		color_ = { 0.25f, 0.25f, 0.25f, 1.0f };
 		break;
 	// ロック中・解放可能
 	case GridState::LockedAvailable:
-		transform_.scale = { 0.9f, 0.1f, 0.9f };
-		transform_.position.y = -0.1f;
-		color_ = { 0.5f, 0.5f, 0.5f, 1.0f };
 		break;
 	// 解放済み・空
 	case GridState::UnlockedEmpty:
-		transform_.scale = { 0.9f, 0.1f, 0.9f };
-		transform_.position.y = 0.0f;
-		color_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 		break;
 	// 解放済み・アイテムあり
 	case GridState::UnlockedOccupied:
-		transform_.scale = { 0.9f, 0.1f, 0.9f };
-		transform_.position.y = 0.0f;
-		color_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 		break;
 	default:
 		break;
@@ -44,6 +37,14 @@ void BackPackPiece::ChangeState(GridState newState)
 	state_ = newState;
 }
 
+bool BackPackPiece::SetItem(Item* item, const int localIndex)
+{
+	if (state_ != GridState::UnlockedEmpty) return false;
+	item_ = item;
+	index_ = localIndex;
+	ChangeState(GridState::UnlockedOccupied);
+	return true;
+}
 
 
 

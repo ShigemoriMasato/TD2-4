@@ -84,6 +84,11 @@ namespace GameConstants
 	inline constexpr size_t kBackPackRowNum = 8;
 	// バックパックの列数
 	inline constexpr size_t kBackPackColNum = 12;
+
+	// バックパックの1マスのサイズ
+	inline constexpr float kBackPackCellSize = 1.0f;
+	// バックパックのセル間サイズ
+	inline constexpr float kBackPackCellSpacing = 1.0f;
 }
 
 struct InstanceBinding
@@ -93,4 +98,34 @@ struct InstanceBinding
 	int texCbvIndex = -1;      // PS b0
 	int colorCbvIndex = -1;    // PS b1
 	int lightCbvIndex = -1;    // PS b2
+};
+
+struct Vector2int
+{
+	int x = 0;
+	int y = 0;
+	Vector2int operator+(const Vector2int& rhs) const
+	{
+		return Vector2int{ x + rhs.x, y + rhs.y };
+	}
+	Vector2int operator-(const Vector2int& rhs) const
+	{
+		return Vector2int{ x - rhs.x, y - rhs.y };
+	}
+	bool operator==(const Vector2int& rhs) const
+	{
+		return x == rhs.x && y == rhs.y;
+	}
+	bool operator!=(const Vector2int& rhs) const
+	{
+		return x != rhs.x || y != rhs.y;
+	}
+	bool operator<(const Vector2int& rhs) const
+	{
+		if (y != rhs.y)
+		{
+			return y < rhs.y;
+		}
+		return x < rhs.x;
+	}
 };

@@ -1,6 +1,8 @@
 #pragma once
 #include "GameObject/BackPack/GameConstants.h"
 
+class Item;
+
 // バックパックの1マス
 class BackPackPiece
 {
@@ -22,11 +24,17 @@ public:
 		return Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 	}
 
+	// アイテムを設置する関数
+	bool SetItem(Item* item, const int localIndex);
+
 private:
 	Transform transform_{};
 	Vector4 color_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 	GridState state_ = GridState::LockedUnavailable;
 
+	Item* item_ = nullptr;
+	// 設置されているアイテムのローカルインデックス(Item::mapDataのインデックス)
+	int index_;
 };
 
 // バックパックの全マスの描画

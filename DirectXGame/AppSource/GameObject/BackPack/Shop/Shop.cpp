@@ -1,5 +1,6 @@
 #include "Shop.h"
 #include "GameObject/Item/ItemManager.h"
+#include "GameObject/BackPack/BackPack.h"
 
 Shop::Shop()
 {
@@ -9,16 +10,14 @@ Shop::~Shop()
 {
 }
 
-
-
-void Shop::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, ItemManager* itemManager, CommonData* commonData, SHEngine::Input* input)
+void Shop::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, ItemManager* itemManager, CommonData* commonData, SHEngine::Input* input, BackPack* backPack)
 {
 	itemManager_ = itemManager;
 	modelManager_ = modelManager;
 	drawDataManager_ = drawDataManager;
 	commonData_ = commonData;
 	input_ = input;
-
+	backPack_ = backPack;
 
 	auto [w, h] = commonData_->mainWindow.first->GetWindowSize();
 	screenRaycaster_ = std::make_unique<ScreenRaycaster>(static_cast<float>(w), static_cast<float>(h));
@@ -38,7 +37,7 @@ void Shop::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 		data.renderObject->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER);
 		if (i % 2 == 0) data.InitPos.x = -5.0f;
 		else data.InitPos.x = -10.0f;
-		data.InitPos.y = 0.5f;
+		data.InitPos.y = 0.0f;
 		data.InitPos.z = 13.0f - (float(i) * 3.0f);
 		data.hoverPos = data.InitPos;
 		lineupItems_.push_back(std::move(data));
@@ -63,10 +62,58 @@ void Shop::RandomPickup()
 	}
 }
 
-bool Shop::CanPlaceHaveItem()
+bool Shop::CanPlaceHaveItem(LineupItemData& lineupData)
 {
+	// 何も持っていないなら置けない
+	if (!haveItem_.has_value()) return false;
+
+	// 置こうとしているアイテムの形状データを取得
+	const auto& mapData = haveItem_->mapData;
+	// XZ平面上マウスレイ座標を取得
+	const auto mousePosOpt = mouseRay_.GetXZ(0.0f);
+	if (!mousePosOpt.has_value()) return false;
+	// 置いた瞬間アイテム中心から上方向に判定が富んだので左上を中心にするためにアイテムの高さ分引く
+	const Vector3 modelLeftTopPos = Vector3(
+		0.0f, 0.0f, 
+		haveItem_->boundyPlane.center.z + (haveItem_->boundyPlane.height / 2.0f));
+	// 置く位置の左上
+	const auto dropPosOpt = mousePosOpt.value() - modelLeftTopPos;
+
+	// XZ平面上マウスレイ座標 から バックパックのインデックスを取得()
+	const Vector2int anchorF = backPack_->GetIndexByPosition(dropPosOpt);
+	// そのインデックスから正規化座標を取得(セルの中心座標)
+	Vector3 normalizedPos = backPack_->GetPositionByIndex(anchorF) + modelLeftTopPos;
+
+	// すべての占有マスが「範囲内」かつ「空き」かチェック
+	for (const auto& [dx, dy] : mapData)
+	{
+		const Vector2int index = Vector2int(anchorF.x + dx, anchorF.y + dy);
+
+		// 範囲外は置けない
+		if (index.x < 0 || index.y < 0 ||
+			index.x >= GameConstants::kBackPackColNum ||
+			index.y >= GameConstants::kBackPackRowNum)
+		{
+			return false;
+		}
+
+		if (!backPack_->IsEmpty(index))
+		{
+			return false;
+		}
+	}
+
+	// ここまで来たら置ける判定
+	for (int i = 0; i < mapData.size(); ++i)
+	{
+		const Vector2int mapIndex = Vector2int(anchorF.x + mapData[i].first, anchorF.y + mapData[i].second);
+		backPack_->SetItem(mapIndex, &haveItem_.value(), i);
+	}
+
+	lineupData.InitPos = normalizedPos;
+
 	haveItem_.reset();
-	return false;
+	return true;
 }
 
 void Shop::Update(const Matrix4x4& viewProj)
@@ -117,15 +164,11 @@ void Shop::Update(const Matrix4x4& viewProj)
 			// クリックを離した時バックパックに置けるか判定
 			if (leftRelease)
 			{
-				// 置けるなら置いてホバー状態解除
-				if (CanPlaceHaveItem())
-				{
-					data.InitPos = data.hoverPos;
-				}
-				else
-				{
-				}
 				data.isHover = false;
+				if (!CanPlaceHaveItem(data))
+				{
+					haveItem_.reset();
+				}
 			}
 		}
 		// ホバー状態でなければ初期位置に移動

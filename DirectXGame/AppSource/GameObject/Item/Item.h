@@ -42,7 +42,8 @@ struct ItemRankData
 	std::unordered_map<std::string, float> params;
 };
 
-struct Item {
+class Item {
+public:
 	/// ランクに関わらず共通のデータ
 	std::wstring name;		// 名前 ← アイテムの識別に使うため重複不可
 	Category category;		// カテゴリ

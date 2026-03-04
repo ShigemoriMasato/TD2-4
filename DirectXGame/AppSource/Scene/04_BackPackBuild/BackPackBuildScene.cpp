@@ -23,20 +23,18 @@ void BackPackBuildScene::Initialize()
 
 	itemManager_->Initialize(modelManager_);
 	backPack_->Initialize(modelManager_, drawDataManager_, itemManager_.get(), commonData_, input_);
-	shop_->Initialize(modelManager_, drawDataManager_, itemManager_.get(), commonData_, input_);
+	shop_->Initialize(modelManager_, drawDataManager_, itemManager_.get(), commonData_, input_, backPack_.get());
 }
 
 std::unique_ptr<IScene> BackPackBuildScene::Update()
 {
 	// カメラの更新
 	camera_->Update();
-
 	// グリッド
 	grid_->Update(camera_->GetCenter(), camera_->GetVPMatrix());
 
 	// ショップ
 	shop_->Update(camera_->GetVPMatrix());
-	
 	// バックパック
 	backPack_->Update(camera_->GetVPMatrix());
 

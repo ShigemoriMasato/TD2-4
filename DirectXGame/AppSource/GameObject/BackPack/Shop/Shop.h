@@ -6,6 +6,7 @@
 #include "GameObject/LineDrawer/PrimitiveLineDrawer.h" 
 
 class ItemManager;
+class BackPack;
 
 struct LineupItemData
 {
@@ -34,7 +35,7 @@ class Shop
 public:
 	Shop();
 	~Shop();
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, ItemManager* itemManager, CommonData* commonData, SHEngine::Input* input);
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, ItemManager* itemManager, CommonData* commonData, SHEngine::Input* input, BackPack* backPack);
 	void Update(const Matrix4x4& viewProj);
 	void Draw(SHEngine::Command::Object* cmdObject);
 	void DrawImGui();
@@ -45,9 +46,9 @@ public:
 	void RandomPickup();
 
 	/// <summary>
-	/// 現在持っているアイテムを設置出来るか確認する関数
+	/// 現在持っているアイテムを設置する
 	/// </summary>
-	bool CanPlaceHaveItem();
+	bool CanPlaceHaveItem(LineupItemData& lineupData);
 	
 
 private:
@@ -67,6 +68,8 @@ private:
 
 
 
+	// バックパックのポインタ
+	BackPack* backPack_ = nullptr;
 
 	// アイテム一覧ポインタ
 	ItemManager* itemManager_ = nullptr;

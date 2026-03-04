@@ -23,17 +23,15 @@ private:
 
 	// バックパック
 	std::unique_ptr<BackPack> backPack_;
-
 	// ショップ
 	std::unique_ptr<Shop> shop_;
+	// アイテムマネージャー
+	std::unique_ptr<ItemManager> itemManager_;
+
 
 	// マップgrid
 	std::unique_ptr<Grid> grid_;
-	
 	// カメラ
-	std::unique_ptr<DebugCamera> camera_ = nullptr;
-
-	// アイテムマネージャー(多分いずれどこからかポインタを持ってくる)
-	std::unique_ptr<ItemManager> itemManager_;
+	std::unique_ptr<DebugCamera> camera_;
 };
 
