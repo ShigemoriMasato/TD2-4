@@ -1,15 +1,21 @@
 #pragma once
-#include "../AppSource/GameObject/Enemy/Enemy.h"
 #include "../AppSource/GameObject/Weapon/DamageInfo.h"
 #include <unordered_set>
 
+class Enemy;
+
 class IAttackObject {
 public:
+	virtual ~IAttackObject() = default;
+
 	virtual void Update(float deltaTime) = 0;
 	virtual void Draw() = 0;
 
 	// 当たり判定処理
 	void OnHitTarget(Enemy* target);
+
+	// 攻撃が有効かどうか
+	virtual bool IsActive() const = 0;
 
 protected:
 	DamageInfo damageInfo_;              // 攻撃のダメージ情報
