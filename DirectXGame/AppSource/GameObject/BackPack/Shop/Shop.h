@@ -19,6 +19,9 @@ struct LineupItemData
 	// tier
 	int rank = 0;
 
+	// 右回転回数
+	int rotateCount = 0;
+
 	// 初期位置
 	Vector3 InitPos{};
 	// マウスでホバーしているときの位置
@@ -48,7 +51,7 @@ public:
 	/// <summary>
 	/// 現在持っているアイテムを設置する
 	/// </summary>
-	bool CanPlaceHaveItem(LineupItemData& lineupData);
+	bool PlaceHaveItem(LineupItemData& lineupData);
 	
 
 private:

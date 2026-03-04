@@ -62,60 +62,6 @@ void Shop::RandomPickup()
 	}
 }
 
-bool Shop::CanPlaceHaveItem(LineupItemData& lineupData)
-{
-	// 何も持っていないなら置けない
-	if (!haveItem_.has_value()) return false;
-
-	// 置こうとしているアイテムの形状データを取得
-	const auto& mapData = haveItem_->mapData;
-	// XZ平面上マウスレイ座標を取得
-	const auto mousePosOpt = mouseRay_.GetXZ(0.0f);
-	if (!mousePosOpt.has_value()) return false;
-	// 置いた瞬間アイテム中心から上方向に判定が富んだので左上を中心にするためにアイテムの高さ分引く
-	const Vector3 modelLeftTopPos = Vector3(
-		0.0f, 0.0f, 
-		haveItem_->boundyPlane.center.z + (haveItem_->boundyPlane.height / 2.0f));
-	// 置く位置の左上
-	const auto dropPosOpt = mousePosOpt.value() - modelLeftTopPos;
-
-	// XZ平面上マウスレイ座標 から バックパックのインデックスを取得()
-	const Vector2int anchorF = backPack_->GetIndexByPosition(dropPosOpt);
-	// そのインデックスから正規化座標を取得(セルの中心座標)
-	Vector3 normalizedPos = backPack_->GetPositionByIndex(anchorF) + modelLeftTopPos;
-
-	// すべての占有マスが「範囲内」かつ「空き」かチェック
-	for (const auto& [dx, dy] : mapData)
-	{
-		const Vector2int index = Vector2int(anchorF.x + dx, anchorF.y + dy);
-
-		// 範囲外は置けない
-		if (index.x < 0 || index.y < 0 ||
-			index.x >= GameConstants::kBackPackColNum ||
-			index.y >= GameConstants::kBackPackRowNum)
-		{
-			return false;
-		}
-
-		if (!backPack_->IsEmpty(index))
-		{
-			return false;
-		}
-	}
-
-	// ここまで来たら置ける判定
-	for (int i = 0; i < mapData.size(); ++i)
-	{
-		const Vector2int mapIndex = Vector2int(anchorF.x + mapData[i].first, anchorF.y + mapData[i].second);
-		backPack_->SetItem(mapIndex, &haveItem_.value(), i);
-	}
-
-	lineupData.InitPos = normalizedPos;
-
-	haveItem_.reset();
-	return true;
-}
-
 void Shop::Update(const Matrix4x4& viewProj)
 {
 	// デバッグライン描画の内容をクリア。気にしなくてよい。
@@ -124,7 +70,6 @@ void Shop::Update(const Matrix4x4& viewProj)
 	// マウスの状態を取得
 	auto cur = input_->GetMouseButtonState();
 	auto pre = input_->GetPreMouseButtonState();
-
 	// 左クリックの状態を取得
 	const bool leftDown = (cur[0] & 0x80) != 0;                 // 押している
 	const bool leftTrigger = ((cur[0] & 0x80) != 0) && ((pre[0] & 0x80) == 0); // 押した瞬間
@@ -141,34 +86,37 @@ void Shop::Update(const Matrix4x4& viewProj)
 		// 商品を取得
 		auto& data = lineupItems_[i];
 
-		// アイテムの位置を計算
+		// アイテムの衝突判定エリアを取得
 		PlaneXZ worldPlane = data.item.boundyPlane.Translate(data.hoverPos);
 
 		// 商品とマウスレイが衝突している && 左クリックした && なにも持っていない
 		if (IsCollision(mouseRay_, worldPlane) && leftTrigger && !haveItem_.has_value())
 		{
+			// ホバー状態する
 			data.isHover = true;
+			// 手に掴む
 			haveItem_ = data.item;
 		}
 
 		// ホバー状態ならレイ上に移動
 		if (data.isHover)
 		{
-			// ホバー位置をマウスレイ
+			// ホバー位置をマウスレイのXZ平面上座標にする
 			auto mousePosOnXZ = mouseRay_.GetXZ(0.0f);
 			if (mousePosOnXZ.has_value())
 			{
 				data.hoverPos = mousePosOnXZ.value();
 			}
 
-			// クリックを離した時バックパックに置けるか判定
+			// クリックを離した時バックパックに置く
 			if (leftRelease)
 			{
+				// 置けたら置く
+				PlaceHaveItem(data);
+				// ホバー状態解除
 				data.isHover = false;
-				if (!CanPlaceHaveItem(data))
-				{
-					haveItem_.reset();
-				}
+				// 手を空にする
+				haveItem_.reset();
 			}
 		}
 		// ホバー状態でなければ初期位置に移動
@@ -181,6 +129,8 @@ void Shop::Update(const Matrix4x4& viewProj)
 		// 衝突判定エリア描画
 		debugLineDrawer_->AddPlaneXZ(worldPlane, 0xff0000ff);
 	}
+
+	// ラインナップ商品のCBV更新
 	for (int i = 0; i < lineupSum; ++i)
 	{
 		// 商品を取得
@@ -218,6 +168,61 @@ void Shop::DrawImGui()
 #endif // USE_IMGUI
 }
 
+
+
+bool Shop::PlaceHaveItem(LineupItemData& lineupData)
+{
+	// 何も持っていないなら置けない
+	if (!haveItem_.has_value()) return false;
+
+	// XZ平面上マウスレイ座標を取得
+	const auto mousePosOpt = mouseRay_.GetXZ(0.0f);
+	if (!mousePosOpt.has_value()) return false;
+	// XZ平面上マウスレイ座標から
+	const Vector3 modelLeftTopPos = Vector3(0.0f, 0.0f, haveItem_->boundyPlane.center.z + (haveItem_->boundyPlane.height / 2.0f));
+	// 置く位置の左上
+	const Vector3 dropPosOpt = mousePosOpt.value() - modelLeftTopPos;
+
+	// XZ平面上マウスレイ座標 から バックパックのインデックスを取得()
+	const Vector2int anchorF = backPack_->GetIndexByPosition(dropPosOpt);
+	// そのインデックスから正規化座標を取得(セルの中心座標)
+	Vector3 normalizedPos = backPack_->GetPositionByIndex(anchorF) + modelLeftTopPos;
+
+	// 置こうとしているアイテムの形状データを取得
+	const auto& mapData = haveItem_->mapData;
+	// すべての占有マスが「範囲内」かつ「空き」かチェック
+	for (const auto& [dx, dy] : mapData)
+	{
+		const Vector2int worldIndex = Vector2int(anchorF.x + dx, anchorF.y + dy);
+
+		// 範囲外は置けない
+		if (worldIndex.x < 0 || worldIndex.y < 0 ||
+			worldIndex.x >= GameConstants::kBackPackColNum ||
+			worldIndex.y >= GameConstants::kBackPackRowNum)
+		{
+			return false;
+		}
+
+		if (!backPack_->IsEmpty(worldIndex))
+		{
+			return false;
+		}
+	}
+
+	// ここまで来たら置ける判定
+	for (int i = 0; i < mapData.size(); ++i)
+	{
+		const Vector2int localIndex = Vector2int(mapData[i].first, mapData[i].second);
+		const Vector2int worldIndex = anchorF + localIndex;
+		backPack_->SetItem(worldIndex, &haveItem_.value(), i);
+	}
+
+	lineupData.InitPos = normalizedPos;
+
+	return true;
+}
+
+
 bool Shop::IsCollision(const Ray& r, const AABB& aabb)
 {
 	float tmin = (aabb.min.x - r.origin.x) / r.direction.x;
@@ -245,7 +250,6 @@ bool Shop::IsCollision(const Ray& r, const AABB& aabb)
 
 	return true;
 }
-
 std::optional<Vector3> Shop::IntersectRayAABB(const Ray& ray, const AABB& box)
 {
 	const float EPSILON = 1e-8f;
@@ -284,7 +288,6 @@ std::optional<Vector3> Shop::IntersectRayAABB(const Ray& ray, const AABB& box)
 	float tHit = (tmin >= 0.0f) ? tmin : tmax;
 	return ray.origin + ray.direction * tHit;
 }
-
 bool Shop::IsCollision(Ray& r, const PlaneXZ& plane)
 {
 	auto intersectPointOpt = r.GetXZ(plane.center.y);
