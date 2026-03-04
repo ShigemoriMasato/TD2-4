@@ -57,6 +57,14 @@ void MiharaScene::Initialize() {
 	// グリッド
 	grid_ = std::make_unique<Grid>();
 	grid_->Initialize(drawDataManager_);
+
+	// 敵管理クラスの生成&初期化
+	enemyManager_ = std::make_unique<EnemyManager>();
+
+	// 武器のコントローラーの生成&初期化
+	weaponController_ = std::make_unique<WeaponController>();
+	weaponController_->Initialize(modelManager_, drawDataManager_);
+	weaponController_->SetEnemyManager(enemyManager_.get());
 }
 
 std::unique_ptr<IScene> MiharaScene::Update() {
@@ -100,6 +108,10 @@ std::unique_ptr<IScene> MiharaScene::Update() {
 
 		// グリッドの更新
 		grid_->Update(cameraTransform_.position, camera_->GetVPMatrix());
+
+		// 武器のコントローラーの更新
+		weaponController_->Update(player_->GetTransform().position, deltaTime);
+		weaponController_->CheckCollisionsWithEnemies();
 	}
 
 	return nullptr;
@@ -131,6 +143,9 @@ void MiharaScene::Draw() {
 	if (showGrid_) {
 		grid_->Draw(cmdObj);
 	}
+
+	// 武器の描画
+	weaponController_->DrawAllAttackObjects();
 
 	display->PostDraw(cmdObj);
 
@@ -184,7 +199,6 @@ void MiharaScene::DrawDebugUI() {
 	ImGui::End();
 #endif
 }
-
 
 void MiharaScene::DrawImGuiCamera() {
 #ifdef USE_IMGUI

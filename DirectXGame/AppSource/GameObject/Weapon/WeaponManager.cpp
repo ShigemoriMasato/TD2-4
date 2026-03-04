@@ -1,11 +1,13 @@
 #include "WeaponManager.h"
-#include "WeaponDatabase.h"
 
 void WeaponManager::InitializeData() {
 	// JsonManagerの生成
 	jsonManager_ = std::make_unique<JsonManager>();
 
-	// WeaponDatabaseから武器のデータを取得する
+	// WeaponDatabaseを初期化
+	weaponDatabase_.Initialize(*jsonManager_);
+
+	// ローカルデータベースにコピー
 	LoadWeaponData();
 }
 
@@ -16,25 +18,38 @@ WeaponData* WeaponManager::GetWeapon(int id) {
 	return nullptr;
 }
 
+const WeaponData* WeaponManager::GetWeapon(int id) const {
+	auto it = database_.find(id);
+	if (it != database_.end()) {
+		return &it->second;
+	}
+	return nullptr;
+}
+
 void WeaponManager::SaveWeaponData() {
-	// WeaponDatabaseから武器のデータを取得する
 	for (const auto& [id, weapon] : database_) {
-		jsonManager_->Boot("WeaponData" + std::to_string(id));
-		jsonManager_->Add("id", weapon.id);                   // ID
-		jsonManager_->Add("baseDamage", weapon.baseDamage);   // 基本ダメージ
-		jsonManager_->Add("attackSpeed", weapon.attackSpeed); // 攻撃速度
-		jsonManager_->Add("size", weapon.size);               // サイズ
+		jsonManager_->Boot("WeaponData" + std::to_string(weapon.id));
+		jsonManager_->Add("id", weapon.id);
+		jsonManager_->Add("rarity", weapon.rarity);
+		jsonManager_->Add("gold", weapon.gold);
+		jsonManager_->Add("baseDamage", weapon.baseDamage);
+		jsonManager_->Add("criticalChance", weapon.criticalChance);
+		jsonManager_->Add("criticalMultiplier", weapon.criticalMultiplier);
+		jsonManager_->Add("lifeStealChance", weapon.lifeStealChance);
+		jsonManager_->Add("attackSpeed", weapon.attackSpeed);
+		jsonManager_->Add("knockbackPower", weapon.knockbackPower);
+		jsonManager_->Add("range", weapon.range);
+		jsonManager_->Add("penetration", weapon.penetration);
+		jsonManager_->Add("spreadAngle", weapon.spreadAngle);
+		jsonManager_->Add("size", weapon.size);
 		jsonManager_->Save();
 	}
 }
 
 void WeaponManager::LoadWeaponData() {
-	// WeaponDatabaseから武器のデータを取得する
-	for (int i = 0; i < kWeaponDatabaseCount; ++i) {
-		jsonManager_->Boot("WeaponData" + std::to_string(kWeaponDatabase[i].id));
-		database_[kWeaponDatabase[i].id].id = jsonManager_->Get<int>("id");
-		database_[kWeaponDatabase[i].id].baseDamage = jsonManager_->Get<float>("baseDamage");
-		database_[kWeaponDatabase[i].id].attackSpeed = jsonManager_->Get<float>("attackSpeed");
-		database_[kWeaponDatabase[i].id].size = jsonManager_->Get<int>("size");
+	database_.clear();
+	const auto& allWeapons = weaponDatabase_.GetAllWeapons();
+	for (const auto& weapon : allWeapons) {
+		database_[weapon.id] = weapon;
 	}
 }
