@@ -11,7 +11,6 @@
 #include <Camera/Camera.h>
 #include <Scene/IScene.h>
 #include <Tool/Grid/Grid.h>
-#include "../GameObject/Weapon/WeaponController.h"
 #include "../GameObject/Enemy/EnemyManager.h"
 
 class MiharaScene : public IScene {
@@ -59,7 +58,7 @@ private:
 	std::unique_ptr<Player::HeatmapManager> playerHeatmapManager_ = nullptr;
 
 	// 武器のコントローラー
-	std::unique_ptr<WeaponController> weaponController_ = nullptr;
+	
 
 	std::unique_ptr<EnemyManager> enemyManager_ = nullptr;
 

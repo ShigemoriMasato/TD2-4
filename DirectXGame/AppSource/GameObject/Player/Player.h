@@ -33,9 +33,6 @@ public:
 	// 残像を追加する関数
 	void SpawnAfterImage();
 
-	// 残像の更新処理
-	void UpdateAfterImages(float deltaTime);
-
 	// StateからアクセスするためのGetter等
 	SHEngine::Input* GetInput() const { return input_; }
 	Transform& GetTransform() { return transform_; }
@@ -57,6 +54,20 @@ public:
 	float GetRotationSpeed() const { return rotationSpeed_; }
 
 	StatusManager* GetStatusManager() const { return statusManager_.get(); }
+
+	void SetMapMinMax(float minX, float maxX, float minZ, float maxZ) {
+		minX_ = minX;
+		maxX_ = maxX;
+		minZ_ = minZ;
+		maxZ_ = maxZ;
+	}
+
+private:
+	// 残像の更新処理
+	void UpdateAfterImages(float deltaTime);
+
+	// プレイヤーの移動制限
+	void ClampPosition();
 
 private:
 	// 描画用変数
@@ -105,5 +116,11 @@ private:
 
 	// ステータスマネージャ
 	std::unique_ptr<StatusManager> statusManager_ = nullptr;
+
+	// マップの移動制限
+	float minX_;
+	float maxX_;
+	float minZ_;
+	float maxZ_;
 };
 } // namespace Player

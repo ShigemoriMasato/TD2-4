@@ -63,6 +63,7 @@ void AsakawaScene::Initialize() {
 	// マップの生成&初期化
 	map_ = std::make_unique<Map>();
 	map_->Initialize(-20.0f, 20.0f, -20.0f, 20.0f);
+	player_->SetMapMinMax(map_->GetMinX(), map_->GetMaxX(), map_->GetMinZ(), map_->GetMaxZ());
 
 	// 敵管理の生成&初期化
 	enemyManager_ = std::make_unique<EnemyManager>();
@@ -71,6 +72,9 @@ void AsakawaScene::Initialize() {
 
 	waveManager_ = std::make_unique<WaveManager>();
 	waveManager_->Initialize();
+
+	// 武器のコントローラーの生成&初期化
+	weaponController_ = std::make_unique<WeaponController>(weaponManager_.get());
 }
 
 std::unique_ptr<IScene> AsakawaScene::Update() {
@@ -123,6 +127,9 @@ std::unique_ptr<IScene> AsakawaScene::Update() {
 		enemyManager_->Update(deltaTime, waveManager_->GetCurrentWave(), player_->GetTransform().position, camera_->GetVPMatrix());
 
 		waveManager_->Update(deltaTime);
+
+		// 武器のコントローラーの更新
+		weaponController_->Update(deltaTime);
 	}
 
 	// Wave終了でタイトルシーンへ遷移
@@ -171,6 +178,9 @@ void AsakawaScene::Draw() {
 	if (showGrid_) {
 		grid_->Draw(cmdObj);
 	}
+
+	// 武器のコントローラーの更新
+	weaponController_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 

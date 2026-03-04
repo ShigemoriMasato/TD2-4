@@ -1,40 +1,36 @@
 #pragma once
-#include "WeaponData.h"
-#include "WeaponInstance.h"
-#include <../Engine/SHEngine.h>
-#include <../Engine/Utility/Vector.h>
+#include "../AppSource/GameObject/Weapon/AttackObject/IAttackObject.h"
+#include "../AppSource/GameObject/Weapon/WeaponInstance/BaseWeapon.h"
+#include "WeaponManager.h"
 #include <memory>
 #include <vector>
 
-class EnemyManager;
-class IAttackObject;
-
 /// <summary>
-/// 装備中の武器群を管理するクラス
+/// 武器の管理クラス。武器の実体を生成し、攻撃オブジェクトの管理も行う
 /// </summary>
 class WeaponController {
 public:
-	// 初期化
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager);
+	// コンストラクタ
+	WeaponController(WeaponManager* weaponManager) : weaponManager_(weaponManager) {}
 
-	// 武器の追加
-	void AddWeapon(const WeaponData* data);
+	// IDを受け取ってパラメータに基づく武器の実体を生成&リストに追加
+	void EquipWeapon(int weaponID);
 
-	// 更新処理
-	void Update(const Vector3& playerPos, float deltaTime);
+	// 武器から攻撃が生成されたときにリストに追加する用の関数
+	void AddAttackObject(std::unique_ptr<IAttackObject> attackObj);
 
-	// EnemyManagerを設定
-	void SetEnemyManager(EnemyManager* enemyManager);
+	// リスト内の更新処理を呼ぶ
+	void Update(float deltaTime);
 
-	// 敵との当たり判定をチェック
-	void CheckCollisionsWithEnemies();
-
-	// 全ての攻撃オブジェクトを描画
-	void DrawAllAttackObjects();
+	// リスト内の描画処理を呼ぶ
+	void Draw(CmdObj* cmdObj);
 
 private:
-	std::vector<std::unique_ptr<WeaponInstance>> activeWeapons_; // アクティブな武器のリスト
-	EnemyManager* enemyManager_ = nullptr;                       // 敵管理クラスのポインタ
-	SHEngine::ModelManager* modelManager_ = nullptr;
-	SHEngine::DrawDataManager* drawDataManager_ = nullptr;
+	WeaponManager* weaponManager_ = nullptr;
+
+	// 実体化した武器のリスト
+	std::vector<std::unique_ptr<BaseWeapon>> weapons_;
+
+	// 放たれた攻撃(弾、斬撃等)のリスト
+	std::vector<std::unique_ptr<IAttackObject>> activeAttacks_;
 };

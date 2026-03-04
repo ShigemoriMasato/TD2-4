@@ -65,7 +65,7 @@ void StateNormal::Update(Base* player, float deltaTime) {
 	t.position.z += dir.y * player->GetVelocity() * deltaTime;
 
 	// プレイヤーがステージ外に出ないようにする
-	ClampPosition(player);
+	//ClampPosition(player);
 }
 
 void Player::StateNormal::ClampPosition(Base* player) {
