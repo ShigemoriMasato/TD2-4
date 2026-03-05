@@ -2,8 +2,10 @@
 #include "../AppSource/GameObject/Weapon/DamageInfo.h"
 #include <unordered_set>
 #include <Core/Command/CommandManager.h>
+#include <functional>
 
 class Enemy;
+class EnemyManager;
 
 /// <summary>
 /// 武器から生成される斬撃や弾のオブジェクト
@@ -12,7 +14,7 @@ class IAttackObject {
 public:
 	virtual ~IAttackObject() = default;
 
-	virtual void Update(float deltaTime) = 0;
+	virtual void Update(float deltaTime, Matrix4x4 vpMatrix) = 0;
 	virtual void Draw(CmdObj* cmdObj) = 0;
 
 	// 当たり判定処理
@@ -21,8 +23,12 @@ public:
 	// 攻撃が有効かどうか
 	virtual bool IsActive() const = 0;
 
+	// EnemyManagerを設定（敵削除用）
+	void SetEnemyManager(EnemyManager* enemyManager) { enemyManager_ = enemyManager; }
+
 protected:
 	DamageInfo damageInfo_;              // 攻撃のダメージ情報
 	int penetrationCount_ = 0;           // 貫通回数
 	std::unordered_set<int> hitTargets_; // すでに当たった敵のIDを保存するセット
+	EnemyManager* enemyManager_ = nullptr; // 敵削除用のEnemyManager
 };

@@ -13,8 +13,10 @@ public:
 	// コンストラクタ
 	BaseWeapon(const WeaponData& data) : data_(data), attackTimer_(0.0f) {}
 
+	virtual ~BaseWeapon() = default;
+
 	// 武器固有の更新処理
-	virtual void Update(float deltaTime, WeaponController* controller);
+	virtual void Update(float deltaTime, WeaponController* controller, Matrix4x4 vpMatrix, Vector3 playerPos);
 
 	// 武器の描画
 	virtual void Draw(CmdObj* cmdObj) = 0;

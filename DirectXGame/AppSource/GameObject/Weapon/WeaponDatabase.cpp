@@ -30,7 +30,7 @@ std::vector<WeaponData> WeaponDatabase::GetDefaultWeaponData() {
 		{6, static_cast<int>(WeaponRarity::Common), 20.0f, 5.0f,  0.5f, 2.0f, 0.2f, 1.8f, 1.0f, 1.0f, 0, 0.0f, 3},      // ハンドガン
 		{7, static_cast<int>(WeaponRarity::Common), 20.0f, 14.0f, 0.5f, 2.0f, 0.2f, 0.7f, 1.0f, 1.0f, 0, 0.0f, 4},      // ショットガン
 		{8, static_cast<int>(WeaponRarity::Common), 20.0f, 8.0f,  0.5f, 2.0f, 0.2f, 1.2f, 1.0f, 1.0f, 0, 0.0f, 4},      // ライフル
-		{8, static_cast<int>(WeaponRarity::Common), 20.0f, 8.0f,  0.5f, 2.0f, 0.2f, 1.2f, 1.0f, 1.0f, 0, 0.0f, 4},      // バット
+		{9, static_cast<int>(WeaponRarity::Common), 20.0f, 8.0f,  0.5f, 2.0f, 0.2f, 1.2f, 1.0f, 1.0f, 0, 0.0f, 4},      // バット
 	};
 }
 

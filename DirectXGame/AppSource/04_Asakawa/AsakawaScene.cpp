@@ -35,7 +35,7 @@ void AsakawaScene::Initialize() {
 
 	// 武器のパラメータ管理インスタンス生成&初期化
 	weaponManager_ = std::make_unique<WeaponManager>();
-	weaponManager_->InitializeData();
+	weaponManager_->InitializeData(modelManager_, drawDataManager_);
 
 	// 武器のパラメータ管理デバッガーの生成&初期化
 	weaponDebugger_ = std::make_unique<WeaponDebugger>(weaponManager_.get());
@@ -75,6 +75,10 @@ void AsakawaScene::Initialize() {
 
 	// 武器のコントローラーの生成&初期化
 	weaponController_ = std::make_unique<WeaponController>(weaponManager_.get());
+	weaponController_->SetModelManager(modelManager_);
+	weaponController_->SetDrawDataManager(drawDataManager_);
+	weaponController_->SetEnemyManager(enemyManager_.get());  // この行を追加
+	weaponController_->EquipWeapon(1); // バット（ID=1）を初期装備として装備
 }
 
 std::unique_ptr<IScene> AsakawaScene::Update() {
@@ -129,7 +133,7 @@ std::unique_ptr<IScene> AsakawaScene::Update() {
 		waveManager_->Update(deltaTime);
 
 		// 武器のコントローラーの更新
-		weaponController_->Update(deltaTime);
+		weaponController_->Update(deltaTime, camera_->GetVPMatrix(), player_->GetTransform().position);
 	}
 
 	// Wave終了でタイトルシーンへ遷移

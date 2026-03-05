@@ -1,5 +1,6 @@
 #include "IAttackObject.h"
 #include "../AppSource/GameObject/Enemy/Enemy.h"
+#include "../AppSource/GameObject/Enemy/EnemyManager.h"
 
 void IAttackObject::OnHitTarget(Enemy* target) {
 	if (!target || !target->IsAlive()) {
@@ -17,6 +18,11 @@ void IAttackObject::OnHitTarget(Enemy* target) {
 
 	// 当たった敵のIDをセットに追加
 	hitTargets_.insert(target->GetID());
+
+	// 敵が死亡した場合、EnemyManagerから削除する
+	if (!target->IsAlive() && enemyManager_) {
+		enemyManager_->RemoveEnemy(target);
+	}
 
 	// 貫通回数を減らす
 	if (penetrationCount_ > 0) {

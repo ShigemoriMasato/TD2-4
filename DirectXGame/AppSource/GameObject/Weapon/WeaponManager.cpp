@@ -1,14 +1,18 @@
 #include "WeaponManager.h"
 
-void WeaponManager::InitializeData() {
+void WeaponManager::InitializeData(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager) {
 	// JsonManagerの生成
 	jsonManager_ = std::make_unique<JsonManager>();
 
 	// WeaponDatabaseを初期化
-	weaponDatabase_.Initialize(*jsonManager_);
+	weaponDatabase_ = std::make_unique<WeaponDatabase>();
+	weaponDatabase_->Initialize(*jsonManager_);
 
 	// ローカルデータベースにコピー
 	LoadWeaponData();
+
+	modelManager_ = modelManager;
+	drawDataManager_ = drawDataManager;
 }
 
 WeaponData* WeaponManager::GetWeapon(int id) {
@@ -48,7 +52,7 @@ void WeaponManager::SaveWeaponData() {
 
 void WeaponManager::LoadWeaponData() {
 	database_.clear();
-	const auto& allWeapons = weaponDatabase_.GetAllWeapons();
+	const auto& allWeapons = weaponDatabase_->GetAllWeapons();
 	for (const auto& weapon : allWeapons) {
 		database_[weapon.id] = weapon;
 	}

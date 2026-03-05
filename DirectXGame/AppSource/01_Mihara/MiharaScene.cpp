@@ -33,7 +33,7 @@ void MiharaScene::Initialize() {
 
 	// 武器のパラメータ管理インスタンス生成&初期化
 	weaponManager_ = std::make_unique<WeaponManager>();
-	weaponManager_->InitializeData();
+	weaponManager_->InitializeData(modelManager_,drawDataManager_);
 
 	// 武器のパラメータ管理デバッガーの生成&初期化
 	weaponDebugger_ = std::make_unique<WeaponDebugger>(weaponManager_.get());

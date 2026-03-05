@@ -216,3 +216,18 @@ Vector3 EnemyManager::ClampToMapBounds(const Vector3& position) const {
 	clamped.z = std::clamp(clamped.z, mapMinZ_, mapMaxZ_);
 	return clamped;
 }
+
+void EnemyManager::RemoveEnemy(Enemy* target) {
+	if (!target) {
+		return;
+	}
+
+	// 敵ポインタと比較して削除
+	enemies_.erase(
+		std::remove_if(enemies_.begin(), enemies_.end(),
+			[target](const std::unique_ptr<Enemy>& enemy) {
+				return enemy.get() == target;
+			}),
+		enemies_.end()
+	);
+}

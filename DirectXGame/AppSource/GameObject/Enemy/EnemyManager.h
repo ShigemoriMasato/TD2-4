@@ -52,6 +52,10 @@ public:
 	/// @return 生存している敵の数
 	int GetAliveEnemyCount() const;
 
+	/// @brief 敵を削除
+	/// @param target 削除する敵
+	void RemoveEnemy(Enemy* target);
+
 	/// @brief 全ての敵をクリア
 	void Clear();
 
