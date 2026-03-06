@@ -13,6 +13,7 @@ public:
 	// アイテムの名前からアイテムデータを取得(名前リストがどこかにある想定)
 	const Item& GetItem(std::wstring itemName) const;
 	const Item& GetItem(int index) const;
+	const std::vector<Item>& GetAllItems() const { return items_; }
 
 	// 描画等で必要になったときに ID を解決する
 	int ResolveModelID(Item& item);

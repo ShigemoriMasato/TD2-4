@@ -1,6 +1,7 @@
 #include "Piece.h"
+#include "PieceManager.h"
 
-void Piece::Initialize(Item& item) {
+void Piece::Initialize(const Item& item) {
 	itemData_ = item;
 	chips_.clear();
 	chips_.resize(item.mapData.size());
@@ -30,6 +31,8 @@ bool Piece::Put(BackPack* backPack) {
 	for (const auto& chip : chips_) {
 		backPack->SetSlot(chip, Slot::Rank1);
 	}
+	
+	pieceManager_->MoveShopToHold(this);
 
 	return true;
 }

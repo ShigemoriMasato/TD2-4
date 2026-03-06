@@ -9,7 +9,7 @@ public:
 	void Initialize(KeyManager* keyManager);
 
 	void Update(Camera* camera);
-	void EditPiece(const std::vector<std::unique_ptr<Piece>>& pieces, BackPack* backPack);
+	void EditPiece(std::vector<Piece*> pieces, BackPack* backPack);
 
 private:
 

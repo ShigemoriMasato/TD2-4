@@ -2,12 +2,17 @@
 #include <GameObject/Item/Item.h>
 #include "BackPack.h"
 
+class PieceManager;
+
 class Piece {
 public:
 
 	Piece() = default;
+	Piece(const Item& item) { Initialize(item); }
 
-	void Initialize(Item& item);
+	static void SetPieceManager(PieceManager* manager) { pieceManager_ = manager; }
+
+	void Initialize(const Item& item);
 
 	void SetPosition(const Vector3& pos);
 
@@ -18,6 +23,8 @@ public:
 	std::vector<DrawInfo> GetDrawInfos() const;
 
 private:
+
+	static inline PieceManager* pieceManager_ = nullptr;
 
 	Item itemData_;
 	std::vector<std::pair<int, int>> chips_;

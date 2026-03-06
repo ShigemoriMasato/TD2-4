@@ -8,6 +8,8 @@
 #include <Shop/BackPack.h>
 #include <Shop/Piece.h>
 #include <Shop/ShopCursor.h>
+#include <Shop/PieceManager.h>
+#include <Shop/Shop.h>
 
 class ShopScene : public IScene {
 public:
@@ -24,7 +26,8 @@ private:
 	std::unique_ptr<ObjectRender> objectRender_;
 
 	std::unique_ptr<ItemManager> itemManager_;
-	std::vector<std::unique_ptr<Piece>> pieces_;
 	std::unique_ptr<BackPack> backPack_;
 	std::unique_ptr<ShopCursor> shopCursor_;
+	std::unique_ptr<PieceManager> pieceManager_;
+	std::unique_ptr<Shop> shop_;
 };

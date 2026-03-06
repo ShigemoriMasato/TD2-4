@@ -10,7 +10,7 @@ void ShopCursor::Update(Camera* camera) {
 	worldPos_ = GetWorldCursor(camera, cursor);
 }
 
-void ShopCursor::EditPiece(const std::vector<std::unique_ptr<Piece>>& pieces, BackPack* backPack) {
+void ShopCursor::EditPiece(std::vector<Piece*> pieces, BackPack* backPack) {
 	//持っているピースがあるなら
 	if (heldPiece_) {
 		if(!keyManager_->GetKeyStates()[Key::Hold]) {
@@ -39,7 +39,7 @@ void ShopCursor::EditPiece(const std::vector<std::unique_ptr<Piece>>& pieces, Ba
 		if (piece->IsHovered(worldPos_, backPack)) {
 
 			if (keyManager_->GetKeyStates()[Key::Hold]) {
-				heldPiece_ = piece.get();
+				heldPiece_ = piece;
 				preHeldPiecePos_ = piece->GetPosition();
 			}
 

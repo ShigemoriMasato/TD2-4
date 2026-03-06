@@ -23,13 +23,13 @@ void ShopScene::Initialize() {
 	shopCursor_ = std::make_unique<ShopCursor>();
 	shopCursor_->Initialize(commonData_->keyManager.get());
 
-	pieces_.resize(1);
-	for (auto& piece : pieces_) {
-		piece = std::make_unique<Piece>();
-		auto item = itemManager_->GetItem(0);
-		piece->Initialize(item);
-		piece->SetPosition({ 0.0f, 0.0f, 0.0f });
-	}
+	pieceManager_ = std::make_unique<PieceManager>();
+	pieceManager_->Initialize({});
+
+	shop_ = std::make_unique<Shop>();
+	shop_->Initialize(itemManager_.get());
+
+	pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
 }
 
 std::unique_ptr<IScene> ShopScene::Update() {
@@ -38,14 +38,21 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	debugCamera_->Update();
 	grid_->Update(debugCamera_->GetCenter(), debugCamera_->GetVPMatrix());
 
+	//何かしらのトリガーでショップのピースを更新する
+	if (key[Key::Debug2]) {
+		pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
+	}
+
+	auto pieces = pieceManager_->GetAllPieces();
+
 	shopCursor_->Update(debugCamera_.get());
-	shopCursor_->EditPiece(pieces_, backPack_.get());
+	shopCursor_->EditPiece(pieces, backPack_.get());
 
 	colliderManager_->CollisionCheckAll();
 
 	//DrawInfo集め
 	std::vector<DrawInfo> drawInfos = backPack_->GetSlotDrawInfos();
-	for(const auto& piece : pieces_) {
+	for(const auto& piece : pieces) {
 		auto pieceDrawInfos = piece->GetDrawInfos();
 		drawInfos.insert(drawInfos.end(), pieceDrawInfos.begin(), pieceDrawInfos.end());
 	}
