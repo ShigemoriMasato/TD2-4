@@ -162,6 +162,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Enemy\Enemy.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\EnemyManager.cpp" />
     <ClCompile Include="AppSource\GameObject\LineDrawer\PrimitiveLineDrawer.cpp" />
+    <ClCompile Include="AppSource\GameObject\Map\Map.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Heatmap\PlayerHeatmap.cpp" />
     <ClCompile Include="AppSource\GameObject\WaveSystem\Wave.cpp" />
     <ClCompile Include="AppSource\GameObject\WaveSystem\WaveManager.cpp" />
@@ -356,9 +357,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Player\Status\StatusModifier.h" />
     <ClInclude Include="AppSource\GameObject\Player\Status\Status.h" />
     <ClInclude Include="AppSource\GameObject\Player\Status\StatusManager.h" />
-    <ClInclude Include="Engine\Render\Screen\ShadowMap.h" />
     <ClInclude Include="AppSource\GameObject\LineDrawer\PrimitiveLineDrawer.h" />
-    <ClInclude Include="AppSource\GameObject\Weapon\WeaponController.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponInstance.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\AttackObject\IAttackObject.h" />
     <ClInclude Include="Engine\Render\Screen\ShadowMap.h" />
