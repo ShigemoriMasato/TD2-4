@@ -13,14 +13,30 @@ void ShigeScene::Initialize() {
 	colliderManager_ = std::make_unique<ColliderManager>();
 	Collider::SetColliderManager(colliderManager_.get());
 
-	player_ = std::make_unique<Player>();
-	player_->Initialize(commonData_->keyManager.get());
+	player_ = std::make_unique<Player::Base>();
+	player_->Initialize(modelManager_, drawDataManager_, input_);
 	
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize(player_->GetPositionPtr());
 
+	map_ = std::make_unique<Map>();
+	map_->Initialize(); 
+	player_->SetMapMinMax(map_->GetMinX(), map_->GetMaxX(), map_->GetMinZ(), map_->GetMaxZ());
+
 	objectRender_ = std::make_unique<ObjectRender>();
 	objectRender_->Initialize(drawDataManager_, modelManager_);
+
+	weaponDatabase_ = std::make_unique<WeaponDatabase>();
+	weaponDatabase_->Initialize(jsonManager_);
+
+	attackManager_ = std::make_unique<AttackManager>();
+	attackManager_->Initialize();
+
+	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
+
+	std::unique_ptr<Pistol> pistol = std::make_unique<Pistol>();
+	pistol->Initialize(0, player_.get());
+	weapons_.emplace_back(std::move(pistol));
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -38,16 +54,22 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		enemyManager_->PopEnemy(initPos);
 	}
 
-	player_->Update(deltaTime);
+	player_->Update(camera_->GetVPMatrix(), deltaTime);
+	map_->Update();
 	enemyManager_->Update(deltaTime);
+	for(const auto& weapon : weapons_) {
+		weapon->Update(deltaTime);
+	}
+	attackManager_->Update(deltaTime);
 
 	colliderManager_->CollisionCheckAll();
 
 	//DrawInfoを収集して描画クラスに渡す
 	drawInfos_.clear();
-	drawInfos_.push_back(player_->GetDrawInfo());
 	auto enemyDI = enemyManager_->GetEnemyDrawInfos();
 	drawInfos_.insert(drawInfos_.end(), enemyDI.begin(), enemyDI.end());
+	auto attackDI = attackManager_->GetAttackDrawInfos();
+	drawInfos_.insert(drawInfos_.end(), attackDI.begin(), attackDI.end());
 
 	objectRender_->SetDrawInfo(drawInfos_.data(), drawInfos_.size(), camera_->GetVPMatrix());
 
@@ -67,6 +89,8 @@ void ShigeScene::Draw() {
 
 	grid_->Draw(cmdObj);
 	objectRender_->Draw(cmdObj);
+	player_->Draw(cmdObj);
+	
 
 	display->PostDraw(cmdObj);
 

@@ -43,9 +43,17 @@ void EnemyManager::PopEnemy(Vector3 initPos) {
 std::vector<DrawInfo> EnemyManager::GetEnemyDrawInfos() const {
 	std::vector<DrawInfo> drawInfos;
 	for (const auto& [id, enemy] : enemies_) {
-		drawInfos.push_back(enemy->GetPosition());
+		drawInfos.push_back(enemy->GetDrawInfo());
 	}
 	return drawInfos;
+}
+
+std::vector<IEnemy*> EnemyManager::GetEnemies() const {
+	std::vector<IEnemy*> enemies;
+	for (const auto& [id, enemy] : enemies_) {
+		enemies.push_back(enemy.get());
+	}
+	return enemies;
 }
 
 void EnemyManager::Kill(int id) {

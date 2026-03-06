@@ -35,3 +35,60 @@ bool CollisionVisitor::operator()(Quad* colliderA, Quad* colliderB) {
 	}
 	return true;
 }
+
+bool CollisionVisitor::operator()(DirCircle* colliderA, Circle* colliderB) {
+	Vector2 toTarget = colliderB->center - colliderA->center;
+	float dist = toTarget.Length();
+	if (dist > colliderA->radius + colliderB->radius) {
+		return false;
+	}
+	toTarget = toTarget.Normalize();
+	float dot = toTarget.x * colliderA->direction.x + toTarget.y * colliderA->direction.y;
+	float angle = acosf(dot);
+	if (angle <= colliderA->radian / 2.0f) {
+		return true;
+	}
+	return false;
+}
+
+bool CollisionVisitor::operator()(Circle* colliderA, DirCircle* colliderB) {
+	return CollisionVisitor::operator()(colliderB, colliderA);
+}
+
+bool CollisionVisitor::operator()(DirCircle* colliderA, Quad* colliderB) {
+	Vector2 closestPoint{
+		std::clamp(colliderA->center.x, colliderB->topLeft.x, colliderB->bottomRight.x),
+		std::clamp(colliderA->center.y, colliderB->topLeft.y, colliderB->bottomRight.y)
+	};
+	Vector2 toTarget = closestPoint - colliderA->center;
+	float dist = toTarget.Length();
+	if (dist > colliderA->radius) {
+		return false;
+	}
+	toTarget = toTarget.Normalize();
+	float dot = toTarget.x * colliderA->direction.x + toTarget.y * colliderA->direction.y;
+	float angle = acosf(dot);
+	if (angle <= colliderA->radian / 2.0f) {
+		return true;
+	}
+	return false;
+}
+
+bool CollisionVisitor::operator()(DirCircle* colliderA, DirCircle* colliderB) {
+	Vector2 toTarget = colliderB->center - colliderA->center;
+	float dist = toTarget.Length();
+	if (dist > colliderA->radius + colliderB->radius) {
+		return false;
+	}
+	toTarget = toTarget.Normalize();
+	float dot = toTarget.x * colliderA->direction.x + toTarget.y * colliderA->direction.y;
+	float angle = acosf(dot);
+	if (angle <= colliderA->radian / 2.0f) {
+		return true;
+	}
+	return false;
+}
+
+bool CollisionVisitor::operator()(Quad* colliderA, DirCircle* colliderB) {
+	return CollisionVisitor::operator()(colliderB, colliderA);
+}

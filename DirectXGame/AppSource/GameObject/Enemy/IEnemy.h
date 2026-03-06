@@ -11,7 +11,7 @@ public:
 	void SetPosition(const Vector3& pos) { drawInfo_.position = pos; }
 	virtual void Update(float deltaTime) {};
 
-	DrawInfo GetPosition() const { return drawInfo_; }
+	DrawInfo GetDrawInfo() const { return drawInfo_; }
 	void OnCollision(Collider* other) override;
 
 	void KillMe();

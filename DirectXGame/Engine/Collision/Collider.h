@@ -20,6 +20,7 @@ enum class CollTag : uint32_t {
 	Slot = 1 << 3,     ///< バックパックの秋スロット
 	Chip = 1 << 4,     ///< Pieceのチップ
 	Cursor = 1 << 5,   ///< カーソル
+	Attack = 1 << 6,   ///< 攻撃オブジェクト
 };
 
 /**
@@ -67,7 +68,7 @@ uint32_t operator~(CollTag a);
 struct CollConfig {
 	CollTag ownTag = CollTag::None;                 ///< 自身のタグ
 	uint32_t targetTag = 0;                          ///< 衝突対象のタグ(ビットマスク)
-	std::variant<Circle*, Quad*> colliderInfo;      ///< コライダーの形状情報(円または矩形)
+	std::variant<Circle*, Quad*, DirCircle*> colliderInfo;      ///< コライダーの形状情報(円または矩形)
 	bool isActive = false;                           ///< 有効/無効フラグ
 };
 
@@ -136,7 +137,7 @@ private:
 	friend class ColliderManager;
 
 	/// @brief コライダーの形状情報(円または矩形)
-	std::variant<Circle*, Quad*> colliderInfo_;
+	std::variant<Circle*, Quad*, DirCircle*> colliderInfo_;
 	/// @brief 自身のタグ
 	CollTag ownTag_ = CollTag::None;
 	/// @brief 衝突対象のタグ(ビットマスク)

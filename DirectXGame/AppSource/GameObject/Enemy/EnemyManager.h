@@ -10,6 +10,7 @@ public:
 	void PopEnemy(Vector3 initPos = {0.0f, 0.0f, 0.0f});
 
 	std::vector<DrawInfo> GetEnemyDrawInfos() const;
+	std::vector<IEnemy*> GetEnemies() const;
 
 	void Kill(int id);
 

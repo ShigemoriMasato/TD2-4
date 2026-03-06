@@ -7,9 +7,10 @@ void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id) {
 	manager_ = manager;
 	id_ = id;
 	collCircle_ = std::make_unique<Circle>();
+	collCircle_->radius = 0.5f;
 	CollConfig config;
 	config.ownTag = CollTag::Enemy;
-	config.targetTag = uint32_t(CollTag::Player);
+	config.targetTag = uint32_t(CollTag::Attack);
 	config.colliderInfo = collCircle_.get();
 	config.isActive = true;
 	Collider::Initialize();
