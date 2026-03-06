@@ -2,6 +2,7 @@
 #include <Render/RenderObject.h>
 #include <vector>
 #include <GameObject/BackPack/GameConstants.h>
+#include "GameObject/BackPack/Structures.h"
 
 class PrimitiveLineDrawer
 {

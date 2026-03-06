@@ -3,6 +3,7 @@
 #include <assets/Model/ModelManager.h>
 #include <Render/RenderObject.h>
 #include "GameObject/BackPack/GameConstants.h"
+#include "GameObject/BackPack/Structures.h"
 
 class ItemManager;
 class BackPackPiece;

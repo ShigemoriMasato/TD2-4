@@ -159,6 +159,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
   <ItemGroup>
     <ClCompile Include="AppSource\04_Asakawa\AsakawaScene.cpp" />
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
+    <ClCompile Include="AppSource\GameObject\BackPack\Structures.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\Enemy.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\EnemyManager.cpp" />
     <ClCompile Include="AppSource\GameObject\LineDrawer\PrimitiveLineDrawer.cpp" />
@@ -253,10 +254,12 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Weapon\WeaponController.cpp" />
     <ClCompile Include="AppSource\GameObject\Random\Random.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\AttackObject\SlashAttack.cpp" />
+    <ClCompile Include="AppSource\GameObject\BackPack\Test\YokoYamaTest.cpp" />
     <ClInclude Include="AppSource\04_Asakawa\AsakawaScene.h" />
     <ClCompile Include="Engine\Render\Screen\ShadowMap.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\BackPack\GameConstants.h" />
+    <ClInclude Include="AppSource\GameObject\BackPack\Structures.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
     <ClInclude Include="AppSource\GameObject\Map\Map.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\AttackObject\Projectile.h" />
@@ -364,6 +367,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponController.h" />
     <ClInclude Include="AppSource\GameObject\Random\Random.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\AttackObject\SlashAttack.h" />
+    <ClInclude Include="AppSource\GameObject\BackPack\Test\YokoYamaTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

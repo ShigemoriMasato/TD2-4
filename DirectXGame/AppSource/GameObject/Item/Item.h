@@ -7,6 +7,7 @@
 #include <Utility/Vector.h>
 #include <SHEngine.h>
 #include "GameObject/BackPack/GameConstants.h"
+#include "GameObject/BackPack/Structures.h"
 
 enum class Category : int {
 	Weapon,

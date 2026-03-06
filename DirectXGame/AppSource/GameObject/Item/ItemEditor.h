@@ -1,6 +1,9 @@
 #pragma once
 
 #ifdef USE_IMGUI
+#include <imgui/imgui.h>
+#include <vector>
+#include <string>
 
 class ItemManager;
 
@@ -19,16 +22,23 @@ private:
 	char newItemName_[64] = "Default Item";
 	// 新規追加する時のカテゴリバッファ（0:Weapon 1:Armor 2:Item）
 	int newItemCategory_ = 2;
+	// 新規追加時のモデルパス
+	char newItemModelPath_[256] = "Assets/Model/";
+
+
+	bool modelCandidatesDirty_ = true;
+	std::vector<std::string> modelCandidates_;
+
 	// 既存アイテムの名前編集用バッファ
 	char editItemName_[64] = {};
+	// 既存アイテムのモデルパス編集用バッファ
+	char editModelPath_[256] = {};
 
 	// アイテム追加した時の状態 0:成功 1:重複 2:空
 	int addItemState_ = 0;
 	// アイテム名変更したときの状態 0:成功 1:重複 2:空
 	int renameItemState_ = 0;
 
-	// モデルパス編集用バッファ
-	char editModelPath_[256] = {};
 
 	//　mapData編集用
 	int gridW_ = 8;
