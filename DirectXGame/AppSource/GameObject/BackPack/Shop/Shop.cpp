@@ -61,7 +61,7 @@ void Shop::RandomPickup()
 		const auto drawData = drawDataManager_->GetDrawData(modelData.drawDataIndex);
 		lineupItems_[i].renderObject->SetDrawData(drawData);
 		lineupItems_[i].item = pickItem;
-		lineupItems_[i].color = pickItem.color;
+		lineupItems_[i].color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 	}
 }
 
