@@ -137,19 +137,26 @@ namespace
 			ImGui::PushID(idx);
 
 			const float delW = 70.0f;
-			const float avail = ImGui::GetContentRegionAvail().x;
-			ImGui::SetNextItemWidth(std::max(1.0f, avail - delW - ImGui::GetStyle().ItemSpacing.x));
+			const float spacing = ImGui::GetStyle().ItemSpacing.x;
+
+			// 行の開始Xと、行で使える幅
+			const float startX = ImGui::GetCursorPosX();
+			const float availW = ImGui::GetContentRegionAvail().x;
+
+			// SelectableがDelete領域に被らないように幅を制限
+			const float selectableW = std::max(1.0f, availW - delW - spacing);
 
 			const bool selected = (currentItemIndex == idx);
-
-			// 表示は item.name（modelPathツリーの末端にぶら下げる）
 			const std::string label = ConvertString(items[idx].name);
-			if (ImGui::Selectable(label.c_str(), selected))
+
+			// 1) 左側：Selectable（幅固定）
+			if (ImGui::Selectable(label.c_str(), selected, ImGuiSelectableFlags_None, ImVec2(selectableW, 0.0f)))
 			{
 				currentItemIndex = idx;
 			}
 
-			ImGui::SameLine();
+			// 2) 右側：Delete（Selectableの右に固定配置）
+			ImGui::SameLine(startX + selectableW + spacing);
 			if (ImGui::SmallButton("Delete"))
 			{
 				deleteIndex = idx;
@@ -440,7 +447,8 @@ void ItemEditor::Draw(ItemManager& itemManager)
 		filled.reserve(currentItem.mapData.size() * 2);
 		for (const auto& c : currentItem.mapData)
 		{
-			filled.insert({ c.first, c.second });
+			const int flippedY = (gridH_ - 1) - c.second;
+			filled.insert({ c.first, flippedY });
 		}
 
 		ImDrawList* dl = ImGui::GetWindowDrawList();
@@ -510,11 +518,14 @@ void ItemEditor::Draw(ItemManager& itemManager)
 			}
 		}
 
-		// 編集結果をItemのmapDataに反映
+		// 編集結果をItemのmapDataに反映 & Y反転
 		currentItem.mapData.clear();
+		currentItem.mapData.reserve(filled.size());
+
 		for (const auto& cell : filled)
 		{
-			currentItem.mapData.emplace_back(cell.first, cell.second);
+			const int flippedY = (gridH_ - 1) - cell.second;
+			currentItem.mapData.emplace_back(cell.first, flippedY);
 		}
 		std::sort(currentItem.mapData.begin(), currentItem.mapData.end());
 
