@@ -19,17 +19,35 @@ namespace
 {
 	constexpr const char* kModelRoot = "Assets/Model";
 
+	/// <summary>
+	/// s が prefix で始まっているかを判定する関数
+	/// </summary>
+	/// <param name="s"> 判定対象の文字列 </param>
+	/// <param name="prefix"> 先頭についててほしい文字列 </param>
+	/// <returns> s が prefix で始まっているなら true、そうでないなら false </returns>
 	static bool StartsWith(const std::string& s, const std::string& prefix)
 	{
-		return s.size() >= prefix.size() && std::equal(prefix.begin(), prefix.end(), s.begin());
+		bool sizeOk = s.size() >= prefix.size();
+		if (!sizeOk) return false;
+
+		bool equal = std::equal(prefix.begin(), prefix.end(), s.begin());
+		if (!equal) return false;
+
+		return true;
 	}
 
-	// "Assets/Model/..." を "...（末尾スラッシュなし）" にする
+	/// <summary>
+	/// "Assets/Model/Weapon/sword.fbx" → "Weapon/sword.fbx" のように kModelRoot を削除した文字列を返す関数
+	/// </summary>
+	/// <param name="fullPath"> 例："Assets/Model/Weapon/sword.fbx" </param>
+	/// <returns> 例："Weapon/sword.fbx" </returns>
 	static std::string ToModelRelativePath(const std::string& fullPath)
 	{
 		std::string p = fullPath;
+		// std::filesystemでパスを取得すると'\\'になることがあるため'/'に置換
 		std::replace(p.begin(), p.end(), '\\', '/');
 
+		// kModelRoot を削除
 		const std::string root = std::string(kModelRoot) + "/";
 		if (StartsWith(p, root))
 		{
@@ -38,6 +56,11 @@ namespace
 		return p;
 	}
 
+	/// <summary>
+	/// "Assets/Model/Weapon/sword" → {"Assets", "Model", "Weapon", "sword"} のようにパスを分割する関数
+	/// </summary>
+	/// <param name="path"> 例："Assets/Model/Weapon/sword" </param>
+	/// <returns> 例：{"Assets", "Model", "Weapon", "sword"} </returns>
 	static std::vector<std::string> SplitPath(const std::string& path)
 	{
 		std::vector<std::string> parts;
@@ -63,22 +86,29 @@ namespace
 		return parts;
 	}
 
+	/// <summary>
+	/// モデルファイル（.fbx, .obj, .gltf, .glb）が存在するフォルダ一覧を作る。
+	/// </summary>
+	/// <param name="outCandidates"></param>
 	static void BuildModelCandidates(std::vector<std::string>& outCandidates)
 	{
-		// 拡張子 => 対象ファイル（rootからの相対パス）が取れる
 		static const std::vector<std::string> exts = { ".fbx", ".obj", ".gltf", ".glb" };
 
-		// 「拡張子ファイルが存在するディレクトリ」を集める
+		// モデルファイルが存在するディレクトリ配列
 		std::set<std::string> dirs;
 
 		for (const auto& ext : exts)
 		{
-			const auto relFiles = SearchFilePathsAddChild(kModelRoot, ext); // root相対パスが返る
+			// kModelRoot 以下の全てのファイルから、拡張子が ext のもののパスを取得
+			const auto relFiles = SearchFilePathsAddChild(kModelRoot, ext);
+
+			// 
 			for (auto rel : relFiles)
 			{
+				// std::filesystemでパスを取得すると'\\'になることがあるため'/'に置換
 				std::replace(rel.begin(), rel.end(), '\\', '/');
 
-				// "Demo/Weapon/sword/sword_short/model.obj" -> 親ディレクトリを候補に
+				// 例："Demo/Weapon/sword/sword_short/model.obj" なら "Demo/Weapon/sword/sword_short" 
 				const auto pos = rel.find_last_of('/');
 				if (pos == std::string::npos)
 				{
@@ -99,7 +129,9 @@ namespace
 	// Treeノード用構造体
 	struct PathNode
 	{
+		// 例： "Demo/Weapon/sword/sword_short/model.obj" なら "Demo" -> "Weapon" -> "sword" -> "sword_short"
 		std::map<std::string, PathNode> children;
+		// そのモデルを使っているアイテムのインデックス　(インデックスとはItemManager::itemsの添字のこと)
 		std::vector<int> itemIndices;
 	};
 
@@ -175,21 +207,17 @@ void ItemEditor::Draw(ItemManager& itemManager)
 	// 新規追加するアイテムのカテゴリ
 	ImGui::Combo("追加アイテムCategory", &newItemCategory_, "Weapon\0Armor\0Item\0");
 
-
 	// モデル候補をLazy生成（起動直後/必要時のみ）
-	if (modelCandidatesDirty_)
-	{
-		BuildModelCandidates(modelCandidates_);
-		modelCandidatesDirty_ = false;
-	}
+	BuildModelCandidates(modelCandidates_);
 
-	// 現在値のプレビュー（Assets/Modelを基点に読みやすく表示）
+	// 現在値のプレビュー
 	std::string preview = newItemModelPath_;
 	preview = ToModelRelativePath(preview);
 	if (preview.empty())
 	{
-		preview = "(select model path)";
+		preview = "モデルパスを設定してね";
 	}
+
 
 	if (ImGui::BeginCombo("追加アイテムModelPath", preview.c_str()))
 	{
@@ -207,8 +235,9 @@ void ItemEditor::Draw(ItemManager& itemManager)
 		ImGui::EndCombo();
 	}
 
-	bool empty = false;
-	bool exists = false;
+	bool nameEmpty = false;
+	bool nameExists = false;
+	bool modelPathEmpty = false;
 
 	// アイテム追加実行ボタン
 	if (ImGui::Button("Add Item"))
@@ -217,21 +246,29 @@ void ItemEditor::Draw(ItemManager& itemManager)
 		const std::wstring newNameW = ConvertString(std::string(newItemName_));
 
 		// 空
-		empty = newNameW.empty();
+		nameEmpty = newNameW.empty();
 
 		// 重複
-		exists = std::any_of(items.begin(), items.end(),
+		nameExists = std::any_of(items.begin(), items.end(),
 			[&](const Item& it) { return it.name == newNameW; });
 
-		// 重複してたら失敗フラグをたてる
-		if (exists)
+		// モデルパス空
+		modelPathEmpty = (preview == "モデルパスを設定してね");
+
+		// 空だったら失敗フラグをたてる
+		if (nameEmpty)
 		{
 			addItemState_ = 1;
 		}
-		// 空だったら失敗フラグをたてる
-		else if (empty)
+		// 重複してたら失敗フラグをたてる
+		else if (nameExists)
 		{
 			addItemState_ = 2;
+		}
+		// モデルパス空だったら失敗フラグをたてる
+		else if (modelPathEmpty)
+		{
+			addItemState_ = 3;
 		}
 		// 重複してないし空でもないならアイテム追加
 		else
@@ -255,11 +292,15 @@ void ItemEditor::Draw(ItemManager& itemManager)
 
 	if (addItemState_ == 1)
 	{
-		ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "Error : 既に存在する名前です");
+		ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "Error : 名前を入力してください");
 	}
 	else if (addItemState_ == 2)
 	{
-		ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "Error : 名前を入力してください");
+		ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "Error : 既に存在する名前です");
+	}
+	else if (addItemState_ == 3)
+	{
+		ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "Error : モデルパスを設定してください");
 	}
 
 #pragma endregion
@@ -272,7 +313,6 @@ void ItemEditor::Draw(ItemManager& itemManager)
 	currentItemIndex_ = std::clamp(currentItemIndex_, 0, static_cast<int>(items.size()) - 1);
 
 	int deleteIndex = -1;
-
 
 	// modelPathベースのTree表示（Assets/Modelを共通基盤にして相対化）
 	PathNode treeRoot;

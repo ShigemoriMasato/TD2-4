@@ -26,7 +26,6 @@ private:
 	char newItemModelPath_[256] = "Assets/Model/";
 
 
-	bool modelCandidatesDirty_ = true;
 	std::vector<std::string> modelCandidates_;
 
 	// 既存アイテムの名前編集用バッファ
