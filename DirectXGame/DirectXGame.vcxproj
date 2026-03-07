@@ -176,6 +176,11 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Weapon\WeaponDatabase.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\WeaponDebugger.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\WeaponManager.cpp" />
+    <ClCompile Include="AppSource\Scene\01_Title\TitleScene.cpp" />
+    <ClCompile Include="AppSource\Scene\02_CharaSelect\CharaSelectScene.cpp" />
+    <ClCompile Include="AppSource\Scene\03_Game\GameScene.cpp" />
+    <ClCompile Include="AppSource\Scene\04_BackPackBuild\BackPackBuildScene.cpp" />
+    <ClCompile Include="AppSource\Scene\05_Result\ResultScene.cpp" />
     <ClCompile Include="AppSource\Scene\CommonData.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\EnemyManager.cpp" />
     <ClCompile Include="AppSource\Shop\BackPack.cpp" />
@@ -272,6 +277,11 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponDebugger.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponInclude.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponManager.h" />
+    <ClInclude Include="AppSource\Scene\01_Title\TitleScene.h" />
+    <ClInclude Include="AppSource\Scene\02_CharaSelect\CharaSelectScene.h" />
+    <ClInclude Include="AppSource\Scene\03_Game\GameScene.h" />
+    <ClInclude Include="AppSource\Scene\04_BackPackBuild\BackPackBuildScene.h" />
+    <ClInclude Include="AppSource\Scene\05_Result\ResultScene.h" />
     <ClInclude Include="AppSource\Scene\CommonData.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\EnemyManager.h" />
     <ClInclude Include="AppSource\Shop\BackPack.h" />
