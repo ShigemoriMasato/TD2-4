@@ -1,5 +1,8 @@
 #pragma once
 #include <Scene/IScene.h>
+#include <UI/Title/TitleUI.h>
+#include <Camera/Camera.h>
+#include <memory>
 
 namespace Title {
 	enum class State {
@@ -21,4 +24,7 @@ public:
 private:
 
 	Title::State state_ = Title::State::Start;
+	std::unique_ptr<TitleUI> titleUI_ = nullptr;
+	std::unique_ptr<Camera> camera_ = nullptr;
+	Transform cameraTransform_{};
 };
