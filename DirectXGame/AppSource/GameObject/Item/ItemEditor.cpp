@@ -167,21 +167,28 @@ namespace
 		for (int idx : node.itemIndices)
 		{
 			ImGui::PushID(idx);
-
+			
 			const float delW = 70.0f;
-			const float avail = ImGui::GetContentRegionAvail().x;
-			ImGui::SetNextItemWidth(std::max(1.0f, avail - delW - ImGui::GetStyle().ItemSpacing.x));
+			const float spacing = ImGui::GetStyle().ItemSpacing.x;
+
+			// 行の開始Xと、行で使える幅
+			const float startX = ImGui::GetCursorPosX();
+			const float availW = ImGui::GetContentRegionAvail().x;
+
+			// SelectableがDelete領域に被らないように幅を制限
+			const float selectableW = std::max(1.0f, availW - delW - spacing);
 
 			const bool selected = (currentItemIndex == idx);
-
-			// 表示は item.name（modelPathツリーの末端にぶら下げる）
 			const std::string label = ConvertString(items[idx].name);
-			if (ImGui::Selectable(label.c_str(), selected))
+
+			// 1) 左側：Selectable（幅固定）
+			if (ImGui::Selectable(label.c_str(), selected, ImGuiSelectableFlags_None, ImVec2(selectableW, 0.0f)))
 			{
 				currentItemIndex = idx;
 			}
 
-			ImGui::SameLine();
+			// 2) 右側：Delete（Selectableの右に固定配置）
+			ImGui::SameLine(startX + selectableW + spacing);
 			if (ImGui::SmallButton("Delete"))
 			{
 				deleteIndex = idx;
