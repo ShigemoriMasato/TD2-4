@@ -487,7 +487,8 @@ void ItemEditor::Draw(ItemManager& itemManager)
 		filled.reserve(currentItem.mapData.size() * 2);
 		for (const auto& c : currentItem.mapData)
 		{
-			filled.insert({ c.first, c.second });
+			const int flippedY = (gridH_ - 1) - c.second;
+			filled.insert({ c.first, flippedY });
 		}
 
 		ImDrawList* dl = ImGui::GetWindowDrawList();
@@ -557,13 +558,17 @@ void ItemEditor::Draw(ItemManager& itemManager)
 			}
 		}
 
-		// 編集結果をItemのmapDataに反映
+		// 編集結果をItemのmapDataに反映（Y反転：ImGuiは上→下、ゲーム側は下→上想定）
 		currentItem.mapData.clear();
+		currentItem.mapData.reserve(filled.size());
+
 		for (const auto& cell : filled)
 		{
-			currentItem.mapData.emplace_back(cell.x, cell.y);
+			const int flippedY = (gridH_ - 1) - cell.y;
+			currentItem.mapData.emplace_back(cell.x, flippedY);
 		}
 		std::sort(currentItem.mapData.begin(), currentItem.mapData.end());
+
 
 		ImGui::TreePop();
 	}
