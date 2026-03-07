@@ -1,29 +1,168 @@
 #include "ItemEditor.h"
 
+#ifdef USE_IMGUI
+
 #include "ItemManager.h"
 #include <Utility/ConvertString.h>
+#include <Utility/SearchFile.h>
 #include <imgui/imgui.h>
 #include <algorithm>
 #include <unordered_set>
 #include <cfloat>
+#include <filesystem>
+#include <map>
+#include <set>
+
+
 
 namespace
 {
-	struct PairHash
+	constexpr const char* kModelRoot = "Assets/Model";
+
+	static bool StartsWith(const std::string& s, const std::string& prefix)
 	{
-		size_t operator()(const std::pair<int, int>& p) const noexcept
+		return s.size() >= prefix.size() && std::equal(prefix.begin(), prefix.end(), s.begin());
+	}
+
+	// "Assets/Model/..." を "...（末尾スラッシュなし）" にする
+	static std::string ToModelRelativePath(const std::string& fullPath)
+	{
+		std::string p = fullPath;
+		std::replace(p.begin(), p.end(), '\\', '/');
+
+		const std::string root = std::string(kModelRoot) + "/";
+		if (StartsWith(p, root))
 		{
-			const uint64_t x = static_cast<uint32_t>(p.first);
-			const uint64_t y = static_cast<uint32_t>(p.second);
-			return static_cast<size_t>((x << 32) ^ y);
+			p.erase(0, root.size());
 		}
+		return p;
+	}
+
+	static std::vector<std::string> SplitPath(const std::string& path)
+	{
+		std::vector<std::string> parts;
+		std::string cur;
+
+		for (char ch : path)
+		{
+			if (ch == '/' || ch == '\\')
+			{
+				if (!cur.empty())
+				{
+					parts.push_back(cur);
+					cur.clear();
+				}
+				continue;
+			}
+			cur.push_back(ch);
+		}
+		if (!cur.empty())
+		{
+			parts.push_back(cur);
+		}
+		return parts;
+	}
+
+	static void BuildModelCandidates(std::vector<std::string>& outCandidates)
+	{
+		// 拡張子 => 対象ファイル（rootからの相対パス）が取れる
+		static const std::vector<std::string> exts = { ".fbx", ".obj", ".gltf", ".glb" };
+
+		// 「拡張子ファイルが存在するディレクトリ」を集める
+		std::set<std::string> dirs;
+
+		for (const auto& ext : exts)
+		{
+			const auto relFiles = SearchFilePathsAddChild(kModelRoot, ext); // root相対パスが返る
+			for (auto rel : relFiles)
+			{
+				std::replace(rel.begin(), rel.end(), '\\', '/');
+
+				// "Demo/Weapon/sword/sword_short/model.obj" -> 親ディレクトリを候補に
+				const auto pos = rel.find_last_of('/');
+				if (pos == std::string::npos)
+				{
+					continue;
+				}
+				const std::string relDir = rel.substr(0, pos);
+
+				// item.modelPath は "Assets/Model/...." を想定
+				const std::string fullDir = std::string(kModelRoot) + "/" + relDir;
+				dirs.insert(fullDir);
+			}
+		}
+
+		outCandidates.assign(dirs.begin(), dirs.end());
+		std::sort(outCandidates.begin(), outCandidates.end());
+	}
+
+	// Treeノード用構造体
+	struct PathNode
+	{
+		std::map<std::string, PathNode> children;
+		std::vector<int> itemIndices;
 	};
+
+	static void InsertItemByModelPath(PathNode& root, const std::string& modelPathRel, int itemIndex)
+	{
+		auto parts = SplitPath(modelPathRel);
+		PathNode* node = &root;
+		for (const auto& part : parts)
+		{
+			node = &node->children[part];
+		}
+		node->itemIndices.push_back(itemIndex);
+	}
+
+	static void DrawPathTree(
+		PathNode& node,
+		std::vector<Item>& items,
+		int& currentItemIndex,
+		int& deleteIndex)
+	{
+		// 子フォルダ
+		for (auto& [name, child] : node.children)
+		{
+			const bool open = ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_SpanFullWidth);
+			if (open)
+			{
+				DrawPathTree(child, items, currentItemIndex, deleteIndex);
+				ImGui::TreePop();
+			}
+		}
+
+		// この階層のリーフアイテム
+		for (int idx : node.itemIndices)
+		{
+			ImGui::PushID(idx);
+
+			const float delW = 70.0f;
+			const float avail = ImGui::GetContentRegionAvail().x;
+			ImGui::SetNextItemWidth(std::max(1.0f, avail - delW - ImGui::GetStyle().ItemSpacing.x));
+
+			const bool selected = (currentItemIndex == idx);
+
+			// 表示は item.name（modelPathツリーの末端にぶら下げる）
+			const std::string label = ConvertString(items[idx].name);
+			if (ImGui::Selectable(label.c_str(), selected))
+			{
+				currentItemIndex = idx;
+			}
+
+			ImGui::SameLine();
+			if (ImGui::SmallButton("Delete"))
+			{
+				deleteIndex = idx;
+			}
+
+			ImGui::PopID();
+		}
+	}
 }
+
 
 void ItemEditor::Draw(ItemManager& itemManager)
 {
-#ifdef USE_IMGUI
-
 	auto& items = itemManager.GetItemsForEdit();
 	auto& baseParam = itemManager.GetBaseParamsForEdit();
 
@@ -32,9 +171,41 @@ void ItemEditor::Draw(ItemManager& itemManager)
 #pragma region Item追加
 
 	// 新規追加するアイテムの名前
-	ImGui::InputText("NewItem Name", newItemName_, sizeof(newItemName_));
+	ImGui::InputText("追加アイテムName", newItemName_, sizeof(newItemName_));
 	// 新規追加するアイテムのカテゴリ
-	ImGui::Combo("Category", &newItemCategory_, "Weapon\0Armor\0Item\0");
+	ImGui::Combo("追加アイテムCategory", &newItemCategory_, "Weapon\0Armor\0Item\0");
+
+
+	// モデル候補をLazy生成（起動直後/必要時のみ）
+	if (modelCandidatesDirty_)
+	{
+		BuildModelCandidates(modelCandidates_);
+		modelCandidatesDirty_ = false;
+	}
+
+	// 現在値のプレビュー（Assets/Modelを基点に読みやすく表示）
+	std::string preview = newItemModelPath_;
+	preview = ToModelRelativePath(preview);
+	if (preview.empty())
+	{
+		preview = "(select model path)";
+	}
+
+	if (ImGui::BeginCombo("追加アイテムModelPath", preview.c_str()))
+	{
+		for (const auto& fullDir : modelCandidates_)
+		{
+			const std::string rel = ToModelRelativePath(fullDir);
+
+			const bool selected = (std::string(newItemModelPath_) == fullDir);
+			if (ImGui::Selectable(rel.c_str(), selected))
+			{
+				strncpy_s(newItemModelPath_, sizeof(newItemModelPath_), fullDir.c_str(), _TRUNCATE);
+			}
+		}
+
+		ImGui::EndCombo();
+	}
 
 	bool empty = false;
 	bool exists = false;
@@ -70,6 +241,7 @@ void ItemEditor::Draw(ItemManager& itemManager)
 			Item item{};
 			item.name = newNameW;
 			item.category = static_cast<Category>(newItemCategory_);
+			item.modelPath = newItemModelPath_;
 			for (int r = 0; r < 4; ++r)
 			{
 				item.ranks[r].price = 0;
@@ -101,44 +273,30 @@ void ItemEditor::Draw(ItemManager& itemManager)
 
 	int deleteIndex = -1;
 
-	// アイテム一覧表示
-	if (ImGui::BeginTable("ItemTable", 2,
-		ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_ScrollY,
-		ImVec2(0, 160.0f)))
+
+	// modelPathベースのTree表示（Assets/Modelを共通基盤にして相対化）
+	PathNode treeRoot;
+	for (int i = 0; i < static_cast<int>(items.size()); ++i)
 	{
-		ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
-		ImGui::TableSetupColumn("##Del", ImGuiTableColumnFlags_WidthFixed, 70.0f);
+		std::string mp = items[i].modelPath;
+		std::replace(mp.begin(), mp.end(), '\\', '/');
 
-		for (int i = 0; i < static_cast<int>(items.size()); ++i)
+		// "Assets/Model/..." 以外が入っててもツリーには乗せる（その場合はそのまま表示）
+		std::string rel = ToModelRelativePath(mp);
+		if (rel.empty())
 		{
-			ImGui::PushID(i);
-
-			// テーブル更新
-			ImGui::TableNextRow();
-
-			// 名前表示
-			ImGui::TableSetColumnIndex(0);
-			const bool selected = (currentItemIndex_ == i);
-			const std::string label = ConvertString(items[i].name);
-			if (ImGui::Selectable(label.c_str(), selected))
-			{
-				currentItemIndex_ = i;
-			}
-
-			// Deleteボタン
-			ImGui::TableSetColumnIndex(1);
-			if (ImGui::SmallButton("Delete"))
-			{
-				deleteIndex = i;
-			}
-
-			ImGui::PopID();
+			// Assets/Model 直下扱い
+			rel = "(root)";
 		}
 
-		ImGui::EndTable();
+		InsertItemByModelPath(treeRoot, rel, i);
 	}
 
-	// もし削除ボタンが押されてたらアイテム削除
+	ImGui::BeginChild("ItemTreeList", ImVec2(0, 160.0f), true);
+	DrawPathTree(treeRoot, items, currentItemIndex_, deleteIndex);
+	ImGui::EndChild();
+
+	// 削除（既存ロジック維持）
 	if (deleteIndex >= 0)
 	{
 		items.erase(items.begin() + deleteIndex);
@@ -282,7 +440,7 @@ void ItemEditor::Draw(ItemManager& itemManager)
 		filled.reserve(currentItem.mapData.size() * 2);
 		for (const auto& c : currentItem.mapData)
 		{
-			filled.insert(c);
+			filled.insert({ c.first, c.second });
 		}
 
 		ImDrawList* dl = ImGui::GetWindowDrawList();
@@ -353,7 +511,11 @@ void ItemEditor::Draw(ItemManager& itemManager)
 		}
 
 		// 編集結果をItemのmapDataに反映
-		currentItem.mapData.assign(filled.begin(), filled.end());
+		currentItem.mapData.clear();
+		for (const auto& cell : filled)
+		{
+			currentItem.mapData.emplace_back(cell.first, cell.second);
+		}
 		std::sort(currentItem.mapData.begin(), currentItem.mapData.end());
 
 		ImGui::TreePop();
@@ -445,6 +607,6 @@ void ItemEditor::Draw(ItemManager& itemManager)
 #pragma endregion
 
 	ImGui::End();
+}
 
 #endif
-}

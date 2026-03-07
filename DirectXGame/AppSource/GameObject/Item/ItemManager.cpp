@@ -9,6 +9,8 @@
 #include "ItemEditor.h"
 #endif
 
+ItemManager::ItemManager() {}
+
 ItemManager::~ItemManager()
 {
 	SaveBaseParam();
@@ -171,6 +173,21 @@ void ItemManager::SaveItem()
 
 void ItemManager::LoadItem()
 {
+	// 指定したファイルを読み込み
+	jsonManager_.Boot(itemFile_);
+
+	//jsonManager_.Get("Items", items_);
+
+
+	///////////////////////////////////////////
+	// ⇩修正前バイナリ　↑修正後Json
+	///////////////////////////////////////////
+
+
+
+
+
+
 	auto data = binaryManager_.Read(itemFile_);
 	if (data.empty())
 	{

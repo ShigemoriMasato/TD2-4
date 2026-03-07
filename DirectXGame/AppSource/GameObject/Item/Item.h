@@ -41,7 +41,8 @@ struct ItemRankData
 	std::unordered_map<std::string, float> params;
 };
 
-struct Item {
+class Item {
+public:
 	/// ランクに関わらず共通のデータ
 	std::wstring name;		// 名前 ← アイテムの識別に使うため重複不可
 	Category category;		// カテゴリ
@@ -49,7 +50,10 @@ struct Item {
 	int weaponID = -1;						//武器ID (武器以外は-1)
 	std::string modelPath;					// モデルパス
 	int modelID = -1;
-	Vector4 color = Vector4(1, 1, 1, 1);	//アイテムの色
+	Vector4 color = { 1, 1, 1, 1 };	//アイテムの色
+
+	// 違和感なく見えるモデル位置にするためのオフセット
+	std::pair<int, int> visualOffsetCells{ 0, 0 };
 
 	/// ランクごとに変わるデータ  値段・効果・バフ
 	std::array<ItemRankData, 4> ranks{};

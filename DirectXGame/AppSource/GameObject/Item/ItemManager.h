@@ -2,10 +2,22 @@
 #include "Item.h"
 #include <Tool/Binary/BinaryManager.h>
 #include <Assets/Model/ModelManager.h>
+#include <Tool/Json/JsonManager.h>
+
+enum class ParamType : int
+{
+	HP,
+	MP,
+	Attack,
+	Defense,
+	Speed,
+	Count,
+};
 
 class ItemManager {
 public:
 
+	ItemManager();
 	~ItemManager();
 	void Initialize(SHEngine::ModelManager* modelManager);
 	void DrawImGui();
@@ -13,10 +25,12 @@ public:
 	// アイテムの名前からアイテムデータを取得(名前リストがどこかにある想定)
 	const Item& GetItem(std::wstring itemName) const;
 	const Item& GetItem(int index) const;
-	const std::vector<Item>& GetAllItems() const { return items_; }
+	std::vector<Item> GetAllItems() const { return items_; }
 
 	// 描画等で必要になったときに ID を解決する
 	int ResolveModelID(Item& item);
+
+#ifdef USE_IMGUI 
 
 	/// Editer用関数
 	std::vector<Item>& GetItemsForEdit() { return items_; }
@@ -25,7 +39,10 @@ public:
 	std::unordered_map<std::string, float>& GetBaseParamsForEdit() { return baseParam_; }
 	const std::unordered_map<std::string, float>& GetBaseParamsForEdit() const { return baseParam_; }
 
+#endif
+
 private:
+
 
 	void SaveModel();
 	void LoadModel();
@@ -47,8 +64,9 @@ private:
 
 	SHEngine::ModelManager* modelManager_ = nullptr;
 	BinaryManager binaryManager_;
+	JsonManager jsonManager_;
 
-	static inline const std::string modelFile_ = "ModelIDMap.bin";
-	static inline const std::string itemFile_ = "ItemData.bin";
-	static inline const std::string baseParamFile_ = "BaseParamData.bin";
+	static inline const std::string modelFile_ = "ModelIDMap";
+	static inline const std::string itemFile_ = "ItemData";
+	static inline const std::string baseParamFile_ = "BaseParamData";
 };
