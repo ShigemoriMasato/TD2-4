@@ -22,6 +22,8 @@ public:
 
 private:
 
+	void MakeWeapon();
+
 	std::unique_ptr<DebugCamera> camera_;
 	std::unique_ptr<Grid> grid_;
 	std::unique_ptr<ColliderManager> colliderManager_;

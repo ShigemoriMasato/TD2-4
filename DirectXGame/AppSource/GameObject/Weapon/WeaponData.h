@@ -7,8 +7,14 @@ enum class WeaponRarity : int {
 	Epic = 3,        // エピック
 };
 
+enum class WeaponType : int {
+	Pistol = 0,      // ピストル
+	Sowrd = 1,       // ソード
+};
+
 struct WeaponData {
 	int id;                   // ID
+	WeaponType type;          // 武器の種類
 	int rarity;               // レア度（WeaponRarityのint値）
 	float gold;               // 値段
 	float baseDamage;         // 基本ダメージ数

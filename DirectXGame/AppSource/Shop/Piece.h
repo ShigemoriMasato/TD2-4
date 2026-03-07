@@ -21,6 +21,7 @@ public:
 	bool Put(BackPack* backPack);
 	bool IsHovered(const Vector3& cursorPos, BackPack* backPack) ;
 	std::vector<DrawInfo> GetDrawInfos() const;
+	Item GetItem() const { return itemData_; }
 
 private:
 

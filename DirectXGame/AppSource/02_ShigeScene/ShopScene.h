@@ -1,6 +1,8 @@
 #pragma once
 #include <Scene/IScene.h>
 #include <GameObject/Item/ItemManager.h>
+#include <GameObject/Weapon/WeaponManager.h>
+#include <GameObject/Weapon/WeaponDebugger.h>
 #include <Collision/ColliderManager.h>
 #include <Camera/DebugCamera.h>
 #include <Tool/Grid/Grid.h>
@@ -13,6 +15,8 @@
 
 class ShopScene : public IScene {
 public:
+
+	~ShopScene();
 
 	void Initialize() override;
 	std::unique_ptr<IScene> Update() override;
@@ -30,4 +34,7 @@ private:
 	std::unique_ptr<ShopCursor> shopCursor_;
 	std::unique_ptr<PieceManager> pieceManager_;
 	std::unique_ptr<Shop> shop_;
+
+	std::unique_ptr<WeaponManager> weaponManager_;
+	std::unique_ptr<WeaponDebugger> weaponDebugger_;
 };

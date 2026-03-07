@@ -5,7 +5,7 @@
 class PieceManager {
 public:
 
-	void Initialize(std::vector<std::unique_ptr<Piece>>&& playerPieces);
+	void Initialize(std::vector<std::unique_ptr<Piece>>& playerPieces);
 
 	// ショップのピースを更新する。ショップのピースは別のクラスで抽選したものを引数で渡す
 	void RefreshShopPieces(std::vector<std::unique_ptr<Piece>> shopPieces);

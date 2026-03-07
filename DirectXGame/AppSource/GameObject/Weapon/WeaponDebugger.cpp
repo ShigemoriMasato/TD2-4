@@ -16,6 +16,13 @@ void WeaponDebugger::Draw() {
 
 	// 武器データが見つかった場合
 	if (weapon != nullptr) {
+		//武器の種類
+		const char* weaponTypeNames[] = { "Pistol", "Sword" };
+		int weaponTypeIndex = static_cast<int>(weapon->type);
+		if (ImGui::Combo("Weapon Type", &weaponTypeIndex, weaponTypeNames, IM_ARRAYSIZE(weaponTypeNames))) {
+			weapon->type = static_cast<WeaponType>(weaponTypeIndex);
+		}
+
 		// レア度表示
 		const char* rarityNames[] = {"Common", "Uncommon", "Rare", "Epic"};
 		int rarityIndex = weapon->rarity;

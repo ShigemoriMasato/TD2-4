@@ -34,6 +34,7 @@ void WeaponManager::SaveWeaponData() {
 	for (const auto& [id, weapon] : database_) {
 		jsonManager_->Boot("WeaponData" + std::to_string(weapon.id));
 		jsonManager_->Add("id", weapon.id);
+		jsonManager_->Add("type", static_cast<int>(weapon.type));
 		jsonManager_->Add("rarity", weapon.rarity);
 		jsonManager_->Add("gold", weapon.gold);
 		jsonManager_->Add("baseDamage", weapon.baseDamage);

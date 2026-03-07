@@ -1,6 +1,10 @@
 #include "ShopScene.h"
 #include "ShigeScene.h"
 
+ShopScene::~ShopScene() {
+	commonData_->pieces = pieceManager_->GetHoldPieces();
+}
+
 void ShopScene::Initialize() {
 	colliderManager_ = std::make_unique<ColliderManager>();
 	Collider::SetColliderManager(colliderManager_.get());
@@ -24,12 +28,20 @@ void ShopScene::Initialize() {
 	shopCursor_->Initialize(commonData_->keyManager.get());
 
 	pieceManager_ = std::make_unique<PieceManager>();
-	pieceManager_->Initialize({});
+	pieceManager_->Initialize(commonData_->pieces);
+	//PieceManager内でstd::moveを行っているため、クリアを行う
+	commonData_->pieces.clear();
+	Piece::SetPieceManager(pieceManager_.get());
 
 	shop_ = std::make_unique<Shop>();
 	shop_->Initialize(itemManager_.get());
 
 	pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
+
+	weaponManager_ = std::make_unique<WeaponManager>();
+	weaponManager_->InitializeData(modelManager_, drawDataManager_);
+
+	weaponDebugger_ = std::make_unique<WeaponDebugger>(weaponManager_.get());
 }
 
 std::unique_ptr<IScene> ShopScene::Update() {
@@ -59,7 +71,7 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	objectRender_->SetDrawInfo(drawInfos.data(), drawInfos.size(), debugCamera_->GetVPMatrix());
 
 	if (key[Key::Debug1]) {
-		return std::unique_ptr<ShigeScene>();
+		return std::make_unique<ShigeScene>();
 	}
 
 	return nullptr;
@@ -82,6 +94,7 @@ void ShopScene::Draw() {
 #ifdef USE_IMGUI
 	display->DrawImGui();
 	itemManager_->DrawImGui();
+	weaponDebugger_->Draw();
 
 	engine_->DrawImGui();
 #endif

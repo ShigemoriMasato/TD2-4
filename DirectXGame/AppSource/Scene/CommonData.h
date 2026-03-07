@@ -3,6 +3,7 @@
 #include <Render/Screen/SwapChain.h>
 #include <Common/MainDisplay.h>
 #include <Common/KeyConfig/KeyManager.h>
+#include <Shop/Piece.h>
 
 using WindowSet = std::pair<std::unique_ptr<SHEngine::Screen::WindowsAPI>, std::unique_ptr<SHEngine::Screen::SwapChain>>;
 
@@ -15,4 +16,6 @@ struct CommonData {
 
 	std::unique_ptr<KeyManager> keyManager;
 	int postEffectDrawDataIndex = -1;
+
+	std::vector<std::unique_ptr<Piece>> pieces; //Playerが今持っているピースのデータ
 };

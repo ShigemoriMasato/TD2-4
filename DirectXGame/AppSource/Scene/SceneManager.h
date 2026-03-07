@@ -17,9 +17,10 @@ public:
 private:
 
 	SHEngine::Engine* engine_ = nullptr;
+
+	std::unique_ptr<CommonData> commonData_ = nullptr;
 	
 	std::unique_ptr<IScene> currentScene_ = nullptr;
 	std::unique_ptr<IScene> nextScene_ = nullptr;
-	std::unique_ptr<CommonData> commonData_ = nullptr;
 
 };

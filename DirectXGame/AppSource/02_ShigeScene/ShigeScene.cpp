@@ -15,12 +15,12 @@ void ShigeScene::Initialize() {
 
 	player_ = std::make_unique<Player::Base>();
 	player_->Initialize(modelManager_, drawDataManager_, input_);
-	
+
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize(player_->GetPositionPtr());
 
 	map_ = std::make_unique<Map>();
-	map_->Initialize(); 
+	map_->Initialize();
 	player_->SetMapMinMax(map_->GetMinX(), map_->GetMaxX(), map_->GetMinZ(), map_->GetMaxZ());
 
 	objectRender_ = std::make_unique<ObjectRender>();
@@ -34,9 +34,7 @@ void ShigeScene::Initialize() {
 
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 
-	std::unique_ptr<Pistol> pistol = std::make_unique<Pistol>();
-	pistol->Initialize(0, player_.get());
-	weapons_.emplace_back(std::move(pistol));
+	MakeWeapon();
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -48,7 +46,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 
 	worldTimer_ += deltaTime;
-	if(worldTimer_ > 2.0f) {
+	if (worldTimer_ > 2.0f) {
 		worldTimer_ = 0.0f;
 		Vector3 initPos = { float(rand() % 20 - 10), 0.0f, float(rand() % 20 - 10) };
 		enemyManager_->PopEnemy(initPos);
@@ -57,7 +55,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	player_->Update(camera_->GetVPMatrix(), deltaTime);
 	map_->Update();
 	enemyManager_->Update(deltaTime);
-	for(const auto& weapon : weapons_) {
+	for (const auto& weapon : weapons_) {
 		weapon->Update(deltaTime);
 	}
 	attackManager_->Update(deltaTime);
@@ -90,7 +88,7 @@ void ShigeScene::Draw() {
 	grid_->Draw(cmdObj);
 	objectRender_->Draw(cmdObj);
 	player_->Draw(cmdObj);
-	
+
 
 	display->PostDraw(cmdObj);
 
@@ -112,4 +110,24 @@ void ShigeScene::Draw() {
 
 	engine_->DrawImGui();
 	window->PostDraw(cmdObj);
+}
+
+void ShigeScene::MakeWeapon() {
+	for (const auto& piece : commonData_->pieces) {
+		int weaponID = piece->GetItem().weaponID;
+
+		if (weaponID != -1) {
+			WeaponData* data = weaponDatabase_->GetWeapon(weaponID);
+
+			switch (data->type) {
+			case WeaponType::Pistol:
+			{
+				std::unique_ptr<Pistol> pistol = std::make_unique<Pistol>();
+				pistol->Initialize(weaponID, player_.get());
+				weapons_.emplace_back(std::move(pistol));
+				break;
+			}
+			}
+		}
+	}
 }

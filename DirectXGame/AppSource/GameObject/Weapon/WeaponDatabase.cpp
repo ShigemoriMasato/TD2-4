@@ -21,16 +21,16 @@
 
 std::vector<WeaponData> WeaponDatabase::GetDefaultWeaponData() {
 	return {
-		{0, static_cast<int>(WeaponRarity::Common), 20.0f, 6.0f,  0.5f, 2.0f, 0.2f, 1.5f, 1.0f, 1.0f, 0, 0.0f, 4},      // ショートソード
-		{1, static_cast<int>(WeaponRarity::Common), 20.0f, 10.0f, 0.5f, 2.0f, 0.2f, 1.8f, 1.0f, 1.0f, 0, 0.0f, 5},      // ロングソード
-		{2, static_cast<int>(WeaponRarity::Common), 20.0f, 4.0f,  0.5f, 2.0f, 0.2f, 2.2f, 1.0f, 1.0f, 0, 0.0f, 2},      // ダガー
-		{3, static_cast<int>(WeaponRarity::Common), 20.0f, 20.0f, 0.5f, 2.0f, 0.2f, 0.6f, 1.0f, 1.0f, 0, 0.0f, 6},      // ハンマー
-		{4, static_cast<int>(WeaponRarity::Common), 20.0f, 15.0f, 0.5f, 2.0f, 0.2f, 2.0f, 1.0f, 1.0f, 0, 0.0f, 5},      // ウォーハンマー
-		{5, static_cast<int>(WeaponRarity::Common), 20.0f, 2.0f,  0.5f, 2.0f, 0.2f, 0.2f, 1.0f, 1.0f, 0, 0.0f, 2},      // 投げ斧
-		{6, static_cast<int>(WeaponRarity::Common), 20.0f, 5.0f,  0.5f, 2.0f, 0.2f, 1.8f, 1.0f, 1.0f, 0, 0.0f, 3},      // ハンドガン
-		{7, static_cast<int>(WeaponRarity::Common), 20.0f, 14.0f, 0.5f, 2.0f, 0.2f, 0.7f, 1.0f, 1.0f, 0, 0.0f, 4},      // ショットガン
-		{8, static_cast<int>(WeaponRarity::Common), 20.0f, 8.0f,  0.5f, 2.0f, 0.2f, 1.2f, 1.0f, 1.0f, 0, 0.0f, 4},      // ライフル
-		{9, static_cast<int>(WeaponRarity::Common), 20.0f, 8.0f,  0.5f, 2.0f, 0.2f, 1.2f, 1.0f, 1.0f, 0, 0.0f, 4},      // バット
+		{0, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 6.0f,  0.5f, 2.0f, 0.2f, 1.5f, 1.0f, 1.0f, 0, 0.0f, 4},      // ショートソード
+		{1, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 10.0f, 0.5f, 2.0f, 0.2f, 1.8f, 1.0f, 1.0f, 0, 0.0f, 5},      // ロングソード
+		{2, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 4.0f,  0.5f, 2.0f, 0.2f, 2.2f, 1.0f, 1.0f, 0, 0.0f, 2},      // ダガー
+		{3, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 20.0f, 0.5f, 2.0f, 0.2f, 0.6f, 1.0f, 1.0f, 0, 0.0f, 6},      // ハンマー
+		{4, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 15.0f, 0.5f, 2.0f, 0.2f, 2.0f, 1.0f, 1.0f, 0, 0.0f, 5},      // ウォーハンマー
+		{5, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 2.0f,  0.5f, 2.0f, 0.2f, 0.2f, 1.0f, 1.0f, 0, 0.0f, 2},      // 投げ斧
+		{6, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 5.0f,  0.5f, 2.0f, 0.2f, 1.8f, 1.0f, 1.0f, 0, 0.0f, 3},      // ハンドガン
+		{7, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 14.0f, 0.5f, 2.0f, 0.2f, 0.7f, 1.0f, 1.0f, 0, 0.0f, 4},      // ショットガン
+		{8, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 8.0f,  0.5f, 2.0f, 0.2f, 1.2f, 1.0f, 1.0f, 0, 0.0f, 4},      // ライフル
+		{9, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 8.0f,  0.5f, 2.0f, 0.2f, 1.2f, 1.0f, 1.0f, 0, 0.0f, 4},      // バット
 	};
 }
 
@@ -64,6 +64,7 @@ void WeaponDatabase::LoadFromJson(JsonManager& jsonManager) {
 		try {
 			// 基本情報を読み込む
 			int id = jsonManager.Get<int>("id");
+			int type = 0;
 			int rarity = jsonManager.Get<int>("rarity");
 
 			// レア度倍率を計算
@@ -71,6 +72,7 @@ void WeaponDatabase::LoadFromJson(JsonManager& jsonManager) {
 
 			// パラメータを読み込み、レア度倍率を適用
 			weaponData.id = id;
+			weaponData.type = static_cast<WeaponType>(type);
 			weaponData.rarity = rarity;
 			weaponData.gold = jsonManager.Get<float>("gold");
 			weaponData.baseDamage = jsonManager.Get<float>("baseDamage") * rarityMultiplier;
