@@ -12,6 +12,7 @@
 #include <Shop/ShopCursor.h>
 #include <Shop/PieceManager.h>
 #include <Shop/Shop.h>
+#include <GameObject/Player/Parameter/ParameterRender.h>
 
 class ShopScene : public IScene {
 public:
@@ -37,4 +38,7 @@ private:
 
 	std::unique_ptr<WeaponManager> weaponManager_;
 	std::unique_ptr<WeaponDebugger> weaponDebugger_;
+
+	std::unique_ptr<ParameterRender> parameterRender_;
+	std::unique_ptr<Camera> orthoCamera_;
 };

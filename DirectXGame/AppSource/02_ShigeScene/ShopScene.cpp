@@ -42,6 +42,11 @@ void ShopScene::Initialize() {
 	weaponManager_->InitializeData(modelManager_, drawDataManager_);
 
 	weaponDebugger_ = std::make_unique<WeaponDebugger>(weaponManager_.get());
+
+	parameterRender_ = std::make_unique<ParameterRender>();
+	parameterRender_->Initialize(modelManager_, drawDataManager_, engine_);
+
+	orthoCamera_ = std::make_unique<Camera>();
 }
 
 std::unique_ptr<IScene> ShopScene::Update() {
@@ -77,6 +82,14 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	}
 	objectRender_->SetDrawInfo(drawInfos.data(), drawInfos.size(), debugCamera_->GetVPMatrix());
 
+	OrthographicDesc orthDesc;
+	orthDesc.SetValue();
+	orthoCamera_->SetProjectionMatrix(orthDesc);
+	orthoCamera_->SetScale({1,-1,1});
+	orthoCamera_->SetPosition({0, 0, 0});
+	orthoCamera_->MakeMatrix();
+	parameterRender_->Update(orthoCamera_->GetVPMatrix(), commonData_->playerParameterData);
+
 	if (key[Key::Debug1]) {
 		return std::make_unique<ShigeScene>();
 	}
@@ -93,6 +106,7 @@ void ShopScene::Draw() {
 
 	grid_->Draw(cmdObj);
 	objectRender_->Draw(cmdObj);
+	parameterRender_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 
