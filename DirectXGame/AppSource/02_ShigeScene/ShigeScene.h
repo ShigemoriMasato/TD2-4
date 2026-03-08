@@ -12,6 +12,7 @@
 #include <GameObject/Attack/AttackManager.h>
 #include <GameObject/Weapon/IWeapon.h>
 #include <GameObject/Weapon/WeaponInclude.h>
+#include <Camera/GameCamera.h>
 
 class ShigeScene : public IScene {
 public:
@@ -24,7 +25,9 @@ private:
 
 	void MakeWeapon();
 
-	std::unique_ptr<DebugCamera> camera_;
+	std::unique_ptr<DebugCamera> debugCamera_;
+	std::unique_ptr<GameCamera> gameCamera_;
+	Camera* camera_;
 	std::unique_ptr<Grid> grid_;
 	std::unique_ptr<ColliderManager> colliderManager_;
 

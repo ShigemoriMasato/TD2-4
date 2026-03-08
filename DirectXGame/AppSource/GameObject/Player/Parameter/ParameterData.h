@@ -14,7 +14,7 @@ struct ParameterData {
 	float expBonusPercent;     // 経験値ボーナス％
 	float moneyBonusPercent;   // お金ボーナス％
 	float range;               // 攻撃範囲
-	float attackCount;         // 攻撃回数
+	float attackCount = 1.0f;  // 攻撃回数(絶対初期値1以上にする。じゃないと一切攻撃できなくなる)
 	float penetration;         // 貫通数
 	float knockback;           // ノックバック
 	float criticalMultiplier;  // クリティカル倍率

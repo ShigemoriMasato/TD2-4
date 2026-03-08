@@ -4,8 +4,13 @@
 #include "ShopScene.h"
 
 void ShigeScene::Initialize() {
-	camera_ = std::make_unique<DebugCamera>();
-	camera_->Initialize(input_);
+	debugCamera_ = std::make_unique<DebugCamera>();
+	debugCamera_->Initialize(input_);
+
+	gameCamera_ = std::make_unique<GameCamera>();
+	gameCamera_->Initialize();
+
+	camera_ = gameCamera_.get();
 
 	grid_ = std::make_unique<Grid>();
 	grid_->Initialize(drawDataManager_);
@@ -34,6 +39,8 @@ void ShigeScene::Initialize() {
 
 	commonData_->playerParameterData = player_->GetParameter();
 
+
+
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 
 	MakeWeapon();
@@ -43,12 +50,13 @@ void ShigeScene::Initialize() {
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
-	camera_->Update();
-	Vector3 cameraPos = camera_->GetCenter();
-	grid_->Update(cameraPos, camera_->GetVPMatrix());
-	auto key = commonData_->keyManager->GetKeyStates();
 
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
+
+	gameCamera_->Update(deltaTime, player_->GetTransform().position);
+	Vector3 cameraPos = { 0.f,0.f,0.f };
+	grid_->Update(cameraPos, camera_->GetVPMatrix());
+	auto key = commonData_->keyManager->GetKeyStates();
 
 	worldTimer_ += deltaTime;
 	if (worldTimer_ > 2.0f) {
@@ -119,6 +127,8 @@ void ShigeScene::Draw() {
 	ImGui::DragFloat3("Rotation", &debugDrawInfo_.rotation.x, 0.1f);
 	ImGui::DragFloat3("Position", &debugDrawInfo_.position.x, 0.1f);
 	ImGui::End();
+
+	gameCamera_->DrawImGui();
 
 #endif
 

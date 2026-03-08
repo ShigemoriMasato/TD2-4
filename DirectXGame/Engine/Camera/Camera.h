@@ -77,7 +77,7 @@ public:
 
 	//TransformとProjectionMatrixをかけて、VPMatrixを作成する
 	virtual void MakeMatrix();
-	void DrawImGui();
+	virtual void DrawImGui();
 
 	void SetTransform(Matrix4x4 mat);
 	void SetScale(Vector3 scale) { scale_ = scale; }
