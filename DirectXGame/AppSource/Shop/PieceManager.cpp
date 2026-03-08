@@ -7,6 +7,15 @@ void PieceManager::Initialize(std::vector<std::unique_ptr<Piece>>& playerPieces)
 	}
 }
 
+void PieceManager::UpdateItemInfo(ItemManager* itemManager) {
+	for (const auto& piece : shopPieces_) {
+		piece->Initialize(itemManager->GetItem(piece->GetItem().id));
+	}
+	for (const auto& piece : holdPieces_) {
+		piece->Initialize(itemManager->GetItem(piece->GetItem().id));
+	}
+}
+
 void PieceManager::RefreshShopPieces(std::vector<std::unique_ptr<Piece>> shopPieces) {
 	for (size_t i = 0; i < shopPieces_.size(); ++i) {
 		for (size_t j = 0; j < allPieces_.size(); ++j) {
@@ -24,9 +33,10 @@ void PieceManager::RefreshShopPieces(std::vector<std::unique_ptr<Piece>> shopPie
 }
 
 void PieceManager::MoveShopToHold(Piece* piece) {
-	for (auto& shopPiece : shopPieces_) {
-		if (shopPiece.get() == piece) {
-			holdPieces_.push_back(std::move(shopPiece));
+	for (size_t i = 0; i < shopPieces_.size(); ++i) {
+		if(shopPieces_[i].get() == piece) {
+			holdPieces_.push_back(std::move(shopPieces_[i]));
+			shopPieces_.erase(shopPieces_.begin() + i);
 			break;
 		}
 	}

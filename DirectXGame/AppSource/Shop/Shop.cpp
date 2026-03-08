@@ -5,8 +5,8 @@ void Shop::Initialize(ItemManager* itemManager) {
 	auto items = itemManager->GetAllItems();
 
 	//Itemのインデックスを作成しておく。いつかIDにする
-	for (size_t i = 0; i < items.size(); ++i) {
-		itemIndices_.push_back(static_cast<int>(i));
+	for(const auto& [id, item] : items) {
+		itemIndices_.push_back(id);
 	}
 }
 
@@ -20,8 +20,8 @@ std::vector<std::unique_ptr<Piece>> Shop::RefreshShopPieces() {
 		auto piece = std::make_unique<Piece>();
 		piece->Initialize(item);
 
-		//初期位置
-		piece->SetPosition(Vector3(-4.0f, 0.0f, -4.0f + i * 4.0f));
+		//初期位置(適当)
+		piece->SetPosition(Vector3(-8.0f, 0.0f, -8.0f + i * 8.0f));
 
 		shopPieces.push_back(std::move(piece));
 	}

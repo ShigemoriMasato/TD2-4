@@ -1,11 +1,14 @@
 #pragma once
 #include "Piece.h"
 #include <memory>
+#include <GameObject/Item/ItemManager.h>
 
 class PieceManager {
 public:
 
 	void Initialize(std::vector<std::unique_ptr<Piece>>& playerPieces);
+
+	void UpdateItemInfo(ItemManager* itemManager);
 
 	// ショップのピースを更新する。ショップのピースは別のクラスで抽選したものを引数で渡す
 	void RefreshShopPieces(std::vector<std::unique_ptr<Piece>> shopPieces);

@@ -26,27 +26,12 @@ void ItemManager::Initialize(SHEngine::ModelManager* modelManager)
 	LoadItem();
 	LoadModel();
 
-	if (items_.empty())
-	{
-		Item defaultItem{};
-		defaultItem.name = L"Default Item";
-		defaultItem.category = Category::Item;
-		for (int r = 0; r < 4; ++r)
-		{
-			defaultItem.ranks[r].price = 0;
-			defaultItem.ranks[r].effect = 0u;
-			defaultItem.ranks[r].params = baseParam_;
-		}
-		defaultItem.modelPath = "Assets/EngineResource/Model/Cube";
-		items_.push_back(std::move(defaultItem));
-	}
-
 	ResolveAllModelIDs();
 }
 
 const Item& ItemManager::GetItem(std::wstring itemName) const
 {
-	for (const auto& item : items_)
+	for (const auto& [id, item] : items_)
 	{
 		if (item.name == itemName)
 		{
@@ -56,10 +41,14 @@ const Item& ItemManager::GetItem(std::wstring itemName) const
 	throw std::runtime_error("Item not found: " + ConvertString(itemName));
 }
 
-const Item& ItemManager::GetItem(int index) const
+const Item& ItemManager::GetItem(int index)
 {
-	int targetIndex = index % static_cast<int>(items_.size());
-	return items_[targetIndex];
+	auto it = items_.find(index);
+	if(it == items_.end())
+	{
+		throw std::runtime_error("Item not found with ID: " + std::to_string(index));
+	}
+	return items_[index];
 }
 
 int ItemManager::ResolveModelID(Item& item)
@@ -74,7 +63,7 @@ int ItemManager::ResolveModelID(Item& item)
 
 void ItemManager::ResolveAllModelIDs()
 {
-	for (auto& item : items_)
+	for (auto& [id, item] : items_)
 	{
 		item.modelID = ResolveModelID(item);
 	}
@@ -125,11 +114,14 @@ void ItemManager::SaveItem()
 {
 	int size = static_cast<int>(items_.size());
 	binaryManager_.RegisterOutput(&size);
-	for (auto& item : items_)
+	for (auto& [id, item] : items_)
 	{
 		// name
 		std::string tmpName = ConvertString(item.name);
 		binaryManager_.RegisterOutput(&tmpName);
+
+		// ID
+		binaryManager_.RegisterOutput(&item.id);
 
 		// category
 		int category = static_cast<int>(item.category);
@@ -147,6 +139,7 @@ void ItemManager::SaveItem()
 		// 見た目
 		binaryManager_.RegisterOutput(&item.modelPath);
 		binaryManager_.RegisterOutput(&item.weaponID);
+		binaryManager_.RegisterOutput(&item.visualOffsetCells);
 
 		// ranks（可変）
 		for (int r = 0; r < 4; ++r)
@@ -176,18 +169,6 @@ void ItemManager::LoadItem()
 	// 指定したファイルを読み込み
 	jsonManager_.Boot(itemFile_);
 
-	//jsonManager_.Get("Items", items_);
-
-
-	///////////////////////////////////////////
-	// ⇩修正前バイナリ　↑修正後Json
-	///////////////////////////////////////////
-
-
-
-
-
-
 	auto data = binaryManager_.Read(itemFile_);
 	if (data.empty())
 	{
@@ -201,6 +182,13 @@ void ItemManager::LoadItem()
 
 		// name
 		item.name = ConvertString(binaryManager_.Reverse<std::string>(data));
+
+		// ID
+		item.id = binaryManager_.Reverse<int>(data);
+		usedID_ = std::max(usedID_, item.id); // 読み込んだIDをもとにusedID_を更新
+		if (item.id == -1) {
+			item.id = usedID_++;
+		}
 
 		// category
 		int category = binaryManager_.Reverse<int>(data);
@@ -218,6 +206,7 @@ void ItemManager::LoadItem()
 		// 見た目
 		item.modelPath = binaryManager_.Reverse<std::string>(data);
 		item.weaponID = binaryManager_.Reverse<int>(data);
+		item.visualOffsetCells = binaryManager_.Reverse<Vector2>(data);
 
 		// ranks
 		for (int r = 0; r < 4; ++r)
@@ -237,7 +226,7 @@ void ItemManager::LoadItem()
 			}
 		}
 
-		items_.push_back(item);
+		items_[item.id] = item;
 	}
 }
 

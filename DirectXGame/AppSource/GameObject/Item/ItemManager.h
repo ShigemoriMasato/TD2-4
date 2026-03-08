@@ -3,6 +3,7 @@
 #include <Tool/Binary/BinaryManager.h>
 #include <Assets/Model/ModelManager.h>
 #include <Tool/Json/JsonManager.h>
+#include <memory>
 
 enum class ParamType : int
 {
@@ -24,8 +25,8 @@ public:
 
 	// アイテムの名前からアイテムデータを取得(名前リストがどこかにある想定)
 	const Item& GetItem(std::wstring itemName) const;
-	const Item& GetItem(int index) const;
-	std::vector<Item> GetAllItems() const { return items_; }
+	const Item& GetItem(int index);
+	std::unordered_map<int, Item> GetAllItems() const { return items_; }
 
 	// 描画等で必要になったときに ID を解決する
 	int ResolveModelID(Item& item);
@@ -33,8 +34,8 @@ public:
 #ifdef USE_IMGUI 
 
 	/// Editer用関数
-	std::vector<Item>& GetItemsForEdit() { return items_; }
-	const std::vector<Item>& GetItemsForEdit() const { return items_; }
+	std::unordered_map<int, Item>& GetItemsForEdit() { return items_; }
+	int& GetUsedID() { return usedID_; }
 
 	std::unordered_map<std::string, float>& GetBaseParamsForEdit() { return baseParam_; }
 	const std::unordered_map<std::string, float>& GetBaseParamsForEdit() const { return baseParam_; }
@@ -57,7 +58,9 @@ private:
 
 	//パラメータ一覧と基礎値
 	std::unordered_map<std::string, float> baseParam_;
-	std::vector<Item> items_;
+	std::unordered_map<int, Item> items_;
+
+	int usedID_ = 0;
 
 	// モデルIDとパスのマップ
 	std::map<int, std::string> modelIDtoName_;
@@ -66,7 +69,7 @@ private:
 	BinaryManager binaryManager_;
 	JsonManager jsonManager_;
 
-	static inline const std::string modelFile_ = "ModelIDMap";
-	static inline const std::string itemFile_ = "ItemData";
-	static inline const std::string baseParamFile_ = "BaseParamData";
+	static inline const std::string modelFile_ = "ModelIDMap.bin";
+	static inline const std::string itemFile_ = "ItemData.bin";
+	static inline const std::string baseParamFile_ = "BaseParamData.bin";
 };

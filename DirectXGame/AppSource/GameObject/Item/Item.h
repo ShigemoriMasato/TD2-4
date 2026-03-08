@@ -50,10 +50,11 @@ public:
 	int weaponID = -1;						//武器ID (武器以外は-1)
 	std::string modelPath;					// モデルパス
 	int modelID = -1;
+	int id = -1;							// アイテムID（識別用）
 	Vector4 color = { 1, 1, 1, 1 };	//アイテムの色
 
 	// 違和感なく見えるモデル位置にするためのオフセット
-	std::pair<int, int> visualOffsetCells{ 0, 0 };
+	Vector2 visualOffsetCells{ 0, 0 };
 
 	/// ランクごとに変わるデータ  値段・効果・バフ
 	std::array<ItemRankData, 4> ranks{};

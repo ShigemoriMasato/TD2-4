@@ -47,6 +47,13 @@ void ShopScene::Initialize() {
 std::unique_ptr<IScene> ShopScene::Update() {
 	auto key = commonData_->keyManager->GetKeyStates();
 
+#ifdef USE_IMGUI
+
+	pieceManager_->UpdateItemInfo(itemManager_.get());
+	shop_->Initialize(itemManager_.get());
+
+#endif
+
 	debugCamera_->Update();
 	grid_->Update(debugCamera_->GetCenter(), debugCamera_->GetVPMatrix());
 

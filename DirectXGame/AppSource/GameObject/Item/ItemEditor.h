@@ -4,6 +4,7 @@
 #include <imgui/imgui.h>
 #include <vector>
 #include <string>
+#include <memory>
 
 class ItemManager;
 
@@ -19,35 +20,32 @@ public:
 class ItemEditor
 {
 public:
+
 	void Draw(ItemManager& itemManager);
 
 private:
-	// 現在選択しているアイテムのインデックス
-	int currentItemIndex_ = 0;
-	// 前回選択していたアイテムのインデックス 
-	int lastItemIndex_ = -1;
 
-	// 新規追加する時の名前バッファ
-	char newItemName_[64] = "Default Item";
-	// 新規追加する時のカテゴリバッファ（0:Weapon 1:Armor 2:Item）
-	int newItemCategory_ = 2;
-	// 新規追加時のモデルパス
-	char newItemModelPath_[256] = "Assets/Model/";
+	struct Node {
+		Node* parent = nullptr;
+		std::vector<std::unique_ptr<Node>> children;
+		std::string name;
+		int itemID = -1; // アイテムID（-1ならフォルダ）
+	};
 
+	void CreateItemFromModel(ItemManager& itemManager);
 
-	bool modelCandidatesDirty_ = true;
-	std::vector<std::string> modelCandidates_;
+	void DrawNode(Node* node);
 
-	// 既存アイテムの名前編集用バッファ
-	char editItemName_[64] = {};
-	// 既存アイテムのモデルパス編集用バッファ
-	char editModelPath_[256] = {};
+	// Itemのモデルがあるフォルダのパス
+	std::string basePath_ = "Assets/Model/Item/";
 
-	// アイテム追加した時の状態 0:成功 1:重複 2:空
-	int addItemState_ = 0;
-	// アイテム名変更したときの状態 0:成功 1:重複 2:空
-	int renameItemState_ = 0;
+	// ファイルパスをツリー構造に変換したもの
+	std::unique_ptr<Node> rootNode_ = std::make_unique<Node>();
+	// 現在選択中のノード
+	Node* selectedNode = nullptr;
 
+	// stringを編集するときのバッファ
+	char bufEdit_[256] = "";
 
 	//　mapData編集用
 	int gridW_ = 8;

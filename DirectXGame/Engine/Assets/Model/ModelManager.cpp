@@ -100,7 +100,7 @@ int ModelManager::LoadModel(std::string filePath) {
 }
 
 void ModelManager::LoadAllModels() {
-	auto files = SearchFileNames("Assets/Model/");
+	auto files = SearchDirectoryNames("Assets/Model/");
 
 	for (const auto& filePath : files) {
 		LoadModel(filePath);

@@ -8,7 +8,6 @@ void Piece::Initialize(const Item& item) {
 	for (size_t i = 0; i < item.mapData.size(); i++) {
 		chips_[i] = item.mapData[i];
 	}
-	SetPosition({ 0.0f, 0.0f, 0.0f });
 }
 
 bool Piece::CanPut(BackPack* backPack)  {
@@ -34,6 +33,8 @@ bool Piece::Put(BackPack* backPack) {
 	
 	pieceManager_->MoveShopToHold(this);
 
+	isPlaced_ = false;
+
 	return true;
 }
 
@@ -41,7 +42,7 @@ void Piece::SetPosition(const Vector3& pos) {
 	//愚かしいことにもワールドポジションが送られてくるため、マップチップ番号に変換してから入力する
 	Vector3 mappedPos = pos - Vector3(0.5f, 0.0f, 0.5f);
 	position_ = Vector3(std::round(mappedPos.x), 0.0f, std::round(mappedPos.z));
-}	
+}
 
 bool Piece::IsHovered(const Vector3& cursorPos, BackPack* backPack)  {
 	for (const auto& chip : chips_) {
@@ -59,8 +60,8 @@ bool Piece::IsHovered(const Vector3& cursorPos, BackPack* backPack)  {
 
 std::vector<DrawInfo> Piece::GetDrawInfos() const {
 	std::vector<DrawInfo> drawInfos;
+	DrawInfo info;
 	for (const auto& chip : chips_) {
-		DrawInfo info;
 		info.position = position_ + Vector3(static_cast<float>(chip.first) + 0.5f, 0.0f, static_cast<float>(chip.second) + 0.5f);
 		info.scale = Vector3(1.0f, 0.2f, 1.0f);
 		info.modelIndex = 0;
@@ -75,6 +76,12 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 
 		drawInfos.push_back(info);
 	}
+	info.modelIndex = itemData_.modelID;
+	info.position = position_ + Vector3(0.5f, 0.0f, 0.5f) + Vector3(itemData_.visualOffsetCells.x, 0.0f, itemData_.visualOffsetCells.y);
+	info.scale = Vector3(0.5f, 0.5f, 0.5f);
+	info.color = 0xffffffff;
+	drawInfos.push_back(info);
+
 	return drawInfos;
 }
 
