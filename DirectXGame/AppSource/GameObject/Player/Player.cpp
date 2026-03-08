@@ -74,6 +74,9 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 
 	// キャラクターIDに基づいてパラメータを取得
 	parameterData_ = parameterList_->GetParameterData(characterID);
+
+	// Transformの初期化
+	transform_.position = { 19.0f, 0.0f, 19.0f };
 }
 
 void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {

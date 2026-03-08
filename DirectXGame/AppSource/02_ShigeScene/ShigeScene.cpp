@@ -50,8 +50,8 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	worldTimer_ += deltaTime;
 	if (worldTimer_ > 2.0f) {
 		worldTimer_ = 0.0f;
-		Vector3 initPos = { float(rand() % 20 - 10), 0.0f, float(rand() % 20 - 10) };
-		enemyManager_->PopEnemy(initPos);
+		Vector3 initPos = { float(rand() % 40 - 20), 0.0f, float(rand() % 40 - 20) };
+		enemyManager_->PopEnemy(initPos + Vector3({ 19.0f,0.0f,19.0f }));
 	}
 
 	player_->Update(camera_->GetVPMatrix(), deltaTime);
