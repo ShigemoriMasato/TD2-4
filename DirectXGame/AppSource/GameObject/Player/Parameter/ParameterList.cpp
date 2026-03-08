@@ -25,5 +25,9 @@ void ParameterList::Initialize(JsonManager* jsonManager) {
 		parameterData_[i].expBonusPercent = jsonManager_->Get<float>("ExpBonusPercent");
 		parameterData_[i].moneyBonusPercent = jsonManager_->Get<float>("MoneyBonusPercent");
 		parameterData_[i].range = jsonManager_->Get<float>("Range");
+		parameterData_[i].range = jsonManager_->Get<float>("AttackCount");
+		parameterData_[i].range = jsonManager_->Get<float>("Penetration");
+		parameterData_[i].range = jsonManager_->Get<float>("Knockback");
+		parameterData_[i].range = jsonManager_->Get<float>("CriticalMultiplier");
 	}
 }

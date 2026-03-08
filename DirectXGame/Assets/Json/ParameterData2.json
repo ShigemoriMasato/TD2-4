@@ -12,5 +12,9 @@
     "MoneyBonusPercent": 0.0,
     "MoveSpeedPercent": 0.0,
     "Range":0.0,
-    "RangedDamage": 0.0
+    "RangedDamage": 0.0,
+    "AttackCount":0.0,
+    "Penetration":0.0,
+    "Knockback":0.0,
+    "CriticalMultiplier":0.0
 }
