@@ -186,6 +186,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Shop\BackPack.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\AttackManager.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Bullet.cpp" />
+    <ClCompile Include="AppSource\UI\Title\TitleUI.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSPSOManager.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSRootSignature.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSShaderShelf.cpp" />
@@ -287,6 +288,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Shop\BackPack.h" />
     <ClInclude Include="AppSource\GameObject\Attack\AttackManager.h" />
     <ClInclude Include="AppSource\GameObject\Attack\Bullet.h" />
+    <ClInclude Include="AppSource\UI\Title\TitleUI.h" />
     <ClInclude Include="Engine\Compute\PSO\CSPSOManager.h" />
     <ClInclude Include="Engine\Compute\PSO\CSRootSignature.h" />
     <ClInclude Include="Engine\Compute\PSO\CSShaderShelf.h" />

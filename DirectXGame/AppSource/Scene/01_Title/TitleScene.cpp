@@ -2,8 +2,6 @@
 #include <imgui/imgui.h>
 #include <Utility/Color.h>
 
-#include "04_Asakawa/AsakawaScene.h"
-
 TitleScene::TitleScene() {
 }
 
@@ -13,7 +11,7 @@ void TitleScene::Initialize() {
 std::unique_ptr<IScene> TitleScene::Update() {
 	// ZキーでCharaSelectSceneに遷移
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z)) {
-		return std::make_unique<AsakawaScene>();
+		//return std::make_unique<AsakawaScene>();
 	}
 	
 	return nullptr;
