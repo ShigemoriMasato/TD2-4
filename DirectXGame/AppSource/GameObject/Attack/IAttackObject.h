@@ -2,6 +2,7 @@
 #include <Collision/Collider.h>
 #include <GameObject/DrawInfo.h>
 #include <Render/RenderObject.h>
+#include <Assets/Model/ModelManager.h>
 
 class IAttackObject : public Collider {
 public:
@@ -10,7 +11,7 @@ public:
 		Vector3 position = { 0.0f, 0.0f, 0.0f };
 		float direction = 0.0f;
 		float spreadAngle = 0.0f;
-		float attackPower = 0.0f;
+		float damage = 0.0f;
 		float range = 0.0f;
 		float speed = 0.0f;
 		float penetration = 0.0f;
@@ -29,13 +30,21 @@ public:
 
 	virtual DrawInfo GetDrawInfo() = 0;
 
-	virtual int GetDamage() const { return static_cast<int>(config_.attackPower); }
+	virtual int GetDamage() const { return static_cast<int>(config_.damage); }
+
+	int GetID()	const { return id_; }
 
 protected:
+
+	friend class AttackManager;
+
+	static inline SHEngine::ModelManager* modelManager_ = nullptr;
 
 	//ポインターだけセットしたコンフィグを、それ以外の設定を付与して設定する関数
 	void SetCollider(CollConfig& config);
 
 	bool isActive_ = true;
 	Config config_{};
+
+	int id_ = -1;
 };

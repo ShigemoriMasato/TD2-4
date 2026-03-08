@@ -37,6 +37,9 @@ private:
 	std::unique_ptr<WeaponDatabase> weaponDatabase_;
 	std::unique_ptr<AttackManager> attackManager_;
 
+	Transform transform_;
+	DrawInfo debugDrawInfo_;
+
 	JsonManager jsonManager_;
 
 	float worldTimer_ = 0.0f;

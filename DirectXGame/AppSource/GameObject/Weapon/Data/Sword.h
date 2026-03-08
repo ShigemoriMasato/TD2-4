@@ -1,7 +1,7 @@
 #pragma once
-#include "../IWeapon.h"
+#include "IMeleeWeapon.h"
 
-class Sword : public IWeapon {
+class Sword : public IMeleeWeapon {
 public:
 
 	void Initialize(int weaponID, Player::Base* player) override;

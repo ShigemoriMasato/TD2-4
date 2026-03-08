@@ -9,7 +9,7 @@ enum class WeaponRarity : int {
 
 enum class WeaponType : int {
 	Pistol = 0,      // ピストル
-	Sowrd = 1,       // ソード
+	Sword = 1,       // ソード
 };
 
 struct WeaponData {

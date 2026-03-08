@@ -14,8 +14,8 @@ struct Quad : public ICollider {
 };
 
 struct DirCircle : public ICollider {
-	Vector2 center;		//中心座標
-	float radius;		//半径
-	Vector2 direction;	//方向ベクトル
-	float radian;		//扇の内角
+	Vector2 center;				//中心座標
+	float radius;				//半径
+	Vector2 direction;			//方向ベクトル
+	float radian;				//扇の内角
 };

@@ -5,7 +5,7 @@
 class AttackManager {
 public:
 
-	void Initialize();
+	void Initialize(SHEngine::ModelManager* modelManager);
 	void Update(float deltaTime);
 	void Draw(CmdObj* cmdObj);
 
@@ -16,5 +16,7 @@ public:
 private:
 
 	std::vector<std::unique_ptr<IAttackObject>> attackObjects_;
+
+	int nextID_ = 0;
 
 };

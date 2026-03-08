@@ -15,7 +15,7 @@ private:
 
 	std::map<WeaponType, std::string> weaponTypeNames_ = {
 		{ WeaponType::Pistol, "Pistol" },
-		{ WeaponType::Sowrd, "Sword" },
+		{ WeaponType::Sword, "Sword" },
 	};
 
 public:
