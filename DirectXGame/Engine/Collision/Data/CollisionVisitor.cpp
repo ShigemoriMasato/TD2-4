@@ -42,10 +42,15 @@ bool CollisionVisitor::operator()(DirCircle* colliderA, Circle* colliderB) {
 	if (dist > colliderA->radius + colliderB->radius) {
 		return false;
 	}
+	if (dist == 0.0f) {
+		return true; // 完全に重なっている場合は当たりとする
+	}
 	toTarget = toTarget.Normalize();
-	float dot = toTarget.x * colliderA->direction.x + toTarget.y * colliderA->direction.y;
-	float angle = acosf(dot);
-	if (angle <= colliderA->radian / 2.0f) {
+	Vector2 dir = colliderA->direction.Normalize();
+	float dot = toTarget.x * dir.x + toTarget.y * dir.y;
+	dot = std::clamp(dot, -1.0f, 1.0f); // acosfの引数は-1から1の範囲でなければならない
+	float limit = cosf(colliderA->radian * 0.5f);
+	if (dot >= limit) {
 		return true;
 	}
 	return false;
@@ -62,9 +67,11 @@ bool CollisionVisitor::operator()(DirCircle* colliderA, Quad* colliderB) {
 	};
 	Vector2 toTarget = closestPoint - colliderA->center;
 	float dist = toTarget.Length();
+
 	if (dist > colliderA->radius) {
 		return false;
 	}
+
 	toTarget = toTarget.Normalize();
 	float dot = toTarget.x * colliderA->direction.x + toTarget.y * colliderA->direction.y;
 	float angle = acosf(dot);
@@ -80,6 +87,7 @@ bool CollisionVisitor::operator()(DirCircle* colliderA, DirCircle* colliderB) {
 	if (dist > colliderA->radius + colliderB->radius) {
 		return false;
 	}
+	
 	toTarget = toTarget.Normalize();
 	float dot = toTarget.x * colliderA->direction.x + toTarget.y * colliderA->direction.y;
 	float angle = acosf(dot);

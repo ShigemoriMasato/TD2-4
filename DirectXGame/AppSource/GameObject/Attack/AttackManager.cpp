@@ -1,6 +1,7 @@
 #include "AttackManager.h"
 
-void AttackManager::Initialize() {
+void AttackManager::Initialize(SHEngine::ModelManager* modelManager) {
+	IAttackObject::modelManager_ = modelManager;
 	attackObjects_.clear();
 }
 
@@ -28,6 +29,7 @@ void AttackManager::Draw(CmdObj* cmdObj) {
 }
 
 void AttackManager::AddObj(std::unique_ptr<IAttackObject> attackObject) {
+	attackObject->id_ = nextID_++;
 	attackObjects_.emplace_back(std::move(attackObject));
 }
 

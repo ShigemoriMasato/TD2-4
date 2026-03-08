@@ -255,6 +255,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Weapon\Data\IMeleeWeapon.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\IRangedWeapon.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\DrawInfo.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
@@ -352,6 +353,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Player\Parameter\ParameterRender.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Data\IMeleeWeapon.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Data\IRangedWeapon.h" />
+    <ClInclude Include="AppSource\GameObject\Attack\Swing.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

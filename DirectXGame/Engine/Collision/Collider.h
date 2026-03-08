@@ -69,7 +69,7 @@ struct CollConfig {
 	CollTag ownTag = CollTag::None;                 ///< 自身のタグ
 	uint32_t targetTag = 0;                          ///< 衝突対象のタグ(ビットマスク)
 	std::variant<Circle*, Quad*, DirCircle*> colliderInfo;      ///< コライダーの形状情報(円または矩形)
-	bool isActive = false;                           ///< 有効/無効フラグ
+	bool isActive = true;                           ///< 有効/無効フラグ
 };
 
 class Collider {

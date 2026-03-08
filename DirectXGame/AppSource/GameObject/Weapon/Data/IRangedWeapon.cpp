@@ -5,23 +5,23 @@ void IRangedWeapon::Initialize(int weaponID, Player::Base* player) {
 	IWeapon::Initialize(weaponID, player);
 	auto para = player->GetParameter();
 
-	config_.spreadAngle = spreadAngle_;
-	config_.attackPower = para.damagePercent * (weaponData_->baseDamage + para.rangedDamage);
+	config_.spreadAngle = weaponData_->spreadAngle;
+	config_.damage = para.damagePercent + (weaponData_->baseDamage + para.rangedDamage);
 	config_.speed = weaponData_->range + para.range;
 	config_.range = config_.speed * lifeTime_;
-	config_.knockbackPower = weaponData_->knockbackPower;
+	config_.knockbackPower = weaponData_->knockbackPower + para.knockback;
 	config_.criticalChance = weaponData_->criticalChance + para.criticalRatePercent;
-	config_.criticalMultiplier = weaponData_->criticalMultiplier;
+	config_.criticalMultiplier = weaponData_->criticalMultiplier + para.criticalMultiplier;
 	config_.lifeSteelChance = weaponData_->lifeStealChance + para.lifeStealPercent;
-	config_.penetration = weaponData_->penetration + 1.0f;
+	config_.penetration = weaponData_->penetration + para.penetration;
 
 	// 武器データベースからパラメータを取得
 	rate_ = 2.0f / (weaponData_->attackSpeed + para.attackSpeedPercent);
 	speed_ = config_.speed;
 	range_ = config_.range;
 	penetration_ = config_.penetration;
-	spreadAngle_ = weaponData_->spreadAngle;
-	bulletNum_ = weaponData_->attackCount + 1.0f;
+	spreadAngle_ = config_.spreadAngle;
+	bulletNum_ = weaponData_->attackCount + para.attackCount;
 }
 
 void IRangedWeapon::Update(float deltaTime) {

@@ -16,7 +16,7 @@ void ObjectRender::SetDrawInfo(DrawInfo* info, size_t num, Matrix4x4 vpMatrix) {
 		AddRenderObject(id);
 
 		auto& renderObject = renderObjects_[id];
-		Matrix4x4 world = Matrix::MakeAffineMatrix(info[i].scale, Vector3(), info[i].position);
+		Matrix4x4 world = Matrix::MakeAffineMatrix(info[i].scale, info[i].rotation, info[i].position);
 		buffers_[id].matrix.push_back(world * vpMatrix);
 		buffers_[id].color.push_back(ConvertColor(info[i].color));
 	}

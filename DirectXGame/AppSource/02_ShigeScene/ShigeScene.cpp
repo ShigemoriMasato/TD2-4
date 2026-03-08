@@ -30,11 +30,14 @@ void ShigeScene::Initialize() {
 	weaponDatabase_->Initialize(jsonManager_);
 
 	attackManager_ = std::make_unique<AttackManager>();
-	attackManager_->Initialize();
+	attackManager_->Initialize(modelManager_);
 
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 
 	MakeWeapon();
+
+	debugDrawInfo_.modelIndex = modelManager_->LoadModel("Swing");
+	debugDrawInfo_.color = 0x000000ff;
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -69,6 +72,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		drawInfos_.insert(drawInfos_.end(), enemyDI.begin(), enemyDI.end());
 		auto attackDI = attackManager_->GetAttackDrawInfos();
 		drawInfos_.insert(drawInfos_.end(), attackDI.begin(), attackDI.end());
+		drawInfos_.push_back(debugDrawInfo_);
 
 		objectRender_->SetDrawInfo(drawInfos_.data(), drawInfos_.size(), camera_->GetVPMatrix());
 	}
@@ -100,7 +104,6 @@ void ShigeScene::Draw() {
 	//ここ以外で記述する場合、ifdefを忘れないようにすること
 #ifdef USE_IMGUI
 
-
 	display->DrawImGui();
 
 	ImGui::Begin("FPS");
@@ -108,8 +111,14 @@ void ShigeScene::Draw() {
 	ImGui::Text("DeltaTime: %.3f ms", deltaTime * 1000.0f);
 	ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
 	ImGui::End();
-#endif
 
+	ImGui::Begin("Debug");
+	ImGui::DragFloat3("Scale", &debugDrawInfo_.scale.x, 0.1f);
+	ImGui::DragFloat3("Rotation", &debugDrawInfo_.rotation.x, 0.1f);
+	ImGui::DragFloat3("Position", &debugDrawInfo_.position.x, 0.1f);
+	ImGui::End();
+
+#endif
 
 	engine_->DrawImGui();
 	window->PostDraw(cmdObj);
@@ -128,6 +137,13 @@ void ShigeScene::MakeWeapon() {
 				std::unique_ptr<Pistol> pistol = std::make_unique<Pistol>();
 				pistol->Initialize(weaponID, player_.get());
 				weapons_.emplace_back(std::move(pistol));
+				break;
+			}
+			case WeaponType::Sword:
+			{
+				std::unique_ptr<Sword> sword = std::make_unique<Sword>();
+				sword->Initialize(weaponID, player_.get());
+				weapons_.emplace_back(std::move(sword));
 				break;
 			}
 			}

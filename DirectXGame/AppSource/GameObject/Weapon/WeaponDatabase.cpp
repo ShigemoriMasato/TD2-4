@@ -65,7 +65,7 @@ void WeaponDatabase::LoadFromJson(JsonManager& jsonManager) {
 		try {
 			// 基本情報を読み込む
 			int id = jsonManager.Get<int>("id");
-			int type = 0;
+			int type = jsonManager.Get<int>("type");
 			int rarity = jsonManager.Get<int>("rarity");
 
 			// レア度倍率を計算
