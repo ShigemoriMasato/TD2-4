@@ -8,7 +8,7 @@
     "id": 0,
     "knockbackPower": 0.0,
     "lifeStealChance": 0.0,
-    "penetration": 0,
+    "penetration": 1,
     "range": 30.0,
     "rarity": 0,
     "size": 4,

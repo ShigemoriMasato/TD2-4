@@ -29,6 +29,8 @@ public:
 
 	virtual DrawInfo GetDrawInfo() = 0;
 
+	virtual int GetDamage() const { return static_cast<int>(config_.attackPower); }
+
 protected:
 
 	//ポインターだけセットしたコンフィグを、それ以外の設定を付与して設定する関数

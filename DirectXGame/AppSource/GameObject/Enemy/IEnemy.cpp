@@ -1,5 +1,6 @@
 #include "IEnemy.h"
 #include "EnemyManager.h"
+#include <GameObject/Attack/IAttackObject.h>
 
 void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id) {
 	drawInfo_.color = 0xff0000ff;
@@ -18,6 +19,8 @@ void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id) {
 }
 
 void IEnemy::OnCollision(Collider* other) {
+	auto attack = static_cast<IAttackObject*>(other);
+	hp_ -= static_cast<int>(attack->GetDamage());
 	KillMe();
 }
 
