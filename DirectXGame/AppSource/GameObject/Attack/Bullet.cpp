@@ -25,7 +25,7 @@ void Bullet::Initialize(const Config& config) {
 	speed_ = config.speed;
 	penetrationCount_ = static_cast<int>(config.penetration);
 
-	hitEnemyIds_.resize(penetrationCount_);
+	hitEnemyIds_.resize(penetrationCount_ + 1);
 }
 
 void Bullet::Update(float deltaTime) {
@@ -58,7 +58,7 @@ void Bullet::OnCollision(Collider* other) {
 
 	// 衝突したら非アクティブにする
 	hitCount_++;
-	if (hitCount_ >= penetrationCount_) {
+	if (hitCount_ > penetrationCount_) {
 		isActive_ = false;
 	}
 }

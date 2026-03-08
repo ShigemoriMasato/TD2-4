@@ -21,6 +21,8 @@ class ItemEditor
 {
 public:
 
+	void CreateItemFromModel(ItemManager& itemManager);
+
 	void Draw(ItemManager& itemManager);
 
 private:
@@ -31,8 +33,6 @@ private:
 		std::string name;
 		int itemID = -1; // アイテムID（-1ならフォルダ）
 	};
-
-	void CreateItemFromModel(ItemManager& itemManager);
 
 	void DrawNode(Node* node);
 

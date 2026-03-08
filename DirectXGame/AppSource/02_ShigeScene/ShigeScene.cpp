@@ -23,6 +23,7 @@ void ShigeScene::Initialize() {
 
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize(player_->GetPositionPtr());
+	IEnemy::SetModelManager(modelManager_);
 
 	map_ = std::make_unique<Map>();
 	map_->Initialize(drawDataManager_, modelManager_);
@@ -39,14 +40,9 @@ void ShigeScene::Initialize() {
 
 	commonData_->playerParameterData = player_->GetParameter();
 
-
-
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 
 	MakeWeapon();
-
-	debugDrawInfo_.modelIndex = modelManager_->LoadModel("Swing");
-	debugDrawInfo_.color = 0x000000ff;
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -82,7 +78,6 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		drawInfos_.insert(drawInfos_.end(), enemyDI.begin(), enemyDI.end());
 		auto attackDI = attackManager_->GetAttackDrawInfos();
 		drawInfos_.insert(drawInfos_.end(), attackDI.begin(), attackDI.end());
-		drawInfos_.push_back(debugDrawInfo_);
 
 		objectRender_->SetDrawInfo(drawInfos_.data(), drawInfos_.size(), camera_->GetVPMatrix());
 	}
@@ -121,14 +116,6 @@ void ShigeScene::Draw() {
 	ImGui::Text("DeltaTime: %.3f ms", deltaTime * 1000.0f);
 	ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
 	ImGui::End();
-
-	ImGui::Begin("Debug");
-	ImGui::DragFloat3("Scale", &debugDrawInfo_.scale.x, 0.1f);
-	ImGui::DragFloat3("Rotation", &debugDrawInfo_.rotation.x, 0.1f);
-	ImGui::DragFloat3("Position", &debugDrawInfo_.position.x, 0.1f);
-	ImGui::End();
-
-	gameCamera_->DrawImGui();
 
 #endif
 

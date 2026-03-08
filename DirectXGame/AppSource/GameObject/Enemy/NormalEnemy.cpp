@@ -3,6 +3,8 @@
 void NormalEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id) {
 	IEnemy::Initialize(playerPos, manager, id);
 	speed_ = float(rand() % 100) / 50.0f + baseSpeed_;
+	drawInfo_.scale = { 0.75f, 0.75f, 0.75f };
+	SetModel("Normal");
 }
 
 void NormalEnemy::Update(float deltaTime) {

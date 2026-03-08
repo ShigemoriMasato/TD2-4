@@ -52,18 +52,22 @@ void ItemEditor::CreateItemFromModel(ItemManager& itemManager) {
 	auto files = SearchDirectoryNames(basePath_);
 
 	//モデルが存在しないアイテムを削除する
+	std::vector<int> toRemove;
 	for (auto& [id, item] : items) {
 		bool found = false;
-		for(const auto& f : files) {
-			if(item.modelPath == basePath_ + f) {
+		for (const auto& f : files) {
+			if (item.modelPath == basePath_ + f) {
 				found = true;
 				break;
 			}
 		}
-
 		if (!found) {
-			items.erase(id);
+			toRemove.push_back(id);
 		}
+	}
+
+	for (int id : toRemove) {
+		items.erase(id);
 	}
 
 	for (const auto& f : files) {
@@ -105,7 +109,7 @@ void ItemEditor::CreateItemFromModel(ItemManager& itemManager) {
 
 		//この時点でcurrentNodeはファイルの末端を指しているので、それをItemとして扱う
 		//pは空で、pathはファイル名のみになっている
-		
+
 		//アイテムが作成済みの可能性があるので、同じモデルパスのアイテムがあればidをセットしてcontinueする
 		bool exists = false;
 		for (auto& [id, item] : items) {
@@ -134,7 +138,7 @@ void ItemEditor::CreateItemFromModel(ItemManager& itemManager) {
 			item.ranks[r].effect = 0u;
 			item.ranks[r].params = itemManager.GetBaseParamsForEdit();
 		}
-		
+
 		//CurrentNodeのitemIDにセット
 		currentNode->itemID = item.id;
 
@@ -169,7 +173,7 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 		Item& currentItem = items[selectedNode->itemID];
 
 		// 名前編集
-		ImGui::Text("%s", ConvertString(currentItem.name.c_str()));
+		ImGui::Text("%s", ConvertString(currentItem.name).c_str());
 
 		// カテゴリ編集
 		ImGui::Combo("Category##2", reinterpret_cast<int*>(&currentItem.category), "Weapon\0Armor\0Item\0");
@@ -183,6 +187,7 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 			currentItem.weaponID = -1;
 		}
 
+		ImGui::Checkbox("Is Active", &currentItem.isActive);
 
 #pragma endregion
 
@@ -372,6 +377,28 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 
 #pragma endregion
 
+	}
+
+	ImGui::End();
+
+	ImGui::Begin("New Param");
+
+	static char newParamName[256] = "";
+	ImGui::InputText("Name", newParamName, sizeof(newParamName));
+	if (ImGui::Button("Add")) {
+		bool found = false;
+		for(const auto& p : baseParam) {
+			if (p.first == newParamName) {
+				ImGui::OpenPopup("Error");
+				found = true;
+				break;
+			}
+
+			if (!found) {
+				baseParam[newParamName] = 0.0f;
+				newParamName[0] = '\0';
+			}
+		}
 	}
 
 	ImGui::End();
