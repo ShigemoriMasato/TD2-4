@@ -32,6 +32,8 @@ void ShigeScene::Initialize() {
 	attackManager_ = std::make_unique<AttackManager>();
 	attackManager_->Initialize(modelManager_);
 
+	commonData_->playerParameterData = player_->GetParameter();
+
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 
 	MakeWeapon();
