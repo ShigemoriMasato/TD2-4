@@ -65,9 +65,9 @@ void ParameterRender::Update(Matrix4x4 vpMatrix) {
 }
 
 void ParameterRender::Draw(CmdObj* cmdObj) {
-	/*for (int i = 0; i < kParameterCount; ++i) {
+	for (int i = 0; i < kParameterCount; ++i) {
 		renders_[i]->Draw(cmdObj);
-	}*/
+	}
 
 #ifdef USE_IMGUI
 	ImGui::Begin("ParameterRender");
