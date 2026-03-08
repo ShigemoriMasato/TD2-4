@@ -11,7 +11,7 @@
 // | 4     | criticalChance      | float       | クリティカル発生確率    |
 // | 5     | criticalMultiplier  | float       | クリティカルダメージ倍率 |
 // | 6     | lifeStealChance     | float       | ライフスティール確率    |
-// | 7     | attackSpeed         | float       | 攻撃速度              |
+// | 7     | attackSpeed         | float       | 攻撃速度(秒)           |
 // | 8     | knockbackPower      | float       | ノックバックの強さ      |
 // | 9     | range               | float       | 射程距離              |
 // | 10    | penetration         | int         | 貫通                  |
@@ -22,16 +22,16 @@
 
 std::vector<WeaponData> WeaponDatabase::GetDefaultWeaponData() {
 	return {
-		{0, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 6.0f,  0.5f, 2.0f, 0.2f, 1.5f, 1.0f, 1.0f, 0, 0.0f, 4},      // ショートソード
-		{1, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 10.0f, 0.5f, 2.0f, 0.2f, 1.8f, 1.0f, 1.0f, 0, 0.0f, 5},      // ロングソード
-		{2, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 4.0f,  0.5f, 2.0f, 0.2f, 2.2f, 1.0f, 1.0f, 0, 0.0f, 2},      // ダガー
-		{3, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 20.0f, 0.5f, 2.0f, 0.2f, 0.6f, 1.0f, 1.0f, 0, 0.0f, 6},      // ハンマー
-		{4, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 15.0f, 0.5f, 2.0f, 0.2f, 2.0f, 1.0f, 1.0f, 0, 0.0f, 5},      // ウォーハンマー
-		{5, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 2.0f,  0.5f, 2.0f, 0.2f, 0.2f, 1.0f, 1.0f, 0, 0.0f, 2},      // 投げ斧
-		{6, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 5.0f,  0.5f, 2.0f, 0.2f, 1.8f, 1.0f, 1.0f, 0, 0.0f, 3},      // ハンドガン
-		{7, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 14.0f, 0.5f, 2.0f, 0.2f, 0.7f, 1.0f, 1.0f, 0, 0.0f, 4},      // ショットガン
-		{8, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 8.0f,  0.5f, 2.0f, 0.2f, 1.2f, 1.0f, 1.0f, 0, 0.0f, 4},      // ライフル
-		{9, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 8.0f,  0.5f, 2.0f, 0.2f, 1.2f, 1.0f, 1.0f, 0, 0.0f, 4},      // バット
+		{0, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 6.0f,  0.5f, 2.0f, 0.2f, 1.5f, 1.0f, 1.0f, 0, 0.0f, 4, 1},      // ショートソード
+		{1, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 10.0f, 0.5f, 2.0f, 0.2f, 1.8f, 1.0f, 1.0f, 0, 0.0f, 5, 1},      // ロングソード
+		{2, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 4.0f,  0.5f, 2.0f, 0.2f, 2.2f, 1.0f, 1.0f, 0, 0.0f, 2, 1},      // ダガー
+		{3, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 20.0f, 0.5f, 2.0f, 0.2f, 0.6f, 1.0f, 1.0f, 0, 0.0f, 6, 1},      // ハンマー
+		{4, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 15.0f, 0.5f, 2.0f, 0.2f, 2.0f, 1.0f, 1.0f, 0, 0.0f, 5, 1},      // ウォーハンマー
+		{5, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 2.0f,  0.5f, 2.0f, 0.2f, 0.2f, 1.0f, 1.0f, 0, 0.0f, 2, 1},      // 投げ斧
+		{6, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 5.0f,  0.5f, 2.0f, 0.2f, 1.8f, 1.0f, 1.0f, 0, 0.0f, 3, 1},      // ハンドガン
+		{7, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 14.0f, 0.5f, 2.0f, 0.2f, 0.7f, 1.0f, 1.0f, 0, 0.0f, 4, 1},      // ショットガン
+		{8, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 8.0f,  0.5f, 2.0f, 0.2f, 1.2f, 1.0f, 1.0f, 0, 0.0f, 4, 1},      // ライフル
+		{9, WeaponType::Pistol, static_cast<int>(WeaponRarity::Common), 20.0f, 8.0f,  0.5f, 2.0f, 0.2f, 1.2f, 1.0f, 1.0f, 0, 0.0f, 4, 1},      // バット
 	};
 }
 

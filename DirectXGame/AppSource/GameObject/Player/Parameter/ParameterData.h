@@ -13,4 +13,5 @@ struct ParameterData {
 	float moveSpeedPercent;    // 移動速度％
 	float expBonusPercent;     // 経験値ボーナス％
 	float moneyBonusPercent;   // お金ボーナス％
+	float range;               // 攻撃範囲
 };
