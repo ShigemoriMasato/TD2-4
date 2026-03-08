@@ -28,6 +28,7 @@ private:
 	EnemyManager* manager_ = nullptr;
 	int id_ = -1;
 	bool isActive_ = true;
+	int hp_ = 1;
 
 };
 

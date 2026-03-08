@@ -3,12 +3,12 @@
 
 void Pistol::Initialize(int weaponID, Player::Base* player) {
 	IWeapon::Initialize(weaponID, player);
+	auto para = player->GetParameter();
 
 	// 武器データベースからパラメータを取得
-	rate_ = 2.0f / (weaponData_->attackSpeed);
+	rate_ = 2.0f / (weaponData_->attackSpeed * para.attackSpeedPercent);
 	speed_ = weaponData_->range;
 	range_ = speed_ * lifeTime_;
-	bulletNum_ = 1.0f;
 	penetration_ = 1.0f + float(weaponData_->penetration);
 	spreadAngle_ = weaponData_->spreadAngle;
 
