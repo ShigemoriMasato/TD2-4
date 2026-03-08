@@ -1,5 +1,6 @@
 #pragma once
 #include "Item.h"
+#include "ItemEditor.h"
 #include <Tool/Binary/BinaryManager.h>
 #include <Assets/Model/ModelManager.h>
 #include <Tool/Json/JsonManager.h>
@@ -72,4 +73,6 @@ private:
 	static inline const std::string modelFile_ = "ModelIDMap.bin";
 	static inline const std::string itemFile_ = "ItemData.bin";
 	static inline const std::string baseParamFile_ = "BaseParamData.bin";
+
+	ItemEditor editor;
 };

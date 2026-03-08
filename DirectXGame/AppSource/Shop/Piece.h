@@ -25,6 +25,14 @@ public:
 
 private:
 
+	enum class Direction {
+		Up,
+		Right,
+		Down,
+		Left,
+	} direction_;
+	Direction preDirection_;
+
 	static inline PieceManager* pieceManager_ = nullptr;
 
 	Item itemData_;

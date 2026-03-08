@@ -54,6 +54,7 @@ std::unique_ptr<IScene> ShopScene::Update() {
 
 #ifdef USE_IMGUI
 
+	itemManager_->DrawImGui();
 	pieceManager_->UpdateItemInfo(itemManager_.get());
 	shop_->Initialize(itemManager_.get());
 
@@ -106,7 +107,7 @@ void ShopScene::Draw() {
 
 	grid_->Draw(cmdObj);
 	objectRender_->Draw(cmdObj);
-	parameterRender_->Draw(cmdObj);
+	//parameterRender_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 
@@ -114,7 +115,6 @@ void ShopScene::Draw() {
 
 #ifdef USE_IMGUI
 	display->DrawImGui();
-	itemManager_->DrawImGui();
 	weaponDebugger_->Draw();
 
 	engine_->DrawImGui();

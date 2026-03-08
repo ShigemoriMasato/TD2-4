@@ -260,6 +260,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\DrawInfo.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
+    <ClInclude Include="AppSource\GameObject\Item\ItemEditor.h" />
     <ClInclude Include="AppSource\GameObject\Player\Parameter\ParameterData.h" />
     <ClInclude Include="AppSource\GameObject\Item\Item.h" />
     <ClInclude Include="AppSource\GameObject\Item\ItemManager.h" />

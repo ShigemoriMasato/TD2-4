@@ -52,6 +52,7 @@ void ItemEditor::CreateItemFromModel(ItemManager& itemManager) {
 	auto files = SearchDirectoryNames(basePath_);
 
 	//モデルが存在しないアイテムを削除する
+	std::vector<int> toRemove;
 	for (auto& [id, item] : items) {
 		bool found = false;
 		for(const auto& f : files) {
@@ -60,10 +61,13 @@ void ItemEditor::CreateItemFromModel(ItemManager& itemManager) {
 				break;
 			}
 		}
-
-		if (!found) {
-			items.erase(id);
+		if(!found) {
+			toRemove.push_back(id);
 		}
+	}
+
+	for (int id : toRemove) {
+		items.erase(id);
 	}
 
 	for (const auto& f : files) {

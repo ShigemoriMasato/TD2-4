@@ -5,10 +5,6 @@
 #include <algorithm>
 #include <unordered_set>
 
-#ifdef USE_IMGUI
-#include "ItemEditor.h"
-#endif
-
 ItemManager::ItemManager() {}
 
 ItemManager::~ItemManager()
@@ -27,6 +23,8 @@ void ItemManager::Initialize(SHEngine::ModelManager* modelManager)
 	LoadModel();
 
 	ResolveAllModelIDs();
+
+	editor.CreateItemFromModel(*this);
 }
 
 const Item& ItemManager::GetItem(std::wstring itemName) const
@@ -73,7 +71,6 @@ void ItemManager::ResolveAllModelIDs()
 void ItemManager::DrawImGui()
 {
 #ifdef USE_IMGUI
-	static ItemEditor editor;
 	editor.Draw(*this);
 #endif
 }

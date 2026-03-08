@@ -1,11 +1,14 @@
 #pragma once
 #include <Collision/Collider.h>
 #include <GameObject/DrawInfo.h>
+#include <Assets/Model/ModelManager.h>
 
 class EnemyManager;
 
 class IEnemy  : public Collider {
 public:
+
+	static void SetModelManager(SHEngine::ModelManager* modelManager) { modelManager_ = modelManager; }
 
 	virtual void Initialize(Vector3* playerPos, EnemyManager* manager, int id);
 	void SetPosition(const Vector3& pos) { drawInfo_.position = pos; }
@@ -19,11 +22,15 @@ public:
 
 protected:
 
+	void SetModel(std::string path) { drawInfo_.modelIndex = modelManager_->LoadModel("Enemy/" + path); }
+
 	DrawInfo drawInfo_{};
 	std::unique_ptr<Circle> collCircle_;
 	Vector3* playerPos_;
 
 private:
+
+	static inline SHEngine::ModelManager* modelManager_ = nullptr;
 
 	EnemyManager* manager_ = nullptr;
 	int id_ = -1;
