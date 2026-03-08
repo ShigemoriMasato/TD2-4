@@ -11,5 +11,6 @@
     "MeleeDamage": 0.0,
     "MoneyBonusPercent": 0.0,
     "MoveSpeedPercent": 0.0,
+    "Range":0.0,
     "RangedDamage": 0.0
 }

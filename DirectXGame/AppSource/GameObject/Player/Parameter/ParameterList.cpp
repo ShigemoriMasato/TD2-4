@@ -24,5 +24,6 @@ void ParameterList::Initialize(JsonManager* jsonManager) {
 		parameterData_[i].moveSpeedPercent = jsonManager_->Get<float>("MoveSpeedPercent");
 		parameterData_[i].expBonusPercent = jsonManager_->Get<float>("ExpBonusPercent");
 		parameterData_[i].moneyBonusPercent = jsonManager_->Get<float>("MoneyBonusPercent");
+		parameterData_[i].range = jsonManager_->Get<float>("Range");
 	}
 }
