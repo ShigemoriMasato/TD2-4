@@ -35,6 +35,7 @@ void WeaponDebugger::Draw() {
 		ImGui::SliderFloat("射程距離", &weapon->range, 0.1f, 100.0f, "%.1f");
 		ImGui::SliderInt("貫通回数", &weapon->penetration, 1, 10, "%d");
 		ImGui::SliderInt("バックパック内でのサイズ", &weapon->size, 1, 9);
+		ImGui::SliderInt("攻撃回数", &weapon->attackCount, 1, 9);
 
 		ImGui::Separator();
 

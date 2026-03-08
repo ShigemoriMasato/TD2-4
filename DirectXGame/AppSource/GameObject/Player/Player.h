@@ -1,5 +1,6 @@
 #pragma once
-#include "../AppSource/GameObject/Player/Status/StatusManager.h"
+#include "../Player/Parameter/ParameterData.h"
+#include "../Player/Parameter/ParameterList.h"
 #include "State/IPlayerState.h"
 #include "State/PlayerStateDash.h"
 #include "State/PlayerStateNormal.h"
@@ -19,7 +20,7 @@ struct AfterImage {
 class Base {
 public:
 	// 初期化（デフォルトキャラクターID: 0）
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input, CharacterID characterID = 0);
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input, CharacterID characterID, JsonManager* jsonManager);
 
 	// 更新
 	void Update(Matrix4x4 vpMatrix, float deltaTime);
@@ -53,14 +54,14 @@ public:
 
 	float GetRotationSpeed() const { return rotationSpeed_; }
 
-	StatusManager* GetStatusManager() const { return statusManager_.get(); }
-
 	void SetMapMinMax(float minX, float maxX, float minZ, float maxZ) {
 		minX_ = minX;
 		maxX_ = maxX;
 		minZ_ = minZ;
 		maxZ_ = maxZ;
 	}
+
+	ParameterData GetParameter() const { return parameterData_; }
 
 private:
 	// 残像の更新処理
@@ -114,13 +115,14 @@ private:
 	// 残像・インスタンスの最大値
 	static const int kMaxInstanceAfterImage = 8;
 
-	// ステータスマネージャ
-	std::unique_ptr<StatusManager> statusManager_ = nullptr;
-
 	// マップの移動制限
 	float minX_;
 	float maxX_;
 	float minZ_;
 	float maxZ_;
+
+	// パラメータ
+	std::unique_ptr<ParameterList> parameterList_ = nullptr;
+	ParameterData parameterData_;
 };
 } // namespace Player

@@ -163,6 +163,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Enemy\EnemyManager.cpp" />
     <ClCompile Include="AppSource\GameObject\Map\Map.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Heatmap\PlayerHeatmap.cpp" />
+    <ClCompile Include="AppSource\GameObject\Player\Status\Status.cpp" />
+    <ClCompile Include="AppSource\GameObject\Player\Status\StatusManager.cpp" />
+    <ClCompile Include="AppSource\GameObject\Player\Status\StatusModifier.cpp" />
     <ClCompile Include="AppSource\GameObject\WaveSystem\Wave.cpp" />
     <ClCompile Include="AppSource\GameObject\WaveSystem\WaveManager.cpp" />
     <ClCompile Include="AppSource\Scene\01_Title\TitleScene.cpp" />
@@ -245,16 +248,19 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Player\Level\PlayerLevelUI.cpp" />
     <ClCompile Include="AppSource\Common\KeyConfig\WorldCursor.cpp" />
     <ClCompile Include="AppSource\GameObject\Puzzle\PieceManager.cpp" />
-    <ClCompile Include="AppSource\GameObject\Player\Status\StatusModifier.cpp" />
-    <ClCompile Include="AppSource\GameObject\Player\Status\Status.cpp" />
-    <ClCompile Include="AppSource\GameObject\Player\Status\StatusManager.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\WeaponController.cpp" />
     <ClCompile Include="AppSource\GameObject\Random\Random.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\AttackObject\SlashAttack.cpp" />
+    <ClCompile Include="AppSource\GameObject\Player\Parameter\ParameterList.cpp" />
+    <ClCompile Include="AppSource\GameObject\Player\Parameter\ParameterRender.cpp" />
     <ClInclude Include="AppSource\04_Asakawa\AsakawaScene.h" />
     <ClCompile Include="Engine\Render\Screen\ShadowMap.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
+    <ClInclude Include="AppSource\GameObject\Player\Parameter\ParameterData.h" />
+    <ClInclude Include="AppSource\GameObject\Player\Status\Status.h" />
+    <ClInclude Include="AppSource\GameObject\Player\Status\StatusManager.h" />
+    <ClInclude Include="AppSource\GameObject\Player\Status\StatusModifier.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\DamageInfo.h" />
     <ClInclude Include="AppSource\GameObject\Map\Map.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponData.h" />
@@ -349,14 +355,13 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Item\ItemEditor.h" />
     <ClInclude Include="AppSource\GameObject\Player\Heatmap\PlayerHeatmap.h" />
     <ClInclude Include="AppSource\GameObject\Field\Field.h" />
-    <ClInclude Include="AppSource\GameObject\Player\Status\StatusModifier.h" />
-    <ClInclude Include="AppSource\GameObject\Player\Status\Status.h" />
-    <ClInclude Include="AppSource\GameObject\Player\Status\StatusManager.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\AttackObject\IAttackObject.h" />
     <ClInclude Include="Engine\Render\Screen\ShadowMap.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponController.h" />
     <ClInclude Include="AppSource\GameObject\Random\Random.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\AttackObject\SlashAttack.h" />
+    <ClInclude Include="AppSource\GameObject\Player\Parameter\ParameterList.h" />
+    <ClInclude Include="AppSource\GameObject\Player\Parameter\ParameterRender.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

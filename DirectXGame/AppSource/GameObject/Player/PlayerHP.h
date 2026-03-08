@@ -3,13 +3,12 @@
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
-#include "../AppSource/GameObject/Player/Status/StatusManager.h"
 
 namespace Player {
 class HP {
 public:
 	// 初期化関数
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input, StatusManager* statusManager);
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input);
 
 	// 更新関数
 	void Update(Matrix4x4 vpMatrix, float deltaTime);
@@ -46,9 +45,6 @@ private:
 
 	// HPバー　減った量のアニメーション
 	void AnimationHPBarAfter(float deltaTime);
-
-	// StatusManagerからMaxHPを取得して初期化
-	void InitializeHPFromStatus();
 
 private:
 	// 描画用変数
@@ -91,8 +87,5 @@ private:
 
 	// HPバー　減った分のアニメーション用変数
 	AnimationBundle<float> scaleAnimationHPBarAfter_;
-
-	// ステータスマネージャ
-	StatusManager* statusManager_ = nullptr;
 };
 } // namespace Player

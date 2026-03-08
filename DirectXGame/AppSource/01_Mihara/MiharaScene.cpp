@@ -5,12 +5,12 @@
 
 void MiharaScene::Initialize() {
 	// プレイヤーの生成&初期化
-	player_ = std::make_unique<Player::Base>();
-	player_->Initialize(modelManager_, drawDataManager_, input_);
+	//player_ = std::make_unique<Player::Base>();
+	//player_->Initialize(modelManager_, drawDataManager_, input_);
 
 	// プレイヤーHPの生成&初期化
 	playerHP_ = std::make_unique<Player::HP>();
-	playerHP_->Initialize(modelManager_, drawDataManager_, input_, player_->GetStatusManager());
+	playerHP_->Initialize(modelManager_, drawDataManager_, input_);
 
 	// プレイヤーのレベルシステムの生成&初期化
 	playerLevelSystem_ = std::make_unique<Player::LevelSystem>();

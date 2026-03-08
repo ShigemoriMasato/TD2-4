@@ -1,18 +1,21 @@
 #include "AsakawaScene.h"
+#include <Scene/01_Title/TitleScene.h>
+#include <Scene/05_Result/ResultScene.h>
 #include <Utility/Color.h>
 #include <Utility/MatrixFactory.h>
 #include <imgui/imgui.h>
-#include <Scene/01_Title/TitleScene.h>
-#include <Scene/05_Result/ResultScene.h>
 
 void AsakawaScene::Initialize() {
+	// JsonManagerの生成&初期化
+	jsonManager_ = std::make_unique<JsonManager>();
+
 	// プレイヤーの生成&初期化
 	player_ = std::make_unique<Player::Base>();
-	player_->Initialize(modelManager_, drawDataManager_, input_);
+	player_->Initialize(modelManager_, drawDataManager_, input_, CharacterID::Warrior, jsonManager_.get());
 
 	// プレイヤーHPの生成&初期化
 	playerHP_ = std::make_unique<Player::HP>();
-	playerHP_->Initialize(modelManager_, drawDataManager_, input_, player_->GetStatusManager());
+	playerHP_->Initialize(modelManager_, drawDataManager_, input_);
 
 	// プレイヤーのレベルシステムの生成&初期化
 	playerLevelSystem_ = std::make_unique<Player::LevelSystem>();
@@ -42,8 +45,8 @@ void AsakawaScene::Initialize() {
 
 	// カメラのトランスフォーム設定
 	cameraTransform_.position = cameraOffset_;
-	cameraTransform_.rotate = { -0.65f, 0.0f, 0.0f };
-	cameraTransform_.scale = { 1.0f, 1.0f, 1.0f };
+	cameraTransform_.rotate = {-0.65f, 0.0f, 0.0f};
+	cameraTransform_.scale = {1.0f, 1.0f, 1.0f};
 
 	// ウェーブ中にどれくらいレベルが上がったかを管理するインスタンスの生成&初期化
 	levelProgressTracker_ = std::make_unique<LevelProgressTracker>();
@@ -77,8 +80,12 @@ void AsakawaScene::Initialize() {
 	weaponController_ = std::make_unique<WeaponController>(weaponManager_.get());
 	weaponController_->SetModelManager(modelManager_);
 	weaponController_->SetDrawDataManager(drawDataManager_);
-	weaponController_->SetEnemyManager(enemyManager_.get());  // この行を追加
-	weaponController_->EquipWeapon(1); // バット（ID=1）を初期装備として装備
+	weaponController_->SetEnemyManager(enemyManager_.get()); // この行を追加
+	weaponController_->EquipWeapon(1);                       // バット（ID=1）を初期装備として装備
+
+	// パラメータの描画用インスタンスの生成&初期化
+	parameterRender_ = std::make_unique<ParameterRender>();
+	parameterRender_->Initialize(modelManager_, drawDataManager_, engine_);
 }
 
 std::unique_ptr<IScene> AsakawaScene::Update() {
@@ -134,10 +141,13 @@ std::unique_ptr<IScene> AsakawaScene::Update() {
 
 		// 武器のコントローラーの更新
 		weaponController_->Update(deltaTime, camera_->GetVPMatrix(), player_->GetTransform().position);
+
+		// パラメータの描画用インスタンスの更新
+		parameterRender_->Update(camera_->GetVPMatrix());
 	}
 
 	// Wave終了でタイトルシーンへ遷移
-	if (waveManager_->IsWaveComplete() || input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z)) {
+	if (/*waveManager_->IsWaveComplete() || */input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z)) {
 		shouldTransitionToTitle_ = true;
 #ifdef _DEBUG
 		OutputDebugStringA("AsakawaScene: Creating TitleScene for transition...\n");
@@ -185,6 +195,9 @@ void AsakawaScene::Draw() {
 
 	// 武器のコントローラーの更新
 	weaponController_->Draw(cmdObj);
+
+	// パラメータの描画用インスタンスの描画
+	parameterRender_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 
@@ -244,7 +257,6 @@ void AsakawaScene::DrawDebugUI() {
 	ImGui::End();
 #endif
 }
-
 
 void AsakawaScene::DrawImGuiCamera() {
 #ifdef USE_IMGUI

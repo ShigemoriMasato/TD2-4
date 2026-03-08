@@ -6,13 +6,14 @@
 #include "../AppSource/GameObject/Player/Level/PlayerLevelUI.h"
 #include "GameObject/Player/Player.h"
 #include "GameObject/Player/PlayerHP.h"
+#include "GameObject/Weapon/WeaponController.h"
 #include "GameObject/Weapon/WeaponDebugger.h"
 #include "GameObject/Weapon/WeaponManager.h"
-#include "GameObject/Weapon/WeaponController.h"
 
-#include "GameObject/WaveSystem/WaveManager.h"
 #include "GameObject/Enemy/EnemyManager.h"
 #include "GameObject/Map/Map.h"
+#include "GameObject/WaveSystem/WaveManager.h"
+#include "../AppSource/GameObject/Player/Parameter/ParameterRender.h"
 
 #include <Camera/Camera.h>
 #include <Scene/IScene.h>
@@ -87,14 +88,20 @@ private:
 	GridConfig config_;
 
 	// カメラ・プレイヤーからのオフセット
-	Vector3 cameraOffset_ = { 0.0f, 3.0f, 70.0f };
+	Vector3 cameraOffset_ = {0.0f, 3.0f, 70.0f};
 
 	// ウェーブシステム管理クラス
-	std::unique_ptr <WaveManager> waveManager_;
+	std::unique_ptr<WaveManager> waveManager_;
 
 	// グリッドの描画・表示切り替え用のフラグ
 	bool showGrid_ = false;
 
 	// Wave終了でシーン遷移するためのフラグ
 	bool shouldTransitionToTitle_ = false;
+
+	// JsonManager
+	std::unique_ptr<JsonManager> jsonManager_ = nullptr;
+
+	// パラメータの描画用インスタンス
+	std::unique_ptr<ParameterRender> parameterRender_ = nullptr;
 };
