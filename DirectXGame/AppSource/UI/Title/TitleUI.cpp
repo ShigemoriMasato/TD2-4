@@ -46,13 +46,47 @@ void TitleUI::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::M
 		renders_[i]->SetUseTexture(true);
 		renders_[i]->instanceNum_ = 1;
 	}
+	
+	currentSelect_ = Title::Select::Start;
+}
+
+void TitleUI::UpdateSelection(bool upPressed, bool downPressed) {
+	if (upPressed) {
+		int currentIndex = static_cast<int>(currentSelect_);
+		currentIndex--;
+
+		if (currentIndex < 0) {
+			currentIndex = static_cast<int>(Title::Select::Count) - 1;
+		}
+		currentSelect_ = static_cast<Title::Select>(currentIndex);
+	}
+	
+	if (downPressed) {
+		int currentIndex = static_cast<int>(currentSelect_);
+		currentIndex++;
+
+		if (currentIndex >= static_cast<int>(Title::Select::Count)) {
+			currentIndex = 0;
+		}
+		currentSelect_ = static_cast<Title::Select>(currentIndex);
+	}
 }
 
 void TitleUI::Update(const Matrix4x4& vpMatrix) {
 	int textureIndex = 0;
-	Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	for (size_t i = 0; i < kUICount; ++i) {
+		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+		
+		// 選択中の項目を赤色にする（Logoは除外）
+		if (i > 0) {
+			Title::Kinds kind = static_cast<Title::Kinds>(i);
+			Title::Select selectFromKind = static_cast<Title::Select>(static_cast<int>(kind) - 1);
+			if (selectFromKind == currentSelect_) {
+				color = { 1.0f, 0.0f, 0.0f, 1.0f };
+			}
+		}
+
 		// WVP行列を作成
 		Matrix4x4 world = Matrix::MakeAffineMatrix(scales_[i], Vector3(), positions_[i]);
 		Matrix4x4 wvp = world * vpMatrix;
@@ -74,13 +108,20 @@ void TitleUI::DrawImGui() {
 	ImGui::Begin("Title UI Settings");
 
 	const char* uiNames[] = { "Logo", "Start", "Option", "Quit" };
+	const char* selectNames[] = { "Start", "Option", "Quit" };
 
 	for (size_t i = 0; i < kUICount; ++i) {
 		if (ImGui::TreeNode(uiNames[i])) {
-			ImGui::DragFloat3("Position", &positions_[i].x, 0.1f);
+			ImGui::DragFloat3("Position", &positions_[i].x, 0.01f);
 			ImGui::DragFloat3("Scale", &scales_[i].x, 0.01f, 0.01f, 10.0f);
 			ImGui::TreePop();
 		}
+	}
+	
+	ImGui::Separator();
+	int currentSelectIndex = static_cast<int>(currentSelect_);
+	if (ImGui::Combo("Current Selection", &currentSelectIndex, selectNames, static_cast<int>(Title::Select::Count))) {
+		currentSelect_ = static_cast<Title::Select>(currentSelectIndex);
 	}
 
 	ImGui::End();

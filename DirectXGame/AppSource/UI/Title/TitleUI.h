@@ -8,8 +8,19 @@
 #include <array>
 
 namespace Title {
+
+	/// UIモデルの種類
 	enum class Kinds {
 		Logo,
+		Start,
+		Option,
+		Quit,
+
+		Count,
+	};
+
+	/// 選択肢の種類
+	enum class Select {
 		Start,
 		Option,
 		Quit,
@@ -24,6 +35,9 @@ public:
 	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager);
 	void Update(const Matrix4x4& vpMatrix);
 	void Draw(CmdObj* cmdObj);
+
+	void UpdateSelection(bool upPressed, bool downPressed);
+	Title::Select GetCurrentSelect() const { return currentSelect_; }
 
 #ifdef USE_IMGUI
 	void DrawImGui();
@@ -51,18 +65,20 @@ private:
 	
 	std::array<std::unique_ptr<SHEngine::RenderObject>, kUICount> renders_;
 	std::array<Vector3, kUICount> positions_{
-		Vector3{ 0.0f, 2.0f, 10.0f },   // Logo
+		Vector3{ 0.0f, 1.5f, 10.0f },   // Logo
 		Vector3{ 0.0f, 0.0f, 10.0f },   // Start
-		Vector3{ 0.0f, -2.0f, 10.0f },  // Option
-		Vector3{ 0.0f, -4.0f, 10.0f }   // Quit
+		Vector3{ 0.0f, -0.75f, 10.0f },  // Option
+		Vector3{ 0.0f, -1.5f, 10.0f }   // Quit
 	};
 	std::array<Vector3, kUICount> scales_{
-		Vector3{ 1.0f, 1.0f, 1.0f },   // Logo
-		Vector3{ 1.0f, 1.0f, 1.0f },   // Start
-		Vector3{ 1.0f, 1.0f, 1.0f },   // Option
-		Vector3{ 1.0f, 1.0f, 1.0f }    // Quit
+		Vector3{ 2.0f, 2.0f, 0.5f },   // Logo
+		Vector3{ 1.0f, 1.0f, 0.5f },   // Start
+		Vector3{ 1.0f, 1.0f, 0.5f },   // Option
+		Vector3{ 1.0f, 1.0f, 0.5f }    // Quit
 	};
 	std::array<int, kUICount> modelIDs_{ -1, -1, -1, -1 };
+
+	Title::Select currentSelect_ = Title::Select::Start;
 
 	SHEngine::DrawDataManager* drawDataManager_ = nullptr;
 	SHEngine::ModelManager* modelManager_ = nullptr;

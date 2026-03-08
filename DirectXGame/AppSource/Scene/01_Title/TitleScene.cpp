@@ -2,6 +2,8 @@
 #include <imgui/imgui.h>
 #include <Utility/Color.h>
 
+#include <02_ShigeScene/ShigeScene.h>
+
 TitleScene::TitleScene() {
 }
 
@@ -13,15 +15,32 @@ void TitleScene::Initialize() {
 	PerspectiveFovDesc perspectiveDesc;
 	perspectiveDesc.SetValue(1280, 720, 0.45f, 0.1f, 1000.0f);
 	camera_->SetProjectionMatrix(perspectiveDesc);
-	camera_->SetPosition({ 0.0f, 0.0f, -10.0f });
+	camera_->SetPosition({ 0.0f, 0.0f, 0.0f });
 	camera_->SetRotation({ 0.0f, 0.0f, 0.0f });
 	camera_->SetScale({ 1.0f, 1.0f, 1.0f });
 }
 
 std::unique_ptr<IScene> TitleScene::Update() {
-	// ZキーでCharaSelectSceneに遷移
+
+	// 上下キーで選択を変更
+	bool upPressed = input_->GetKeyState(DIK_UPARROW) && !input_->GetPreKeyState(DIK_UPARROW);
+	bool downPressed = input_->GetKeyState(DIK_DOWNARROW) && !input_->GetPreKeyState(DIK_DOWNARROW);
+	
+	titleUI_->UpdateSelection(upPressed, downPressed);
+	
+	// Zキーで決定
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z)) {
-		//return std::make_unique<AsakawaScene>();
+		Title::Select currentSelect = titleUI_->GetCurrentSelect();
+		
+		// Startが選択されている場合はシーン遷移
+		if (currentSelect == Title::Select::Start) {
+			return std::make_unique<ShigeScene>();
+		}
+
+		// Quitが選択されている場合はアプリケーションを終了
+		else if (currentSelect == Title::Select::Quit) {
+			commonData_->shouldQuit = true;
+		}
 	}
 	
 	// カメラの行列更新
