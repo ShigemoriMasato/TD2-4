@@ -18,4 +18,6 @@ struct CommonData {
 	int postEffectDrawDataIndex = -1;
 
 	std::vector<std::unique_ptr<Piece>> pieces; //Playerが今持っているピースのデータ
+	
+	bool shouldQuit = false; // アプリケーション終了フラグ
 };

@@ -44,5 +44,5 @@ void SceneManager::Present() {
 
 bool SceneManager::IsLoop() const {
 	//CommonDataとかからループを抜ける条件を判断する
-	return true;
+	return !commonData_->shouldQuit;
 }
