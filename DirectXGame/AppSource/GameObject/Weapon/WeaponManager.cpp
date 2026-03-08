@@ -47,6 +47,7 @@ void WeaponManager::SaveWeaponData() {
 		jsonManager_->Add("penetration", weapon.penetration);
 		jsonManager_->Add("spreadAngle", weapon.spreadAngle);
 		jsonManager_->Add("size", weapon.size);
+		jsonManager_->Add("attackCount", weapon.attackCount);
 		jsonManager_->Save();
 	}
 }

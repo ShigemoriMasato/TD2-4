@@ -1,15 +1,17 @@
 {
+    "attackCount": 0,
     "attackSpeed": 1.5,
     "baseDamage": 6.0,
     "criticalChance": 0.0,
     "criticalMultiplier": 0.0,
-    "gold": 0.0,  
+    "gold": 0.0,
     "id": 0,
     "knockbackPower": 0.0,
     "lifeStealChance": 0.0,
-    "penetration": 0.0,
-    "range": 0.0,
+    "penetration": 0,
+    "range": 30.0,
     "rarity": 0,
     "size": 4,
-    "spreadAngle": 0.0                      
+    "spreadAngle": 0.0,
+    "type": 0
 }

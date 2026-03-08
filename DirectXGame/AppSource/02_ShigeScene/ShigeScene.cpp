@@ -14,7 +14,7 @@ void ShigeScene::Initialize() {
 	Collider::SetColliderManager(colliderManager_.get());
 
 	player_ = std::make_unique<Player::Base>();
-	player_->Initialize(modelManager_, drawDataManager_, input_);
+	player_->Initialize(modelManager_, drawDataManager_, input_, CharacterID::Warrior, &jsonManager_);
 
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize(player_->GetPositionPtr());
@@ -63,13 +63,15 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	colliderManager_->CollisionCheckAll();
 
 	//DrawInfoを収集して描画クラスに渡す
-	drawInfos_.clear();
-	auto enemyDI = enemyManager_->GetEnemyDrawInfos();
-	drawInfos_.insert(drawInfos_.end(), enemyDI.begin(), enemyDI.end());
-	auto attackDI = attackManager_->GetAttackDrawInfos();
-	drawInfos_.insert(drawInfos_.end(), attackDI.begin(), attackDI.end());
+	{
+		drawInfos_.clear();
+		auto enemyDI = enemyManager_->GetEnemyDrawInfos();
+		drawInfos_.insert(drawInfos_.end(), enemyDI.begin(), enemyDI.end());
+		auto attackDI = attackManager_->GetAttackDrawInfos();
+		drawInfos_.insert(drawInfos_.end(), attackDI.begin(), attackDI.end());
 
-	objectRender_->SetDrawInfo(drawInfos_.data(), drawInfos_.size(), camera_->GetVPMatrix());
+		objectRender_->SetDrawInfo(drawInfos_.data(), drawInfos_.size(), camera_->GetVPMatrix());
+	}
 
 	if (key[Key::Debug1]) {
 		return std::make_unique<ShopScene>();

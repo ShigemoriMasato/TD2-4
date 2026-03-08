@@ -22,7 +22,10 @@ void Bullet::Initialize(const Config& config) {
 
 	direction_ = { cosf(radian), sinf(radian) };
 	constexpr float lifeTime = 0.5f;
-	speed_ = config.range * lifeTime;
+	speed_ = config.speed;
+	penetrationCount_ = static_cast<int>(config.penetration);
+
+	hitEnemyIds_.resize(penetrationCount_);
 }
 
 void Bullet::Update(float deltaTime) {
@@ -37,8 +40,25 @@ void Bullet::Update(float deltaTime) {
 DrawInfo Bullet::GetDrawInfo() {
 	DrawInfo info;
 	info.position = { collCircle_->center.x, 0.0f, collCircle_->center.y };
-	info.scale = { radius_, radius_, radius_ };
+	info.scale = { radius_ * 2.0f, radius_ * 2.0f, radius_ * 2.0f };
 	info.modelIndex = 2; // 仮のモデルインデックス
 	info.color = 0xffff00ff; // 黄色
 	return info;
+}
+
+void Bullet::OnCollision(Collider* other) {
+	int id = other->GetID();
+	// すでに貫通している敵は無視する
+	for (int hitId : hitEnemyIds_) {
+		if (hitId == id) {
+			return;
+		}
+	}
+	hitEnemyIds_[hitCount_] = id;
+
+	// 衝突したら非アクティブにする
+	hitCount_++;
+	if (hitCount_ >= penetrationCount_) {
+		isActive_ = false;
+	}
 }

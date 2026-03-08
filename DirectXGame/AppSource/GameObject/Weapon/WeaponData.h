@@ -1,10 +1,10 @@
 #pragma once
 
 enum class WeaponRarity : int {
-	Common = 0,      // コモン
-	Uncommon = 1,    // アンコモン
-	Rare = 2,        // レア
-	Epic = 3,        // エピック
+	Common = 0,   // コモン
+	Uncommon = 1, // アンコモン
+	Rare = 2,     // レア
+	Epic = 3,     // エピック
 };
 
 enum class WeaponType : int {
@@ -27,5 +27,6 @@ struct WeaponData {
 	int penetration;          // 貫通
 	float spreadAngle;        // 拡散角度
 	int size;                 // バックパック上でのサイズ
+	int attackCount;          // 攻撃回数
 	char nameBuffer[64];      // ImGuiのInputText用の固定長のバッファ
 };

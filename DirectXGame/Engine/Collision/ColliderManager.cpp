@@ -31,14 +31,14 @@ void ColliderManager::CollisionCheck(Collider* collider) {
 }
 
 void ColliderManager::AddCollider(Collider* collider) {
+	collider->id_ = nextID_++;
 	colliders_.emplace_back(collider);
 }
 
 void ColliderManager::DeleteCollider(Collider* collider) {
 	for (size_t i = 0; i < colliders_.size(); ++i) {
 		if (colliders_[i] == collider) {
-			colliders_.erase(colliders_.begin() + i);
-			return;
+			colliders_.erase(colliders_.begin() + i--);
 		}
 	}
 }

@@ -6,7 +6,7 @@
 using namespace SHEngine;
 using namespace Player;
 
-void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, Input* input, CharacterID characterID) {
+void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, Input* input, CharacterID characterID, JsonManager* jsonManager) {
 	// 本体描画用オブジェクトの生成&初期化
 	render_ = std::make_unique<RenderObject>();
 	render_->Initialize();
@@ -57,10 +57,6 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	// 状態の初期化
 	currentState_ = std::make_unique<StateNormal>(); // 通常
 
-	// ステータスマネージャの生成&初期化
-	statusManager_ = std::make_unique<StatusManager>();
-	statusManager_->Initialize(characterID);
-
 	collCircle_ = std::make_unique<Circle>();
 	collCircle_->center = transform_.position;
 	collCircle_->radius = 1.0f; // 仮の半径
@@ -71,6 +67,13 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	collConfig.isActive = true;
 	Collider::Initialize();
 	SetColliderConfig(collConfig);
+
+	// パラメータリストの生成&初期化
+	parameterList_=std::make_unique<ParameterList>();
+	parameterList_->Initialize(jsonManager);
+
+	// キャラクターIDに基づいてパラメータを取得
+	parameterData_ = parameterList_->GetParameterData(characterID);
 }
 
 void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {

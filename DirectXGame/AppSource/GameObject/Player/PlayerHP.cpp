@@ -1,7 +1,5 @@
 #include "PlayerHP.h"
 #include "Player.h"
-#include "Status/StatusManager.h"
-#include "Status/StatusModifier.h"
 #include <Utility/Matrix.h>
 #include <Utility/MatrixFactory.h>
 #include <imgui/imgui.h>
@@ -9,13 +7,7 @@
 using namespace SHEngine;
 using namespace Player;
 
-void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input, StatusManager* statusManager) {
-	// ステータスマネージャを保存
-	statusManager_ = statusManager;
-
-	// StatusManagerからMaxHPを取得
-	InitializeHPFromStatus();
-
+void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input) {
 	// HPバーの生成
 	hpBarFill_.render = std::make_unique<RenderObject>();  // 前面
 	hpBarAfter_.render = std::make_unique<RenderObject>(); // 減った分
@@ -223,12 +215,4 @@ void HP::AnimationHPBarAfter(float deltaTime) {
 	// 座標の変更
 	float offsetX = (kHPBarWidth - hpBarAfter_.transform.scale.x) / 2.0f;
 	hpBarAfter_.transform.position.x = hpBarPosX_ - offsetX;
-}
-
-void HP::InitializeHPFromStatus() {
-	if (statusManager_) {
-		// StatusManagerからMaxHPを取得
-		maxHP_ = statusManager_->GetStatusValue(StatusType::MaxHP);
-		currentHP_ = maxHP_;
-	}
 }

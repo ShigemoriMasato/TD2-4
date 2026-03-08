@@ -102,6 +102,9 @@ public:
 	// 自分のタグ
 	virtual CollTag GetOwnTag() { return ownTag_; }
 
+	/// @brief コライダーの有効状態を取得
+	int GetID() const { return id_; }
+
 protected:
 
 	/**

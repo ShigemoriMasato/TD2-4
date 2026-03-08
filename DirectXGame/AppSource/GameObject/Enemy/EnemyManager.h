@@ -11,6 +11,12 @@ public:
 
 	std::vector<DrawInfo> GetEnemyDrawInfos() const;
 	std::vector<IEnemy*> GetEnemies() const;
+	/// @brief 敵を削除
+	/// @param target 削除する敵
+	void RemoveEnemy(IEnemy* target);
+
+	/// @brief 全ての敵をクリア
+	void Clear();
 
 	void Kill(int id);
 

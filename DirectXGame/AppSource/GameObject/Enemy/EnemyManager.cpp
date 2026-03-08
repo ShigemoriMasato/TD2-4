@@ -7,7 +7,7 @@ void EnemyManager::Initialize(Vector3* playerPos) {
 }
 
 void EnemyManager::Update(float deltaTime) {
-	if(enemies_.size() == 0) {
+	if (enemies_.size() == 0) {
 		return;
 	}
 
@@ -58,4 +58,23 @@ std::vector<IEnemy*> EnemyManager::GetEnemies() const {
 
 void EnemyManager::Kill(int id) {
 	enemies_.erase(id);
+}
+
+void EnemyManager::Clear() {
+	enemies_.clear();
+	nextEnemyId_ = 0;
+}
+
+void EnemyManager::RemoveEnemy(IEnemy* target) {
+	if (!target) {
+		return;
+	}
+
+	// 敵ポインタと比較して削除
+	for (const auto& [id, enemy] : enemies_) {
+		if (enemy.get() == target) {
+			enemies_.erase(id);
+			return;
+		}
+	}
 }

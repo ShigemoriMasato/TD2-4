@@ -9,6 +9,8 @@ public:
 
 	DrawInfo GetDrawInfo() override;
 
+	void OnCollision(Collider* other) override;
+
 private:
 
 	std::unique_ptr<Circle> collCircle_;
@@ -17,4 +19,8 @@ private:
 	const float lifeTime_ = 0.5f; // 弾の寿命
 	float timer_ = 0.0f;
 	float radius_ = 0.3f; // 弾の半径
+	
+	std::vector<int> hitEnemyIds_; // 貫通した敵のIDを保存するベクター
+	int penetrationCount_ = 0; // 貫通回数
+	int hitCount_ = 0;
 };

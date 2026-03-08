@@ -17,6 +17,7 @@
 // | 10    | penetration         | int         | 貫通                  |
 // | 11    | spreadAngle         | float       | 拡散角度              |
 // | 12    | size                | int         | バックパック上でのサイズ |
+// | 13    | attackCount         | int         | 攻撃回数              |
 // -------------------------------------------------------------------
 
 std::vector<WeaponData> WeaponDatabase::GetDefaultWeaponData() {
@@ -37,10 +38,10 @@ std::vector<WeaponData> WeaponDatabase::GetDefaultWeaponData() {
 float WeaponDatabase::GetRarityMultiplier(int rarity) {
 	switch (rarity) {
 		case static_cast<int>(WeaponRarity::Common):    return 1.0f;
-		case static_cast<int>(WeaponRarity::Uncommon):  return 1.15f;
-		case static_cast<int>(WeaponRarity::Rare):      return 1.35f;
+		case static_cast<int>(WeaponRarity::Uncommon):  return 1.2f;
+		case static_cast<int>(WeaponRarity::Rare):      return 1.4f;
 		case static_cast<int>(WeaponRarity::Epic):      return 1.6f;
-		default:                                       return 1.0f;
+		default:                                       return 2.0f;
 	}
 }
 
@@ -85,6 +86,7 @@ void WeaponDatabase::LoadFromJson(JsonManager& jsonManager) {
 			weaponData.penetration = jsonManager.Get<int>("penetration");
 			weaponData.spreadAngle = jsonManager.Get<float>("spreadAngle");
 			weaponData.size = jsonManager.Get<int>("size");
+			weaponData.attackCount = jsonManager.Get<int>("attackCount");
 
 		} catch (const std::exception&) {
 			// Jsonの読み込みに失敗した場合はデフォルト値を使用（既に設定済み）

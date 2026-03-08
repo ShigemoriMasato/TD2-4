@@ -12,6 +12,8 @@ public:
 		float spreadAngle = 0.0f;
 		float attackPower = 0.0f;
 		float range = 0.0f;
+		float speed = 0.0f;
+		float penetration = 0.0f;
 		float knockbackPower = 0.0f;
 		float criticalChance = 0.0f;
 		float criticalMultiplier = 0.0f;
