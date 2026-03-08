@@ -19,6 +19,6 @@ protected:
 	static inline WeaponDatabase* weaponManager_ = nullptr;
 
 	WeaponData* weaponData_;
-	Vector3* playerPos_ = nullptr;
+	Player::Base* player_;
 
 };

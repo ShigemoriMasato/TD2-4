@@ -6,6 +6,7 @@ void KeyManager::Initialize(SHEngine::Input* input, MainDisplay* display) {
 	keyHistory_.resize(kMaxHistory_);
 	buttonHistory_.resize(kMaxHistory_);
 	stickHistory_.resize(kMaxHistory_);
+	mouseHistory_.resize(kMaxHistory_);
 }
 
 void KeyManager::Update() {
@@ -26,12 +27,13 @@ void KeyManager::Update() {
 	stickHistory_.erase(stickHistory_.begin());
 	stickHistory_.emplace_back();
 
+	mouseHistory_.erase(mouseHistory_.begin());
+	mouseHistory_.emplace_back();
+
 	//Keyの数だけループ
 	for (const auto& [action, keys] : keyMap_) {
-
 		//Keyに登録されているDIKの数だけループ
 		for (const auto& [key, keyState] : keys) {
-
 			//履歴を作成する
 			keyHistory_.back()[key] = input_->GetKeyState(key);
 		}
@@ -49,6 +51,14 @@ void KeyManager::Update() {
 		//履歴を作成する
 		stickHistory_.back()[stick.first].x = input_->GetXBoxStickState(int(stick.first)).x;
 		stickHistory_.back()[stick.first].y = input_->GetXBoxStickState(int(stick.first)).y;
+	}
+
+	for (const auto& [action, buttons] : mouseMap_) {
+		//Keyに登録されているDIKの数だけループ
+		for (const auto& [button, buttonState] : buttons) {
+			//履歴を作成する
+			mouseHistory_.back()[button] = input_->GetMouseButtonState()[button];
+		}
 	}
 
 	// ================- keyの最終的な状態の更新 -================
@@ -150,6 +160,38 @@ void KeyManager::Update() {
 		}
 	}
 
+	for(const auto& [action, buttons] : mouseMap_) {
+		
+		//すでにtrueになっていたらスキップ
+		if (resultKeyFlugs_[action]) {
+			continue;
+		}
+
+		//Keyに登録されているDIKの数だけループ
+		for (const auto& [button, targetState] : buttons) {
+			//最終的な状態
+			bool state = false;
+			switch (targetState) {
+			case KeyState::None:
+				state = !mouseHistory_.back()[button];
+				break;
+			case KeyState::Trigger:
+				state = mouseHistory_.back()[button] && !mouseHistory_[mouseHistory_.size() - 2][button];
+				break;
+			case KeyState::Hold:
+				state = mouseHistory_.back()[button];
+				break;
+			case KeyState::Release:
+				state = !mouseHistory_.back()[button] && mouseHistory_[mouseHistory_.size() - 2][button];
+				break;
+			}
+			//trueになったら登録してループを抜ける
+			if (state) {
+				resultKeyFlugs_[action] = state;
+				break;
+			}
+		}
+	}
 }
 
 Vector2 KeyManager::GetCursorPos() const {
@@ -177,4 +219,8 @@ void KeyManager::SetButton(Key action, XBoxController button, KeyState state) {
 
 void KeyManager::SetStick(Key action, bool isLeft, bool isY, float toggleValue) {
 	stickMap_[action] = { isLeft ? Direction::Left : Direction::Right, {isY, toggleValue} };
+}
+
+void KeyManager::SetMouse(Key action, int mouseButton, KeyState state) {
+	mouseMap_[action].emplace_back(mouseButton, state);
 }

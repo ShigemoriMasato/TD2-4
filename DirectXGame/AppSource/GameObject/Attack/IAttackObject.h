@@ -6,7 +6,19 @@
 class IAttackObject : public Collider {
 public:
 
-	virtual void Initialize(float size) { size_ = size; }
+	struct Config {
+		Vector3 position = { 0.0f, 0.0f, 0.0f };
+		float direction = 0.0f;
+		float spreadAngle = 0.0f;
+		float attackPower = 0.0f;
+		float range = 0.0f;
+		float knockbackPower = 0.0f;
+		float criticalChance = 0.0f;
+		float criticalMultiplier = 0.0f;
+		float lifeSteelChance = 0.0f;
+	};
+
+	virtual void Initialize(const Config& config) { config_ = config; }
 	virtual void Update(float deltaTime) {}
 	//何か特殊な描画をする場合はここで行う
 	virtual void Draw(CmdObj* cmdObj) {}
@@ -21,6 +33,5 @@ protected:
 	void SetCollider(CollConfig& config);
 
 	bool isActive_ = true;
-	float size_ = 0.0f;
-
+	Config config_{};
 };

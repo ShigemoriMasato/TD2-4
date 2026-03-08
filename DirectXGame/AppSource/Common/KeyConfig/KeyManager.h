@@ -13,6 +13,7 @@ enum class Key {
 	Down,
 
 	Hold,//Chip持ち運び
+	Erase,//Chip消す
 	
 	Correct,//確定キー
 	Reverse,//取消キー
@@ -53,6 +54,8 @@ public:
 	void SetKey(Key action, uint8_t DIK, KeyState state = KeyState::Release);
 	void SetButton(Key action, XBoxController button, KeyState state);
 	void SetStick(Key action, bool isLeft, bool isY, float toggleValue);
+	//0.左クリック 1.右クリック 2.ホイールクリック
+	void SetMouse(Key action, int mouseButton, KeyState state);
 
 private:
 
@@ -69,13 +72,15 @@ private:
 	std::unordered_map<Key, std::vector<std::pair<uint8_t, KeyState>>> keyMap_;
 	std::unordered_map<Key, std::vector<std::pair<XBoxController, KeyState>>> buttonMap_;
 	std::unordered_map<Key, std::pair<Direction, std::pair<bool, float>>> stickMap_;
+	std::unordered_map<Key, std::vector<std::pair<int, KeyState>>> mouseMap_;
 
 	//キー入力の履歴を保存する。
 	std::vector<std::unordered_map<uint8_t, bool>> keyHistory_;
 	std::vector<std::unordered_map<XBoxController, bool>> buttonHistory_;
 	std::vector<std::unordered_map<Direction, Vector2>> stickHistory_;
+	std::vector<std::unordered_map<int, bool>> mouseHistory_;
 	//履歴の最大数
-	static const int kMaxHistory_ = 10;
+	static const int kMaxHistory_ = 2;
 
 	//最終的な状態を格納する
 	std::unordered_map<Key, bool> resultKeyFlugs_;

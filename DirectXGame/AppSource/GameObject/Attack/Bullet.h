@@ -4,8 +4,7 @@
 class Bullet : public IAttackObject {
 public:
 
-	void Initialize(float size) override;
-	void SetConfig(Vector2 startPos, Vector2 direction, float speed);
+	void Initialize(const Config& config) override;
 	void Update(float deltaTime) override;
 
 	DrawInfo GetDrawInfo() override;
@@ -17,5 +16,5 @@ private:
 	float speed_ = 0.0f;
 	const float lifeTime_ = 0.5f; // 弾の寿命
 	float timer_ = 0.0f;
-
+	float radius_ = 0.3f; // 弾の半径
 };

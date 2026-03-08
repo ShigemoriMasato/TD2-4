@@ -55,7 +55,7 @@ void ItemEditor::CreateItemFromModel(ItemManager& itemManager) {
 	for (auto& [id, item] : items) {
 		bool found = false;
 		for(const auto& f : files) {
-			if(item.modelPath == f) {
+			if(item.modelPath == basePath_ + f) {
 				found = true;
 				break;
 			}
@@ -109,7 +109,7 @@ void ItemEditor::CreateItemFromModel(ItemManager& itemManager) {
 		//アイテムが作成済みの可能性があるので、同じモデルパスのアイテムがあればidをセットしてcontinueする
 		bool exists = false;
 		for (auto& [id, item] : items) {
-			if (item.modelPath == f) {
+			if (item.modelPath == basePath_ + f) {
 				currentNode->itemID = id;
 				currentNode->name = path.string();
 				item.name = ConvertString(path.string());
@@ -127,7 +127,7 @@ void ItemEditor::CreateItemFromModel(ItemManager& itemManager) {
 		item.name = ConvertString(path.string());
 		item.id = itemManager.GetUsedID()++;
 		item.category = Category::Item;
-		item.modelPath = f;
+		item.modelPath = basePath_ + f;
 		item.modelID = itemManager.ResolveModelID(item);
 		for (int r = 0; r < 4; ++r) {
 			item.ranks[r].price = 0;
@@ -175,6 +175,13 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 		ImGui::Combo("Category##2", reinterpret_cast<int*>(&currentItem.category), "Weapon\0Armor\0Item\0");
 
 		ImGui::DragFloat2("Visual Offset Cells", &currentItem.visualOffsetCells.x, 0.01f);
+
+		if (currentItem.category == Category::Weapon) {
+			currentItem.weaponID = std::max(currentItem.weaponID, 0);
+			ImGui::InputInt("Weapon ID", &currentItem.weaponID);
+		} else {
+			currentItem.weaponID = -1;
+		}
 
 
 #pragma endregion

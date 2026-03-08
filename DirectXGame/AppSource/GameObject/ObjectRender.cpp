@@ -25,6 +25,9 @@ void ObjectRender::SetDrawInfo(DrawInfo* info, size_t num, Matrix4x4 vpMatrix) {
 		if (renderObject) {
 			renderObject->CopyBufferData(0, buffers_[id].matrix.data(), sizeof(Matrix4x4) * buffers_[id].matrix.size());
 			renderObject->CopyBufferData(1, buffers_[id].color.data(), sizeof(Vector4) * buffers_[id].color.size());
+			auto modelData = modelManager_->GetNodeModelData(id);
+			int textureIndex = modelData.materials[modelData.materialIndex.front()].textureIndex;
+			renderObject->CopyBufferData(2, &textureIndex, sizeof(int));
 			renderObject->instanceNum_ = (uint32_t)buffers_[id].matrix.size();
 		}
 	}

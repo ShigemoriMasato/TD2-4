@@ -79,7 +79,8 @@ void InitializeScene::Initialize() {
 	keyManager->SetButton(Key::Down, XBoxController::kDown, KeyState::Hold);
 	keyManager->SetStick(Key::Down, true, true, -0.5f);
 
-	keyManager->SetKey(Key::Hold, DIK_LSHIFT, KeyState::Hold);
+	keyManager->SetMouse(Key::Hold, 0, KeyState::Hold);
+	keyManager->SetMouse(Key::Erase, 1, KeyState::Trigger);
 
 	//================================================================================
 
