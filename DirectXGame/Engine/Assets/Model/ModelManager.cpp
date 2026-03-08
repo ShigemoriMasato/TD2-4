@@ -49,6 +49,12 @@ int ModelManager::LoadModel(std::string filePath) {
 	// ファイルパスの確認と修正
 	std::string fileName = FilePathChecker(filePath);
 
+	// ファイル名が見つからない場合
+	if (fileName.empty()) {
+		logger_->error("Model file not found in directory: {}", filePath);
+		return 0; // キューブのIDを返す
+	}
+
 	// すでに読み込んでいたらIDを返す
 	const auto it = modelFilePaths_.find(filePath);
 	if (it != modelFilePaths_.end()) {
@@ -56,7 +62,7 @@ int ModelManager::LoadModel(std::string filePath) {
 		return it->second;
 	}
 
-	logger_->info("Loading Model: {}", filePath + fileName);
+	logger_->info("Loading Model: {}/{}", filePath, fileName);
 
 	//idの設定
 	int id = -1;
@@ -67,8 +73,8 @@ int ModelManager::LoadModel(std::string filePath) {
 	const aiScene* scene = nullptr;
 	scene = importer.ReadFile(path.c_str(), aiProcess_MakeLeftHanded | aiProcess_FlipWindingOrder | aiProcess_FlipUVs | aiProcess_Triangulate);
 	if (!scene) {
-		logger_->error("Failed to load model: {}", filePath);
-		return 1;
+		logger_->error("Failed to load model: {} - Error: {}", path, importer.GetErrorString());
+		return 0; // キューブのIDを返す
 	}
 
 	//読み込み
