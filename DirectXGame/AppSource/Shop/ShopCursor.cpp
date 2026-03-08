@@ -1,8 +1,9 @@
 #include "ShopCursor.h"
 #include <Common/KeyConfig/WorldCursor.h>
 
-void ShopCursor::Initialize(KeyManager* keyManager) {
+void ShopCursor::Initialize(KeyManager* keyManager, PieceManager* pieceManager) {
 	keyManager_ = keyManager;
+	pieceManager_ = pieceManager;
 }
 
 void ShopCursor::Update(Camera* camera) {
@@ -10,10 +11,12 @@ void ShopCursor::Update(Camera* camera) {
 	worldPos_ = GetWorldCursor(camera, cursor);
 }
 
-void ShopCursor::EditPiece(std::vector<Piece*> pieces, BackPack* backPack) {
+void ShopCursor::EditPiece(BackPack* backPack) {
+	auto pieces = pieceManager_->GetAllPieces();
+
 	//持っているピースがあるなら
 	if (heldPiece_) {
-		if(!keyManager_->GetKeyStates()[Key::Hold]) {
+		if (!keyManager_->GetKeyStates()[Key::Hold]) {
 			//本当にその場所に配置できるかの判断を行う
 			if (heldPiece_->CanPut(backPack)) {
 				heldPiece_->Put(backPack);
@@ -26,7 +29,7 @@ void ShopCursor::EditPiece(std::vector<Piece*> pieces, BackPack* backPack) {
 			heldPiece_ = nullptr;
 
 		} else {
-			
+
 			heldPiece_->SetPosition(worldPos_);
 
 		}
@@ -41,6 +44,10 @@ void ShopCursor::EditPiece(std::vector<Piece*> pieces, BackPack* backPack) {
 			if (keyManager_->GetKeyStates()[Key::Hold]) {
 				heldPiece_ = piece;
 				preHeldPiecePos_ = piece->GetPosition();
+			}
+
+			if (keyManager_->GetKeyStates()[Key::Erase]) {
+				pieceManager_->RemovePiece(piece);
 			}
 
 			break;

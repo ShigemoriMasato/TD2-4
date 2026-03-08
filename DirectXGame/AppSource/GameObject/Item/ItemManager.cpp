@@ -138,6 +138,9 @@ void ItemManager::SaveItem()
 		binaryManager_.RegisterOutput(&item.weaponID);
 		binaryManager_.RegisterOutput(&item.visualOffsetCells);
 
+		//Active
+		binaryManager_.RegisterOutput(&item.isActive);
+
 		// ranks（可変）
 		for (int r = 0; r < 4; ++r)
 		{
@@ -204,6 +207,9 @@ void ItemManager::LoadItem()
 		item.modelPath = binaryManager_.Reverse<std::string>(data);
 		item.weaponID = binaryManager_.Reverse<int>(data);
 		item.visualOffsetCells = binaryManager_.Reverse<Vector2>(data);
+
+		//Active
+		item.isActive = binaryManager_.Reverse<bool>(data);
 
 		// ranks
 		for (int r = 0; r < 4; ++r)

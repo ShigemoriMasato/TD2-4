@@ -24,9 +24,6 @@ void ShopScene::Initialize() {
 	backPack_ = std::make_unique<BackPack>();
 	backPack_->Initialize();
 
-	shopCursor_ = std::make_unique<ShopCursor>();
-	shopCursor_->Initialize(commonData_->keyManager.get());
-
 	pieceManager_ = std::make_unique<PieceManager>();
 	pieceManager_->Initialize(commonData_->pieces);
 	//PieceManager内でstd::moveを行っているため、クリアを行う
@@ -37,6 +34,9 @@ void ShopScene::Initialize() {
 	shop_->Initialize(itemManager_.get());
 
 	pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
+
+	shopCursor_ = std::make_unique<ShopCursor>();
+	shopCursor_->Initialize(commonData_->keyManager.get(), pieceManager_.get());
 
 	weaponManager_ = std::make_unique<WeaponManager>();
 	weaponManager_->InitializeData(modelManager_, drawDataManager_);
@@ -68,15 +68,15 @@ std::unique_ptr<IScene> ShopScene::Update() {
 		pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
 	}
 
-	auto pieces = pieceManager_->GetAllPieces();
-
 	shopCursor_->Update(debugCamera_.get());
-	shopCursor_->EditPiece(pieces, backPack_.get());
+	shopCursor_->EditPiece(backPack_.get());
 
 	colliderManager_->CollisionCheckAll();
 
 	//DrawInfo集め
 	std::vector<DrawInfo> drawInfos = backPack_->GetSlotDrawInfos();
+
+	auto pieces = pieceManager_->GetAllPieces();
 	for(const auto& piece : pieces) {
 		auto pieceDrawInfos = piece->GetDrawInfos();
 		drawInfos.insert(drawInfos.end(), pieceDrawInfos.begin(), pieceDrawInfos.end());

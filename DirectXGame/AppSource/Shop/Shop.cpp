@@ -3,10 +3,13 @@
 void Shop::Initialize(ItemManager* itemManager) {
 	itemManager_ = itemManager;
 	auto items = itemManager->GetAllItems();
+	itemIndices_.clear();
 
 	//Itemのインデックスを作成しておく。いつかIDにする
 	for(const auto& [id, item] : items) {
-		itemIndices_.push_back(id);
+		if (item.isActive) {
+			itemIndices_.push_back(id);
+		}
 	}
 }
 
@@ -14,7 +17,8 @@ std::vector<std::unique_ptr<Piece>> Shop::RefreshShopPieces() {
 	std::vector<std::unique_ptr<Piece>> shopPieces;
 	// アイテムのインデックスからランダムに3つ選ぶ
 	std::shuffle(itemIndices_.begin(), itemIndices_.end(), randomEngine_);
-	for (int i = 0; i < 3 && i < static_cast<int>(itemIndices_.size()); ++i) {
+	int selectCount = 3;
+	for (int i = 0; i < selectCount && i < static_cast<int>(itemIndices_.size()); ++i) {
 		int itemIndex = itemIndices_[i];
 		const Item& item = itemManager_->GetItem(itemIndex);
 		auto piece = std::make_unique<Piece>();

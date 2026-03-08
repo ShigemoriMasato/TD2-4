@@ -34,10 +34,33 @@ void PieceManager::RefreshShopPieces(std::vector<std::unique_ptr<Piece>> shopPie
 
 void PieceManager::MoveShopToHold(Piece* piece) {
 	for (size_t i = 0; i < shopPieces_.size(); ++i) {
-		if(shopPieces_[i].get() == piece) {
+		if (shopPieces_[i].get() == piece) {
 			holdPieces_.push_back(std::move(shopPieces_[i]));
 			shopPieces_.erase(shopPieces_.begin() + i);
 			break;
+		}
+	}
+}
+
+void PieceManager::RemovePiece(Piece* piece) {
+	for (size_t i = 0; i < allPieces_.size(); ++i) {
+		if (allPieces_[i] == piece) {
+			allPieces_.erase(allPieces_.begin() + i);
+			break;
+		}
+	}
+
+	for (size_t i = 0; i < shopPieces_.size(); ++i) {
+		if (shopPieces_[i].get() == piece) {
+			shopPieces_.erase(shopPieces_.begin() + i);
+			return;
+		}
+	}
+
+	for (size_t i = 0; i < holdPieces_.size(); ++i) {
+		if (holdPieces_[i].get() == piece) {
+			holdPieces_.erase(holdPieces_.begin() + i);
+			return;
 		}
 	}
 }

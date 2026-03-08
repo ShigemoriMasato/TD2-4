@@ -16,6 +16,9 @@ public:
 	//ShopからHoldに移動させる
 	void MoveShopToHold(Piece* piece);
 
+	//削除
+	void RemovePiece(Piece* piece);
+
 	// 場にあるピースを全て取得する。当たり判定用
 	std::vector<Piece*> GetAllPieces();
 	// 最後保存する用
