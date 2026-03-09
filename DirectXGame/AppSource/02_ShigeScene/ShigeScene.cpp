@@ -1,7 +1,8 @@
 #include "ShigeScene.h"
-#include <imgui/imgui.h>
-#include <Utility/Color.h>
 #include "ShopScene.h"
+#include <Utility/Color.h>
+#include <imgui/imgui.h>
+#include <numbers>
 
 void ShigeScene::Initialize() {
 	debugCamera_ = std::make_unique<DebugCamera>();
@@ -43,6 +44,7 @@ void ShigeScene::Initialize() {
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 
 	MakeWeapon();
+	MakeWeaponRender();
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -50,15 +52,15 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 
 	gameCamera_->Update(deltaTime, player_->GetTransform().position);
-	Vector3 cameraPos = { 0.f,0.f,0.f };
+	Vector3 cameraPos = {0.f, 0.f, 0.f};
 	grid_->Update(cameraPos, camera_->GetVPMatrix());
 	auto key = commonData_->keyManager->GetKeyStates();
 
 	worldTimer_ += deltaTime;
 	if (worldTimer_ > 2.0f) {
 		worldTimer_ = 0.0f;
-		Vector3 initPos = { float(rand() % 40 - 20), 0.0f, float(rand() % 40 - 20) };
-		enemyManager_->PopEnemy(initPos + Vector3({ 19.0f,0.0f,19.0f }));
+		Vector3 initPos = {float(rand() % 40 - 20), 0.0f, float(rand() % 40 - 20)};
+		enemyManager_->PopEnemy(initPos + Vector3({19.0f, 0.0f, 19.0f}));
 	}
 
 	player_->Update(camera_->GetVPMatrix(), deltaTime);
@@ -71,7 +73,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	colliderManager_->CollisionCheckAll();
 
-	//DrawInfoを収集して描画クラスに渡す
+	// DrawInfoを収集して描画クラスに渡す
 	{
 		drawInfos_.clear();
 		auto enemyDI = enemyManager_->GetEnemyDrawInfos();
@@ -80,6 +82,25 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		drawInfos_.insert(drawInfos_.end(), attackDI.begin(), attackDI.end());
 
 		objectRender_->SetDrawInfo(drawInfos_.data(), drawInfos_.size(), camera_->GetVPMatrix());
+	}
+
+	{
+		int weaponCount = static_cast<int>(weaponRenders_.size());
+		for (size_t i = 0; i < weaponCount; ++i) {
+			// 武器が1つ以上のときだけ計算
+			if (weaponCount > 0) {
+				// 円周上の角度を計算 (ラジアン)
+				float angle = (2.0f * std::numbers::pi_v<float> / weaponCount) * i;
+
+				// XZ平面での円周オフセット座標の計算 (baseRadius_とbaseHeight_を使用)
+				Vector3 offset = {std::cos(angle) * baseRadius_, baseHeight_, std::sin(angle) * baseRadius_};
+
+				// プレイヤー座標にオフセットを加算
+				Vector3 weaponPos = player_->GetTransform().position + offset;
+
+				weaponRenders_[i]->Update(camera_->GetVPMatrix(), weaponPos);
+			}
+		}
 	}
 
 	if (key[Key::Debug1]) {
@@ -101,12 +122,15 @@ void ShigeScene::Draw() {
 	objectRender_->Draw(cmdObj);
 	player_->Draw(cmdObj);
 
+	for (const auto& render : weaponRenders_) {
+		render->Draw(cmdObj);
+	}
 
 	display->PostDraw(cmdObj);
 
 	window->PreDraw(cmdObj);
 
-	//ここ以外で記述する場合、ifdefを忘れないようにすること
+	// ここ以外で記述する場合、ifdefを忘れないようにすること
 #ifdef USE_IMGUI
 
 	display->DrawImGui();
@@ -115,6 +139,11 @@ void ShigeScene::Draw() {
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 	ImGui::Text("DeltaTime: %.3f ms", deltaTime * 1000.0f);
 	ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
+	ImGui::End();
+
+	ImGui::Begin("RenderDebug");
+	ImGui::DragFloat("baseHeight", &baseHeight_, 0.01f);
+	ImGui::DragFloat("baseRadius", &baseRadius_, 0.01f);
 	ImGui::End();
 
 #endif
@@ -131,18 +160,41 @@ void ShigeScene::MakeWeapon() {
 			WeaponData* data = weaponDatabase_->GetWeapon(weaponID);
 
 			switch (data->type) {
-			case WeaponType::Pistol:
-			{
+			case WeaponType::Pistol: {
 				std::unique_ptr<Pistol> pistol = std::make_unique<Pistol>();
 				pistol->Initialize(weaponID, player_.get());
 				weapons_.emplace_back(std::move(pistol));
 				break;
 			}
-			case WeaponType::Sword:
-			{
+			case WeaponType::Sword: {
 				std::unique_ptr<Sword> sword = std::make_unique<Sword>();
 				sword->Initialize(weaponID, player_.get());
 				weapons_.emplace_back(std::move(sword));
+				break;
+			}
+			}
+		}
+	}
+}
+
+void ShigeScene::MakeWeaponRender() {
+	for (const auto& piece : commonData_->pieces) {
+		int weaponID = piece->GetItem().weaponID;
+
+		if (weaponID != -1) {
+			WeaponData* data = weaponDatabase_->GetWeapon(weaponID);
+
+			switch (data->type) {
+			case WeaponType::Pistol: {
+				std::unique_ptr<WeaponRender> pistol = std::make_unique<WeaponRender>();
+				pistol->Initialize(drawDataManager_, modelManager_, "Pistol");
+				weaponRenders_.emplace_back(std::move(pistol));
+				break;
+			}
+			case WeaponType::Sword: {
+				std::unique_ptr<WeaponRender> sword = std::make_unique<WeaponRender>();
+				sword->Initialize(drawDataManager_, modelManager_, "Sword");
+				weaponRenders_.emplace_back(std::move(sword));
 				break;
 			}
 			}
