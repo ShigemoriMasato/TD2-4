@@ -5,7 +5,7 @@ using namespace SHEngine;
 void WeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, std::string filepath) {
 	render_ = std::make_unique<RenderObject>();
 
-	int modelHandle = modelManager->LoadModel("Assets/Model/Item/" + filepath + "/");
+	int modelHandle = modelManager->LoadModel("Assets/Model/Item/Weapon/" + filepath + "/");
 	auto modelData = modelManager->GetNodeModelData(modelHandle);
 	auto drawData = drawDataManager->GetDrawData(modelData.drawDataIndex);
 
