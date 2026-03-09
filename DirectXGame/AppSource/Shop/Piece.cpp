@@ -5,14 +5,18 @@ void Piece::Initialize(const Item& item) {
 	itemData_ = item;
 	chips_.clear();
 	chips_.resize(item.mapData.size());
+	Vector3 maxPos = { 0.0f, 0.0f, 0.0f };
 	for (size_t i = 0; i < item.mapData.size(); i++) {
 		chips_[i] = item.mapData[i];
+		maxPos.x = (float)std::max(int(maxPos.x), chips_[i].first);
+		maxPos.z = (float)std::max(int(maxPos.z), chips_[i].second);
 	}
+	middleLocalPos_ = Vector3(maxPos.x * 0.5f, 0.0f, maxPos.z * 0.5f);
 }
 
 bool Piece::CanPut(BackPack* backPack)  {
 	for (const auto& chip : chips_) {
-		std::pair<int, int> slotPos = { static_cast<int>(position_.x) + chip.first, static_cast<int>(position_.z) + chip.second };
+		std::pair<int, int> slotPos = GetChipPos(chip);
 		if (backPack->GetSlot(slotPos) != Slot::Empty) {
 			isPlaced_ = false;
 			return false;
@@ -40,13 +44,13 @@ bool Piece::Put(BackPack* backPack) {
 
 void Piece::SetPosition(const Vector3& pos) {
 	//愚かしいことにもワールドポジションが送られてくるため、マップチップ番号に変換してから入力する
-	Vector3 mappedPos = pos - Vector3(0.5f, 0.0f, 0.5f);
+	Vector3 mappedPos = { std::roundf(pos.x), std::roundf(pos.y) , std::roundf(pos.z) };
 	position_ = Vector3(std::round(mappedPos.x), 0.0f, std::round(mappedPos.z));
 }
 
 bool Piece::IsHovered(const Vector3& cursorPos, BackPack* backPack)  {
 	for (const auto& chip : chips_) {
-		std::pair<int, int> slotPos = { static_cast<int>(position_.x) + chip.first, static_cast<int>(position_.z) + chip.second };
+		std::pair<int, int> slotPos = GetChipPos(chip);
 		Vector3 slotWorldPos = backPack->GetWorldPos(slotPos);
 		if (std::abs(cursorPos.x - slotWorldPos.x) < 0.5f &&
 			std::abs(cursorPos.z - slotWorldPos.z) < 0.5f) {
@@ -60,9 +64,10 @@ bool Piece::IsHovered(const Vector3& cursorPos, BackPack* backPack)  {
 
 std::vector<DrawInfo> Piece::GetDrawInfos() const {
 	std::vector<DrawInfo> drawInfos;
-	DrawInfo info;
 	for (const auto& chip : chips_) {
-		info.position = position_ + Vector3(static_cast<float>(chip.first) + 0.5f, 0.0f, static_cast<float>(chip.second) + 0.5f);
+		DrawInfo info;
+		auto slotPos = GetChipPos(chip);
+		info.position = { (float)slotPos.first + 0.5f, 0.0f, (float)slotPos.second + 0.5f };
 		info.scale = Vector3(1.0f, 0.2f, 1.0f);
 		info.modelIndex = 0;
 
@@ -76,12 +81,63 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 
 		drawInfos.push_back(info);
 	}
+	DrawInfo info;
 	info.modelIndex = itemData_.modelID;
-	info.position = position_ + Vector3(0.5f, 0.0f, 0.5f) + Vector3(itemData_.visualOffsetCells.x, 0.0f, itemData_.visualOffsetCells.y);
+	info.position = middleLocalPos_;
+	switch (direction_) {
+		case Direction::Up:
+			break;
+		case Direction::Right:
+			info.position = Vector3(info.position.z, info.position.y, -info.position.x);
+			break;
+		case Direction::Down:
+			info.position = Vector3(-info.position.x, info.position.y, -info.position.z);
+			break;
+		case Direction::Left:
+			info.position = Vector3(-info.position.z, info.position.y, info.position.x);
+			break;
+	}
+	info.position += Vector3(0.5f, 0.0f, 0.5f) + Vector3(itemData_.visualOffsetCells.x, 0.0f, itemData_.visualOffsetCells.y) + position_;
 	info.scale = Vector3(0.5f, 0.5f, 0.5f);
+	info.rotation.y = static_cast<float> (direction_) * 3.1415926535f * 0.5f;
 	info.color = 0xffffffff;
 	drawInfos.push_back(info);
 
 	return drawInfos;
+}
+
+void Piece::RotateRight() {
+	direction_ = static_cast<Direction>((static_cast<int>(direction_) + 1) % 4);
+}
+
+void Piece::RotateLeft() {
+	direction_ = static_cast<Direction>((static_cast<int>(direction_) + 3) % 4);
+}
+
+std::pair<int, int> Piece::GetChipPos(const std::pair<int, int>& chip) const {
+	std::pair<int, int> world = chip;
+	int tmp;
+	//回転処理
+	switch (direction_) {
+	case Direction::Up:
+		break;
+	case Direction::Right:
+		tmp = world.first;
+		world.first = world.second;
+		world.second = tmp * -1;
+		break;
+	case Direction::Down:
+		world.first *= -1;
+		world.second *= -1;
+		break;
+	case Direction::Left:
+		tmp = world.first;
+		world.first = world.second * -1;
+		world.second = tmp;
+		break;
+	}
+	world.first += static_cast<int>(position_.x);
+	world.second += static_cast<int>(position_.z);
+	return world;
 }
 

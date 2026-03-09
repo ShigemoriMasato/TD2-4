@@ -7,6 +7,14 @@ class PieceManager;
 class Piece {
 public:
 
+	enum class Direction {
+		Up,
+		Right,
+		Down,
+		Left,
+	};
+
+
 	Piece() = default;
 	Piece(const Item& item) { Initialize(item); }
 
@@ -23,24 +31,23 @@ public:
 	std::vector<DrawInfo> GetDrawInfos() const;
 	Item GetItem() const { return itemData_; }
 
+	void RotateRight();
+	void RotateLeft();
+	Direction GetDirection() const { return direction_; }
+
 private:
 
-	enum class Direction {
-		Up,
-		Right,
-		Down,
-		Left,
-	} direction_;
-	Direction preDirection_;
+	std::pair<int, int> GetChipPos(const std::pair<int, int>& chip) const;
 
 	static inline PieceManager* pieceManager_ = nullptr;
+
+	Direction direction_ = Direction::Up;
 
 	Item itemData_;
 	std::vector<std::pair<int, int>> chips_;
 
+	Vector3 middleLocalPos_ = { 0.0f, 0.0f, 0.0f };
 	Vector3 position_{};
-
-	Vector2 maxLocalPos_{};
 
 	bool isHovered_ = false;
 	bool isPlaced_ = false;

@@ -1,6 +1,12 @@
 #include "SceneManager.h"
 #include "InitializeScene.h"
 
+SceneManager::~SceneManager() {
+	if (commonData_->cmdObject) {
+		commonData_->cmdObject->WaitForStopGPU();
+	}
+}
+
 void SceneManager::Initialize(SHEngine::Engine* engine) {
 	engine_ = engine;
 	commonData_ = std::make_unique<CommonData>();
