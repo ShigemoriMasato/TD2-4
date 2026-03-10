@@ -57,6 +57,7 @@ private:
 	int currentParamType_ = 0;
 	float baseParamValue_ = 0.0f;
 	std::vector<std::string> paramNames_;
+	std::vector<const char*> paramNamesCStr_;
 };
 
 #else

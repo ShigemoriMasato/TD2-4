@@ -110,6 +110,10 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 	collCircle_->center = transform_.position;
 }
 
+void Player::Base::UpdateParameter(const std::vector<Piece*>& items) {
+	parameterList_->Update(items);
+}
+
 void Base::Draw(CmdObj* cmdObj) {
 	// 残像の描画
 	if (!afterImages_.empty()) {

@@ -84,7 +84,7 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 	}
 	DrawInfo info;
 	info.modelIndex = itemData_.modelID;
-	info.position = middleLocalPos_;
+	info.position = middleLocalPos_ + Vector3(itemData_.visualOffsetCells.x, 0.0f, itemData_.visualOffsetCells.y);
 	switch (direction_) {
 		case Direction::Up:
 			break;
@@ -98,7 +98,7 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 			info.position = Vector3(-info.position.z, info.position.y, info.position.x);
 			break;
 	}
-	info.position += Vector3(0.5f, 0.0f, 0.5f) + Vector3(itemData_.visualOffsetCells.x, 0.0f, itemData_.visualOffsetCells.y) + position_;
+	info.position += Vector3(0.5f, 0.0f, 0.5f) + position_;
 	info.scale = Vector3(0.5f, 0.5f, 0.5f);
 	info.rotation.y = static_cast<float> (direction_) * 3.1415926535f * 0.5f;
 	info.color = 0xffffffff;

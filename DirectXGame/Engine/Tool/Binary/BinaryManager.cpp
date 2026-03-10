@@ -12,6 +12,7 @@ void BinaryManager::Write(const std::string& fileName) {
 		throw std::runtime_error("Failed to open file for writing: " + fileName);
 	}
 
+	file.write(reinterpret_cast<const char*>(&version_), sizeof(version_)); // バージョンを書き込む
 	file.write(binaryBuffer_.data(), binaryBuffer_.size());
 
 	file.close();
@@ -20,18 +21,26 @@ void BinaryManager::Write(const std::string& fileName) {
 	binaryBuffer_.clear();
 }
 
-BinaryData BinaryManager::Read(const std::string& fileName) {
+bool BinaryManager::Boot(const std::string& fileName) {
 	const std::string path = basePath + fileName;
 	std::ifstream file(path, std::ios::binary);
 	if (!file) {
-		return {};
+		return false;
 	}
 
 	const auto fileSize = fs::file_size(path);
-	std::string buffer;
-	buffer.resize(static_cast<size_t>(fileSize));
+	inputBuffer_.resize(static_cast<size_t>(fileSize));
+	file.read(inputBuffer_.data(), fileSize);
 
-	file.read(buffer.data(), static_cast<std::streamsize>(buffer.size()));
+	uint8_t fileVersion;
+	std::memcpy(&fileVersion, inputBuffer_.data(), sizeof(fileVersion));
 
-	return buffer;
+	//Versionが違う場合は読み込まない
+	if (fileVersion != version) {
+		inputBuffer_.clear();
+		return false;
+	}
+	inputBuffer_.erase(0, sizeof(fileVersion)); // バージョンを読み取った後、バッファから削除
+
+	return true;
 }

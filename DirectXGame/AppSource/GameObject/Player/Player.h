@@ -26,6 +26,8 @@ public:
 
 	// 更新
 	void Update(Matrix4x4 vpMatrix, float deltaTime);
+	// パラメータの更新
+	void UpdateParameter(const std::vector<Piece*>& items);
 
 	// 描画
 	void Draw(CmdObj* cmdObj);

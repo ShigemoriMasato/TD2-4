@@ -3,35 +3,40 @@
 #include <cstring>
 #include "Value.h"
 
-using BinaryData = std::string;
-
 class BinaryManager {
 public:
 
+	bool Boot(const std::string& fileName);
+
 	template<typename T>
-	void RegisterOutput(T* data);
+	void Register(T* data);
 	void Write(const std::string& fileName);
 
-	BinaryData Read(const std::string& fileName);
+	//Registerした順番で値を吐き出す。一回しか吐き出さない。
 	template<typename T>
-	T Reverse(BinaryData& buffer);
+	T Reverse();
 
 private:
 
-	BinaryData binaryBuffer_;
+	std::string inputBuffer_;
+	std::string binaryBuffer_;
+
+	//TypeIDと混在しないように、バージョンは0xf0以上にする
+	static constexpr uint8_t version = 0xf0;
+	uint8_t version_ = version;
 
 	static inline const std::string basePath = "Assets/Binary/";
 
-	static constexpr size_t idSize = sizeof(TypeID);
-	static constexpr size_t sizeSize = sizeof(size_t);
-	static constexpr size_t headerSize = idSize + sizeSize;
+	static constexpr uint32_t idSize = uint32_t(sizeof(TypeID));
+	static constexpr uint32_t sizeSize = uint32_t(sizeof(uint32_t));
+	static constexpr uint32_t headerSize = idSize + sizeSize;
 };
 
 template<typename T>
-void BinaryManager::RegisterOutput(T* data) {
+void BinaryManager::Register(T* data) {
 	constexpr TypeID currentID = TypeIDResolver<T>::id;
-	size_t size = sizeof(T);
-
+	uint32_t size = uint32_t(sizeof(T));
+	
 	// 未対応の型の場合は登録しない
 	if (currentID == TypeID::kUnknown) {
 		return;
@@ -39,42 +44,42 @@ void BinaryManager::RegisterOutput(T* data) {
 
 	/* ID->Size->値 */
 	binaryBuffer_.append(reinterpret_cast<const char*>(&currentID), sizeof(TypeID));
-	binaryBuffer_.append(reinterpret_cast<const char*>(&size), sizeof(size_t));
+	binaryBuffer_.append(reinterpret_cast<const char*>(&size), sizeof(uint32_t));
 	binaryBuffer_.append(reinterpret_cast<const char*>(data), size);
 }
 
 template<typename T>
-T BinaryManager::Reverse(BinaryData& buffer) {
+T BinaryManager::Reverse() {
 	T value{};
 
-	if (buffer.size() < headerSize) {
+	if (inputBuffer_.size() < headerSize) {
 		return value;
 	}
 
 	TypeID id;
-	size_t size;
+	uint32_t size;
 
-	std::memcpy(&id, buffer.data(), idSize);
-	std::memcpy(&size, buffer.data() + idSize, sizeSize);
+	std::memcpy(&id, inputBuffer_.data(), idSize);
+	std::memcpy(&size, inputBuffer_.data() + idSize, sizeSize);
 
 	if (id != TypeIDResolver<T>::id) {
 		return value;
 	}
 
-	if (buffer.size() < headerSize + size) {
+	if (inputBuffer_.size() < headerSize + size) {
 		return value;
 	}
 
-	std::memcpy(&value, buffer.data() + headerSize, sizeof(T));
-	buffer.erase(0, headerSize + size);
+	std::memcpy(&value, inputBuffer_.data() + headerSize, sizeof(T));
+	inputBuffer_.erase(0, headerSize + size);
 	return value;
 }
 
 template<>
-inline void BinaryManager::RegisterOutput<std::string>(std::string* data)
+inline void BinaryManager::Register<std::string>(std::string* data)
 {
 	constexpr TypeID id = TypeIDResolver<std::string>::id;
-	size_t size = data->size();
+	uint32_t size = uint32_t(data->size());
 
 	binaryBuffer_.append(reinterpret_cast<const char*>(&id), sizeof(id));
 	binaryBuffer_.append(reinterpret_cast<const char*>(&size), sizeof(size));
@@ -82,33 +87,33 @@ inline void BinaryManager::RegisterOutput<std::string>(std::string* data)
 }
 
 template<>
-inline std::string BinaryManager::Reverse<std::string>(BinaryData& buffer)
+inline std::string BinaryManager::Reverse<std::string>()
 {
 	std::string value;
 
-	if (buffer.size() < headerSize)
+	if (inputBuffer_.size() < headerSize)
 	{
 		return value;
 	}
 
 	TypeID id;
-	size_t size;
-	std::memcpy(&id, buffer.data(), idSize);
-	std::memcpy(&size, buffer.data() + idSize, sizeSize);
+	uint32_t size;
+	std::memcpy(&id, inputBuffer_.data(), idSize);
+	std::memcpy(&size, inputBuffer_.data() + idSize, sizeSize);
 
 	if (id != TypeIDResolver<std::string>::id)
 	{
 		return value;
 	}
 
-	if (buffer.size() < headerSize + size)
+	if (inputBuffer_.size() < headerSize + size)
 	{
 		return value;
 	}
 
 	value.resize(size);
-	std::memcpy(value.data(), buffer.data() + headerSize, size);
-	buffer.erase(0, headerSize + size);
+	std::memcpy(value.data(), inputBuffer_.data() + headerSize, size);
+	inputBuffer_.erase(0, headerSize + size);
 
 	return value;
 }

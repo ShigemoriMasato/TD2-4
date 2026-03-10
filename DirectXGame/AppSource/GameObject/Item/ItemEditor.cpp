@@ -331,21 +331,27 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 
 #pragma region バフパラメータ編集
 
-		// 今後増えていくだろうに固定なのが心底悔やまれる
-		static const char* names[] = { "HP", "MP", "Attack", "Defense", "Speed" };
+		if (paramNamesCStr_.size() != paramNames_.size()) {
+			paramNamesCStr_.clear();
+			paramNamesCStr_.reserve(paramNames_.size());
+
+			for (const auto& name : paramNames_) {
+				paramNamesCStr_.push_back(name.c_str());
+			}
+		}
 
 		if (ImGui::TreeNode("----------------parm---------------")) {
 			static int currentParamType = 0;
 
 			if (ImGui::Button("Add")) {
 				// 以降ランクに追加する方針に変更
-				const std::string paramName = names[currentParamType];
+				const std::string paramName = paramNames_[currentParamType];
 				for (int r = rankTab; r < 4; ++r) {
 					currentItem.ranks[r].params[paramName] = 0.0f;
 				}
 			}
 			ImGui::SameLine();
-			ImGui::Combo("ParamType", &currentParamType, names, IM_ARRAYSIZE(names));
+			ImGui::Combo("ParamType", &currentParamType, paramNamesCStr_.data(), (int)paramNamesCStr_.size());
 
 			ImGui::Text("Params:");
 
@@ -353,13 +359,14 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 			bool doDelete = false;
 
 			for (auto& [name, value] : editRank.params) {
+				ImGui::Separator();
+
 				ImGui::PushID(name.c_str());
+
+				ImGui::Text("%s", name.c_str());
 
 				ImGui::DragFloat("##Value", &value, 0.1f);
 				ImGui::SameLine();
-				ImGui::Text("%s", name.c_str());
-				ImGui::SameLine();
-
 				if (ImGui::SmallButton("Delete")) {
 					deleteParamName = name;
 					doDelete = true;
@@ -427,8 +434,10 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 
 	ImGui::EndChild();
 
-	float& param = baseParam[paramNames_[currentParamType_]];
-	ImGui::DragFloat("Slected Base Value", &param, 0.1f);
+	if (baseParam.size() > currentParamType_) {
+		float& param = baseParam[paramNames_[currentParamType_]];
+		ImGui::DragFloat("Slected Base Value", &param, 0.1f);
+	}
 
 	ImGui::End();
 }

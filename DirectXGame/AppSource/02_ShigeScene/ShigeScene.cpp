@@ -22,8 +22,14 @@ void ShigeScene::Initialize() {
 	itemManager_ = std::make_unique<ItemManager>();
 	itemManager_->Initialize(modelManager_);
 
+	pieces_.reserve(commonData_->pieces.size());
+	for(const auto& piece : commonData_->pieces) {
+		pieces_.push_back(piece.get());
+	}
+
 	player_ = std::make_unique<Player::Base>();
 	player_->Initialize(modelManager_, drawDataManager_, input_, CharacterID::Warrior, itemManager_.get());
+	player_->UpdateParameter(pieces_);
 
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize(player_->GetPositionPtr());
@@ -65,6 +71,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	}
 
 	player_->Update(camera_->GetVPMatrix(), deltaTime);
+	player_->UpdateParameter(pieces_);
 	map_->Update(camera_->GetVPMatrix());
 	enemyManager_->Update(deltaTime);
 	for (const auto& weapon : weapons_) {

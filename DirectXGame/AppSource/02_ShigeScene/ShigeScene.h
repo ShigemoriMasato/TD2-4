@@ -45,6 +45,9 @@ private:
 	std::vector<std::unique_ptr<WeaponRender>> weaponRenders_;
 	std::unique_ptr<ItemManager> itemManager_;
 
+	//プレイヤーが持っているピースの生ポインタ。
+	std::vector<Piece*> pieces_;
+
 	JsonManager jsonManager_;
 
 	float worldTimer_ = 0.0f;
