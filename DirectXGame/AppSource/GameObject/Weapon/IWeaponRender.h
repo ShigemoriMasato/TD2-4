@@ -3,16 +3,16 @@
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
 
-class WeaponRender {
+class IWeaponRender {
 public:
 	// 初期化関数
-	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, std::string filepath);
+	virtual void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, std::string filepath);
 
 	// 更新関数
-	void Update(Matrix4x4 vpMatrix, Vector3 playerPos);
+	virtual void Update(Matrix4x4 vpMatrix, Vector3 playerPos);
 
 	// 描画関数
-	void Draw(CmdObj* cmdObj);
+	virtual void Draw(CmdObj* cmdObj);
 
 	// Setter
 	void SetPosition(Vector3 position) { transform_.position = position; }
@@ -23,7 +23,7 @@ public:
 
 	Matrix4x4 LookAt(const Vector3& direction, const Vector3& up);
 
-private:
+protected:
 	// テクスチャのインデックス
 	int textureIndex_;
 

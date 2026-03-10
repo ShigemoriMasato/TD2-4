@@ -5,19 +5,20 @@
 // | index | field               | type        | description         |
 // |-------|---------------------|-------------|---------------------|
 // | 0     | id                  | int         | 一意のID             |
-// | 1     | rarity              | int         | レア度               |
-// | 2     | gold                | float       | 値段                 |
-// | 3     | baseDamage          | float       | 基本ダメージ           |
-// | 4     | criticalChance      | float       | クリティカル発生確率    |
-// | 5     | criticalMultiplier  | float       | クリティカルダメージ倍率 |
-// | 6     | lifeStealChance     | float       | ライフスティール確率    |
-// | 7     | attackSpeed         | float       | 攻撃速度(秒)           |
-// | 8     | knockbackPower      | float       | ノックバックの強さ      |
-// | 9     | range               | float       | 射程距離              |
-// | 10    | penetration         | int         | 貫通                  |
-// | 11    | spreadAngle         | float       | 拡散角度              |
-// | 12    | size                | int         | バックパック上でのサイズ |
-// | 13    | attackCount         | int         | 攻撃回数              |
+// | 1     | type                | WeaponType  | 武器の種類            |
+// | 2     | rarity              | int         | レア度               |
+// | 3     | gold                | float       | 値段                 |
+// | 4     | baseDamage          | float       | 基本ダメージ          |
+// | 5     | criticalChance      | float       | クリティカル発生確率    |
+// | 6     | criticalMultiplier  | float       | クリティカルダメージ倍率 |
+// | 7     | lifeStealChance     | float       | ライフスティール確率    |
+// | 8     | attackSpeed         | float       | 攻撃速度(秒)           |
+// | 9     | knockbackPower      | float       | ノックバックの強さ      |
+// | 10    | range               | float       | 射程距離              |
+// | 11    | penetration         | int         | 貫通                  |
+// | 12    | spreadAngle         | float       | 拡散角度              |
+// | 13    | size                | int         | バックパック上でのサイズ |
+// | 14    | attackCount         | int         | 攻撃回数              |
 // -------------------------------------------------------------------
 
 std::vector<WeaponData> WeaponDatabase::GetDefaultWeaponData() {

@@ -260,7 +260,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Camera\GameCamera.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
-    <ClCompile Include="AppSource\GameObject\Weapon\WeaponRender.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\IWeaponRender.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\Render\PistolRender.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\Render\SwordRender.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\WaveSystem.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\DrawInfo.h" />
@@ -283,6 +285,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Player\Status\StatusManager.h" />
     <ClInclude Include="AppSource\GameObject\Player\Status\StatusModifier.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\DamageInfo.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\Render\WeaponRenderInclude.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponData.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponDatabase.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponDebugger.h" />
@@ -366,7 +369,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\Data\IRangedWeapon.h" />
     <ClInclude Include="AppSource\GameObject\Attack\Swing.h" />
     <ClInclude Include="AppSource\Camera\GameCamera.h" />
-    <ClInclude Include="AppSource\GameObject\Weapon\WeaponRender.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\IWeaponRender.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\Render\PistolRender.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\Render\SwordRender.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\WaveSystem.h" />
   </ItemGroup>
   <ItemGroup>

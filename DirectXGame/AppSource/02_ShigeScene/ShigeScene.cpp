@@ -194,13 +194,13 @@ void ShigeScene::MakeWeaponRender() {
 
 			switch (data->type) {
 			case WeaponType::Pistol: {
-				std::unique_ptr<WeaponRender> pistol = std::make_unique<WeaponRender>();
+				std::unique_ptr<PistolRender> pistol = std::make_unique<PistolRender>();
 				pistol->Initialize(drawDataManager_, modelManager_, "Pistol");
 				weaponRenders_.emplace_back(std::move(pistol));
 				break;
 			}
 			case WeaponType::Sword: {
-				std::unique_ptr<WeaponRender> sword = std::make_unique<WeaponRender>();
+				std::unique_ptr<SwordRender> sword = std::make_unique<SwordRender>();
 				sword->Initialize(drawDataManager_, modelManager_, "Sword");
 				weaponRenders_.emplace_back(std::move(sword));
 				break;

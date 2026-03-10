@@ -28,11 +28,11 @@ void WaveSystem::Update(float deltaTime) {
 	const auto& config = waveConfigs_[stageNum_];
 	if (timer_ > config.spawnInterval) {
 		std::pair<int, int> spawnRange = { std::max(2, config.enemyCount - 1), std::min(2, config.enemyCount / 4) }; // スポーンするX座標の範囲
-		std::uniform_real_distribution<float> spawnDist(spawnRange.first, spawnRange.second);
+		std::uniform_real_distribution<float> spawnDist(static_cast<float>(spawnRange.first), static_cast<float>(spawnRange.second));
 		std::uniform_real_distribution<float> xDist(minX_, maxX_); // X座標の範囲
 		std::uniform_real_distribution<float> zDist(minZ_, maxZ_); // Z座標の範囲
 
-		int spawnNum = spawnDist(rng_);
+		int spawnNum = static_cast<int>(spawnDist(rng_));
 
 		for (int i = 0; i < spawnNum; ++i) {
 			Vector3 initPos = { xDist(rng_), 0.0f, zDist(rng_) };
