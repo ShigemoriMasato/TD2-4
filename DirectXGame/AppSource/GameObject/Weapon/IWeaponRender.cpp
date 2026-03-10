@@ -1,8 +1,8 @@
-#include "WeaponRender.h"
+#include "IWeaponRender.h"
 
 using namespace SHEngine;
 
-void WeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, std::string filepath) {
+void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, std::string filepath) {
 	render_ = std::make_unique<RenderObject>();
 
 	int modelHandle = modelManager->LoadModel("Assets/Model/Item/Weapon/" + filepath + "/");
@@ -38,21 +38,19 @@ void WeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngi
 	wvp_ = Matrix4x4::Identity();
 }
 
-void WeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos) {
+void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos) {
 	transform_.position = playerPos;
 	wvp_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 	wvp_ *= vpMatrix;
-	render_->CopyBufferData(0, &wvp_, sizeof(Matrix4x4));
-
 	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
+	render_->CopyBufferData(0, &wvp_, sizeof(Matrix4x4));
 	render_->CopyBufferData(1, &color, sizeof(Vector4));
-
 	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
 }
 
-void WeaponRender::Draw(CmdObj* cmdObj) { render_->Draw(cmdObj); }
+void IWeaponRender::Draw(CmdObj* cmdObj) { render_->Draw(cmdObj); }
 
-Matrix4x4 WeaponRender::LookAt(const Vector3& direction, const Vector3& up) {
+Matrix4x4 IWeaponRender::LookAt(const Vector3& direction, const Vector3& up) {
 	Vector3 forward = MyMath::Normalize(direction);
 	Vector3 right = MyMath::Normalize(MyMath::cross(up, forward));
 	Vector3 trueUp = MyMath::cross(forward, right);

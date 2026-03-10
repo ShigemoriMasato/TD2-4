@@ -13,7 +13,7 @@
 #include <GameObject/Weapon/IWeapon.h>
 #include <GameObject/Weapon/WeaponInclude.h>
 #include <Camera/GameCamera.h>
-#include <GameObject/Weapon/WeaponRender.h>
+#include <GameObject/Weapon/Render/WeaponRenderInclude.h>
 
 class ShigeScene : public IScene {
 public:
@@ -41,7 +41,7 @@ private:
 	std::vector<DrawInfo> drawInfos_;
 	std::unique_ptr<WeaponDatabase> weaponDatabase_;
 	std::unique_ptr<AttackManager> attackManager_;
-	std::vector<std::unique_ptr<WeaponRender>> weaponRenders_;
+	std::vector<std::unique_ptr<IWeaponRender>> weaponRenders_;
 
 	JsonManager jsonManager_;
 
