@@ -1,8 +1,9 @@
 #include "Piece.h"
 #include "PieceManager.h"
 
-void Piece::Initialize(const Item& item) {
+void Piece::Initialize(const Item& item, int rank) {
 	itemData_ = item;
+	rank_ = rank;
 	chips_.clear();
 	chips_.resize(item.mapData.size());
 	Vector3 maxPos = { 0.0f, 0.0f, 0.0f };

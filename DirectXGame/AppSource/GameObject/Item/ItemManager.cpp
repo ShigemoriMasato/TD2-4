@@ -239,8 +239,10 @@ void ItemManager::SaveBaseParam()
 	binaryManager_.RegisterOutput(&size);
 	for (const auto& param : baseParam_)
 	{
-		binaryManager_.RegisterOutput(&param.first);
-		binaryManager_.RegisterOutput(&param.second);
+		std::string name = param.first;
+		float value = param.second;
+		binaryManager_.RegisterOutput(&name);
+		binaryManager_.RegisterOutput(&value);
 	}
 	binaryManager_.Write(baseParamFile_);
 }

@@ -6,7 +6,7 @@
 using namespace SHEngine;
 using namespace Player;
 
-void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, Input* input, CharacterID characterID, JsonManager* jsonManager) {
+void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, Input* input, CharacterID characterID, ItemManager* itemManager) {
 	// 本体描画用オブジェクトの生成&初期化
 	render_ = std::make_unique<RenderObject>();
 	render_->Initialize();
@@ -70,13 +70,12 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 
 	// パラメータリストの生成&初期化
 	parameterList_=std::make_unique<ParameterList>();
-	parameterList_->Initialize(jsonManager);
-
-	// キャラクターIDに基づいてパラメータを取得
-	parameterData_ = parameterList_->GetParameterData(characterID);
+	parameterList_->Initialize(itemManager);
 
 	// Transformの初期化
 	transform_.position = { 19.0f, 0.0f, 19.0f };
+
+	logger_ = getLogger("Player");
 }
 
 void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
@@ -209,4 +208,16 @@ void Base::UpdateDashCooldown(float deltaTime) {
 	if (dashCooldownTimer_ > 0.0f) {
 		dashCooldownTimer_ -= deltaTime;
 	}
+}
+
+float Base::GetParameter(const std::string& paramName) const {
+	auto param = parameterList_->GetAllParameters();
+	auto it = param.find(paramName);
+	if (it != param.end()) {
+		return it->second;
+	}
+
+	//間違っている場合ログを残す
+	logger_->warn("Parameter '{}' not found. Returning 0.", paramName);
+	return 0.0f; // パラメータが見つからない場合は0を返す
 }

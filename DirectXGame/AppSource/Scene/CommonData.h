@@ -20,7 +20,5 @@ struct CommonData {
 
 	std::vector<std::unique_ptr<Piece>> pieces; //Playerが今持っているピースのデータ
 
-	ParameterData playerParameterData; // Playerのパラメータデータ
-	
 	bool shouldQuit = false; // アプリケーション終了フラグ
 };

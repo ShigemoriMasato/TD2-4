@@ -22,7 +22,7 @@ std::vector<std::unique_ptr<Piece>> Shop::RefreshShopPieces() {
 		int itemIndex = itemIndices_[i];
 		const Item& item = itemManager_->GetItem(itemIndex);
 		auto piece = std::make_unique<Piece>();
-		piece->Initialize(item);
+		piece->Initialize(item, 0);
 
 		//初期位置(適当)
 		piece->SetPosition(Vector3(-8.0f, 0.0f, -8.0f + i * 8.0f));

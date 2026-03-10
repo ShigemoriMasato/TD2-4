@@ -385,21 +385,50 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 
 	static char newParamName[256] = "";
 	ImGui::InputText("Name", newParamName, sizeof(newParamName));
+	ImGui::DragFloat("Default Value", &baseParamValue_, 0.1f);
 	if (ImGui::Button("Add")) {
-		bool found = false;
-		for(const auto& p : baseParam) {
-			if (p.first == newParamName) {
-				ImGui::OpenPopup("Error");
-				found = true;
-				break;
-			}
+		auto it = baseParam.find(newParamName);
 
-			if (!found) {
-				baseParam[newParamName] = 0.0f;
-				newParamName[0] = '\0';
-			}
+		if (it == baseParam.end()) {
+			baseParam[newParamName] = baseParamValue_;
+			paramNames_.push_back(newParamName);
+			std::sort(paramNames_.begin(), paramNames_.end());
+
+			baseParamValue_ = 0.0f;
+			newParamName[0] = '\0';
 		}
 	}
+
+	//paramNamesの準備
+	if (paramNames_.size() != baseParam.size()) {
+		paramNames_.clear();
+		paramNames_.reserve(baseParam.size());
+
+		for (const auto& [name, value] : baseParam) {
+			paramNames_.push_back(name);
+		}
+	}
+
+	ImGui::BeginChild("##BaseParamList", ImVec2(0, 200), true);
+
+	for (int i = 0; i < (int)paramNames_.size(); ++i) {
+		if (ImGui::Selectable(paramNames_[i].c_str(), currentParamType_ == i)) {
+			currentParamType_ = i;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button(("Erase##BaseParam" + std::to_string(i)).c_str())) {
+			baseParam.erase(paramNames_[i]);
+			paramNames_.erase(paramNames_.begin() + i);
+			--i;
+		}
+	}
+
+	ImGui::EndChild();
+
+	float& param = baseParam[paramNames_[currentParamType_]];
+	ImGui::DragFloat("Slected Base Value", &param, 0.1f);
 
 	ImGui::End();
 }

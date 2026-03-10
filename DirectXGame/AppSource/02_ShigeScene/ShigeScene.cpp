@@ -19,8 +19,11 @@ void ShigeScene::Initialize() {
 	colliderManager_ = std::make_unique<ColliderManager>();
 	Collider::SetColliderManager(colliderManager_.get());
 
+	itemManager_ = std::make_unique<ItemManager>();
+	itemManager_->Initialize(modelManager_);
+
 	player_ = std::make_unique<Player::Base>();
-	player_->Initialize(modelManager_, drawDataManager_, input_, CharacterID::Warrior, &jsonManager_);
+	player_->Initialize(modelManager_, drawDataManager_, input_, CharacterID::Warrior, itemManager_.get());
 
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize(player_->GetPositionPtr());
@@ -38,8 +41,6 @@ void ShigeScene::Initialize() {
 
 	attackManager_ = std::make_unique<AttackManager>();
 	attackManager_->Initialize(modelManager_);
-
-	commonData_->playerParameterData = player_->GetParameter();
 
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 

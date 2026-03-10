@@ -16,11 +16,11 @@ public:
 
 
 	Piece() = default;
-	Piece(const Item& item) { Initialize(item); }
+	Piece(const Item& item, int rank) { Initialize(item, rank); }
 
 	static void SetPieceManager(PieceManager* manager) { pieceManager_ = manager; }
 
-	void Initialize(const Item& item);
+	void Initialize(const Item& item, int rank);
 
 	void SetPosition(const Vector3& pos);
 
@@ -30,6 +30,7 @@ public:
 	bool IsHovered(const Vector3& cursorPos, BackPack* backPack) ;
 	std::vector<DrawInfo> GetDrawInfos() const;
 	Item GetItem() const { return itemData_; }
+	int GetRank() const { return rank_; }
 
 	void RotateRight();
 	void RotateLeft();
@@ -44,6 +45,7 @@ private:
 	Direction direction_ = Direction::Up;
 
 	Item itemData_;
+	int rank_ = 0;
 	std::vector<std::pair<int, int>> chips_;
 
 	Vector3 middleLocalPos_ = { 0.0f, 0.0f, 0.0f };
