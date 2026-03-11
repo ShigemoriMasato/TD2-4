@@ -261,6 +261,11 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\GameTimer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail.cpp" />
+    <ClCompile Include="AppSource\03_YokoScene\YokoScene.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\TestTrail1\TestTrail1.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\TestTrail2\TestTrail2.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\TestTrail3\TestTrail3.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\IWeaponRender.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Render\PistolRender.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Render\SwordRender.cpp" />
@@ -372,6 +377,11 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\Data\IRangedWeapon.h" />
     <ClInclude Include="AppSource\GameObject\Attack\Swing.h" />
     <ClInclude Include="AppSource\Camera\GameCamera.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail.h" />
+    <ClInclude Include="AppSource\03_YokoScene\YokoScene.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\TestTrail1\TestTrail1.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\TestTrail2\TestTrail2.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\TestTrail3\TestTrail3.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\IWeaponRender.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Render\PistolRender.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Render\SwordRender.h" />
