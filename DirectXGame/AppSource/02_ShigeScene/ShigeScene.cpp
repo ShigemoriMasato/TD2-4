@@ -175,6 +175,10 @@ void ShigeScene::MakeWeapon() {
 				std::unique_ptr<Pistol> pistol = std::make_unique<Pistol>();
 				pistol->Initialize(weaponID, player_.get());
 				weapons_.emplace_back(std::move(pistol));
+
+				std::unique_ptr<PistolRender> rpistol = std::make_unique<PistolRender>();
+				rpistol->Initialize(drawDataManager_, modelManager_, weapons_.back().get(), piece->GetItem());
+				weaponRenders_.emplace_back(std::move(rpistol));
 				break;
 			}
 			case WeaponType::Sword:
@@ -182,6 +186,10 @@ void ShigeScene::MakeWeapon() {
 				std::unique_ptr<Sword> sword = std::make_unique<Sword>();
 				sword->Initialize(weaponID, player_.get());
 				weapons_.emplace_back(std::move(sword));
+
+				std::unique_ptr<SwordRender> rsword = std::make_unique<SwordRender>();
+				rsword->Initialize(drawDataManager_, modelManager_, weapons_.back().get(), piece->GetItem());
+				weaponRenders_.emplace_back(std::move(rsword));
 				break;
 			}
 			case WeaponType::ShotGun:
@@ -189,6 +197,10 @@ void ShigeScene::MakeWeapon() {
 				std::unique_ptr<ShotGun> shotGun = std::make_unique<ShotGun>();
 				shotGun->Initialize(weaponID, player_.get());
 				weapons_.emplace_back(std::move(shotGun));
+
+				std::unique_ptr<ShotgunRender> rshotgun = std::make_unique<ShotgunRender>();
+				rshotgun->Initialize(drawDataManager_, modelManager_, weapons_.back().get(), piece->GetItem());
+				weaponRenders_.emplace_back(std::move(rshotgun));
 				break;
 			}
 			}
@@ -197,34 +209,4 @@ void ShigeScene::MakeWeapon() {
 }
 
 void ShigeScene::MakeWeaponRender() {
-	for (const auto& piece : commonData_->pieces) {
-		int weaponID = piece->GetItem().weaponID;
-
-		if (weaponID != -1) {
-			WeaponData* data = weaponDatabase_->GetWeapon(weaponID);
-
-			switch (data->type) {
-			case WeaponType::Pistol:
-			{
-				std::unique_ptr<PistolRender> pistol = std::make_unique<PistolRender>();
-				pistol->Initialize(drawDataManager_, modelManager_, "Pistol");
-				weaponRenders_.emplace_back(std::move(pistol));
-				break;
-			}
-			case WeaponType::Sword:
-			{
-				std::unique_ptr<SwordRender> sword = std::make_unique<SwordRender>();
-				sword->Initialize(drawDataManager_, modelManager_, "Sword");
-				weaponRenders_.emplace_back(std::move(sword));
-				break;
-			}
-			case WeaponType::ShotGun: {
-				std::unique_ptr<ShotgunRender> shotgun = std::make_unique<ShotgunRender>();
-				shotgun->Initialize(drawDataManager_, modelManager_, "Shotgun");
-				weaponRenders_.emplace_back(std::move(shotgun));
-				break;
-			}
-			}
-		}
-	}
 }

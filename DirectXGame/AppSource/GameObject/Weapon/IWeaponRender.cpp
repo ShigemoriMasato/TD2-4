@@ -41,7 +41,11 @@ void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEng
 }
 
 void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos) {
-	transform_.position = playerPos;
+	float dir = weapon_->GetDirection();
+	transform_.position.x = std::cosf(dir) * 3.0f;
+	transform_.position.y = std::sinf(dir) * 3.0f;
+	transform_.position += playerPos;
+	transform_.rotate.y = dir;
 	
 	wvp_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 	wvp_ *= vpMatrix;
