@@ -12,11 +12,15 @@ public:
 	virtual void Initialize(int weaponID, Player::Base* player);
 	virtual void Update(float deltaTime);
 
+	virtual float GetDirection() const { return config_.direction; }
+
 protected:
 
 	static inline AttackManager* attackManager_ = nullptr;
 	static inline EnemyManager* enemyManager_ = nullptr;
 	static inline WeaponDatabase* weaponManager_ = nullptr;
+
+	IAttackObject::Config config_;
 
 	WeaponData* weaponData_;
 	Player::Base* player_;
