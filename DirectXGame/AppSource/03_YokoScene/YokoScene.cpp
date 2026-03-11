@@ -16,6 +16,9 @@ void YokoScene::Initialize()
 
 	testTrail2_ = std::make_unique<TestTrail2>();
 	testTrail2_->Initialize(drawDataManager_, textureManager_);
+
+	testTrail3_ = std::make_unique<TestTrail3>();
+	testTrail3_->Initialize(drawDataManager_, textureManager_);
 }
 
 std::unique_ptr<IScene> YokoScene::Update()
@@ -28,6 +31,7 @@ std::unique_ptr<IScene> YokoScene::Update()
 	// トレイル更新
 	testTrail1_->Update(dt);
 	testTrail2_->Update(dt);
+	testTrail3_->Update(dt);
 
 	return nullptr;
 }
@@ -43,6 +47,7 @@ void YokoScene::Draw()
 	// トレイル描画
 	testTrail1_->Draw(cmdObj, camera_->GetVPMatrix());
 	testTrail2_->Draw(cmdObj, camera_->GetVPMatrix());
+	testTrail3_->Draw(cmdObj, camera_->GetVPMatrix());
 
 	display->PostDraw(cmdObj);
 

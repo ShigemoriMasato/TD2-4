@@ -261,6 +261,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\03_YokoScene\YokoScene.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\TestTrail1\TestTrail1.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\TestTrail2\TestTrail2.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\TestTrail3\TestTrail3.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\DrawInfo.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
@@ -365,6 +366,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\03_YokoScene\YokoScene.h" />
     <ClInclude Include="AppSource\GameObject\Effect\TestTrail1\TestTrail1.h" />
     <ClInclude Include="AppSource\GameObject\Effect\TestTrail2\TestTrail2.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\TestTrail3\TestTrail3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

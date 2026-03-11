@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include "imgui/imgui.h"
 
 namespace
 {
@@ -31,7 +32,6 @@ void TestTrail2::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine
 	cfg.drawNormal = false;
 	cfg.drawAdd = true;
 	cfg.colorAdd = { 0.35f, 0.85f, 1.0f, 0.75f };
-	cfg.defaultTexturePath = "Assets/.EngineResource/Texture/uvChecker.png";
 
 	trail_.Initialize(drawDataManager, textureManager, cfg);
 
@@ -44,13 +44,6 @@ void TestTrail2::Update(float deltaTime)
 {
 	time_ += deltaTime;
 
-	// --- オーラ形状パラメータ ---
-	const float auraRadius = 0.75f;     // 剣の周りの半径
-	const float auraWidth = 0.35f;      // Trailのbase-tip間の“太さ”
-	const float spinSpeed = 8.0f;       // 回転速度
-	const float waveSpeed = 4.0f;       // 揺れ速度
-	const float waveAmp = 0.18f;        // 揺れ幅（半径に加算）
-
 	// 剣の軸（長手方向）
 	const Vector3 up = NormalizeSafe(swordUpWS_);
 
@@ -60,16 +53,15 @@ void TestTrail2::Update(float deltaTime)
 	Vector3 forward = NormalizeSafe(Cross(up, right));
 
 	// 螺旋：高さ方向に少しだけずらしながら回転
-	const float h = 2.5f; // 剣に沿って伸ばす長さ（テスト用）
 	const float t = time_;
 
 	// 2点（base/tip）は「リング断面の両端」として作る
 	// base/tipをリング中心の両側に置くと“帯”になる
-	const float phase = t * spinSpeed;
-	const float radial = auraRadius + std::sin(t * waveSpeed) * waveAmp;
+	const float phase = t * spinSpeed_;
+	const float radial = auraRadius_ + std::sin(t * waveSpeed_) * waveAmp_;
 
 	// 剣の中心から、長手方向に沿ってオフセット（螺旋っぽく）
-	const float along = std::sin(t * 1.7f) * (h * 0.15f);
+	const float along = std::sin(t * 1.7f) * (auraLength_ * 0.15f);
 	const Vector3 center = swordCenterWS_ + up * along;
 
 	// リング上の方向ベクトル
@@ -88,8 +80,8 @@ void TestTrail2::Update(float deltaTime)
 	}
 
 	// base/tip（WS）
-	const Vector3 baseWS = ringPos - widthDir * (auraWidth * 0.5f);
-	const Vector3 tipWS = ringPos + widthDir * (auraWidth * 0.5f);
+	const Vector3 baseWS = ringPos - widthDir * (auraWidth_ * 0.5f);
+	const Vector3 tipWS = ringPos + widthDir * (auraWidth_ * 0.5f);
 
 	trail_.PushSegment(baseWS, tipWS);
 	trail_.Update(deltaTime);
@@ -98,4 +90,22 @@ void TestTrail2::Update(float deltaTime)
 void TestTrail2::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
 {
 	trail_.Draw(cmdObj, vpMatrix);
+
+#ifdef USE_IMGUI
+
+	ImGui::Begin("TestTrail2 Config");
+
+
+	ImGui::DragFloat("Radius", &auraRadius_, 0.01f, 0.0f, 5.0f);
+	ImGui::DragFloat("Width", &auraWidth_, 0.01f, 0.0f, 5.0f);
+	ImGui::DragFloat("Length", &auraLength_, 0.1f, 0.0f, 10.0f);
+	ImGui::DragFloat("Spin Speed", &spinSpeed_, 0.1f, 0.0f, 20.0f);
+	ImGui::DragFloat("Wave Speed", &waveSpeed_, 0.1f, 0.0f, 20.0f);
+	ImGui::DragFloat("Wave Amp", &waveAmp_, 0.01f, 0.0f, 5.0f);
+
+
+	ImGui::End();
+
+#endif 
+
 }
