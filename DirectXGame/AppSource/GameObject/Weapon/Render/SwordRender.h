@@ -4,7 +4,7 @@
 class SwordRender :public IWeaponRender{
 public:
 	// 初期化関数
-	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, std::string filepath) override;
+	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, const std::string& filepath) override;
 
 	// 更新関数
 	void Update(Matrix4x4 vpMatrix, Vector3 playerPos) override;

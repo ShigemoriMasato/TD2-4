@@ -1,6 +1,6 @@
 #include "SwordRender.h"
 
-void SwordRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, std::string filepath) {
+void SwordRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, const std::string& filepath) {
 	IWeaponRender::Initialize(drawDataManager, modelManager, filepath);
 }
 

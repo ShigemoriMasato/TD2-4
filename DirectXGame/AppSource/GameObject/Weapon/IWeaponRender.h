@@ -6,7 +6,7 @@
 class IWeaponRender {
 public:
 	// 初期化関数
-	virtual void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, std::string filepath);
+	virtual void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, const std::string& filepath);
 
 	// 更新関数
 	virtual void Update(Matrix4x4 vpMatrix, Vector3 playerPos);
@@ -24,6 +24,9 @@ public:
 	Matrix4x4 LookAt(const Vector3& direction, const Vector3& up);
 
 protected:
+	static inline int nextID_ = 0;
+	int id_ = nextID_++;
+
 	// テクスチャのインデックス
 	int textureIndex_;
 
