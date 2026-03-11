@@ -32,7 +32,7 @@ void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEng
 
 	// ワールド座標を設定
 	transform_.position = {0.0f, 0.0f, 0.0f};
-	transform_.rotate = {0.0f, 0.0f, std::numbers::pi_v<float> / 2};
+	transform_.rotate = {0.0f, 0.0f, -std::numbers::pi_v<float> / 2};
 	transform_.scale = {0.5f, 0.5f, 0.5f};
 
 	// 単位行列の代入
