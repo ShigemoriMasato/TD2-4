@@ -30,8 +30,8 @@ private:
 
 	struct WaveConfig {
 		bool isAdjust = true;
-		float spawnInterval = 3.0f; // 敵をスポーンする間隔
-		float enemyCount = 3; // スポーンする敵の数
+		float spawnInterval = 1.0f; // 敵をスポーンする間隔
+		float enemyCount = 5; // スポーンする敵の数
 		uint32_t event = uint32_t(Event::SpawnNormalEnemy); // イベント
 	};
 
