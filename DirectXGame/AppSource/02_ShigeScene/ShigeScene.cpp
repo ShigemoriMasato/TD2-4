@@ -106,7 +106,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 				Vector3 offset = { std::cos(angle) * baseRadius_, baseHeight_, std::sin(angle) * baseRadius_ };
 
 				// プレイヤー座標にオフセットを加算
-				Vector3 weaponPos = player_->GetTransform().position + offset;
+				Vector3 weaponPos = player_->GetTransform().position;
 
 				weaponRenders_[i]->Update(camera_->GetVPMatrix(), weaponPos);
 			}
