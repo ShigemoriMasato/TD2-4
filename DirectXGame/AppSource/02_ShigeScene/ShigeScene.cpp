@@ -50,6 +50,12 @@ void ShigeScene::Initialize() {
 
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 
+	waveSystem_ = std::make_unique<WaveSystem>();
+	waveSystem_->Initialize(enemyManager_.get(), commonData_->stageNum++, map_->GetMinX(), map_->GetMaxX(), map_->GetMinZ(), map_->GetMaxZ());
+
+	gameTimer_ = std::make_unique<GameTimer>();
+	gameTimer_->Initialize();
+
 	MakeWeapon();
 	MakeWeaponRender();
 }
@@ -63,12 +69,8 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	grid_->Update(cameraPos, camera_->GetVPMatrix());
 	auto key = commonData_->keyManager->GetKeyStates();
 
-	worldTimer_ += deltaTime;
-	if (worldTimer_ > 2.0f) {
-		worldTimer_ = 0.0f;
-		Vector3 initPos = {float(rand() % 40 - 20), 0.0f, float(rand() % 40 - 20)};
-		enemyManager_->PopEnemy(initPos + Vector3({19.0f, 0.0f, 19.0f}));
-	}
+	gameTimer_->Update(deltaTime);
+	waveSystem_->Update(deltaTime);
 
 	player_->Update(camera_->GetVPMatrix(), deltaTime);
 	player_->UpdateParameter(pieces_);
@@ -111,7 +113,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		}
 	}
 
-	if (key[Key::Debug1]) {
+	if (key[Key::Debug1] || gameTimer_->IsEnd()) {
 		return std::make_unique<ShopScene>();
 	}
 

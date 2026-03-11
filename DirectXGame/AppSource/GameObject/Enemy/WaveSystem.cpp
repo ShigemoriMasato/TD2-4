@@ -14,6 +14,12 @@ void WaveSystem::Initialize(EnemyManager* enemyManager, int stageNum, float minX
 	timer_ = 0.0f;
 	isActive_ = true;
 
+	Load();
+	if(waveConfigs_.size() <= stageNum_) {
+		waveConfigs_.resize(stageNum_ + 1);
+		Adjust();
+	}
+
 	// 座標範囲の設定
 	minX_ = minX;
 	maxX_ = maxX;
@@ -27,8 +33,8 @@ void WaveSystem::Update(float deltaTime) {
 
 	const auto& config = waveConfigs_[stageNum_];
 	if (timer_ > config.spawnInterval) {
-		std::pair<int, int> spawnRange = { std::max(2, config.enemyCount - 1), std::min(2, config.enemyCount / 4) }; // スポーンするX座標の範囲
-		std::uniform_real_distribution<float> spawnDist(static_cast<float>(spawnRange.first), static_cast<float>(spawnRange.second));
+		std::pair<int, int> spawnRange = { std::max(2, int(config.enemyCount - 1)), std::min(2, int(config.enemyCount / 4)) }; // スポーンするX座標の範囲
+		std::uniform_real_distribution<float> spawnDist(static_cast<float>(spawnRange.second), static_cast<float>(spawnRange.first));
 		std::uniform_real_distribution<float> xDist(minX_, maxX_); // X座標の範囲
 		std::uniform_real_distribution<float> zDist(minZ_, maxZ_); // Z座標の範囲
 
@@ -51,17 +57,7 @@ void WaveSystem::DrawImGui() {
 	ImGui::DragFloat("IncreaseEnemyCount", &increaseEnemyCount_, 0.01f, 0.0f);
 
 	if (ImGui::Button("Adjust")) {
-		for (int i = 1; i < waveConfigs_.size(); ++i) {
-			auto& preConfig = waveConfigs_[i - 1];
-			auto& config = waveConfigs_[i];
-			
-			if (!config.isAdjust) {
-				continue;
-			}
-
-			config.spawnInterval = preConfig.spawnInterval + increaseIntercal_;
-			config.enemyCount = static_cast<int>(preConfig.enemyCount + increaseEnemyCount_);
-		}
+		Adjust();
 	}
 
 	for(int i = 0; i < waveConfigs_.size(); ++i) {
@@ -69,13 +65,27 @@ void WaveSystem::DrawImGui() {
 		ImGui::PushID(i);
 		ImGui::Separator();
 		ImGui::Checkbox("Adjust", &config.isAdjust);
-		ImGui::DragFloat("Spawn Interval", &config.spawnInterval, 0.1f, 0.1f, 10.0f);
-		ImGui::DragInt("Enemy Count", &config.enemyCount, 1, 1, 100);
+		ImGui::DragFloat("Spawn Interval", &config.spawnInterval, 0.1f, 0.1f);
+		ImGui::DragFloat("Enemy Count", &config.enemyCount, 0.1f, 1);
 		ImGui::PopID();
 	}
 
 	ImGui::End();
 #endif
+}
+
+void WaveSystem::Adjust() {
+	for (int i = 1; i < waveConfigs_.size(); ++i) {
+		auto& preConfig = waveConfigs_[i - 1];
+		auto& config = waveConfigs_[i];
+
+		if (!config.isAdjust) {
+			continue;
+		}
+
+		config.spawnInterval = preConfig.spawnInterval - increaseIntercal_;
+		config.enemyCount = preConfig.enemyCount + increaseEnemyCount_;
+	}
 }
 
 void WaveSystem::Load() {
