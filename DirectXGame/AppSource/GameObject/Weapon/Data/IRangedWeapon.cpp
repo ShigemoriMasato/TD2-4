@@ -37,7 +37,7 @@ void IRangedWeapon::Update(float deltaTime) {
 	}
 }
 
-bool IRangedWeapon::Shot() {
+bool IRangedWeapon::Shot(bool regist) {
 	auto enemies = enemyManager_->GetEnemies();
 
 	// 近くに敵がいるかの判別
@@ -60,6 +60,11 @@ bool IRangedWeapon::Shot() {
 			attackManager_->AddObj(std::move(bullet));
 
 			rateTimer_ = 0.0f;
+
+			if (regist) {
+				int id = enemy->GetID(); // 敵のIDを取得
+				shotEnemyIDs_.push_back(id); // 射撃した敵のIDを保存
+			}
 
 			return true;
 		}

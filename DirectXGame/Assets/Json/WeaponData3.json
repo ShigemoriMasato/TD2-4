@@ -9,9 +9,9 @@
     "knockbackPower": 1.0,
     "lifeStealChance": 0.20000000298023224,
     "penetration": 0,
-    "range": 1.0,
+    "range": 21.100000381469727,
     "rarity": 0,
     "size": 6,
-    "spreadAngle": 0.0,
-    "type": 0
+    "spreadAngle": 0.6000000238418579,
+    "type": 2
 }

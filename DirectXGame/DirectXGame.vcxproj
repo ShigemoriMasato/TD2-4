@@ -266,6 +266,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Weapon\Render\SwordRender.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\WaveSystem.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Render\ShotgunRender.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\Data\ShotGun.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\DrawInfo.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
@@ -377,6 +378,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Enemy\WaveSystem.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Render\ShotgunRender.h" />
     <ClInclude Include="AppSource\GameObject\GameTimer.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\Data\ShotGun.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

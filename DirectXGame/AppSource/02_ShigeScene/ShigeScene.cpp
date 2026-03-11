@@ -23,7 +23,7 @@ void ShigeScene::Initialize() {
 	itemManager_->Initialize(modelManager_);
 
 	pieces_.reserve(commonData_->pieces.size());
-	for(const auto& piece : commonData_->pieces) {
+	for (const auto& piece : commonData_->pieces) {
 		pieces_.push_back(piece.get());
 	}
 
@@ -65,7 +65,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 
 	gameCamera_->Update(deltaTime, player_->GetTransform().position);
-	Vector3 cameraPos = {0.f, 0.f, 0.f};
+	Vector3 cameraPos = { 0.f, 0.f, 0.f };
 	grid_->Update(cameraPos, camera_->GetVPMatrix());
 	auto key = commonData_->keyManager->GetKeyStates();
 
@@ -103,7 +103,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 				float angle = (2.0f * std::numbers::pi_v<float> / weaponCount) * i;
 
 				// XZ平面での円周オフセット座標の計算 (baseRadius_とbaseHeight_を使用)
-				Vector3 offset = {std::cos(angle) * baseRadius_, baseHeight_, std::sin(angle) * baseRadius_};
+				Vector3 offset = { std::cos(angle) * baseRadius_, baseHeight_, std::sin(angle) * baseRadius_ };
 
 				// プレイヤー座標にオフセットを加算
 				Vector3 weaponPos = player_->GetTransform().position + offset;
@@ -170,16 +170,25 @@ void ShigeScene::MakeWeapon() {
 			WeaponData* data = weaponDatabase_->GetWeapon(weaponID);
 
 			switch (data->type) {
-			case WeaponType::Pistol: {
+			case WeaponType::Pistol:
+			{
 				std::unique_ptr<Pistol> pistol = std::make_unique<Pistol>();
 				pistol->Initialize(weaponID, player_.get());
 				weapons_.emplace_back(std::move(pistol));
 				break;
 			}
-			case WeaponType::Sword: {
+			case WeaponType::Sword:
+			{
 				std::unique_ptr<Sword> sword = std::make_unique<Sword>();
 				sword->Initialize(weaponID, player_.get());
 				weapons_.emplace_back(std::move(sword));
+				break;
+			}
+			case WeaponType::ShotGun:
+			{
+				std::unique_ptr<ShotGun> shotGun = std::make_unique<ShotGun>();
+				shotGun->Initialize(weaponID, player_.get());
+				weapons_.emplace_back(std::move(shotGun));
 				break;
 			}
 			}
@@ -195,13 +204,15 @@ void ShigeScene::MakeWeaponRender() {
 			WeaponData* data = weaponDatabase_->GetWeapon(weaponID);
 
 			switch (data->type) {
-			case WeaponType::Pistol: {
+			case WeaponType::Pistol:
+			{
 				std::unique_ptr<PistolRender> pistol = std::make_unique<PistolRender>();
 				pistol->Initialize(drawDataManager_, modelManager_, "Pistol");
 				weaponRenders_.emplace_back(std::move(pistol));
 				break;
 			}
-			case WeaponType::Sword: {
+			case WeaponType::Sword:
+			{
 				std::unique_ptr<SwordRender> sword = std::make_unique<SwordRender>();
 				sword->Initialize(drawDataManager_, modelManager_, "Sword");
 				weaponRenders_.emplace_back(std::move(sword));

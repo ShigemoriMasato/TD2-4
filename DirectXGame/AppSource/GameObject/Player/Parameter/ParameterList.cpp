@@ -4,6 +4,7 @@ void ParameterList::Initialize(ItemManager* itemManager) {
 	auto param = itemManager->GetBaseParamsForEdit();
 	for (const auto& [key, value] : param) {
 		parameters_[key] = value;
+		baseParams[key] = value;
 	}
 }
 

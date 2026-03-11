@@ -5,8 +5,8 @@ void BackPack::Initialize() {
 	slots_.resize(10, std::vector<Slot>(10, Slot::Locked));
 
 	// 中央の5x5をEmptyにする
-	for (int i = 3; i < 7; ++i) {
-		for (int j = 3; j < 7; ++j) {
+	for (int i = 2; i < 8; ++i) {
+		for (int j = 2; j < 8; ++j) {
 			slots_[i][j] = Slot::Empty;
 		}
 	}

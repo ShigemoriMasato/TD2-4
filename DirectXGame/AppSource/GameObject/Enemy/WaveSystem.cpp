@@ -44,6 +44,8 @@ void WaveSystem::Update(float deltaTime) {
 			Vector3 initPos = { xDist(rng_), 0.0f, zDist(rng_) };
 			enemyManager_->PopEnemy(initPos);
 		}
+
+		timer_ = 0.0f;
 	}
 }
 

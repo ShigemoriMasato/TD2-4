@@ -31,7 +31,7 @@ const WeaponData* WeaponManager::GetWeapon(int id) const {
 }
 
 void WeaponManager::SaveWeaponData() {
-	for (const auto& [id, weapon] : database_) {
+	for (auto& [id, weapon] : database_) {
 		jsonManager_->Boot("WeaponData" + std::to_string(weapon.id));
 		jsonManager_->Add("id", weapon.id);
 		int tmp = static_cast<int>(weapon.type);
