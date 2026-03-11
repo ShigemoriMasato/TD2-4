@@ -16,8 +16,12 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 
 	//持っているピースがあるなら
 	if (heldPiece_) {
+		if(keyManager_->GetKeyStates()[Key::Rotate]) {
+			heldPiece_->RotateRight();
+		}
+
 		if (!keyManager_->GetKeyStates()[Key::Hold]) {
-			//本当にその場所に配置できるかの判断を行う
+			//本                                     当にその場所に配置できるかの判断を行う
 			if (heldPiece_->CanPut(backPack)) {
 				heldPiece_->Put(backPack);
 			}

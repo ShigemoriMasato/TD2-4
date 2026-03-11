@@ -52,6 +52,12 @@ private:
 	int gridH_ = 8;
 	float cellSize_ = 16.0f;
 	int paintMode_ = 0; // 0:none 1:add(L) 2:erase(R)
+
+	//BaseParam編集用
+	int currentParamType_ = 0;
+	float baseParamValue_ = 0.0f;
+	std::vector<std::string> paramNames_;
+	std::vector<const char*> paramNamesCStr_;
 };
 
 #else

@@ -10,7 +10,7 @@ public:
 
 	//データを追加。keyが重複している場合は上書き。対応しない型は例外が発生する。
 	template<typename T>
-	void Add(const std::string& key, T data);
+	void Add(const std::string& key, T& data);
 
 	//データを取得。keyが存在しない場合は例外が発生。対応しない型は例外が発生。
 	template<typename T>
@@ -29,7 +29,7 @@ private:
 };
 
 template<typename T>
-void JsonManager::Add(const std::string& key, T data) {
+void JsonManager::Add(const std::string& key, T& data) {
 	constexpr TypeID id = TypeIDResolver<T>::id;
 	if constexpr (id == TypeID::kUnknown) {
 		throw std::runtime_error("Unsupported type for JsonManager::Add");
@@ -67,7 +67,7 @@ T JsonManager::Get(const std::string& key) {
 		throw std::runtime_error("Unsupported type for JsonManager::Get");
 	}
 
-	const nlohmann::json_abi_v3_12_0::json& j = jsonData_.at(key);
+	const nlohmann::json& j = jsonData_.at(key);
 
     if constexpr (id == TypeID::Vector2) {
         auto v = j.get<std::array<float, 2>>();
@@ -112,7 +112,7 @@ T JsonManager::Get(const std::string& key) {
     else {
         try {
             return j.get<T>();
-        } catch (nlohmann::json::type_error) {
+        } catch (const nlohmann::json::type_error&) {
             throw std::runtime_error("Type mismatch for JsonManager::Get");
         }
     }

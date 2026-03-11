@@ -9,7 +9,8 @@ public:
 
 protected:
 
-	bool Shot();
+	bool Shot(bool regist = true);
+	void ClearIDs() { shotEnemyIDs_.clear(); }
 
 	float rate_;
 	float range_;
@@ -18,10 +19,10 @@ protected:
 	float penetration_ = 0;
 	float spreadAngle_ = 0.0f;
 
+	std::vector<int> shotEnemyIDs_;
+
 	//あまりにも長いと当たらないので、0.5f固定にして、スピードで調整すること
 	const float lifeTime_ = 0.5f;
-
-	IAttackObject::Config config_;
 
 	float rateTimer_ = 0.0f;
 };

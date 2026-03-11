@@ -89,7 +89,7 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	orthoCamera_->SetScale({1,-1,1});
 	orthoCamera_->SetPosition({0, 0, 0});
 	orthoCamera_->MakeMatrix();
-	parameterRender_->Update(orthoCamera_->GetVPMatrix(), commonData_->playerParameterData);
+	//parameterRender_->Update(orthoCamera_->GetVPMatrix(), commonData_->playerParameterData);
 
 	if (key[Key::Debug1]) {
 		return std::make_unique<ShigeScene>();

@@ -10,7 +10,7 @@ void Grid::Initialize(SHEngine::DrawDataManager* drawDataManager) {
 
 	auto drawData = drawDataManager->GetDrawData(drawDataIndex);
 
-	render_ = std::make_unique<SHEngine::RenderObject>("GridOfTool");
+	render_ = std::make_unique<SHEngine::RenderObject>("Grid Tool");
 	render_->Initialize();
 	render_->SetDrawData(drawData);
 	render_->psoConfig_.vs = "Engine/Grid.VS.hlsl";

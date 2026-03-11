@@ -3,25 +3,24 @@
 
 void IRangedWeapon::Initialize(int weaponID, Player::Base* player) {
 	IWeapon::Initialize(weaponID, player);
-	auto para = player->GetParameter();
 
 	config_.spreadAngle = weaponData_->spreadAngle;
-	config_.damage = para.damagePercent + (weaponData_->baseDamage + para.rangedDamage);
-	config_.speed = weaponData_->range + para.range;
+	config_.damage = player->GetParameter("Damage") + (weaponData_->baseDamage + player->GetParameter("RangedDamage"));
+	config_.speed = weaponData_->range + player->GetParameter("Range");
 	config_.range = config_.speed * lifeTime_;
-	config_.knockbackPower = weaponData_->knockbackPower + para.knockback;
-	config_.criticalChance = weaponData_->criticalChance + para.criticalRatePercent;
-	config_.criticalMultiplier = weaponData_->criticalMultiplier + para.criticalMultiplier;
-	config_.lifeSteelChance = weaponData_->lifeStealChance + para.lifeStealPercent;
-	config_.penetration = weaponData_->penetration + para.penetration;
+	config_.knockbackPower = weaponData_->knockbackPower + player->GetParameter("KnockBack");
+	config_.criticalChance = weaponData_->criticalChance + player->GetParameter("CritChance");
+	config_.criticalMultiplier = weaponData_->criticalMultiplier + player->GetParameter("CritMultiplier");
+	config_.lifeSteelChance = weaponData_->lifeStealChance + player->GetParameter("LifeSteel");
+	config_.penetration = weaponData_->penetration + player->GetParameter("Penetration");
 
 	// 武器データベースからパラメータを取得
-	rate_ = 2.0f / (weaponData_->attackSpeed + para.attackSpeedPercent);
+	rate_ = 2.0f / (weaponData_->attackSpeed + player->GetParameter("AttackSpeed"));
 	speed_ = config_.speed;
 	range_ = config_.range;
 	penetration_ = config_.penetration;
 	spreadAngle_ = config_.spreadAngle;
-	bulletNum_ = weaponData_->attackCount + para.attackCount;
+	bulletNum_ = weaponData_->attackCount + player->GetParameter("AttackCount");
 }
 
 void IRangedWeapon::Update(float deltaTime) {
@@ -38,7 +37,7 @@ void IRangedWeapon::Update(float deltaTime) {
 	}
 }
 
-bool IRangedWeapon::Shot() {
+bool IRangedWeapon::Shot(bool regist) {
 	auto enemies = enemyManager_->GetEnemies();
 
 	// 近くに敵がいるかの判別
@@ -61,6 +60,11 @@ bool IRangedWeapon::Shot() {
 			attackManager_->AddObj(std::move(bullet));
 
 			rateTimer_ = 0.0f;
+
+			if (regist) {
+				int id = enemy->GetID(); // 敵のIDを取得
+				shotEnemyIDs_.push_back(id); // 射撃した敵のIDを保存
+			}
 
 			return true;
 		}

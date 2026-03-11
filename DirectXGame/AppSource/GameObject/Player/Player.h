@@ -22,10 +22,12 @@ struct AfterImage {
 class Base : public Collider {
 public:
 	// 初期化（デフォルトキャラクターID: 0）
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input, CharacterID characterID, JsonManager* jsonManager);
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input, CharacterID characterID, ItemManager* itemManager);
 
 	// 更新
 	void Update(Matrix4x4 vpMatrix, float deltaTime);
+	// パラメータの更新
+	void UpdateParameter(const std::vector<Piece*>& items);
 
 	// 描画
 	void Draw(CmdObj* cmdObj);
@@ -64,7 +66,10 @@ public:
 		maxZ_ = maxZ;
 	}
 
-	ParameterData GetParameter() const { return parameterData_; }
+	//パラメータ取得関数。スペルミスを防ぐため、こちらを推奨
+	float GetParameter(const std::string& paramName) const;
+	//全てのパラメータを取得する関数
+	std::unordered_map<std::string, float> GetParameters() const { return parameterList_->GetAllParameters(); }
 
 private:
 	// 残像の更新処理
@@ -126,11 +131,11 @@ private:
 
 	// パラメータ
 	std::unique_ptr<ParameterList> parameterList_ = nullptr;
-	ParameterData parameterData_;
 
 public:// 以下シゲモリ製
 
 	std::unique_ptr<Circle> collCircle_ = nullptr;
+	Logger logger_;
 
 };
 } // namespace Player

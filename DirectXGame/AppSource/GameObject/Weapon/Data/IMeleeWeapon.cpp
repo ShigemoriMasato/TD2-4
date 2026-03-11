@@ -3,20 +3,19 @@
 
 void IMeleeWeapon::Initialize(int weaponID, Player::Base* player) {
 	IWeapon::Initialize(weaponID, player);
-	auto para = player->GetParameter();
 
 	config_.spreadAngle = weaponData_->spreadAngle;
-	config_.damage = para.damagePercent + (weaponData_->baseDamage + weaponData_->baseDamage);
-	config_.speed = para.attackSpeedPercent + weaponData_->attackSpeed;
-	config_.range = weaponData_->range + para.range * lifeTime_;
-	config_.knockbackPower = weaponData_->knockbackPower + para.knockback;
-	config_.criticalChance = weaponData_->criticalChance + para.criticalRatePercent;
-	config_.criticalMultiplier = weaponData_->criticalMultiplier;
-	config_.lifeSteelChance = weaponData_->lifeStealChance + para.lifeStealPercent;
-	config_.penetration = weaponData_->penetration + para.penetration;
+	config_.damage = player->GetParameter("Damage") + (weaponData_->baseDamage + player->GetParameter("MeleeDamage"));
+	config_.speed = weaponData_->attackSpeed + player->GetParameter("AttackSpeed");
+	config_.range = weaponData_->range + player->GetParameter("Range");
+	config_.knockbackPower = weaponData_->knockbackPower + player->GetParameter("KnockBack");
+	config_.criticalChance = weaponData_->criticalChance + player->GetParameter("CriticalChance");
+	config_.criticalMultiplier = weaponData_->criticalMultiplier + player->GetParameter("CriticalMultiplier");
+	config_.lifeSteelChance = weaponData_->lifeStealChance + player->GetParameter("LifeSteel");
+	config_.penetration = weaponData_->penetration + player->GetParameter("Penetration");
 
 	// 武器データベースからパラメータを取得
-	rate_ = 2.0f / (weaponData_->attackSpeed + para.attackSpeedPercent);
+	rate_ = 2.0f / (weaponData_->attackSpeed + player->GetParameter("AttackSpeed"));
 	range_ = config_.range;
 	attackRate_ = rate_ / config_.speed;
 	attackCount_ = 0;

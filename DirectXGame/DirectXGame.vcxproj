@@ -170,6 +170,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Player\PlayerHP.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\State\PlayerStateDash.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\State\PlayerStateNormal.cpp" />
+    <ClCompile Include="AppSource\GameObject\Player\Status\Status.cpp" />
+    <ClCompile Include="AppSource\GameObject\Player\Status\StatusManager.cpp" />
+    <ClCompile Include="AppSource\GameObject\Player\Status\StatusModifier.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\WeaponDatabase.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\WeaponDebugger.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\WeaponManager.cpp" />
@@ -255,6 +258,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Weapon\Data\IMeleeWeapon.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\IRangedWeapon.cpp" />
     <ClCompile Include="AppSource\Camera\GameCamera.cpp" />
+    <ClCompile Include="AppSource\GameObject\GameTimer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail.cpp" />
@@ -262,10 +266,17 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Effect\TestTrail1\TestTrail1.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\TestTrail2\TestTrail2.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\TestTrail3\TestTrail3.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\IWeaponRender.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\Render\PistolRender.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\Render\SwordRender.cpp" />
+    <ClCompile Include="AppSource\GameObject\Enemy\WaveSystem.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\Render\ShotgunRender.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\Data\ShotGun.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\DrawInfo.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
     <ClInclude Include="AppSource\GameObject\Item\ItemEditor.h" />
+    <ClInclude Include="AppSource\GameObject\Player\Heatmap\PlayerHeatmap.h" />
     <ClInclude Include="AppSource\GameObject\Player\Parameter\ParameterData.h" />
     <ClInclude Include="AppSource\GameObject\Item\Item.h" />
     <ClInclude Include="AppSource\GameObject\Item\ItemManager.h" />
@@ -278,7 +289,11 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Player\State\IPlayerState.h" />
     <ClInclude Include="AppSource\GameObject\Player\State\PlayerStateDash.h" />
     <ClInclude Include="AppSource\GameObject\Player\State\PlayerStateNormal.h" />
+    <ClInclude Include="AppSource\GameObject\Player\Status\Status.h" />
+    <ClInclude Include="AppSource\GameObject\Player\Status\StatusManager.h" />
+    <ClInclude Include="AppSource\GameObject\Player\Status\StatusModifier.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\DamageInfo.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\Render\WeaponRenderInclude.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponData.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponDatabase.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\WeaponDebugger.h" />
@@ -367,6 +382,13 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Effect\TestTrail1\TestTrail1.h" />
     <ClInclude Include="AppSource\GameObject\Effect\TestTrail2\TestTrail2.h" />
     <ClInclude Include="AppSource\GameObject\Effect\TestTrail3\TestTrail3.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\IWeaponRender.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\Render\PistolRender.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\Render\SwordRender.h" />
+    <ClInclude Include="AppSource\GameObject\Enemy\WaveSystem.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\Render\ShotgunRender.h" />
+    <ClInclude Include="AppSource\GameObject\GameTimer.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\Data\ShotGun.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

@@ -17,9 +17,12 @@ void WeaponDebugger::Draw() {
 	// 武器データが見つかった場合
 	if (weapon != nullptr) {
 		//武器の種類
-		const char* weaponTypeNames[] = { "Pistol", "Sword" };
+		std::vector<const char*> weaponTypeNames;
+		for (const auto& pair : weaponTypeNames_) {
+			weaponTypeNames.push_back(pair.second.c_str());
+		}
 		int weaponTypeIndex = static_cast<int>(weapon->type);
-		if (ImGui::Combo("Weapon Type", &weaponTypeIndex, weaponTypeNames, IM_ARRAYSIZE(weaponTypeNames))) {
+		if (ImGui::Combo("Weapon Type", &weaponTypeIndex, weaponTypeNames.data(), (uint32_t)weaponTypeNames.size())) {
 			weapon->type = static_cast<WeaponType>(weaponTypeIndex);
 		}
 
@@ -35,6 +38,7 @@ void WeaponDebugger::Draw() {
 		// 数値の調整
 		ImGui::SliderFloat("基本の攻撃力", &weapon->baseDamage, 1.0f, 999.0f, "%.1f");
 		ImGui::SliderFloat("攻撃速度", &weapon->attackSpeed, 0.1f, 5.0f, "%.2f sec");
+		ImGui::DragFloat("偏差", &weapon->spreadAngle, 0.01f, 0.0f, 6.28f, "%.1f deg");
 		ImGui::SliderFloat("クリティカル発生確率", &weapon->criticalChance, 0.0f, 80.0f, "%.2f");
 		ImGui::SliderFloat("クリティカルダメージ倍率", &weapon->criticalMultiplier, 0.1f, 2.0f, "%.2f");
 		ImGui::SliderFloat("ライフスティール確率", &weapon->lifeStealChance, 0.0f, 80.0f, "%.2f");

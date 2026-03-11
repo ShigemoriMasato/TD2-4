@@ -9,10 +9,10 @@ void PieceManager::Initialize(std::vector<std::unique_ptr<Piece>>& playerPieces)
 
 void PieceManager::UpdateItemInfo(ItemManager* itemManager) {
 	for (const auto& piece : shopPieces_) {
-		piece->Initialize(itemManager->GetItem(piece->GetItem().id));
+		piece->Initialize(itemManager->GetItem(piece->GetItem().id), piece->GetRank());
 	}
 	for (const auto& piece : holdPieces_) {
-		piece->Initialize(itemManager->GetItem(piece->GetItem().id));
+		piece->Initialize(itemManager->GetItem(piece->GetItem().id), piece->GetRank());
 	}
 }
 

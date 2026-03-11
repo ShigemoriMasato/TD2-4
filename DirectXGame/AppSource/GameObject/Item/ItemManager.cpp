@@ -82,27 +82,26 @@ void ItemManager::DrawImGui()
 void ItemManager::SaveModel()
 {
 	int size = static_cast<int>(modelIDtoName_.size());
-	binaryManager_.RegisterOutput(&size);
+	binaryManager_.Register(&size);
 	for (const auto& [id, name] : modelIDtoName_)
 	{
-		binaryManager_.RegisterOutput(&id);
-		binaryManager_.RegisterOutput(&name);
+		binaryManager_.Register(&id);
+		binaryManager_.Register(&name);
 	}
 	binaryManager_.Write(modelFile_);
 }
 
 void ItemManager::LoadModel()
 {
-	auto data = binaryManager_.Read(modelFile_);
-	if (data.empty())
+	if (!binaryManager_.Boot(modelFile_))
 	{
 		return;
 	}
-	int size = binaryManager_.Reverse<int>(data);
+	int size = binaryManager_.Reverse<int>();
 	for (int i = 0; i < size; ++i)
 	{
-		int id = binaryManager_.Reverse<int>(data);
-		std::string name = binaryManager_.Reverse<std::string>(data);
+		int id = binaryManager_.Reverse<int>();
+		std::string name = binaryManager_.Reverse<std::string>();
 		modelIDtoName_[id] = name;
 	}
 }
@@ -110,54 +109,54 @@ void ItemManager::LoadModel()
 void ItemManager::SaveItem()
 {
 	int size = static_cast<int>(items_.size());
-	binaryManager_.RegisterOutput(&size);
+	binaryManager_.Register(&size);
 	for (auto& [id, item] : items_)
 	{
 		// name
 		std::string tmpName = ConvertString(item.name);
-		binaryManager_.RegisterOutput(&tmpName);
+		binaryManager_.Register(&tmpName);
 
 		// ID
-		binaryManager_.RegisterOutput(&item.id);
+		binaryManager_.Register(&item.id);
 
 		// category
 		int category = static_cast<int>(item.category);
-		binaryManager_.RegisterOutput(&category);
+		binaryManager_.Register(&category);
 
 		// mapData
 		int mapDataSize = static_cast<int>(item.mapData.size());
-		binaryManager_.RegisterOutput(&mapDataSize);
+		binaryManager_.Register(&mapDataSize);
 		for (auto& [x, y] : item.mapData)
 		{
-			binaryManager_.RegisterOutput(&x);
-			binaryManager_.RegisterOutput(&y);
+			binaryManager_.Register(&x);
+			binaryManager_.Register(&y);
 		}
 
 		// 見た目
-		binaryManager_.RegisterOutput(&item.modelPath);
-		binaryManager_.RegisterOutput(&item.weaponID);
-		binaryManager_.RegisterOutput(&item.visualOffsetCells);
+		binaryManager_.Register(&item.modelPath);
+		binaryManager_.Register(&item.weaponID);
+		binaryManager_.Register(&item.visualOffsetCells);
 
 		//Active
-		binaryManager_.RegisterOutput(&item.isActive);
+		binaryManager_.Register(&item.isActive);
 
 		// ranks（可変）
 		for (int r = 0; r < 4; ++r)
 		{
 			// price
-			binaryManager_.RegisterOutput(&item.ranks[r].price);
+			binaryManager_.Register(&item.ranks[r].price);
 			// effect
-			binaryManager_.RegisterOutput(&item.ranks[r].effect);
+			binaryManager_.Register(&item.ranks[r].effect);
 
 			int buffsSize = static_cast<int>(item.ranks[r].params.size());
-			binaryManager_.RegisterOutput(&buffsSize);
+			binaryManager_.Register(&buffsSize);
 
 			// params
 			for (auto& buff : item.ranks[r].params)
 			{
 				std::string key = buff.first;
-				binaryManager_.RegisterOutput(&key);
-				binaryManager_.RegisterOutput(&buff.second);
+				binaryManager_.Register(&key);
+				binaryManager_.Register(&buff.second);
 			}
 		}
 	}
@@ -169,63 +168,60 @@ void ItemManager::LoadItem()
 	// 指定したファイルを読み込み
 	jsonManager_.Boot(itemFile_);
 
-	auto data = binaryManager_.Read(itemFile_);
-	if (data.empty())
+	if (!binaryManager_.Boot(itemFile_))
 	{
 		return;
 	}
 
-	int size = binaryManager_.Reverse<int>(data);
+	int size = binaryManager_.Reverse<int>();
 	for (int i = 0; i < size; ++i)
 	{
 		Item item{};
 
 		// name
-		item.name = ConvertString(binaryManager_.Reverse<std::string>(data));
+		item.name = ConvertString(binaryManager_.Reverse<std::string>());
 
 		// ID
-		item.id = binaryManager_.Reverse<int>(data);
+		item.id = binaryManager_.Reverse<int>();
 		usedID_ = std::max(usedID_, item.id); // 読み込んだIDをもとにusedID_を更新
 		if (item.id == -1) {
 			item.id = usedID_++;
 		}
 
 		// category
-		int category = binaryManager_.Reverse<int>(data);
+		int category = binaryManager_.Reverse<int>();
 		item.category = static_cast<Category>(category);
 
 		// mapData
-		int mapDataSize = binaryManager_.Reverse<int>(data);
+		int mapDataSize = binaryManager_.Reverse<int>();
 		for (int j = 0; j < mapDataSize; ++j)
 		{
-			int x = binaryManager_.Reverse<int>(data);
-			int y = binaryManager_.Reverse<int>(data);
+			int x = binaryManager_.Reverse<int>();
+			int y = binaryManager_.Reverse<int>();
 			item.mapData.emplace_back(x, y);
 		}
 
 		// 見た目
-		item.modelPath = binaryManager_.Reverse<std::string>(data);
-		item.weaponID = binaryManager_.Reverse<int>(data);
-		item.visualOffsetCells = binaryManager_.Reverse<Vector2>(data);
+		item.modelPath = binaryManager_.Reverse<std::string>();
+		item.weaponID = binaryManager_.Reverse<int>();
+		item.visualOffsetCells = binaryManager_.Reverse<Vector2>();
 
 		//Active
-		item.isActive = binaryManager_.Reverse<bool>(data);
+		item.isActive = binaryManager_.Reverse<bool>();
 
 		// ranks
 		for (int r = 0; r < 4; ++r)
 		{
 			auto& rd = item.ranks[r];
 
-			rd.price = binaryManager_.Reverse<int>(data);
-			rd.effect = binaryManager_.Reverse<uint32_t>(data);
+			rd.price = binaryManager_.Reverse<int>();
+			rd.effect = binaryManager_.Reverse<uint32_t>();
 
-			int buffsSize = binaryManager_.Reverse<int>(data);
-			rd.params = baseParam_;
+			int buffsSize = binaryManager_.Reverse<int>();
 			for (int j = 0; j < buffsSize; ++j)
 			{
-				std::string name = binaryManager_.Reverse<std::string>(data);
-				float value = binaryManager_.Reverse<float>(data);
-				rd.params[name] = value;
+				std::string name = binaryManager_.Reverse<std::string>();
+				float value = binaryManager_.Reverse<float>();
 			}
 		}
 
@@ -236,27 +232,28 @@ void ItemManager::LoadItem()
 void ItemManager::SaveBaseParam()
 {
 	int size = static_cast<int>(baseParam_.size());
-	binaryManager_.RegisterOutput(&size);
+	binaryManager_.Register(&size);
 	for (const auto& param : baseParam_)
 	{
-		binaryManager_.RegisterOutput(&param.first);
-		binaryManager_.RegisterOutput(&param.second);
+		std::string name = param.first;
+		float value = param.second;
+		binaryManager_.Register(&name);
+		binaryManager_.Register(&value);
 	}
 	binaryManager_.Write(baseParamFile_);
 }
 
 void ItemManager::LoadBaseParam()
 {
-	auto data = binaryManager_.Read(baseParamFile_);
-	if (data.empty())
+	if (!binaryManager_.Boot(baseParamFile_))
 	{
 		return;
 	}
-	int size = binaryManager_.Reverse<int>(data);
+	int size = binaryManager_.Reverse<int>();
 	for (int i = 0; i < size; ++i)
 	{
-		std::string name = binaryManager_.Reverse<std::string>(data);
-		float value = binaryManager_.Reverse<float>(data);
+		std::string name = binaryManager_.Reverse<std::string>();
+		float value = binaryManager_.Reverse<float>();
 		baseParam_[name] = value;
 	}
 }

@@ -13,6 +13,10 @@
 #include <GameObject/Weapon/IWeapon.h>
 #include <GameObject/Weapon/WeaponInclude.h>
 #include <Camera/GameCamera.h>
+#include <GameObject/Weapon/Render/WeaponRenderInclude.h>
+#include <GameObject/Item/ItemManager.h>
+#include <GameObject/Enemy/WaveSystem.h>
+#include <GameObject/GameTimer.h>
 
 class ShigeScene : public IScene {
 public:
@@ -24,6 +28,7 @@ public:
 private:
 
 	void MakeWeapon();
+	void MakeWeaponRender();
 
 	std::unique_ptr<DebugCamera> debugCamera_;
 	std::unique_ptr<GameCamera> gameCamera_;
@@ -39,8 +44,18 @@ private:
 	std::vector<DrawInfo> drawInfos_;
 	std::unique_ptr<WeaponDatabase> weaponDatabase_;
 	std::unique_ptr<AttackManager> attackManager_;
+	std::vector<std::unique_ptr<IWeaponRender>> weaponRenders_;
+	std::unique_ptr<ItemManager> itemManager_;
+	std::unique_ptr<WaveSystem> waveSystem_;
+	std::unique_ptr<GameTimer> gameTimer_;
+
+	//プレイヤーが持っているピースの生ポインタ。
+	std::vector<Piece*> pieces_;
 
 	JsonManager jsonManager_;
 
 	float worldTimer_ = 0.0f;
+
+	float baseRadius_ = 4.0f;
+	float baseHeight_ = 2.0f;
 };
