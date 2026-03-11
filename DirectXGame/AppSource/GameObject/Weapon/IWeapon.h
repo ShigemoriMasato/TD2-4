@@ -14,6 +14,8 @@ public:
 
 	virtual float GetDirection() const { return config_.direction; }
 
+	WeaponData* GetWeaponData() {return weaponData_;}
+
 protected:
 
 	static inline AttackManager* attackManager_ = nullptr;

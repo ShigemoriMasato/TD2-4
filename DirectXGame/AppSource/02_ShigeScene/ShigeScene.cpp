@@ -218,12 +218,12 @@ void ShigeScene::MakeWeaponRender() {
 				weaponRenders_.emplace_back(std::move(sword));
 				break;
 			}
-			/*case WeaponType::Shotgun: {
+			case WeaponType::ShotGun: {
 				std::unique_ptr<ShotgunRender> shotgun = std::make_unique<ShotgunRender>();
 				shotgun->Initialize(drawDataManager_, modelManager_, "Shotgun");
 				weaponRenders_.emplace_back(std::move(shotgun));
 				break;
-			}*/
+			}
 			}
 		}
 	}
