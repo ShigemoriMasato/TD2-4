@@ -2,11 +2,12 @@
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
+#include <GameObject/Weapon/IWeapon.h>
 
 class IWeaponRender {
 public:
 	// 初期化関数
-	virtual void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, const std::string& filepath);
+	virtual void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, IWeapon* weapon, Item itemData);
 
 	// 更新関数
 	virtual void Update(Matrix4x4 vpMatrix, Vector3 playerPos);
@@ -38,6 +39,8 @@ protected:
 
 	// トランスフォーム
 	Transform transform_ = {};
+
+	IWeapon* weapon_;
 
 	Matrix4x4 rotationMatrix_ = Matrix4x4::Identity();
 };

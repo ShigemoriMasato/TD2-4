@@ -3,10 +3,11 @@
 
 using namespace SHEngine;
 
-void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, const std::string& filepath) {
+void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, IWeapon* weapon, Item itemData) {
 	render_ = std::make_unique<RenderObject>();
-
-	int modelHandle = modelManager->LoadModel("Assets/Model/Item/Weapon/" + filepath + "/");
+	weapon_ = weapon;
+;
+	int modelHandle = itemData.modelID;
 	auto modelData = modelManager->GetNodeModelData(modelHandle);
 	auto drawData = drawDataManager->GetDrawData(modelData.drawDataIndex);
 
@@ -40,7 +41,12 @@ void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEng
 }
 
 void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos) {
-	transform_.position = playerPos;
+	float dir = weapon_->GetDirection();
+	transform_.position.x = std::cosf(dir) * 3.0f;
+	transform_.position.y = std::sinf(dir) * 3.0f;
+	transform_.position += playerPos;
+	transform_.rotate.y = dir;
+	
 	wvp_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 	wvp_ *= vpMatrix;
 	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};

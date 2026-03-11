@@ -24,7 +24,5 @@ protected:
 	//あまりにも長いと当たらないので、0.5f固定にして、スピードで調整すること
 	const float lifeTime_ = 0.5f;
 
-	IAttackObject::Config config_;
-
 	float rateTimer_ = 0.0f;
 };
