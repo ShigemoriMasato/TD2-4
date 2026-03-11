@@ -15,6 +15,8 @@
 #include <Camera/GameCamera.h>
 #include <GameObject/Weapon/Render/WeaponRenderInclude.h>
 #include <GameObject/Item/ItemManager.h>
+#include <GameObject/Enemy/WaveSystem.h>
+#include <GameObject/GameTimer.h>
 
 class ShigeScene : public IScene {
 public:
@@ -44,6 +46,8 @@ private:
 	std::unique_ptr<AttackManager> attackManager_;
 	std::vector<std::unique_ptr<IWeaponRender>> weaponRenders_;
 	std::unique_ptr<ItemManager> itemManager_;
+	std::unique_ptr<WaveSystem> waveSystem_;
+	std::unique_ptr<GameTimer> gameTimer_;
 
 	//プレイヤーが持っているピースの生ポインタ。
 	std::vector<Piece*> pieces_;

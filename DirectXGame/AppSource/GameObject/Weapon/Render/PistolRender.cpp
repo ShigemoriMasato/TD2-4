@@ -1,6 +1,6 @@
 #include "PistolRender.h"
 
-void PistolRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, std::string filepath) {
+void PistolRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, const std::string& filepath) {
 	IWeaponRender::Initialize(drawDataManager,modelManager,filepath);
 }
 
