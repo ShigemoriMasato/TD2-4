@@ -175,6 +175,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AppSource\GameObject\Player\Controller\AIController.cpp" />
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
     <ClCompile Include="AppSource\GameObject\Item\Item.cpp" />
     <ClCompile Include="AppSource\GameObject\Item\ItemEditor.cpp" />
@@ -277,6 +278,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Weapon\Data\IRangedWeapon.cpp" />
     <ClCompile Include="AppSource\Camera\GameCamera.cpp" />
     <ClCompile Include="AppSource\GameObject\GameTimer.cpp" />
+    <ClCompile Include="AppSource\GameObject\Player\Controller\InputController.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail.cpp" />
@@ -290,13 +292,17 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Enemy\WaveSystem.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Render\ShotgunRender.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\ShotGun.cpp" />
+    <ClCompile Include="AppSource\GameObject\Player\PlayerAI\PlayerAI.cpp" />
+    <ClInclude Include="AppSource\GameObject\Player\Controller\AIController.h" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Spear.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Thrust.cpp" />
     <ClCompile Include="AppSource\Shop\ShopDisplay.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
+    <ClInclude Include="AppSource\GameObject\Distance.h" />
     <ClInclude Include="AppSource\GameObject\DrawInfo.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
     <ClInclude Include="AppSource\GameObject\Item\ItemEditor.h" />
+    <ClInclude Include="AppSource\GameObject\Player\Controller\IController.h" />
     <ClInclude Include="AppSource\GameObject\Player\Heatmap\PlayerHeatmap.h" />
     <ClInclude Include="AppSource\GameObject\Player\Parameter\ParameterData.h" />
     <ClInclude Include="AppSource\GameObject\Item\Item.h" />
@@ -410,6 +416,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\Render\ShotgunRender.h" />
     <ClInclude Include="AppSource\GameObject\GameTimer.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Data\ShotGun.h" />
+    <ClInclude Include="AppSource\GameObject\Player\PlayerAI\PlayerAI.h" />
+    <ClInclude Include="AppSource\GameObject\Player\Controller\InputController.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Data\Spear.h" />
     <ClInclude Include="AppSource\GameObject\Attack\Thrust.h" />
     <ClInclude Include="AppSource\Shop\ShopDisplay.h" />

@@ -17,6 +17,8 @@
 #include <GameObject/Item/ItemManager.h>
 #include <GameObject/Enemy/WaveSystem.h>
 #include <GameObject/GameTimer.h>
+#include <GameObject/Player/Controller/AIController.h>
+#include <GameObject/Player/Controller/InputController.h>
 #include <02_ShigeScene/ShopScene.h>
 
 class ShigeScene : public IScene {
@@ -48,6 +50,9 @@ private:
 	std::unique_ptr<ItemManager> itemManager_;
 	std::unique_ptr<WaveSystem> waveSystem_;
 	std::unique_ptr<GameTimer> gameTimer_;
+	std::vector<IController*> controllers_;
+	std::unique_ptr<AIController> aiController_;
+	std::unique_ptr<InputController> inputController_;
 
 	//プレイヤーが持っているピースの生ポインタ。
 	std::vector<Piece*> pieces_;
@@ -56,6 +61,12 @@ private:
 
 	float worldTimer_ = 0.0f;
 
+	// 現在使用しているコントローラーのインデックス
+	int currentControllerIndex_ = 0;
+
+	// 武器の配置関連の変数
+	float baseRadius_ = 4.0f; // 円の半径
+	float baseHeight_ = 2.0f; // 高さ
 	float baseRadius_ = 4.0f;
 	float baseHeight_ = 2.0f;
 
