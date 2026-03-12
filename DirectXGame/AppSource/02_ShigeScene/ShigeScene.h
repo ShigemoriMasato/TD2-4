@@ -19,6 +19,7 @@
 #include <GameObject/GameTimer.h>
 #include <GameObject/Player/Controller/AIController.h>
 #include <GameObject/Player/Controller/InputController.h>
+#include <GameObject/Weapon/IWeaponRender.h>
 
 class ShigeScene : public IScene {
 public:
