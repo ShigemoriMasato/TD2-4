@@ -65,7 +65,7 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	collCircle_->radius = 1.0f; // 仮の半径
 	CollConfig collConfig;
 	collConfig.ownTag = CollTag::Player;
-	collConfig.targetTag = static_cast<uint32_t>(CollTag::Enemy) | static_cast<uint32_t>(CollTag::Item);
+	collConfig.targetTag = CollTag::Enemy | CollTag::Item;
 	collConfig.colliderInfo = collCircle_.get();
 	collConfig.isActive = true;
 	Collider::Initialize();

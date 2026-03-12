@@ -78,9 +78,6 @@ public:
 	// コントローラーの設定
 	void SetController(IController* controller) { controller_ = controller; }
 
-	// 接触時処理
-	void OnCollision(Collider* other) override;
-
 	// HPのアクセッサ
 	float GetHP() const { return currentHP_; }
 	void SetHP(float hp) { currentHP_ = hp; }
@@ -91,6 +88,9 @@ private:
 
 	// プレイヤーの移動制限
 	void ClampPosition();
+
+	// 接触時処理
+	void OnCollision(Collider* other) override;
 
 private:
 	// 描画用変数
