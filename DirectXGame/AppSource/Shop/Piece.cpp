@@ -130,6 +130,9 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		if (isPlaced_) {
 			info.color = 0x00ffffff; // シアン
 		}
+		if (isUsing_) {
+			info.color = 0xff0000ff; // 赤色
+		}
 
 		drawInfos.push_back(info);
 	}
