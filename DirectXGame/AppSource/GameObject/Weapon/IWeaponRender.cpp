@@ -6,7 +6,7 @@ using namespace SHEngine;
 void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, IWeapon* weapon, Item itemData) {
 	render_ = std::make_unique<RenderObject>();
 	weapon_ = weapon;
-;
+	;
 	int modelHandle = itemData.modelID;
 	auto modelData = modelManager->GetNodeModelData(modelHandle);
 	auto drawData = drawDataManager->GetDrawData(modelData.drawDataIndex);
@@ -40,14 +40,25 @@ void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEng
 	wvp_ = Matrix4x4::Identity();
 }
 
-void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos) {
+void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTime) {
+	if (weapon_->GetIsAnimation()) {
+		bundle_.anim.Start(transform_.scale, {1.0f, 1.0f, 1.0f}, 0.3f, EaseType::EaseOutExpo);
+	}
+
+	bool playing = bundle_.anim.Update(deltaTime, bundle_.temp);
+	transform_.scale = bundle_.temp;
+
+	if(!playing){
+		transform_.scale = {0.5f, 0.5f, 0.5f};
+	}
+
 	float dir = weapon_->GetDirection();
 	transform_.position.x = std::cosf(dir) * 4.0f;
 	transform_.position.z = std::sinf(dir) * 4.0f;
 	transform_.position.y = 3.0f;
 	transform_.position += playerPos;
 	transform_.rotate.x = dir - std::numbers::pi_v<float> / 2;
-	
+
 	wvp_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 	wvp_ *= vpMatrix;
 	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};

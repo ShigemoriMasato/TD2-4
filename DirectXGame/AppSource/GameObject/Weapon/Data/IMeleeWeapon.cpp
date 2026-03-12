@@ -27,6 +27,7 @@ void IMeleeWeapon::Update(float deltaTime) {
 		if (rateTimer_ > rate_) {
 			isAttacking_ = true;
 			rateTimer_ = 100.0f;
+			isAnimation_ = true;
 		}
 	} else {
 		rateTimer_ += deltaTime;
@@ -77,6 +78,8 @@ void IMeleeWeapon::Update(float deltaTime) {
 			isAttacking_ = false;
 			attackCount_ = 0;
 		}
+
+		isAnimation_ = false;
 	}
 }
 

@@ -27,6 +27,7 @@ void IRangedWeapon::Update(float deltaTime) {
 	rateTimer_ += deltaTime;
 
 	if (rateTimer_ < rate_) {
+		isAnimation_ = false;
 		return;
 	}
 
@@ -65,6 +66,8 @@ bool IRangedWeapon::Shot(bool regist) {
 				int id = enemy->GetID(); // 敵のIDを取得
 				shotEnemyIDs_.push_back(id); // 射撃した敵のIDを保存
 			}
+
+			isAnimation_ = true;
 
 			return true;
 		}

@@ -8,6 +8,7 @@ void ShotGun::Update(float deltaTime) {
 	rateTimer_ += deltaTime;
 
 	if (rateTimer_ < rate_) {
+		isAnimation_ = false;
 		return;
 	}
 

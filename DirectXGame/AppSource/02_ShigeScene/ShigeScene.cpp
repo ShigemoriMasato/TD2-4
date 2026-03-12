@@ -128,7 +128,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 				// プレイヤー座標にオフセットを加算
 				Vector3 weaponPos = player_->GetTransform().position;
 
-				weaponRenders_[i]->Update(camera_->GetVPMatrix(), weaponPos);
+				weaponRenders_[i]->Update(camera_->GetVPMatrix(), weaponPos, deltaTime);
 			}
 		}
 	}
@@ -180,7 +180,7 @@ void ShigeScene::Draw() {
 	ImGui::End();
 
 	ImGui::Begin("ActiveController");
-	ImGui::Text("%s", currentControllerIndex_ == 0 ? "InputController" : "AIController");
+	ImGui::Text("%s", currentControllerIndex_ == 0 ? "AIController" : "InputController");
 	ImGui::End();
 
 #endif

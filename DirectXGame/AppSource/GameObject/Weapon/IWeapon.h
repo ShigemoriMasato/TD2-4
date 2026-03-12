@@ -16,6 +16,8 @@ public:
 
 	WeaponData* GetWeaponData() {return weaponData_;}
 
+	bool GetIsAnimation() const { return isAnimation_;}
+
 protected:
 
 	static inline AttackManager* attackManager_ = nullptr;
@@ -27,4 +29,5 @@ protected:
 	WeaponData* weaponData_;
 	Player::Base* player_;
 
+	bool isAnimation_ = false;
 };
