@@ -56,6 +56,13 @@ void ShigeScene::Initialize() {
 	gameTimer_ = std::make_unique<GameTimer>();
 	gameTimer_->Initialize();
 
+	aiController_ = std::make_unique<AIController>(player_->GetPositionPtr(), enemyManager_.get());
+	inputController_ = std::make_unique<InputController>(input_);
+	controllers_.push_back(aiController_.get());
+	controllers_.push_back(inputController_.get());
+	currentControllerIndex_ = 0;
+	player_->SetController(controllers_[currentControllerIndex_]); // AIコントローラーを適用
+
 	MakeWeapon();
 }
 
@@ -70,6 +77,14 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	gameTimer_->Update(deltaTime);
 	waveSystem_->Update(deltaTime);
+
+	if(input_->GetKeyState(DIK_4)&&!input_->GetPreKeyState(DIK_4)){
+		// インデックスを切り替える
+		currentControllerIndex_ = (currentControllerIndex_ + 1) % controllers_.size();
+
+		// プレイヤーに新しいコントローラーをセット
+		player_->SetController(controllers_[currentControllerIndex_]);
+	}
 
 	player_->Update(camera_->GetVPMatrix(), deltaTime);
 	player_->UpdateParameter(pieces_);
@@ -153,6 +168,10 @@ void ShigeScene::Draw() {
 	ImGui::Begin("RenderDebug");
 	ImGui::DragFloat("baseHeight", &baseHeight_, 0.01f);
 	ImGui::DragFloat("baseRadius", &baseRadius_, 0.01f);
+	ImGui::End();
+
+	ImGui::Begin("ActiveController");
+	ImGui::Text("%s", currentControllerIndex_ == 0 ? "InputController" : "AIController");
 	ImGui::End();
 
 #endif

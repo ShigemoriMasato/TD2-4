@@ -8,6 +8,7 @@
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
 #include <Collision/Collider.h>
+#include "Controller/IController.h"
 
 
 /// <summary>
@@ -71,6 +72,12 @@ public:
 	//全てのパラメータを取得する関数
 	std::unordered_map<std::string, float> GetParameters() const { return parameterList_->GetAllParameters(); }
 
+	// コントローラーの取得
+	IController* GetController()const{return controller_;}
+
+	// コントローラーの設定
+	void SetController(IController* controller) { controller_ = controller; }
+
 private:
 	// 残像の更新処理
 	void UpdateAfterImages(float deltaTime);
@@ -131,6 +138,9 @@ private:
 
 	// パラメータ
 	std::unique_ptr<ParameterList> parameterList_ = nullptr;
+
+	// コントローラー
+	IController* controller_ = nullptr;
 
 public:// 以下シゲモリ製
 
