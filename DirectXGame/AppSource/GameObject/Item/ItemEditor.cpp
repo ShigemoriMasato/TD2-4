@@ -244,13 +244,6 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 			ImGui::Text("合計セル数: %d", (int)currentItem.mapData.size());
 			ImGui::Text("左クリック: セル追加   右クリック: セル削除");
 
-			std::unordered_set<std::pair<int, int>, PairHash> filled;
-			filled.reserve(currentItem.mapData.size() * 2);
-			for (const auto& c : currentItem.mapData) {
-				const int flippedY = (gridH_ - 1) - c.second;
-				filled.insert({ c.first, flippedY });
-			}
-
 			ImDrawList* dl = ImGui::GetWindowDrawList();
 			// グリッドの原点（左上の座標）
 			const ImVec2 origin = ImGui::GetCursorScreenPos();
@@ -285,9 +278,17 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 				const int cy = (int)(localY / cellSize_);
 
 				if (0 <= cx && cx < gridW_ && 0 <= cy && cy < gridH_) {
-					const std::pair<int, int> cell(cx, cy);
-					if (paintMode_ == 1) filled.insert(cell);
-					else if (paintMode_ == 2) filled.erase(cell);
+					const std::pair<int, int> cell(cx, (gridH_ - 1) - cy);
+					if (paintMode_ == 1) {
+						// 塗りモード: セルを追加
+						if (std::find_if(currentItem.mapData.begin(), currentItem.mapData.end(),
+							[&cell](const std::pair<int, int>& c) { return c == cell; }) == currentItem.mapData.end()) {
+							currentItem.mapData.emplace_back(cell);
+						}
+					} else if (paintMode_ == 2) {
+						// 消しモード: セルを削除
+						currentItem.mapData.erase(std::remove(currentItem.mapData.begin(), currentItem.mapData.end(), cell), currentItem.mapData.end());
+					}
 				}
 			}
 
@@ -321,16 +322,6 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 					dl->AddRect(p0, p1, colGrid);
 				}
 			}
-
-			// 編集結果をItemのmapDataに反映 & Y反転
-			currentItem.mapData.clear();
-			currentItem.mapData.reserve(filled.size());
-
-			for (const auto& cell : filled) {
-				const int flippedY = (gridH_ - 1) - cell.second;
-				currentItem.mapData.emplace_back(cell.first, flippedY);
-			}
-			std::sort(currentItem.mapData.begin(), currentItem.mapData.end());
 
 			ImGui::TreePop();
 		}
