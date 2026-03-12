@@ -13,17 +13,18 @@ void ShigeScene::Initialize() {
 
 	camera_ = gameCamera_.get();
 
+	shopScene_ = std::make_unique<ShopScene>();
+	shopScene_->Ready(engine_, commonData_);
+	shopScene_->Initialize();
+
 	grid_ = std::make_unique<Grid>();
 	grid_->Initialize(drawDataManager_);
 
 	colliderManager_ = std::make_unique<ColliderManager>();
 	Collider::SetColliderManager(colliderManager_.get());
 
-	itemManager_ = std::make_unique<ItemManager>();
-	itemManager_->Initialize(modelManager_);
-
 	player_ = std::make_unique<Player::Base>();
-	player_->Initialize(modelManager_, drawDataManager_, input_, CharacterID::Warrior, itemManager_.get());
+	player_->Initialize(modelManager_, drawDataManager_, input_, CharacterID::Warrior, shopScene_->GetItemManager());
 	player_->UpdateParameter(commonData_->pieces);
 
 	enemyManager_ = std::make_unique<EnemyManager>();
@@ -50,10 +51,6 @@ void ShigeScene::Initialize() {
 
 	gameTimer_ = std::make_unique<GameTimer>();
 	gameTimer_->Initialize();
-
-	shopScene_ = std::make_unique<ShopScene>();
-	shopScene_->Ready(engine_, commonData_);
-	shopScene_->Initialize();
 
 	aiController_ = std::make_unique<AIController>(player_->GetPositionPtr(), enemyManager_.get());
 	inputController_ = std::make_unique<InputController>(input_);

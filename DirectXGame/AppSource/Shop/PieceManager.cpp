@@ -23,6 +23,9 @@ std::vector<Piece*> PieceManager::Update(BackPack* backPack, float deltaTime) {
 			usedPieces.push_back(piece.get());
 		}
 	}
+	allPieces_.erase(std::remove_if(allPieces_.begin(), allPieces_.end(),
+		[](Piece* piece) { return !piece->IsActive(); }),
+		allPieces_.end());
 	holdPieces_.erase(std::remove_if(holdPieces_.begin(), holdPieces_.end(),
 		[](const std::unique_ptr<Piece>& piece) { return !piece->IsActive(); }),
 		holdPieces_.end());

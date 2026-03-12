@@ -55,7 +55,6 @@ private:// System系
 
 	std::unique_ptr<WeaponDatabase> weaponDatabase_;
 	std::unique_ptr<AttackManager> attackManager_;
-	std::unique_ptr<ItemManager> itemManager_;
 	std::unique_ptr<WaveSystem> waveSystem_;
 	std::unique_ptr<GameTimer> gameTimer_;
 	std::vector<IController*> controllers_;
