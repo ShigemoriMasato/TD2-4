@@ -11,7 +11,7 @@ void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id) {
 	collCircle_->radius = 0.5f;
 	CollConfig config;
 	config.ownTag = CollTag::Enemy;
-	config.targetTag = static_cast<uint32_t>(CollTag::Attack) | static_cast<uint32_t>(CollTag::Player);
+	config.targetTag = static_cast<uint32_t>(CollTag::Attack);
 	config.colliderInfo = collCircle_.get();
 	config.isActive = true;
 	Collider::Initialize();

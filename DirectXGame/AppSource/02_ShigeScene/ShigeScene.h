@@ -21,6 +21,7 @@
 #include <GameObject/Player/Controller/InputController.h>
 #include <GameObject/Weapon/IWeaponRender.h>
 #include <02_ShigeScene/ShopScene.h>
+#include <Scene/01_Title/TitleScene.h>
 #include <GameObject/Player/PlayerHP.h>
 
 class ShigeScene : public IScene {

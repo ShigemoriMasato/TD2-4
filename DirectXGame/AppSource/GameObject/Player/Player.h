@@ -156,6 +156,11 @@ private:
 	float maxHP_ = 0.0f;
 	float currentHP_ = 0.0f;
 
+	// 無敵フラグ
+	bool isInvincible_ = false;
+	float invincibleTimer_ = 0.0f;
+	float invincibleDuration_ = 1.0f;
+
 public: // 以下シゲモリ製
 	std::unique_ptr<Circle> collCircle_ = nullptr;
 	Logger logger_;

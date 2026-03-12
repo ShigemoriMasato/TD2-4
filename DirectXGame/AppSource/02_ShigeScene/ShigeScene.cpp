@@ -89,7 +89,8 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		player_->SetController(controllers_[currentControllerIndex_]);
 	}
 
-	player_->SetHP(playerHP_->GetCurrentHP());
+	playerHP_->Update(orthoCamera_->GetVPMatrix(), deltaTime);
+	playerHP_->SetHP(player_->GetHP());
 	player_->Update(camera_->GetVPMatrix(), deltaTime);
 	player_->UpdateParameter(commonData_->pieces);
 
@@ -99,7 +100,6 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	orthoCamera_->SetScale({1, -1, 1});
 	orthoCamera_->SetPosition({0, 0, 0});
 	orthoCamera_->MakeMatrix();
-	playerHP_->Update(orthoCamera_->GetVPMatrix(), deltaTime);
 
 	map_->Update(camera_->GetVPMatrix());
 	enemyManager_->Update(deltaTime);
@@ -141,6 +141,10 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	}
 
 	if (key[Key::Debug1] || gameTimer_->IsEnd()) {
+	}
+
+	if (player_->GetHP() <= 0){
+		return std::make_unique<TitleScene>();
 	}
 
 	return nullptr;

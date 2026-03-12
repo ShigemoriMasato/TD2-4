@@ -58,7 +58,7 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	currentState_ = std::make_unique<StateNormal>(); // 通常
 
 	// Transformの初期化
-	transform_.position = { 19.0f, 0.0f, 19.0f };
+	transform_.position = {19.0f, 0.0f, 19.0f};
 
 	collCircle_ = std::make_unique<Circle>();
 	collCircle_->center = {transform_.position.x, transform_.position.z};
@@ -72,13 +72,13 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	SetColliderConfig(collConfig);
 
 	// パラメータリストの生成&初期化
-	parameterList_=std::make_unique<ParameterList>();
+	parameterList_ = std::make_unique<ParameterList>();
 	parameterList_->Initialize(itemManager);
 
 	logger_ = getLogger("Player");
 
 	// HPの初期化
-	maxHP_ = parameterList_->GetParameter("maxHP");
+	maxHP_ = parameterList_->GetParameter("MaxHP");
 	currentHP_ = maxHP_;
 	playerHP_ = playerHP;
 	playerHP_->SetHP(currentHP_);
@@ -94,9 +94,16 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 		currentState_->Update(this, deltaTime);
 	}
 
+#ifdef _DEBUG
+	// HP
+	if (input_->GetKeyState(DIK_5) && !input_->GetPreKeyState(DIK_5)) {
+		currentHP_ = maxHP_;
+	}
+#endif
+
 	// 残像の更新
 	UpdateAfterImages(deltaTime);
-	
+
 	// プレイヤーの移動制限
 	ClampPosition();
 
@@ -115,11 +122,17 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
 
 	collCircle_->center = {transform_.position.x, transform_.position.z};
+
+	// 無敵時間更新
+	if (invincibleTimer_ < invincibleDuration_) {
+		invincibleTimer_ += deltaTime;
+	} else {
+		isInvincible_ = false;
+		invincibleTimer_ = 0.0f;
+	}
 }
 
-void Player::Base::UpdateParameter(const std::vector<Piece*>& items) {
-	parameterList_->Update(items);
-}
+void Player::Base::UpdateParameter(const std::vector<Piece*>& items) { parameterList_->Update(items); }
 
 void Base::Draw(CmdObj* cmdObj) {
 	// 残像の描画
@@ -195,7 +208,10 @@ void Player::Base::SpawnAfterImage() {
 }
 
 void Player::Base::OnCollision(Collider* other) {
-	currentHP_--;
+	if (!isInvincible_) {
+		currentHP_--;
+		isInvincible_ = true;
+	}
 }
 
 void Player::Base::UpdateAfterImages(float deltaTime) {
@@ -232,7 +248,7 @@ float Base::GetParameter(const std::string& paramName) const {
 		return it->second;
 	}
 
-	//間違っている場合ログを残す
+	// 間違っている場合ログを残す
 	logger_->warn("Parameter '{}' not found. Returning 0.", paramName);
 	return 0.0f; // パラメータが見つからない場合は0を返す
 }

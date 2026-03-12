@@ -67,6 +67,8 @@ void HP::Update(Matrix4x4 vpMatrix, float deltaTime) {
 	}
 #endif
 
+	HPBarScaleChange();
+
 	// スケールアニメーションの更新
 	AnimationHPBarAfter(deltaTime);
 
