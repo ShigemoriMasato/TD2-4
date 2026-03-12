@@ -171,7 +171,7 @@ void ShigeScene::Draw() {
 	ImGui::End();
 
 	ImGui::Begin("ActiveController");
-	ImGui::Text("%s", currentControllerIndex_ == 0 ? "InputController" : "AIController");
+	ImGui::Text("%s", currentControllerIndex_ == 0 ? "AIController" : "InputController");
 	ImGui::End();
 
 #endif
