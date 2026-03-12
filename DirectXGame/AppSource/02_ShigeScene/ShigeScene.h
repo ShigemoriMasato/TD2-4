@@ -32,30 +32,35 @@ private:
 
 	void MakeWeapon();
 
+private:// System系
 	std::unique_ptr<DebugCamera> debugCamera_;
 	std::unique_ptr<GameCamera> gameCamera_;
 	Camera* camera_;
+
 	std::unique_ptr<Grid> grid_;
 	std::unique_ptr<ColliderManager> colliderManager_;
 
 	std::unique_ptr<Player::Base> player_;
+	std::unique_ptr<AIController> aiController_;
+	std::unique_ptr<InputController> inputController_;
+
 	std::vector<std::unique_ptr<IWeapon>> weapons_;
+	std::vector<std::unique_ptr<IWeaponRender>> weaponRenders_;
+	std::vector<std::pair<int, std::unique_ptr<IWeaponRender>>> wrDeleting_;
+	const int maxWeaponCount_ = 64;
+
 	std::unique_ptr<Map> map_;
 	std::unique_ptr<EnemyManager> enemyManager_;
-	std::unique_ptr<ObjectRender> objectRender_;
-	std::vector<DrawInfo> drawInfos_;
+
 	std::unique_ptr<WeaponDatabase> weaponDatabase_;
 	std::unique_ptr<AttackManager> attackManager_;
-	std::vector<std::unique_ptr<IWeaponRender>> weaponRenders_;
 	std::unique_ptr<ItemManager> itemManager_;
 	std::unique_ptr<WaveSystem> waveSystem_;
 	std::unique_ptr<GameTimer> gameTimer_;
 	std::vector<IController*> controllers_;
-	std::unique_ptr<AIController> aiController_;
-	std::unique_ptr<InputController> inputController_;
 
-	//プレイヤーが持っているピースの生ポインタ。
-	std::vector<Piece*> pieces_;
+	std::vector<DrawInfo> drawInfos_;
+	std::unique_ptr<ObjectRender> objectRender_;
 
 	JsonManager jsonManager_;
 

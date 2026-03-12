@@ -1,7 +1,7 @@
 #include "PieceManager.h"
 
-void PieceManager::Initialize(std::vector<std::unique_ptr<Piece>>& playerPieces) {
-	holdPieces_ = std::move(playerPieces);
+void PieceManager::Initialize() {
+	holdPieces_.clear();
 	for (const auto& piece : holdPieces_) {
 		allPieces_.push_back(piece.get());
 	}
@@ -69,6 +69,9 @@ std::vector<Piece*> PieceManager::GetAllPieces() {
 	return allPieces_;
 }
 
-std::vector<std::unique_ptr<Piece>>&& PieceManager::GetHoldPieces() {
-	return std::move(holdPieces_);
+void PieceManager::GetHoldPieces(std::vector<Piece*>& pieces) {
+	pieces.clear();
+	for (const auto& piece : holdPieces_) {
+		pieces.push_back(piece.get());
+	}
 }

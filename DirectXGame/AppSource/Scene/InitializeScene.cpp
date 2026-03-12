@@ -85,6 +85,10 @@ void InitializeScene::Initialize() {
 	keyManager->SetMouse(Key::Rotate, 1, KeyState::Trigger);
 	keyManager->SetKey(Key::Rotate, DIK_R, KeyState::Trigger);
 
+	keyManager->SetKey(Key::Use, DIK_E, KeyState::Trigger);
+	keyManager->SetKey(Key::Use, DIK_SPACE, KeyState::Trigger);
+	keyManager->SetMouse(Key::Use, 1, KeyState::Trigger);
+
 	//================================================================================
 
 	keyManager->SetKey(Key::Correct, DIK_RETURN, KeyState::Trigger);

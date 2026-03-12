@@ -22,14 +22,9 @@ void ShigeScene::Initialize() {
 	itemManager_ = std::make_unique<ItemManager>();
 	itemManager_->Initialize(modelManager_);
 
-	pieces_.reserve(commonData_->pieces.size());
-	for (const auto& piece : commonData_->pieces) {
-		pieces_.push_back(piece.get());
-	}
-
 	player_ = std::make_unique<Player::Base>();
 	player_->Initialize(modelManager_, drawDataManager_, input_, CharacterID::Warrior, itemManager_.get());
-	player_->UpdateParameter(pieces_);
+	player_->UpdateParameter(commonData_->pieces);
 
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize(player_->GetPositionPtr());
@@ -66,11 +61,11 @@ void ShigeScene::Initialize() {
 	controllers_.push_back(inputController_.get());
 	currentControllerIndex_ = 0;
 	player_->SetController(controllers_[currentControllerIndex_]); // AIコントローラーを適用
-
-	MakeWeapon();
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
+
+	MakeWeapon();
 
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 
@@ -84,7 +79,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	gameTimer_->Update(deltaTime);
 	waveSystem_->Update(deltaTime);
 
-	if(input_->GetKeyState(DIK_4)&&!input_->GetPreKeyState(DIK_4)){
+	if (input_->GetKeyState(DIK_4) && !input_->GetPreKeyState(DIK_4)) {
 		// インデックスを切り替える
 		currentControllerIndex_ = (currentControllerIndex_ + 1) % controllers_.size();
 
@@ -93,7 +88,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	}
 
 	player_->Update(camera_->GetVPMatrix(), deltaTime);
-	player_->UpdateParameter(pieces_);
+	player_->UpdateParameter(commonData_->pieces);
 	map_->Update(camera_->GetVPMatrix());
 	enemyManager_->Update(deltaTime);
 	for (const auto& weapon : weapons_) {
@@ -183,6 +178,8 @@ void ShigeScene::Draw() {
 	ImGui::Text("%s", currentControllerIndex_ == 0 ? "InputController" : "AIController");
 	ImGui::End();
 
+	camera_->DrawImGui();
+
 #endif
 
 	engine_->DrawImGui();
@@ -191,6 +188,21 @@ void ShigeScene::Draw() {
 
 void ShigeScene::MakeWeapon() {
 	for (const auto& piece : commonData_->pieces) {
+		//作成済みかどうか確認
+		{
+			bool found = false;
+			for (const auto& weapon : weapons_) {
+				if (weapon->GetPiecePtr() == piece) {
+					found = true;
+					break;
+				}
+			}
+
+			if (found) {
+				continue;
+			}
+		}
+
 		int weaponID = piece->GetItem().weaponID;
 
 		if (weaponID != -1) {
@@ -223,7 +235,41 @@ void ShigeScene::MakeWeapon() {
 			weaponRenders_.push_back(std::move(weaponRender));
 
 			weapon->Initialize(weaponID, player_.get());
+			weapon->SetPiecePtr(piece);
 			weapons_.push_back(std::move(weapon));
+		}
+	}
+
+	//Pieceから削除された武器を削除する
+	for (int i = 0; i < int(weaponRenders_.size()); ++i) {
+		auto& wr = weaponRenders_[i];
+		if(std::find_if(
+			commonData_->pieces.begin(),
+			commonData_->pieces.end(),
+			[&](const auto& p) { return wr->GetPiecePtr() == p; }
+		) == commonData_->pieces.end()) {
+			wrDeleting_.push_back(std::make_pair(0, std::move(wr)));
+			weaponRenders_.erase(weaponRenders_.begin() + i);
+		}
+	}
+
+	weapons_.erase(
+		std::remove_if(weapons_.begin(), weapons_.end(), [&](const auto& w) {
+			// Piece がまだ存在するかチェック
+			return std::none_of(
+				commonData_->pieces.begin(),
+				commonData_->pieces.end(),
+				[&](const auto& p) { return w->GetPiecePtr() == p; }
+			);
+			}),
+		weapons_.end()
+	);
+
+	// 削除予定の武器描画オブジェクトを更新して削除
+	for (auto& wrd : wrDeleting_) {
+		wrd.first++;
+		if (wrd.first > 5) { // 5フレーム後に完全に削除
+			wrd.second.reset();
 		}
 	}
 }

@@ -22,11 +22,16 @@ public:
 
 	void Initialize(const Item& item, int rank);
 
+	void Update(BackPack* backPack, float deltaTime);
+
 	void SetPosition(const Vector3& pos);
 
 	Vector3 GetPosition() const { return position_; }
 	bool CanPut(BackPack* backPack) ;
 	bool Put(BackPack* backPack);
+	void Remove(BackPack* backPack);
+	void Use();
+
 	bool IsHovered(const Vector3& cursorPos, BackPack* backPack) ;
 	std::vector<DrawInfo> GetDrawInfos() const;
 	Item GetItem() const { return itemData_; }
@@ -54,4 +59,5 @@ private:
 	bool isHovered_ = false;
 	bool isPlaced_ = false;
 
+	bool isUsing_ = false;
 };

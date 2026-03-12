@@ -44,6 +44,17 @@ bool Piece::Put(BackPack* backPack) {
 	return true;
 }
 
+void Piece::Remove(BackPack* backPack) {
+	for (const auto& chip : chips_) {
+		auto slot = GetChipPos(chip);
+		backPack->SetSlot(slot, Slot::Empty);
+	}
+}
+
+void Piece::Use() {
+	isUsing_ = true;
+}
+
 void Piece::SetPosition(const Vector3& pos) {
 	//愚かしいことにもワールドポジションが送られてくるため、マップチップ番号に変換してから入力する
 	Vector3 mappedPos = { std::roundf(pos.x), std::roundf(pos.y) , std::roundf(pos.z) };

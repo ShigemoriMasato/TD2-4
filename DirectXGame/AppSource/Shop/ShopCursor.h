@@ -19,7 +19,7 @@ private:
 	Vector3 worldPos_ = { 0.0f, 0.0f, 0.0f };
 
 	Piece* heldPiece_ = nullptr;
-	Vector3 preHeldPiecePos_ = { 0.0f, 0.0f, 0.0f };
 	Piece::Direction preHeldPieceDir_ = Piece::Direction::Up;
+	Vector3 preHeldPiecePos_ = { 0.0f, 0.0f, 0.0f };
 
 };

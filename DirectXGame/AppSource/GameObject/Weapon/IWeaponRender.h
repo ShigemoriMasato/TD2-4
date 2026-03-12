@@ -24,6 +24,8 @@ public:
 
 	Matrix4x4 LookAt(const Vector3& direction, const Vector3& up);
 
+	Piece* GetPiecePtr() const { return weapon_->GetPiecePtr(); }
+
 protected:
 	static inline int nextID_ = 0;
 	int id_ = nextID_++;

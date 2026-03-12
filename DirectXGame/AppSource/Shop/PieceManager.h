@@ -6,7 +6,7 @@
 class PieceManager {
 public:
 
-	void Initialize(std::vector<std::unique_ptr<Piece>>& playerPieces);
+	void Initialize();
 
 	void UpdateItemInfo(ItemManager* itemManager);
 
@@ -22,7 +22,7 @@ public:
 	// 場にあるピースを全て取得する。当たり判定用
 	std::vector<Piece*> GetAllPieces();
 	// 最後保存する用
-	std::vector<std::unique_ptr<Piece>>&& GetHoldPieces();
+	void GetHoldPieces(std::vector<Piece*>& pieces);
 
 private:
 

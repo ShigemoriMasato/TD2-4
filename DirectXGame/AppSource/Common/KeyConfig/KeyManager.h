@@ -15,6 +15,7 @@ enum class Key {
 	Hold,//Chip持ち運び
 	Erase,//Chip消す
 	Rotate,//Chip回転
+	Use,//Piece使用
 	
 	Correct,//確定キー
 	Reverse,//取消キー

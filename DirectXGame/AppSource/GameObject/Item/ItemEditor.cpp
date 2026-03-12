@@ -12,8 +12,31 @@
 #include <filesystem>
 #include <map>
 #include <set>
+#include <Utility/Easing.h>
 
 namespace fs = std::filesystem;
+
+namespace {
+	using u32 = ImU32;
+	ImU32 ColLerp(ImU32 begin, ImU32 end, float ratio) {
+		u32 r1 = (begin >> 24) & 0xFF;
+		u32 g1 = (begin >> 16) & 0xFF;
+		u32 b1 = (begin >>  8) & 0xFF;
+		u32 a1 = (begin >>  0) & 0xFF;
+
+		u32 r2 = (end >> 24) & 0xFF;
+		u32 g2 = (end >> 16) & 0xFF;
+		u32 b2 = (end >>  8) & 0xFF;
+		u32 a2 = (end >>  0) & 0xFF;
+
+		u32 r = (u32)(r1 + (r2 - r1) * ratio) & 0xFF;
+		u32 g = (u32)(g1 + (g2 - g1) * ratio) & 0xFF;
+		u32 b = (u32)(b1 + (b2 - b1) * ratio) & 0xFF;
+		u32 a = (u32)(a1 + (a2 - a1) * ratio) & 0xFF;
+
+		return (a << 24) | (b << 16) | (g << 8) | r;
+	}
+}
 
 void ItemEditor::DrawNode(Node* node) {
 	ImGuiTreeNodeFlags flags =
@@ -271,7 +294,9 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 			// セルの色とグリッド線の色
 			const ImU32 colBg = IM_COL32(30, 30, 30, 255);
 			const ImU32 colGrid = IM_COL32(80, 80, 80, 255);
-			const ImU32 colFill = IM_COL32(120, 200, 120, 255);
+			const ImU32 colFillMin = IM_COL32(0, 0, 100, 255);
+			const ImU32 colFillMax = IM_COL32(255, 255, 0, 255);
+			const int chipNum = (int)currentItem.mapData.size();
 
 			dl->AddRectFilled(origin, ImVec2(origin.x + gridSize.x, origin.y + gridSize.y), colBg);
 
@@ -281,7 +306,16 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 					const ImVec2 p0(origin.x + x * cellSize_, origin.y + y * cellSize_);
 					const ImVec2 p1(p0.x + cellSize_, p0.y + cellSize_);
 
-					if (filled.contains({ x, y })) {
+					int index = -1;
+					for(int i = 0; i < (int)currentItem.mapData.size(); ++i) {
+						if (currentItem.mapData[i].first == x && currentItem.mapData[i].second == ((gridH_ - 1) - y)) {
+							index = i + 1;
+							break;
+						}
+					}
+
+					if (index != -1) {
+						ImU32 colFill = ColLerp(colFillMin, colFillMax, (float)index / std::max(1, chipNum));
 						dl->AddRectFilled(p0, p1, colFill);
 					}
 					dl->AddRect(p0, p1, colGrid);

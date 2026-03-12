@@ -1,13 +1,12 @@
 #include "ShopScene.h"
 
 ShopScene::~ShopScene() {
-	commonData_->pieces = pieceManager_->GetHoldPieces();
 }
 
 void ShopScene::Initialize() {
 	colliderManager_ = std::make_unique<ColliderManager>();
 	Collider::SetColliderManager(colliderManager_.get());
-	
+
 	debugCamera_ = std::make_unique<DebugCamera>();
 	debugCamera_->Initialize(input_);
 	PerspectiveFovDesc desc;
@@ -27,7 +26,7 @@ void ShopScene::Initialize() {
 	backPack_->Initialize();
 
 	pieceManager_ = std::make_unique<PieceManager>();
-	pieceManager_->Initialize(commonData_->pieces);
+	pieceManager_->Initialize();
 	//PieceManager内でstd::moveを行っているため、クリアを行う
 	commonData_->pieces.clear();
 	Piece::SetPieceManager(pieceManager_.get());
@@ -91,22 +90,29 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	colliderManager_->CollisionCheckAll();
 
 	//DrawInfo集め
-	std::vector<DrawInfo> drawInfos = backPack_->GetSlotDrawInfos();
+	{
+		std::vector<DrawInfo> drawInfos = backPack_->GetSlotDrawInfos();
 
-	auto pieces = pieceManager_->GetAllPieces();
-	for(const auto& piece : pieces) {
-		auto pieceDrawInfos = piece->GetDrawInfos();
-		drawInfos.insert(drawInfos.end(), pieceDrawInfos.begin(), pieceDrawInfos.end());
+		auto pieces = pieceManager_->GetAllPieces();
+		for (const auto& piece : pieces) {
+			auto pieceDrawInfos = piece->GetDrawInfos();
+			drawInfos.insert(drawInfos.end(), pieceDrawInfos.begin(), pieceDrawInfos.end());
+		}
+		objectRender_->SetDrawInfo(drawInfos.data(), drawInfos.size(), debugCamera_->GetVPMatrix());
 	}
-	objectRender_->SetDrawInfo(drawInfos.data(), drawInfos.size(), debugCamera_->GetVPMatrix());
 
-	OrthographicDesc orthDesc;
-	orthDesc.SetValue();
-	orthoCamera_->SetProjectionMatrix(orthDesc);
-	orthoCamera_->SetScale({1,-1,1});
-	orthoCamera_->SetPosition({0, 0, 0});
-	orthoCamera_->MakeMatrix();
+	{
+		OrthographicDesc orthDesc;
+		orthDesc.SetValue();
+		orthoCamera_->SetProjectionMatrix(orthDesc);
+		orthoCamera_->SetScale({ 1,-1,1 });
+		orthoCamera_->SetPosition({ 0, 0, 0 });
+		orthoCamera_->MakeMatrix();
+	}
 	//parameterRender_->Update(orthoCamera_->GetVPMatrix(), commonData_->playerParameterData);
+
+	//最後にコモンデータにピースを保存する
+	pieceManager_->GetHoldPieces(commonData_->pieces);
 
 	Matrix4x4 wvp = Matrix::MakeAffineMatrix(debugTransform_.scale, debugTransform_.rotate, debugTransform_.position) * debugCamera_->GetVPMatrix();
 	debugObj_->CopyBufferData(0, &wvp, sizeof(wvp));

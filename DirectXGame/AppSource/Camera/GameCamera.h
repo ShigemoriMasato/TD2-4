@@ -10,6 +10,6 @@ public:
 
 private:
 
-	Vector3 offset_ = { 0.0f, 13.7f, -35.0f };
+	Vector3 offset_ = { -8.7f, 22.7f, -40.0f };
 
 };

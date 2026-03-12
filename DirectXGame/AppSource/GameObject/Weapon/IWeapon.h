@@ -4,6 +4,8 @@
 #include <GameObject/Weapon/WeaponDatabase.h>
 #include <GameObject/Player/Player.h>
 
+class Piece;
+
 class IWeapon {
 public:
 
@@ -16,6 +18,9 @@ public:
 
 	WeaponData* GetWeaponData() {return weaponData_;}
 
+	void SetPiecePtr(Piece* piece) { piece_ = piece; }
+	Piece* GetPiecePtr() const { return piece_; }
+
 protected:
 
 	static inline AttackManager* attackManager_ = nullptr;
@@ -27,4 +32,7 @@ protected:
 	WeaponData* weaponData_;
 	Player::Base* player_;
 
+private:
+
+	Piece* piece_ = nullptr;
 };

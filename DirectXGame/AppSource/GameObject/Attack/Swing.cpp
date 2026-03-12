@@ -6,7 +6,7 @@ void Swing::Initialize(const Config& config) {
 	collDirCircle_->center = { config.position.x + config.range, config.position.z + config.range };
 	collDirCircle_->radius = radius_;
 	collDirCircle_->direction = { cosf(config.direction), sinf(config.direction) };
-	collDirCircle_->radian = std::numbers::pi_v<float> / 4.0f;
+	collDirCircle_->radian = std::numbers::pi_v<float> / 3.0f;
 	direction_ = config.direction;
 
 	config_ = config;
