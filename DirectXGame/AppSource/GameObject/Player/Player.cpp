@@ -6,7 +6,7 @@
 using namespace SHEngine;
 using namespace Player;
 
-void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, Input* input, CharacterID characterID, ItemManager* itemManager) {
+void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, Input* input, CharacterID characterID, ItemManager* itemManager, Player::HP* playerHP) {
 	// 本体描画用オブジェクトの生成&初期化
 	render_ = std::make_unique<RenderObject>();
 	render_->Initialize();
@@ -57,8 +57,11 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	// 状態の初期化
 	currentState_ = std::make_unique<StateNormal>(); // 通常
 
+	// Transformの初期化
+	transform_.position = { 19.0f, 0.0f, 19.0f };
+
 	collCircle_ = std::make_unique<Circle>();
-	collCircle_->center = transform_.position;
+	collCircle_->center = {transform_.position.x, transform_.position.z};
 	collCircle_->radius = 1.0f; // 仮の半径
 	CollConfig collConfig;
 	collConfig.ownTag = CollTag::Player;
@@ -72,10 +75,14 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	parameterList_=std::make_unique<ParameterList>();
 	parameterList_->Initialize(itemManager);
 
-	// Transformの初期化
-	transform_.position = { 19.0f, 0.0f, 19.0f };
-
 	logger_ = getLogger("Player");
+
+	// HPの初期化
+	maxHP_ = parameterList_->GetParameter("maxHP");
+	currentHP_ = maxHP_;
+	playerHP_ = playerHP;
+	playerHP_->SetHP(currentHP_);
+	playerHP_->SetMaxHP(maxHP_);
 }
 
 void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
@@ -107,7 +114,7 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 	// テクスチャ
 	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
 
-	collCircle_->center = transform_.position;
+	collCircle_->center = {transform_.position.x, transform_.position.z};
 }
 
 void Player::Base::UpdateParameter(const std::vector<Piece*>& items) {
@@ -185,6 +192,10 @@ void Player::Base::SpawnAfterImage() {
 	ai.transform = transform_;      // 現在のプレイヤーの姿勢を代入
 	ai.timer = afterImageLifeTime_; // 寿命をセット
 	afterImages_.push_back(ai);
+}
+
+void Player::Base::OnCollision(Collider* other) {
+	currentHP_--;
 }
 
 void Player::Base::UpdateAfterImages(float deltaTime) {

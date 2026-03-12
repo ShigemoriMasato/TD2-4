@@ -42,7 +42,8 @@ void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEng
 
 void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTime) {
 	if (weapon_->GetIsAnimation()) {
-		bundle_.anim.Start(transform_.scale, {1.0f, 1.0f, 1.0f}, 0.3f, EaseType::EaseOutExpo);
+		transform_.scale = {0.7f,0.7f,0.7f};
+		bundle_.anim.Start(transform_.scale, {0.5f, 0.5f, 0.5f}, 0.3f, EaseType::EaseOutCubic);
 	}
 
 	bool playing = bundle_.anim.Update(deltaTime, bundle_.temp);

@@ -24,19 +24,19 @@ void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMana
 	hpBarBG_.wvp = Matrix4x4::Identity();
 
 	// 前面
-	hpBarFill_.transform.scale = {kHPBarWidth, 1.0f, 1.0f};
-	hpBarFill_.transform.rotate = {0.3f, 0.0f, 0.0f};
-	hpBarFill_.transform.position = {hpBarPosX_, 10.0f, 0.0f};
+	hpBarFill_.transform.scale = {hpBarSize_.x, hpBarSize_.y, 1.0f};
+	hpBarFill_.transform.rotate = {0.0f, 0.0f, 0.0f};
+	hpBarFill_.transform.position = {hpBarPos_.x, hpBarPos_.y, 0.0f};
 
 	// 減った分
-	hpBarAfter_.transform.scale = {kHPBarWidth, 1.0f, 1.0f};
-	hpBarAfter_.transform.rotate = {0.3f, 0.0f, 0.0f};
-	hpBarAfter_.transform.position = {hpBarPosX_, 10.0f, 0.0f};
+	hpBarAfter_.transform.scale = {hpBarSize_.x, hpBarSize_.y, 1.0f};
+	hpBarAfter_.transform.rotate = {0.0f, 0.0f, 0.0f};
+	hpBarAfter_.transform.position = {hpBarPos_.x, hpBarPos_.y, 0.0f};
 
 	// 背景
-	hpBarBG_.transform.scale = {kHPBarWidth, 1.0f, 1.0f};
-	hpBarBG_.transform.rotate = {0.3f, 0.0f, 0.0f};
-	hpBarBG_.transform.position = {hpBarPosX_, 10.0f, 0.0f};
+	hpBarBG_.transform.scale = {hpBarSize_.x, hpBarSize_.y, 1.0f};
+	hpBarBG_.transform.rotate = {0.0f, 0.0f, 0.0f};
+	hpBarBG_.transform.position = {hpBarPos_.x, hpBarPos_.y, 0.0f};
 
 	// FPSObserver
 	fpsObserver_ = std::make_unique<FPSObserver>();
@@ -164,7 +164,7 @@ void HP::HPBarScaleChange() {
 	float hpRatio = currentHP_ / maxHP_;
 
 	// 新しいスケール
-	float newScale = hpRatio * kHPBarWidth;
+	float newScale = hpRatio * hpBarSize_.x;
 
 	// HPバー　減った分のアニメーション用変数の初期化
 	scaleAnimationHPBarAfter_.anim.Start(hpBarFill_.transform.scale.x, newScale, 1.0f, EaseType::EaseOutCubic);
@@ -173,9 +173,9 @@ void HP::HPBarScaleChange() {
 	hpBarFill_.transform.scale.x = newScale;
 
 	// X位置を調整してHPバーが左詰めに見えるようにする
-	float offsetX = (kHPBarWidth - hpBarFill_.transform.scale.x) / 2.0f;
-	hpBarFill_.transform.position.x = hpBarPosX_ - offsetX;
-	hpBarAfter_.transform.position.x = hpBarPosX_ - offsetX;
+	float offsetX = (hpBarSize_.x - hpBarFill_.transform.scale.x) / 2.0f;
+	hpBarFill_.transform.position.x = hpBarPos_.x - offsetX;
+	hpBarAfter_.transform.position.x = hpBarPos_.x - offsetX;
 }
 
 void HP::InvincibleTimerUpdate() {
@@ -213,6 +213,6 @@ void HP::AnimationHPBarAfter(float deltaTime) {
 	hpBarAfter_.transform.scale.x = scaleAnimationHPBarAfter_.temp;
 
 	// 座標の変更
-	float offsetX = (kHPBarWidth - hpBarAfter_.transform.scale.x) / 2.0f;
-	hpBarAfter_.transform.position.x = hpBarPosX_ - offsetX;
+	float offsetX = (hpBarSize_.x - hpBarAfter_.transform.scale.x) / 2.0f;
+	hpBarAfter_.transform.position.x = hpBarPos_.x - offsetX;
 }

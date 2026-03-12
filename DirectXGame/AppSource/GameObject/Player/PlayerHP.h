@@ -25,6 +25,10 @@ public:
 	// Getter等
 	float GetCurrentHP() { return currentHP_; }
 
+	// Setter
+	void SetHP(float hp) { currentHP_ = hp; }
+	void SetMaxHP(float maxHP) { maxHP_ = maxHP; }
+
 private:
 	// HPバーの構造体
 	struct HPBar {
@@ -76,14 +80,14 @@ private:
 	// 入力
 	SHEngine::Input* input_ = nullptr;
 
-	// HPバーの横幅
-	const float kHPBarWidth = 5.0f;
+	// HPバーのサイズ
+	Vector2 hpBarSize_ = {200.0f, 50.0f};
 
 	// モデルマネージャ
 	SHEngine::ModelManager* modelManager_ = nullptr;
 
 	// HPバー初期座標
-	float hpBarPosX_ = -20.0f;
+	Vector2 hpBarPos_ = {770.0f, -50.0f};
 
 	// HPバー　減った分のアニメーション用変数
 	AnimationBundle<float> scaleAnimationHPBarAfter_;

@@ -23,8 +23,14 @@ void ShigeScene::Initialize() {
 	colliderManager_ = std::make_unique<ColliderManager>();
 	Collider::SetColliderManager(colliderManager_.get());
 
+	itemManager_ = std::make_unique<ItemManager>();
+	itemManager_->Initialize(modelManager_);
+
+	playerHP_ = std::make_unique<Player::HP>();
+	playerHP_->Initialize(modelManager_, drawDataManager_, input_);
+
 	player_ = std::make_unique<Player::Base>();
-	player_->Initialize(modelManager_, drawDataManager_, input_, CharacterID::Warrior, shopScene_->GetItemManager());
+	player_->Initialize(modelManager_, drawDataManager_, input_, CharacterID::Warrior, itemManager_.get(), playerHP_.get());
 	player_->UpdateParameter(commonData_->pieces);
 
 	enemyManager_ = std::make_unique<EnemyManager>();
@@ -58,6 +64,8 @@ void ShigeScene::Initialize() {
 	controllers_.push_back(inputController_.get());
 	currentControllerIndex_ = 0;
 	player_->SetController(controllers_[currentControllerIndex_]); // AIコントローラーを適用
+
+	orthoCamera_=std::make_unique<Camera>();
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -84,8 +92,18 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		player_->SetController(controllers_[currentControllerIndex_]);
 	}
 
+	player_->SetHP(playerHP_->GetCurrentHP());
 	player_->Update(camera_->GetVPMatrix(), deltaTime);
 	player_->UpdateParameter(commonData_->pieces);
+
+	OrthographicDesc orthDesc;
+	orthDesc.SetValue();
+	orthoCamera_->SetProjectionMatrix(orthDesc);
+	orthoCamera_->SetScale({1, -1, 1});
+	orthoCamera_->SetPosition({0, 0, 0});
+	orthoCamera_->MakeMatrix();
+	playerHP_->Update(orthoCamera_->GetVPMatrix(), deltaTime);
+
 	map_->Update(camera_->GetVPMatrix());
 	enemyManager_->Update(deltaTime);
 	for (const auto& weapon : weapons_) {
@@ -144,6 +162,7 @@ void ShigeScene::Draw() {
 	map_->Draw(cmdObj);
 	objectRender_->Draw(cmdObj);
 	player_->Draw(cmdObj);
+	playerHP_->Draw(cmdObj);
 
 	waveSystem_->DrawImGui();
 

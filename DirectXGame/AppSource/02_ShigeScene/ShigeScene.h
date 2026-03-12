@@ -21,6 +21,7 @@
 #include <GameObject/Player/Controller/InputController.h>
 #include <GameObject/Weapon/IWeaponRender.h>
 #include <02_ShigeScene/ShopScene.h>
+#include <GameObject/Player/PlayerHP.h>
 
 class ShigeScene : public IScene {
 public:
@@ -42,6 +43,7 @@ private:// System系
 	std::unique_ptr<ColliderManager> colliderManager_;
 
 	std::unique_ptr<Player::Base> player_;
+	std::unique_ptr<Player::HP> playerHP_;
 	std::unique_ptr<AIController> aiController_;
 	std::unique_ptr<InputController> inputController_;
 
@@ -61,6 +63,7 @@ private:// System系
 
 	std::vector<DrawInfo> drawInfos_;
 	std::unique_ptr<ObjectRender> objectRender_;
+	std::unique_ptr<Camera> orthoCamera_;
 
 	JsonManager jsonManager_;
 
