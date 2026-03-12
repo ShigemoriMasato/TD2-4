@@ -34,4 +34,7 @@ protected:
 	WeaponData* weaponData_;
 	Player::Base* player_;
 
+	Piece* piece_;
+
+	bool isAnimation_ = false;
 };
