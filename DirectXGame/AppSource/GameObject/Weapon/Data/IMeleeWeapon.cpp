@@ -68,10 +68,7 @@ void IMeleeWeapon::Update(float deltaTime) {
 		config_.direction = atan2f(dir.y, dir.x);
 		config_.position = player_->GetTransform().position;
 
-		//攻撃オブジェクトを生成
-		std::unique_ptr<Swing> swing = std::make_unique<Swing>();
-		swing->Initialize(config_);
-		attackManager_->AddObj(std::move(swing));
+		Attack();
 
 		//攻撃回数を加算し、攻撃回数が最大値に達したら攻撃終了
 		attackCount_++;
@@ -81,4 +78,11 @@ void IMeleeWeapon::Update(float deltaTime) {
 			attackCount_ = 0;
 		}
 	}
+}
+
+void IMeleeWeapon::Attack() {
+	//攻撃オブジェクトを生成
+	std::unique_ptr<Swing> swing = std::make_unique<Swing>();
+	swing->Initialize(config_);
+	attackManager_->AddObj(std::move(swing));
 }

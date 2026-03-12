@@ -3,3 +3,4 @@
 #include "Data/Pistol.h"
 #include "Data/Sword.h"
 #include "Data/ShotGun.h"
+#include "Data/Spear.h"

@@ -28,7 +28,6 @@ public:
 private:
 
 	void MakeWeapon();
-	void MakeWeaponRender();
 
 	std::unique_ptr<DebugCamera> debugCamera_;
 	std::unique_ptr<GameCamera> gameCamera_;
