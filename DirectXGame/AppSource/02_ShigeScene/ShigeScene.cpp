@@ -56,12 +56,18 @@ void ShigeScene::Initialize() {
 	gameTimer_ = std::make_unique<GameTimer>();
 	gameTimer_->Initialize();
 
+	shopScene_ = std::make_unique<ShopScene>();
+	shopScene_->Ready(engine_, commonData_);
+	shopScene_->Initialize();
+
 	MakeWeapon();
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
 
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
+
+	shopScene_->Update();
 
 	gameCamera_->Update(deltaTime, player_->GetTransform().position);
 	Vector3 cameraPos = { 0.f, 0.f, 0.f };
@@ -113,7 +119,6 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	}
 
 	if (key[Key::Debug1] || gameTimer_->IsEnd()) {
-		return std::make_unique<ShopScene>();
 	}
 
 	return nullptr;
@@ -123,6 +128,8 @@ void ShigeScene::Draw() {
 	auto window = commonData_->mainWindow.second.get();
 	auto display = commonData_->display.get();
 	auto cmdObj = commonData_->cmdObject.get();
+
+	shopScene_->DrawReady();
 
 	display->PreDraw(cmdObj, true);
 
@@ -134,6 +141,8 @@ void ShigeScene::Draw() {
 	for (const auto& render : weaponRenders_) {
 		render->Draw(cmdObj);
 	}
+
+	shopScene_->Draw();
 
 	display->PostDraw(cmdObj);
 

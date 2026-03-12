@@ -17,6 +17,7 @@
 #include <GameObject/Item/ItemManager.h>
 #include <GameObject/Enemy/WaveSystem.h>
 #include <GameObject/GameTimer.h>
+#include <02_ShigeScene/ShopScene.h>
 
 class ShigeScene : public IScene {
 public:
@@ -57,4 +58,9 @@ private:
 
 	float baseRadius_ = 4.0f;
 	float baseHeight_ = 2.0f;
+
+private:// Shop
+
+	std::unique_ptr<ShopScene> shopScene_;
+
 };

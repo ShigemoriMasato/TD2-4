@@ -16,6 +16,8 @@ void DebugCamera::Initialize(Input* input) {
 	spherical_.x = 20.0f;
 	spherical_.y = std::numbers::pi_v<float> / 2;
 	spherical_.z = -std::numbers::pi_v<float> / 2;
+
+	SetProjectionMatrix(PerspectiveFovDesc());
 }
 
 void DebugCamera::Update() {
@@ -56,7 +58,6 @@ void DebugCamera::Update() {
 	//===================
 	//座標の適用
 	//===================
-	SetProjectionMatrix(PerspectiveFovDesc());
 	MakeMatrix();
 }
 

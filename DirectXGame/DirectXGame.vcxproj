@@ -93,7 +93,13 @@
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
-copy "$(ProjectDir)dxil.dll" "$(TargetDir)dxil.dll"
+
+if exist "$(WindowsSdkDir)bin$(TargetPlatformVersion)\arm64\dxil.dll" ( 
+copy "$(WindowsSdkDir)bin$(TargetPlatformVersion)\arm64\dxil.dll" "(TargetDir)dxil.dll"
+) else if exist "$(WindowsSdkDir)bin$(TargetPlatformVersion)\x64\dxil.dll" ( 
+copy "$(WindowsSdkDir)bin$(TargetPlatformVersion)\x64\dxil.dll" "(TargetDir)dxil.dll"
+)
+
 xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -122,7 +128,13 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
-copy "$(ProjectDir)dxil.dll" "$(TargetDir)dxil.dll"
+
+if exist "$(WindowsSdkDir)bin$(TargetPlatformVersion)\arm64\dxil.dll" ( 
+copy "$(WindowsSdkDir)bin$(TargetPlatformVersion)\arm64\dxil.dll" "(TargetDir)dxil.dll"
+) else if exist "$(WindowsSdkDir)bin$(TargetPlatformVersion)\x64\dxil.dll" ( 
+copy "$(WindowsSdkDir)bin$(TargetPlatformVersion)\x64\dxil.dll" "(TargetDir)dxil.dll"
+)
+
 xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -152,7 +164,13 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
-copy "$(ProjectDir)dxil.dll" "$(TargetDir)dxil.dll"
+
+if exist "$(WindowsSdkDir)bin$(TargetPlatformVersion)\arm64\dxil.dll" ( 
+copy "$(WindowsSdkDir)bin$(TargetPlatformVersion)\arm64\dxil.dll" "(TargetDir)dxil.dll"
+) else if exist "$(WindowsSdkDir)bin$(TargetPlatformVersion)\x64\dxil.dll" ( 
+copy "$(WindowsSdkDir)bin$(TargetPlatformVersion)\x64\dxil.dll" "(TargetDir)dxil.dll"
+)
+
 xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -274,6 +292,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Weapon\Data\ShotGun.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Spear.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Thrust.cpp" />
+    <ClCompile Include="AppSource\Shop\ShopDisplay.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\DrawInfo.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
@@ -393,6 +412,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\Data\ShotGun.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Data\Spear.h" />
     <ClInclude Include="AppSource\GameObject\Attack\Thrust.h" />
+    <ClInclude Include="AppSource\Shop\ShopDisplay.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

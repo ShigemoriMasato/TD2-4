@@ -8,7 +8,13 @@ void ShopCursor::Initialize(KeyManager* keyManager, PieceManager* pieceManager) 
 
 void ShopCursor::Update(Camera* camera) {
 	Vector2 cursor = keyManager_->GetCursorPos();
+	cursor.x *= 2.0f;
 	worldPos_ = GetWorldCursor(camera, cursor);
+
+	ImGui::Begin("Cursor");
+	ImGui::Text("Screen Pos: (%.2f, %.2f)", cursor.x, cursor.y);
+	ImGui::Text("World Pos: (%.2f, %.2f, %.2f)", worldPos_.x, worldPos_.y, worldPos_.z);
+	ImGui::End();
 }
 
 void ShopCursor::EditPiece(BackPack* backPack) {

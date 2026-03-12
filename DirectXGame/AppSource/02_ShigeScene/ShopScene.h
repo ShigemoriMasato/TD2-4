@@ -13,6 +13,7 @@
 #include <Shop/PieceManager.h>
 #include <Shop/Shop.h>
 #include <GameObject/Player/Parameter/ParameterRender.h>
+#include <Shop/ShopDisplay.h>
 
 class ShopScene : public IScene {
 public:
@@ -21,6 +22,7 @@ public:
 
 	void Initialize() override;
 	std::unique_ptr<IScene> Update() override;
+	void DrawReady();
 	void Draw() override;
 
 private:
@@ -41,4 +43,10 @@ private:
 
 	std::unique_ptr<ParameterRender> parameterRender_;
 	std::unique_ptr<Camera> orthoCamera_;
+
+	std::unique_ptr<ShopDisplay> shopDisplay_;
+
+	std::unique_ptr<SHEngine::RenderObject> debugObj_;
+	Transform debugTransform_;
+	Vector4 debugColor_ = { 0.0f, 0.0f, 0.0f, 0.1f };
 };

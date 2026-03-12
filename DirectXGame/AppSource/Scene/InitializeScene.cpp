@@ -81,7 +81,8 @@ void InitializeScene::Initialize() {
 	keyManager->SetStick(Key::Down, true, true, -0.5f);
 
 	keyManager->SetMouse(Key::Hold, 0, KeyState::Hold);
-	keyManager->SetMouse(Key::Erase, 1, KeyState::Trigger);
+	keyManager->SetMouse(Key::Erase, 2, KeyState::Trigger);
+	keyManager->SetMouse(Key::Rotate, 1, KeyState::Trigger);
 	keyManager->SetKey(Key::Rotate, DIK_R, KeyState::Trigger);
 
 	//================================================================================
@@ -113,6 +114,7 @@ void InitializeScene::Initialize() {
 std::unique_ptr<IScene> InitializeScene::Update() {
 	//更新処理
 	commonData_->cmdObject->ResetCommandList();
+	return std::make_unique<TitleScene>();
 	return std::make_unique<YokoScene>();
 }
 

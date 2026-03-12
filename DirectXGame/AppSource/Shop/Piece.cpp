@@ -33,7 +33,8 @@ bool Piece::Put(BackPack* backPack) {
 	}
 
 	for (const auto& chip : chips_) {
-		backPack->SetSlot(chip, Slot::Rank1);
+		auto slot = GetChipPos(chip);
+		backPack->SetSlot(slot, Slot::Rank1);
 	}
 	
 	pieceManager_->MoveShopToHold(this);

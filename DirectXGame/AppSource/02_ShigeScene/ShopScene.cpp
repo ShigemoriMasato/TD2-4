@@ -1,5 +1,4 @@
 #include "ShopScene.h"
-#include "ShigeScene.h"
 
 ShopScene::~ShopScene() {
 	commonData_->pieces = pieceManager_->GetHoldPieces();
@@ -11,6 +10,9 @@ void ShopScene::Initialize() {
 	
 	debugCamera_ = std::make_unique<DebugCamera>();
 	debugCamera_->Initialize(input_);
+	PerspectiveFovDesc desc;
+	desc.SetValue(640.0f);
+	debugCamera_->SetProjectionMatrix(desc);
 
 	grid_ = std::make_unique<Grid>();
 	grid_->Initialize(drawDataManager_);
@@ -47,6 +49,19 @@ void ShopScene::Initialize() {
 	parameterRender_->Initialize(modelManager_, drawDataManager_, engine_);
 
 	orthoCamera_ = std::make_unique<Camera>();
+
+	shopDisplay_ = std::make_unique<ShopDisplay>();
+	//PlaneのDrawDataを取得
+	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
+	shopDisplay_->Initialize(commonData_->cmdObject.get(), drawData, textureManager_);
+
+	debugObj_ = std::make_unique<SHEngine::RenderObject>("ShopDebug");
+	debugObj_->Initialize();
+	debugObj_->SetDrawData(drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(0).drawDataIndex));
+	debugObj_->psoConfig_.vs = "Simple.VS.hlsl";
+	debugObj_->psoConfig_.ps = "Color.PS.hlsl";
+	debugObj_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+	debugObj_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 }
 
 std::unique_ptr<IScene> ShopScene::Update() {
@@ -59,6 +74,8 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	shop_->Initialize(itemManager_.get());
 
 #endif
+
+	shopDisplay_->Update();
 
 	debugCamera_->Update();
 	grid_->Update(debugCamera_->GetCenter(), debugCamera_->GetVPMatrix());
@@ -91,34 +108,39 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	orthoCamera_->MakeMatrix();
 	//parameterRender_->Update(orthoCamera_->GetVPMatrix(), commonData_->playerParameterData);
 
-	if (key[Key::Debug1]) {
-		return std::make_unique<ShigeScene>();
-	}
+	Matrix4x4 wvp = Matrix::MakeAffineMatrix(debugTransform_.scale, debugTransform_.rotate, debugTransform_.position) * debugCamera_->GetVPMatrix();
+	debugObj_->CopyBufferData(0, &wvp, sizeof(wvp));
+	debugObj_->CopyBufferData(1, &debugColor_, sizeof(debugColor_));
+
+#ifdef USE_IMGUI
+
+	ImGui::Begin("DebugObj");
+
+	ImGui::DragFloat3("Scale", &debugTransform_.scale.x, 0.1f);
+	ImGui::DragFloat3("Rotate", &debugTransform_.rotate.x, 0.1f);
+	ImGui::DragFloat3("Position", &debugTransform_.position.x, 0.1f);
+	ImGui::ColorEdit4("Color", &debugColor_.x);
+
+	ImGui::End();
+
+#endif
 
 	return nullptr;
 }
 
-void ShopScene::Draw() {
-	// シーン遷移のテスト用に背景を青く塗る
-	auto window = commonData_->mainWindow.second.get();
-	auto display = commonData_->display.get();
+void ShopScene::DrawReady() {
 	auto cmdObj = commonData_->cmdObject.get();
-	display->PreDraw(cmdObj, true);
+
+	shopDisplay_->PreDraw();
 
 	grid_->Draw(cmdObj);
 	objectRender_->Draw(cmdObj);
 	//parameterRender_->Draw(cmdObj);
+	debugObj_->Draw(cmdObj);
 
-	display->PostDraw(cmdObj);
+	shopDisplay_->PostDraw();
+}
 
-	window->PreDraw(cmdObj, true);
-
-#ifdef USE_IMGUI
-	display->DrawImGui();
-	weaponDebugger_->Draw();
-
-	engine_->DrawImGui();
-#endif
-
-	window->PostDraw(cmdObj);
+void ShopScene::Draw() {
+	shopDisplay_->Draw();
 }
