@@ -13,10 +13,37 @@ void Piece::Initialize(const Item& item, int rank) {
 		maxPos.z = (float)std::max(int(maxPos.z), chips_[i].second);
 	}
 	middleLocalPos_ = Vector3(maxPos.x * 0.5f, 0.0f, maxPos.z * 0.5f);
+	ignores_.reserve(chips_.size());
 }
 
-bool Piece::CanPut(BackPack* backPack)  {
+bool Piece::Update(BackPack* backPack, float deltaTime) {
+	if (!isUsing_) {
+		return false;
+	}
+
+	useTimer_ += deltaTime;
+	if (useTimer_ >= 10.0f) {
+		isUsing_ = false;
+
+		// 使用が終わったらチップをひとつバックパックから外す
+		backPack->SetSlot(GetChipPos(chips_[ignores_.size()]), Slot::Empty);
+		ignores_.push_back(chips_[ignores_.size()]);
+		if (chips_.size() == ignores_.size()) {
+			isActive_ = false;
+			return false;
+		}
+
+		useTimer_ = 0.0f;
+	}
+
+	return true;
+}
+
+bool Piece::CanPut(BackPack* backPack) {
 	for (const auto& chip : chips_) {
+		if (IsIgnored(chip)) {
+			continue;
+		}
 		std::pair<int, int> slotPos = GetChipPos(chip);
 		if (backPack->GetSlot(slotPos) != Slot::Empty) {
 			isPlaced_ = false;
@@ -33,10 +60,13 @@ bool Piece::Put(BackPack* backPack) {
 	}
 
 	for (const auto& chip : chips_) {
+		if(IsIgnored(chip)) {
+			continue;
+		}
 		auto slot = GetChipPos(chip);
 		backPack->SetSlot(slot, Slot::Rank1);
 	}
-	
+
 	pieceManager_->MoveShopToHold(this);
 
 	isPlaced_ = false;
@@ -46,6 +76,9 @@ bool Piece::Put(BackPack* backPack) {
 
 void Piece::Remove(BackPack* backPack) {
 	for (const auto& chip : chips_) {
+		if (IsIgnored(chip)) {
+			continue;
+		}
 		auto slot = GetChipPos(chip);
 		backPack->SetSlot(slot, Slot::Empty);
 	}
@@ -61,8 +94,11 @@ void Piece::SetPosition(const Vector3& pos) {
 	position_ = Vector3(std::round(mappedPos.x), 0.0f, std::round(mappedPos.z));
 }
 
-bool Piece::IsHovered(const Vector3& cursorPos, BackPack* backPack)  {
+bool Piece::IsHovered(const Vector3& cursorPos, BackPack* backPack) {
 	for (const auto& chip : chips_) {
+		if (IsIgnored(chip)) {
+			continue;
+		}
 		std::pair<int, int> slotPos = GetChipPos(chip);
 		Vector3 slotWorldPos = backPack->GetWorldPos(slotPos);
 		if (std::abs(cursorPos.x - slotWorldPos.x) < 0.5f &&
@@ -78,6 +114,9 @@ bool Piece::IsHovered(const Vector3& cursorPos, BackPack* backPack)  {
 std::vector<DrawInfo> Piece::GetDrawInfos() const {
 	std::vector<DrawInfo> drawInfos;
 	for (const auto& chip : chips_) {
+		if(IsIgnored(chip)) {
+			continue;
+		}
 		DrawInfo info;
 		auto slotPos = GetChipPos(chip);
 		info.position = { (float)slotPos.first + 0.5f, 0.0f, (float)slotPos.second + 0.5f };
@@ -88,7 +127,7 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		if (isHovered_) {
 			info.color = 0xffff00ff; // 黄色
 		}
-		if(isPlaced_) {
+		if (isPlaced_) {
 			info.color = 0x00ffffff; // シアン
 		}
 
@@ -98,17 +137,17 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 	info.modelIndex = itemData_.modelID;
 	info.position = middleLocalPos_ + Vector3(itemData_.visualOffsetCells.x, 0.0f, itemData_.visualOffsetCells.y);
 	switch (direction_) {
-		case Direction::Up:
-			break;
-		case Direction::Right:
-			info.position = Vector3(info.position.z, info.position.y, -info.position.x);
-			break;
-		case Direction::Down:
-			info.position = Vector3(-info.position.x, info.position.y, -info.position.z);
-			break;
-		case Direction::Left:
-			info.position = Vector3(-info.position.z, info.position.y, info.position.x);
-			break;
+	case Direction::Up:
+		break;
+	case Direction::Right:
+		info.position = Vector3(info.position.z, info.position.y, -info.position.x);
+		break;
+	case Direction::Down:
+		info.position = Vector3(-info.position.x, info.position.y, -info.position.z);
+		break;
+	case Direction::Left:
+		info.position = Vector3(-info.position.z, info.position.y, info.position.x);
+		break;
 	}
 	info.position += Vector3(0.5f, 0.0f, 0.5f) + position_;
 	info.scale = Vector3(0.5f, 0.5f, 0.5f);
@@ -125,6 +164,10 @@ void Piece::RotateRight() {
 
 void Piece::RotateLeft() {
 	direction_ = static_cast<Direction>((static_cast<int>(direction_) + 3) % 4);
+}
+
+bool Piece::IsIgnored(const std::pair<int, int>& chip) const {
+	return std::find_if(ignores_.begin(), ignores_.end(), [&chip](const std::pair<int, int>& c) { return c == chip; }) != ignores_.end();
 }
 
 std::pair<int, int> Piece::GetChipPos(const std::pair<int, int>& chip) const {

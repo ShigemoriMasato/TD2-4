@@ -68,7 +68,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	MakeWeapon();
 
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
-
+	shopScene_->SetDeltaTime(deltaTime);
 	shopScene_->Update();
 
 	gameCamera_->Update(deltaTime, player_->GetTransform().position);

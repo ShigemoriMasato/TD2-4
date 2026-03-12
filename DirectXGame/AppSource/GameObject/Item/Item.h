@@ -51,7 +51,7 @@ public:
 	std::string modelPath;					// モデルパス
 	int modelID = -1;
 	int id = -1;							// アイテムID（識別用）
-	bool isActive = true;					// アイテムがショップに現れるかどうか(ゲームに出現するかどうか)
+	bool isActive = false;					// アイテムがショップに現れるかどうか(ゲームに出現するかどうか)
 	Vector4 color = { 1, 1, 1, 1 };	//アイテムの色
 
 	// 違和感なく見えるモデル位置にするためのオフセット

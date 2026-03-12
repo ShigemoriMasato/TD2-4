@@ -111,8 +111,7 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	}
 	//parameterRender_->Update(orthoCamera_->GetVPMatrix(), commonData_->playerParameterData);
 
-	//最後にコモンデータにピースを保存する
-	pieceManager_->GetHoldPieces(commonData_->pieces);
+	commonData_->pieces = pieceManager_->Update(backPack_.get(), deltaTime_);
 
 	Matrix4x4 wvp = Matrix::MakeAffineMatrix(debugTransform_.scale, debugTransform_.rotate, debugTransform_.position) * debugCamera_->GetVPMatrix();
 	debugObj_->CopyBufferData(0, &wvp, sizeof(wvp));

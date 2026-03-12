@@ -22,7 +22,7 @@ public:
 
 	void Initialize(const Item& item, int rank);
 
-	void Update(BackPack* backPack, float deltaTime);
+	bool Update(BackPack* backPack, float deltaTime);
 
 	void SetPosition(const Vector3& pos);
 
@@ -36,6 +36,7 @@ public:
 	std::vector<DrawInfo> GetDrawInfos() const;
 	Item GetItem() const { return itemData_; }
 	int GetRank() const { return rank_; }
+	bool IsActive() const { return isActive_; }
 
 	void RotateRight();
 	void RotateLeft();
@@ -43,6 +44,7 @@ public:
 
 private:
 
+	bool IsIgnored(const std::pair<int, int>& chip) const;
 	std::pair<int, int> GetChipPos(const std::pair<int, int>& chip) const;
 
 	static inline PieceManager* pieceManager_ = nullptr;
@@ -52,6 +54,7 @@ private:
 	Item itemData_;
 	int rank_ = 0;
 	std::vector<std::pair<int, int>> chips_;
+	std::vector<std::pair<int, int>> ignores_;
 
 	Vector3 middleLocalPos_ = { 0.0f, 0.0f, 0.0f };
 	Vector3 position_{};
@@ -60,4 +63,7 @@ private:
 	bool isPlaced_ = false;
 
 	bool isUsing_ = false;
+	bool isActive_ = true;
+
+	float useTimer_ = 0.0f;
 };

@@ -16,6 +16,19 @@ void PieceManager::UpdateItemInfo(ItemManager* itemManager) {
 	}
 }
 
+std::vector<Piece*> PieceManager::Update(BackPack* backPack, float deltaTime) {
+	std::vector<Piece*> usedPieces;
+	for (const auto& piece : holdPieces_) {
+		if (piece->Update(backPack, deltaTime)) {
+			usedPieces.push_back(piece.get());
+		}
+	}
+	holdPieces_.erase(std::remove_if(holdPieces_.begin(), holdPieces_.end(),
+		[](const std::unique_ptr<Piece>& piece) { return !piece->IsActive(); }),
+		holdPieces_.end());
+	return usedPieces;
+}
+
 void PieceManager::RefreshShopPieces(std::vector<std::unique_ptr<Piece>> shopPieces) {
 	for (size_t i = 0; i < shopPieces_.size(); ++i) {
 		for (size_t j = 0; j < allPieces_.size(); ++j) {
@@ -67,11 +80,4 @@ void PieceManager::RemovePiece(Piece* piece) {
 
 std::vector<Piece*> PieceManager::GetAllPieces() {
 	return allPieces_;
-}
-
-void PieceManager::GetHoldPieces(std::vector<Piece*>& pieces) {
-	pieces.clear();
-	for (const auto& piece : holdPieces_) {
-		pieces.push_back(piece.get());
-	}
 }

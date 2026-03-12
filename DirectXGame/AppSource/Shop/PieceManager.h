@@ -9,6 +9,7 @@ public:
 	void Initialize();
 
 	void UpdateItemInfo(ItemManager* itemManager);
+	std::vector<Piece*> Update(BackPack* backPack, float deltaTime);
 
 	// ショップのピースを更新する。ショップのピースは別のクラスで抽選したものを引数で渡す
 	void RefreshShopPieces(std::vector<std::unique_ptr<Piece>> shopPieces);
@@ -21,8 +22,6 @@ public:
 
 	// 場にあるピースを全て取得する。当たり判定用
 	std::vector<Piece*> GetAllPieces();
-	// 最後保存する用
-	void GetHoldPieces(std::vector<Piece*>& pieces);
 
 private:
 

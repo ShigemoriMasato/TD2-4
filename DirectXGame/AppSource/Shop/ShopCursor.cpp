@@ -85,10 +85,6 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 				pieceManager_->RemovePiece(piece);
 			}
 
-			if(keys[Key::Rotate]) {
-				piece->RotateRight();
-			}
-
 			if (keys[Key::Use]) {
 				piece->Use();
 			}

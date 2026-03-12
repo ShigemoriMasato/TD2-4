@@ -24,6 +24,7 @@ public:
 	std::unique_ptr<IScene> Update() override;
 	void DrawReady();
 	void Draw() override;
+	void SetDeltaTime(float& deltaTime) { deltaTime_ = deltaTime; }
 
 private:
 
@@ -49,4 +50,6 @@ private:
 	std::unique_ptr<SHEngine::RenderObject> debugObj_;
 	Transform debugTransform_;
 	Vector4 debugColor_ = { 0.0f, 0.0f, 0.0f, 0.1f };
+
+	float deltaTime_ = 0.0f;
 };
