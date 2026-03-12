@@ -57,7 +57,6 @@ void ShigeScene::Initialize() {
 	gameTimer_->Initialize();
 
 	MakeWeapon();
-	MakeWeaponRender();
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -187,6 +186,9 @@ void ShigeScene::MakeWeapon() {
 				weapon = std::make_unique<ShotGun>();
 				break;
 			}
+			case WeaponType::Spear:
+				weapon = std::make_unique<Spear>();
+				break;
 			}
 
 			weaponRender->Initialize(drawDataManager_, modelManager_, weapon.get(), piece->GetItem());

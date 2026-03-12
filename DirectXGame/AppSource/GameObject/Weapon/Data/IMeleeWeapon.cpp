@@ -85,4 +85,4 @@ void IMeleeWeapon::Attack() {
 	std::unique_ptr<Swing> swing = std::make_unique<Swing>();
 	swing->Initialize(config_);
 	attackManager_->AddObj(std::move(swing));
-
+}

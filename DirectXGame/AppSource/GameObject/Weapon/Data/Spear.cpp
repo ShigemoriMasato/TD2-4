@@ -8,8 +8,14 @@ void Spear::Initialize(int weaponID, Player::Base* player) {
 }
 
 void Spear::Attack() {
-	for (int i = 0; i < 3; ++i) {
+	Vector3 basePos = config_.position;
+	Vector3 dir = { cosf(config_.direction), 0.0f, sinf(config_.direction) };
+	float range = config_.range;
+	constexpr float bulletRadius = 0.5f;
+	int ballCount = static_cast<int>(range / (bulletRadius * 2.0f));
+	for (int i = 0; i < ballCount; ++i) {
 		std::unique_ptr<Bullet> bullet = std::make_unique<Bullet>();
+		config_.position = i * bulletRadius * 2.0f * dir + basePos;
 		bullet->Initialize(config_);
 		attackManager_->AddObj(std::move(bullet));
 	}
