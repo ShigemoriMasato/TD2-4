@@ -21,6 +21,8 @@ public:
 	void SetPiecePtr(Piece* piece) { piece_ = piece; }
 	Piece* GetPiecePtr() const { return piece_; }
 
+	bool GetIsAnimation() const { return isAnimation_;}
+
 protected:
 
 	static inline AttackManager* attackManager_ = nullptr;
@@ -32,7 +34,4 @@ protected:
 	WeaponData* weaponData_;
 	Player::Base* player_;
 
-private:
-
-	Piece* piece_ = nullptr;
 };

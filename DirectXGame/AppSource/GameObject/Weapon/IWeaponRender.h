@@ -3,17 +3,18 @@
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
 #include <GameObject/Weapon/IWeapon.h>
+#include "GameObject/EasingAnimation/AnimationBundle.h"
 
 class IWeaponRender {
 public:
 	// 初期化関数
-	virtual void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, IWeapon* weapon, Item itemData);
+	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, IWeapon* weapon, Item itemData);
 
 	// 更新関数
-	virtual void Update(Matrix4x4 vpMatrix, Vector3 playerPos);
+	void Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTime);
 
 	// 描画関数
-	virtual void Draw(CmdObj* cmdObj);
+	void Draw(CmdObj* cmdObj);
 
 	// Setter
 	void SetPosition(Vector3 position) { transform_.position = position; }
@@ -45,4 +46,7 @@ protected:
 	IWeapon* weapon_;
 
 	Matrix4x4 rotationMatrix_ = Matrix4x4::Identity();
+
+	// アニメーション用の変数
+	AnimationBundle<Vector3> bundle_;
 };
