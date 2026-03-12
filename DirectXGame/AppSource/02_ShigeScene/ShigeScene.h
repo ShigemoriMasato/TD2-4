@@ -67,8 +67,6 @@ private:
 	// 武器の配置関連の変数
 	float baseRadius_ = 4.0f; // 円の半径
 	float baseHeight_ = 2.0f; // 高さ
-	float baseRadius_ = 4.0f;
-	float baseHeight_ = 2.0f;
 
 private:// Shop
 
