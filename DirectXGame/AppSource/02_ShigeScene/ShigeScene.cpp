@@ -145,6 +145,8 @@ void ShigeScene::Draw() {
 	objectRender_->Draw(cmdObj);
 	player_->Draw(cmdObj);
 
+	waveSystem_->DrawImGui();
+
 	for (const auto& render : weaponRenders_) {
 		render->Draw(cmdObj);
 	}
