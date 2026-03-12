@@ -13,20 +13,7 @@ void StateNormal::Update(Base* player, float deltaTime) {
 	Vector3& rotate = player->GetTransform().rotate;
 
 	// 移動入力の取得
-	Vector2 dir = {0.0f, 0.0f};
-	auto input = player->GetInput();
-	if (input->GetKeyState(DIK_W)) {
-		dir.y += 1.0f;
-	}
-	if (input->GetKeyState(DIK_S)) {
-		dir.y -= 1.0f;
-	}
-	if (input->GetKeyState(DIK_D)) {
-		dir.x += 1.0f;
-	}
-	if (input->GetKeyState(DIK_A)) {
-		dir.x -= 1.0f;
-	}
+	Vector2 dir = player->GetController()->GetMoveDirection();
 
 	// 正規化
 	float length = std::sqrt(dir.x * dir.x + dir.y * dir.y);
@@ -52,7 +39,7 @@ void StateNormal::Update(Base* player, float deltaTime) {
 	}
 
 	// ダッシュのトリガー判定
-	if (input->GetKeyState(DIK_SPACE) && !input->GetPreKeyState(DIK_SPACE) && player->CanDash() && length > 0.0f) {
+	if (player->GetController()->IsDashTriggered() && player->CanDash() && length > 0.0f) {
 		// ダッシュ方向をPlayerにセットして、状態をダッシュに切り替える
 		player->SetDashDir(dir);
 		player->ChangeState(std::make_unique<Player::StateDash>());
