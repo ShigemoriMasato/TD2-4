@@ -132,6 +132,7 @@ void ShopScene::DrawReady() {
 
 	grid_->Draw(cmdObj);
 	objectRender_->Draw(cmdObj);
+	weaponDebugger_->Draw();
 	//parameterRender_->Draw(cmdObj);
 	//debugObj_->Draw(cmdObj);
 
