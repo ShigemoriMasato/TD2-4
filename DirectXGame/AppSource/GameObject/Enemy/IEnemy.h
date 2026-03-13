@@ -5,7 +5,7 @@
 
 class EnemyManager;
 
-class IEnemy  : public Collider {
+class IEnemy : public Collider {
 public:
 
 	static void SetModelManager(SHEngine::ModelManager* modelManager) { modelManager_ = modelManager; }
@@ -13,6 +13,7 @@ public:
 	virtual void Initialize(Vector3* playerPos, EnemyManager* manager, int id);
 	void SetPosition(const Vector3& pos) { drawInfo_.position = pos; }
 	virtual void Update(float deltaTime) {};
+	void UpdateCollider();
 
 	DrawInfo GetDrawInfo() const { return drawInfo_; }
 	void OnCollision(Collider* other) override;
@@ -20,7 +21,7 @@ public:
 	void KillMe();
 	bool IsActive() const { return isActive_; }
 
-	void SetHP(int hp){hp_ = hp;}
+	void SetHP(int hp) { hp_ = hp; }
 
 protected:
 
@@ -29,6 +30,9 @@ protected:
 	DrawInfo drawInfo_{};
 	std::unique_ptr<Circle> collCircle_;
 	Vector3* playerPos_;
+
+	Vector3 velocity_{};
+	Vector3 position_{};
 
 private:
 
@@ -39,5 +43,6 @@ private:
 	bool isActive_ = true;
 	int hp_ = 1;
 
+	std::map<int, int> damageIDs_;
 };
 

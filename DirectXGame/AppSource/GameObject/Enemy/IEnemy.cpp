@@ -18,6 +18,12 @@ void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id) {
 	SetColliderConfig(config);
 }
 
+void IEnemy::UpdateCollider() {
+	position_ += velocity_;
+	drawInfo_.position += velocity_;
+	collCircle_->center = { position_.x, position_.z };
+}
+
 void IEnemy::OnCollision(Collider* other) {
 	if (other->GetOwnTag() & CollTag::Enemy) {
 		auto enemy = static_cast<IEnemy*>(other);
@@ -25,20 +31,25 @@ void IEnemy::OnCollision(Collider* other) {
 		Vector3 dir = (otherPos - drawInfo_.position).Normalize();
 		float dist = (otherPos - drawInfo_.position).Length();
 		//大体のdeltaTimeで押す
-		drawInfo_.position -= dir * dist * 0.016f * 5.0f;
+		velocity_ -= dir * dist * 0.016f * 5.0f;
 
-		if ((otherPos - drawInfo_.position).Length() < 1.0f) {
-			getLogger("Enemy")->warn("Not Resolved !?!?!?!?!?!?!?!?");
-		} else {
-			getLogger("Enemy")->warn("Problem Clear !");
-		}
 		collCircle_->center = { drawInfo_.position.x, drawInfo_.position.z };
 		return;
 	}
 
+	int id = other->GetID();
+	auto it = damageIDs_.find(id);
+	if (it != damageIDs_.end()) {
+		// 既にダメージを受けている場合は無視
+		return;
+	}
+	damageIDs_[id] = 1;
 	auto attack = static_cast<IAttackObject*>(other);
 	hp_ -= static_cast<int>(attack->GetDamage());
-	KillMe();
+
+	if (hp_ <= 0) {
+		KillMe();
+	}
 }
 
 void IEnemy::KillMe() {

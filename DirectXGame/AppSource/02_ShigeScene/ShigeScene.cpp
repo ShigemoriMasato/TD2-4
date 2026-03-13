@@ -49,8 +49,8 @@ void ShigeScene::Initialize() {
 
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 
-	waveSystem_ = std::make_unique<WaveSystem>();
-	waveSystem_->Initialize(enemyManager_.get(), commonData_->stageNum++, map_->GetMinX(), map_->GetMaxX(), map_->GetMinZ(), map_->GetMaxZ());
+	waveSystem_ = std::make_unique<LevelSystem>();
+	waveSystem_->Initialize(enemyManager_.get(), commonData_->stageNum++, player_->GetPositionPtr(), map_->GetMinX(), map_->GetMaxX(), map_->GetMinZ(), map_->GetMaxZ());
 
 	gameTimer_ = std::make_unique<GameTimer>();
 	gameTimer_->Initialize();

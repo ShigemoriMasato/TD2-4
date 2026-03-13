@@ -1,14 +1,15 @@
 #pragma once
 #include <GameObject/Enemy/EnemyManager.h>
+#include <Utility/DataStructures.h>
 #include <Tool/Binary/BinaryManager.h>
 #include <random>
 
-class WaveSystem {
+class LevelSystem {
 public:
 
-	~WaveSystem();
+	~LevelSystem();
 
-	void Initialize(EnemyManager* enemyManager, int stageNum, float minX, float maxX, float minZ, float maxZ);
+	void Initialize(EnemyManager* enemyManager, int stageNum, Vector3* playerPosPtr, float minX, float maxX, float minZ, float maxZ);
 
 	void Update(float deltaTime);
 	void Stop() { isActive_ = false; }
@@ -17,7 +18,7 @@ public:
 
 private:
 
-	void Adjust();
+	void AdjustDifficult();
 
 	void Load();
 	void Save();
@@ -28,20 +29,20 @@ private:
 		FinalBoss,			// ボス
 	};
 
-	struct WaveConfig {
-		bool isAdjust = true;
-		float spawnInterval = 1.0f; // 敵をスポーンする間隔
-		float enemyCount = 5; // スポーンする敵の数
-		float enemyHp = 1.0f; // スポーンする敵のHP
+	struct BaseSystem {
+		float spawnInterval = 3.0f; // 敵をスポーンする間隔
+		float enemyCount = 2; // スポーンする敵の数
+		float enemyHp = 5.0f; // スポーンする敵のHP
 		uint32_t event = uint32_t(Event::SpawnNormalEnemy); // イベント
 	};
 
-	std::vector<WaveConfig> waveConfigs_;
+	BaseSystem config_;
 
 	EnemyManager* enemyManager_ = nullptr;
 
 	int stageNum_ = 0;
 	float timer_ = 0.0f;
+	float allTimer_ = 0.0f;
 
 	std::mt19937 rng_{ std::random_device{}() };
 
@@ -61,4 +62,6 @@ private:	//Edit用
 	float increaseHp_ = 5.0f; // 敵のHPの増加量
 
 	BinaryManager binaryManager_;
+
+	Vector3* playerPosPtr_ = nullptr;
 };

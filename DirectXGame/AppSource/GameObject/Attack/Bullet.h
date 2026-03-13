@@ -20,7 +20,6 @@ private:
 	float timer_ = 0.0f;
 	static constexpr float radius_ = 0.4f; // 弾の半径
 	
-	std::vector<int> hitEnemyIds_; // 貫通した敵のIDを保存するベクター
 	int penetrationCount_ = 0; // 貫通回数
 	int hitCount_ = 0;
 };

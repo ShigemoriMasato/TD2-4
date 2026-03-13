@@ -15,7 +15,7 @@
 #include <Camera/GameCamera.h>
 #include <GameObject/Weapon/Render/WeaponRenderInclude.h>
 #include <GameObject/Item/ItemManager.h>
-#include <GameObject/Enemy/WaveSystem.h>
+#include <GameObject/Enemy/LevelSystem.h>
 #include <GameObject/GameTimer.h>
 #include <GameObject/Player/Controller/AIController.h>
 #include <GameObject/Player/Controller/InputController.h>
@@ -58,7 +58,7 @@ private:// System系
 
 	std::unique_ptr<WeaponDatabase> weaponDatabase_;
 	std::unique_ptr<AttackManager> attackManager_;
-	std::unique_ptr<WaveSystem> waveSystem_;
+	std::unique_ptr<LevelSystem> waveSystem_;
 	std::unique_ptr<GameTimer> gameTimer_;
 	std::vector<IController*> controllers_;
 
