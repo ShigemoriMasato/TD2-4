@@ -19,12 +19,14 @@ void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id) {
 }
 
 void IEnemy::OnCollision(Collider* other) {
-	if(other->GetOwnTag() & CollTag::Enemy) {
+	if (other->GetOwnTag() & CollTag::Enemy) {
 		auto enemy = static_cast<IEnemy*>(other);
 		Vector3 otherPos = enemy->GetDrawInfo().position;
 		Vector3 dir = (otherPos - drawInfo_.position).Normalize();
 		float dist = (otherPos - drawInfo_.position).Length();
-		drawInfo_.position += dir * dist;
+		//大体のdeltaTimeで押す
+		drawInfo_.position -= dir * dist * 0.016f * 5.0f;
+
 		if ((otherPos - drawInfo_.position).Length() < 1.0f) {
 			getLogger("Enemy")->warn("Not Resolved !?!?!?!?!?!?!?!?");
 		} else {

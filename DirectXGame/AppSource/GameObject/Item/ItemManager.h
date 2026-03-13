@@ -32,7 +32,7 @@ public:
 	// 描画等で必要になったときに ID を解決する
 	int ResolveModelID(Item& item);
 
-	/// Editer用関数
+	/// Editor用関数
 	std::unordered_map<int, Item>& GetItemsForEdit() { return items_; }
 	int& GetUsedID() { return usedID_; }
 
