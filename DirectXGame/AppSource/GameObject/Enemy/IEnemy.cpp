@@ -42,5 +42,7 @@ void IEnemy::OnCollision(Collider* other) {
 }
 
 void IEnemy::KillMe() {
-	isActive_ = false;
+	if (hp_ <= 0.0f) {
+		isActive_ = false;
+	}
 }

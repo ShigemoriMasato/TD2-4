@@ -32,6 +32,7 @@ private:
 		bool isAdjust = true;
 		float spawnInterval = 1.0f; // 敵をスポーンする間隔
 		float enemyCount = 5; // スポーンする敵の数
+		float enemyHp = 1.0f; // スポーンする敵のHP
 		uint32_t event = uint32_t(Event::SpawnNormalEnemy); // イベント
 	};
 
@@ -57,6 +58,7 @@ private:	//Edit用
 
 	float increaseIntercal_ = 0.1f; // スポーン間隔の増加量
 	float increaseEnemyCount_ = 0.5f; // スポーンする敵の数の増加量
+	float increaseHp_ = 5.0f; // 敵のHPの増加量
 
 	BinaryManager binaryManager_;
 };

@@ -42,7 +42,7 @@ void WaveSystem::Update(float deltaTime) {
 
 		for (int i = 0; i < spawnNum; ++i) {
 			Vector3 initPos = { xDist(rng_), 0.0f, zDist(rng_) };
-			enemyManager_->PopEnemy(initPos);
+			enemyManager_->PopEnemy(initPos, static_cast<int>(config.enemyHp));
 		}
 
 		timer_ = 0.0f;
@@ -57,6 +57,7 @@ void WaveSystem::DrawImGui() {
 
 	ImGui::DragFloat("IncreaseIntercal", &increaseIntercal_, 0.01f, 0.0f);
 	ImGui::DragFloat("IncreaseEnemyCount", &increaseEnemyCount_, 0.01f, 0.0f);
+	ImGui::DragFloat("IncreaseHp", &increaseHp_, 0.1f, 0.0f);
 
 	if (ImGui::Button("Adjust")) {
 		Adjust();
@@ -69,6 +70,7 @@ void WaveSystem::DrawImGui() {
 		ImGui::Checkbox("Adjust", &config.isAdjust);
 		ImGui::DragFloat("Spawn Interval", &config.spawnInterval, 0.1f, 0.1f);
 		ImGui::DragFloat("Enemy Count", &config.enemyCount, 0.1f, 1);
+		ImGui::DragFloat("Enemy HP", &config.enemyHp, 0.5f, 1.0f);
 		ImGui::PopID();
 	}
 
@@ -87,6 +89,7 @@ void WaveSystem::Adjust() {
 
 		config.spawnInterval = preConfig.spawnInterval - increaseIntercal_;
 		config.enemyCount = preConfig.enemyCount + increaseEnemyCount_;
+		config.enemyHp = preConfig.enemyHp + increaseHp_;
 	}
 }
 

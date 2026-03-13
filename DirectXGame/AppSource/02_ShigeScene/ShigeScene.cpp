@@ -81,7 +81,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	gameTimer_->Update(deltaTime);
 	waveSystem_->Update(deltaTime);
 
-	if (input_->GetKeyState(DIK_4) && !input_->GetPreKeyState(DIK_4)) {
+	if (input_->GetKeyState(DIK_5) && !input_->GetPreKeyState(DIK_5)) {
 		// インデックスを切り替える
 		currentControllerIndex_ = (currentControllerIndex_ + 1) % controllers_.size();
 
@@ -196,7 +196,8 @@ void ShigeScene::Draw() {
 	ImGui::Text("1 : HP減少");
 	ImGui::Text("2 : HP回復");
 	ImGui::Text("3 : HP全回復");
-	ImGui::Text("4 : 自動と手動の切り換え");
+	ImGui::Text("4 : HPゼロ");
+	ImGui::Text("5 : 自動と手動の切り換え");
 	ImGui::Text("%s", currentControllerIndex_ == 0 ? "AIController" : "InputController");
 	ImGui::End();
 

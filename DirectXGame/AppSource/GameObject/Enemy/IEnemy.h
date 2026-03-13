@@ -20,6 +20,8 @@ public:
 	void KillMe();
 	bool IsActive() const { return isActive_; }
 
+	void SetHP(int hp){hp_ = hp;}
+
 protected:
 
 	void SetModel(std::string path) { drawInfo_.modelIndex = modelManager_->LoadModel("Enemy/" + path); }

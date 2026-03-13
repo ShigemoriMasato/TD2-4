@@ -102,6 +102,9 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 	if (input_->GetKeyState(DIK_3) && !input_->GetPreKeyState(DIK_3)) {
 		currentHP_ = maxHP_;
 	}
+	if (input_->GetKeyState(DIK_4) && !input_->GetPreKeyState(DIK_4)) {
+		currentHP_ = 0.0f;
+	}
 #endif
 
 	// 残像の更新
