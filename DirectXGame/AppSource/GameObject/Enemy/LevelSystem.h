@@ -23,17 +23,10 @@ private:
 	void Load();
 	void Save();
 
-	enum class Event : uint32_t {
-		SpawnNormalEnemy,	// 敵をスポーン
-		MiddleBoss,			// 中ボス
-		FinalBoss,			// ボス
-	};
-
 	struct BaseSystem {
 		float spawnInterval = 3.0f; // 敵をスポーンする間隔
 		float enemyCount = 2; // スポーンする敵の数
 		float enemyHp = 5.0f; // スポーンする敵のHP
-		uint32_t event = uint32_t(Event::SpawnNormalEnemy); // イベント
 	};
 
 	BaseSystem config_;
