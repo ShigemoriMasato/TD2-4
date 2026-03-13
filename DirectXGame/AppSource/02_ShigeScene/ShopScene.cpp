@@ -122,19 +122,6 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	debugObj_->CopyBufferData(0, &wvp, sizeof(wvp));
 	debugObj_->CopyBufferData(1, &debugColor_, sizeof(debugColor_));
 
-#ifdef USE_IMGUI
-
-	ImGui::Begin("DebugObj");
-
-	ImGui::DragFloat3("Scale", &debugTransform_.scale.x, 0.1f);
-	ImGui::DragFloat3("Rotate", &debugTransform_.rotate.x, 0.1f);
-	ImGui::DragFloat3("Position", &debugTransform_.position.x, 0.1f);
-	ImGui::ColorEdit4("Color", &debugColor_.x);
-
-	ImGui::End();
-
-#endif
-
 	return nullptr;
 }
 
@@ -146,7 +133,7 @@ void ShopScene::DrawReady() {
 	grid_->Draw(cmdObj);
 	objectRender_->Draw(cmdObj);
 	//parameterRender_->Draw(cmdObj);
-	debugObj_->Draw(cmdObj);
+	//debugObj_->Draw(cmdObj);
 
 	shopDisplay_->PostDraw();
 }

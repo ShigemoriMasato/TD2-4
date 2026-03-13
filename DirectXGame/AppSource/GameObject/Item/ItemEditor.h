@@ -1,12 +1,9 @@
 #pragma once
 
-#ifdef USE_IMGUI
 #include <imgui/imgui.h>
 #include <vector>
 #include <string>
 #include <memory>
-
-class ItemManager;
 
 class PairHash {
 public:
@@ -16,6 +13,8 @@ public:
 		return x | (y << 32);
 	}
 };
+
+class ItemManager;
 
 class ItemEditor
 {
@@ -59,14 +58,3 @@ private:
 	std::vector<std::string> paramNames_;
 	std::vector<const char*> paramNamesCStr_;
 };
-
-#else
-
-class ItemManager;
-class ItemEditor
-{
-public:
-	void Draw(ItemManager&) {}
-};
-
-#endif

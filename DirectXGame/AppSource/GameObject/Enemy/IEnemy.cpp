@@ -11,7 +11,7 @@ void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id) {
 	collCircle_->radius = 0.5f;
 	CollConfig config;
 	config.ownTag = CollTag::Enemy;
-	config.targetTag = static_cast<uint32_t>(CollTag::Attack);
+	config.targetTag = CollTag::Attack | CollTag::Enemy;
 	config.colliderInfo = collCircle_.get();
 	config.isActive = true;
 	Collider::Initialize();
@@ -19,6 +19,21 @@ void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id) {
 }
 
 void IEnemy::OnCollision(Collider* other) {
+	if(other->GetOwnTag() & CollTag::Enemy) {
+		auto enemy = static_cast<IEnemy*>(other);
+		Vector3 otherPos = enemy->GetDrawInfo().position;
+		Vector3 dir = (otherPos - drawInfo_.position).Normalize();
+		float dist = (otherPos - drawInfo_.position).Length();
+		drawInfo_.position += dir * dist;
+		if ((otherPos - drawInfo_.position).Length() < 1.0f) {
+			getLogger("Enemy")->warn("Not Resolved !?!?!?!?!?!?!?!?");
+		} else {
+			getLogger("Enemy")->warn("Problem Clear !");
+		}
+		collCircle_->center = { drawInfo_.position.x, drawInfo_.position.z };
+		return;
+	}
+
 	auto attack = static_cast<IAttackObject*>(other);
 	hp_ -= static_cast<int>(attack->GetDamage());
 	KillMe();

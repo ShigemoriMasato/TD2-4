@@ -1,7 +1,5 @@
 #include "ItemEditor.h"
 
-#ifdef USE_IMGUI
-
 #include "ItemManager.h"
 #include <Utility/ConvertString.h>
 #include <Utility/SearchFile.h>
@@ -39,6 +37,7 @@ namespace {
 }
 
 void ItemEditor::DrawNode(Node* node) {
+#ifdef USE_IMGUI
 	ImGuiTreeNodeFlags flags =
 		ImGuiTreeNodeFlags_OpenOnArrow |
 		ImGuiTreeNodeFlags_OpenOnDoubleClick;
@@ -63,6 +62,7 @@ void ItemEditor::DrawNode(Node* node) {
 		}
 		ImGui::TreePop();
 	}
+#endif
 }
 
 // モデルの候補を取得する
@@ -171,6 +171,8 @@ void ItemEditor::CreateItemFromModel(ItemManager& itemManager) {
 }
 
 void ItemEditor::Draw(ItemManager& itemManager) {
+#ifdef USE_IMGUI
+
 	auto& items = itemManager.GetItemsForEdit();
 	auto& baseParam = itemManager.GetBaseParamsForEdit();
 	int& nextID = itemManager.GetUsedID();
@@ -465,6 +467,5 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 	}
 
 	ImGui::End();
-}
-
 #endif
+}

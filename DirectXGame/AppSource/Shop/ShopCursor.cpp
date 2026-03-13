@@ -10,11 +10,6 @@ void ShopCursor::Update(Camera* camera) {
 	Vector2 cursor = keyManager_->GetCursorPos();
 	cursor.x *= 2.0f;
 	worldPos_ = GetWorldCursor(camera, cursor);
-
-	ImGui::Begin("Cursor");
-	ImGui::Text("Screen Pos: (%.2f, %.2f)", cursor.x, cursor.y);
-	ImGui::Text("World Pos: (%.2f, %.2f, %.2f)", worldPos_.x, worldPos_.y, worldPos_.z);
-	ImGui::End();
 }
 
 void ShopCursor::EditPiece(BackPack* backPack) {
@@ -29,25 +24,26 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 
 		if (!keys[Key::Hold]) {
 			//本当にその場所に配置できるかの判断を行う
+			//配置前の状態を再現し、バックパックから削除する
+			//元の場所の記録を削除してから、置けるかを判断する
+			auto tmpDir = heldPiece_->GetDirection();
+			auto currentDir = heldPiece_->GetDirection();
+			while (currentDir != preHeldPieceDir_) {
+				heldPiece_->RotateRight();
+				currentDir = heldPiece_->GetDirection();
+			}
+			heldPiece_->SetPosition(preHeldPiecePos_);
+			heldPiece_->Remove(backPack);//削除
+
+			while (currentDir != tmpDir) {
+				heldPiece_->RotateRight();
+				currentDir = heldPiece_->GetDirection();
+			}
+			heldPiece_->SetPosition(worldPos_);
+
 			//おけるなら配置、無理なら元の場所に戻す
 			if (heldPiece_->CanPut(backPack)) {
-				//配置前の状態を再現し、バックパックから削除する
-				auto tmpDir = heldPiece_->GetDirection();
-				auto currentDir = heldPiece_->GetDirection();
-				while(currentDir != preHeldPieceDir_) {
-					heldPiece_->RotateRight();
-					currentDir = heldPiece_->GetDirection();
-				}
-				heldPiece_->SetPosition(preHeldPiecePos_);
-				heldPiece_->Remove(backPack);
-
-				//状態を戻し、配置する
-				preHeldPieceDir_ = tmpDir;
-				while (currentDir != preHeldPieceDir_) {
-					heldPiece_->RotateRight();
-					currentDir = heldPiece_->GetDirection();
-				}
-				heldPiece_->SetPosition(worldPos_);
+				//配置する
 				heldPiece_->Put(backPack);
 
 			} else {

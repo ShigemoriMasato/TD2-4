@@ -22,7 +22,7 @@ bool Piece::Update(BackPack* backPack, float deltaTime) {
 	}
 
 	useTimer_ += deltaTime;
-	if (useTimer_ >= 10.0f) {
+	if (useTimer_ >= 30.0f) {
 		isUsing_ = false;
 
 		// 使用が終わったらチップをひとつバックパックから外す
