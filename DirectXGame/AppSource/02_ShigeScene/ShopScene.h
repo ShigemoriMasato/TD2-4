@@ -26,6 +26,7 @@ public:
 	void Draw() override;
 	void SetDeltaTime(float& deltaTime) { deltaTime_ = deltaTime; }
 	ItemManager* GetItemManager() { return itemManager_.get(); }
+	DebugCamera* GetCamera() { return debugCamera_.get(); }
 
 private:
 
