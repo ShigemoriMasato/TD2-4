@@ -201,6 +201,7 @@ void ShigeScene::Draw() {
 	ImGui::End();
 
 	camera_->DrawImGui();
+	shopScene_->GetCamera()->DrawImGui();
 
 #endif
 

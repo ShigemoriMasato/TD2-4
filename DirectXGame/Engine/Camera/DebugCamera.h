@@ -49,6 +49,12 @@ public:
 		spherical_.x = distance;
 	}
 
+	void SetSpherical(const Vector3& spherical) {
+		spherical_ = spherical;
+	}
+
+	void DrawImGui() override;
+
 private:
 
 	void MakeMatrix() override;

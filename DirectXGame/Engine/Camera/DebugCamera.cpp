@@ -2,6 +2,10 @@
 #include "Camera.h"
 #include <numbers>
 
+#ifdef USE_IMGUI
+#include <imgui/imgui.h>
+#endif
+
 using namespace Matrix;
 using namespace SHEngine;
 
@@ -68,4 +72,13 @@ Vector3 DebugCamera::GetCenter() const {
 void DebugCamera::MakeMatrix() {
 	transformMatrix_ = MakeTranslationMatrix(-position_) * MakeRotationYMatrix(-rotation_.y) * MakeRotationXMatrix(-rotation_.x) * MakeScaleMatrix(scale_);
 	vpMatrix_ = transformMatrix_ * projectionMatrix_;
+}
+
+void DebugCamera::DrawImGui() {
+#ifdef USE_IMGUI
+	ImGui::Begin("DebugCamera");
+	ImGui::DragFloat3("Center", &center_.x, 0.1f);
+	ImGui::DragFloat3("Spherical(dist, theta, phi)", &spherical_.x, 0.1f);
+	ImGui::End();
+#endif
 }
