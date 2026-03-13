@@ -19,9 +19,9 @@ void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id) {
 }
 
 void IEnemy::UpdateCollider() {
-	position_ += velocity_;
-	drawInfo_.position += velocity_;
+	drawInfo_.position = position_;
 	collCircle_->center = { position_.x, position_.z };
+	velocity_ = {}; // 毎フレームリセット
 }
 
 void IEnemy::OnCollision(Collider* other) {
@@ -31,9 +31,9 @@ void IEnemy::OnCollision(Collider* other) {
 		Vector3 dir = (otherPos - drawInfo_.position).Normalize();
 		float dist = (otherPos - drawInfo_.position).Length();
 		//大体のdeltaTimeで押す
-		velocity_ -= dir * dist * 0.016f * 5.0f;
+		position_ -= dir * dist * 0.016f * 8.0f;
 
-		collCircle_->center = { drawInfo_.position.x, drawInfo_.position.z };
+		collCircle_->center = { position_.x, position_.z };
 		return;
 	}
 

@@ -14,6 +14,7 @@ void EnemyManager::Update(float deltaTime) {
 	std::vector<int> toRemove;
 	for (auto& [id, enemy] : enemies_) {
 		enemy->Update(deltaTime);
+		enemy->UpdateCollider();
 		if (!enemy->IsActive()) {
 			toRemove.push_back(id);
 		}
