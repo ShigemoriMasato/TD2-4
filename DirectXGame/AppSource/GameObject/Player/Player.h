@@ -2,7 +2,6 @@
 #include "../Player/Parameter/ParameterData.h"
 #include "../Player/Parameter/ParameterList.h"
 #include "Controller/IController.h"
-#include "GameObject/Player/PlayerHP.h"
 #include "State/IPlayerState.h"
 #include "State/PlayerStateDash.h"
 #include "State/PlayerStateNormal.h"
@@ -23,7 +22,7 @@ struct AfterImage {
 class Base : public Collider {
 public:
 	// 初期化（デフォルトキャラクターID: 0）
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input, CharacterID characterID, ItemManager* itemManager, Player::HP* playerHP);
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input, CharacterID characterID, ItemManager* itemManager);
 
 	// 更新
 	void Update(Matrix4x4 vpMatrix, float deltaTime);
@@ -79,8 +78,14 @@ public:
 	void SetController(IController* controller) { controller_ = controller; }
 
 	// HPのアクセッサ
-	float GetHP() const { return currentHP_; }
-	void SetHP(float hp) { currentHP_ = hp; }
+	float GetCurrentHP() const { return currentHP_; }
+	float GetMaxHP() const { return maxHP_; }
+
+	// ダメージ
+	void Damage(float amount);
+
+	// 回復
+	void Heal(float amount);
 
 private:
 	// 残像の更新処理
@@ -148,9 +153,6 @@ private:
 
 	// コントローラー
 	IController* controller_ = nullptr;
-
-	// PlayerHP
-	Player::HP* playerHP_ = nullptr;
 
 	// HP
 	float maxHP_ = 0.0f;

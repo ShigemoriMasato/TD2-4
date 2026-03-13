@@ -6,7 +6,7 @@
 using namespace SHEngine;
 using namespace Player;
 
-void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, Input* input, CharacterID characterID, ItemManager* itemManager, Player::HP* playerHP) {
+void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, Input* input, CharacterID characterID, ItemManager* itemManager) {
 	// 本体描画用オブジェクトの生成&初期化
 	render_ = std::make_unique<RenderObject>();
 	render_->Initialize();
@@ -80,9 +80,6 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	// HPの初期化
 	maxHP_ = parameterList_->GetParameter("MaxHP");
 	currentHP_ = maxHP_;
-	playerHP_ = playerHP;
-	playerHP_->SetHP(currentHP_);
-	playerHP_->SetMaxHP(maxHP_);
 }
 
 void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
@@ -96,6 +93,12 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 
 #ifdef _DEBUG
 	// HP
+	if (input_->GetKeyState(DIK_1) && !input_->GetPreKeyState(DIK_1)) {
+		Damage(1.0f);
+	}
+	if (input_->GetKeyState(DIK_2) && !input_->GetPreKeyState(DIK_2)) {
+		Heal(1.0f);
+	}
 	if (input_->GetKeyState(DIK_5) && !input_->GetPreKeyState(DIK_5)) {
 		currentHP_ = maxHP_;
 	}
@@ -124,11 +127,12 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 	collCircle_->center = {transform_.position.x, transform_.position.z};
 
 	// 無敵時間更新
-	if (invincibleTimer_ < invincibleDuration_) {
-		invincibleTimer_ += deltaTime;
-	} else {
-		isInvincible_ = false;
-		invincibleTimer_ = 0.0f;
+	if (isInvincible_) {
+		invincibleTimer_ -= deltaTime;
+		if (invincibleTimer_ <= 0.0f) {
+			isInvincible_ = false;
+			invincibleTimer_ = 0.0f;
+		}
 	}
 }
 
@@ -208,10 +212,22 @@ void Player::Base::SpawnAfterImage() {
 }
 
 void Player::Base::OnCollision(Collider* other) {
-	if (!isInvincible_) {
-		currentHP_--;
-		isInvincible_ = true;
-	}
+	Damage(1.0f);
+}
+
+void Player::Base::Damage(float amount){
+	if (amount <= 0.0f || isInvincible_)
+		return;
+
+	currentHP_ = std::max(currentHP_ - amount, 0.0f);
+	isInvincible_ = true;
+	invincibleTimer_ = invincibleDuration_; // タイマーをセット
+}
+
+void Player::Base::Heal(float amount) {
+	if (amount <= 0.0f)
+		return;
+	currentHP_ = std::min(currentHP_ + amount, maxHP_);
 }
 
 void Player::Base::UpdateAfterImages(float deltaTime) {

@@ -24,10 +24,10 @@ void ShigeScene::Initialize() {
 	Collider::SetColliderManager(colliderManager_.get());
 
 	playerHP_ = std::make_unique<Player::HP>();
-	playerHP_->Initialize(modelManager_, drawDataManager_, input_);
+	playerHP_->Initialize(modelManager_, drawDataManager_);
 
 	player_ = std::make_unique<Player::Base>();
-	player_->Initialize(modelManager_, drawDataManager_, input_, CharacterID::Warrior, shopScene_->GetItemManager(), playerHP_.get());
+	player_->Initialize(modelManager_, drawDataManager_, input_, CharacterID::Warrior, shopScene_->GetItemManager());
 	player_->UpdateParameter(commonData_->pieces);
 
 	enemyManager_ = std::make_unique<EnemyManager>();
@@ -89,10 +89,9 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		player_->SetController(controllers_[currentControllerIndex_]);
 	}
 
-	playerHP_->Update(orthoCamera_->GetVPMatrix(), deltaTime);
-	playerHP_->SetHP(player_->GetHP());
 	player_->Update(camera_->GetVPMatrix(), deltaTime);
 	player_->UpdateParameter(commonData_->pieces);
+	playerHP_->Update(orthoCamera_->GetVPMatrix(), deltaTime, player_->GetCurrentHP(), player_->GetMaxHP());
 
 	OrthographicDesc orthDesc;
 	orthDesc.SetValue();
@@ -143,7 +142,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	if (key[Key::Debug1] || gameTimer_->IsEnd()) {
 	}
 
-	if (player_->GetHP() <= 0){
+	if (player_->GetCurrentHP() <= 0){
 		return std::make_unique<TitleScene>();
 	}
 

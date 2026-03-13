@@ -7,7 +7,7 @@
 using namespace SHEngine;
 using namespace Player;
 
-void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input) {
+void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager) {
 	// HPバーの生成
 	hpBarFill_.render = std::make_unique<RenderObject>();  // 前面
 	hpBarAfter_.render = std::make_unique<RenderObject>(); // 減った分
@@ -38,36 +38,16 @@ void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMana
 	hpBarBG_.transform.rotate = {0.0f, 0.0f, 0.0f};
 	hpBarBG_.transform.position = {hpBarPos_.x, hpBarPos_.y, 0.0f};
 
-	// FPSObserver
-	fpsObserver_ = std::make_unique<FPSObserver>();
-
-	// 入力
-	input_ = input;
-
 	// モデルマネージャー
 	modelManager_ = modelManager;
-
-	// HP
-	currentHP_ = maxHP_;
 }
 
-void HP::Update(Matrix4x4 vpMatrix, float deltaTime) {
-	// 無敵状態のカウントダウン
-	InvincibleTimerUpdate();
-
-#ifdef _DEBUG
-	// ダメージ
-	if (input_->GetKeyState(DIK_1) && !input_->GetPreKeyState(DIK_1)) {
-		Damage(1);
+void HP::Update(Matrix4x4 vpMatrix, float deltaTime, float currentHP, float maxHP) {
+	// HPに変化があったらアニメーションを開始する
+	if(previousHP_!=currentHP){
+		HPBarScaleChange(currentHP, maxHP);
+		previousHP_ = currentHP;
 	}
-
-	// 回復
-	if (input_->GetKeyState(DIK_2) && !input_->GetPreKeyState(DIK_2)) {
-		Heal(1);
-	}
-#endif
-
-	HPBarScaleChange();
 
 	// スケールアニメーションの更新
 	AnimationHPBarAfter(deltaTime);
@@ -124,46 +104,13 @@ void HP::Draw(CmdObj* cmdObj) {
 		ImGui::DragFloat3("BG - translate", &hpBarBG_.transform.position.x, 0.01f);
 	}
 
-	// --- ステータス情報 ---
-	if (ImGui::CollapsingHeader("Status Information")) {
-		ImGui::Text("Current HP: %.1f / %.1f", currentHP_, maxHP_);
-		ImGui::Text("IsInvincible: %s", isInvincible_ ? "True" : "False");
-	}
-
 	ImGui::End();
 #endif
 }
 
-void HP::Damage(float amount) {
-	// 不正値をガード
-	if (amount <= 0.0f || isInvincible_)
-		return;
-
-	// HPの減算
-	currentHP_ = std::max(currentHP_ - amount, 0.0f);
-
-	// 無敵状態にする
-	isInvincible_ = true;
-
-	// HPバーの変更
-	HPBarScaleChange();
-}
-
-void HP::Heal(float amount) {
-	// 不正値をガード
-	if (amount <= 0.0f)
-		return;
-
-	// HPの加算
-	currentHP_ = std::min(currentHP_ + amount, maxHP_);
-
-	// HPバーの変更
-	HPBarScaleChange();
-}
-
-void HP::HPBarScaleChange() {
+void HP::HPBarScaleChange(float currentHP, float maxHP) {
 	// 現在のHPの比率
-	float hpRatio = currentHP_ / maxHP_;
+	float hpRatio = currentHP / maxHP;
 
 	// 新しいスケール
 	float newScale = hpRatio * hpBarSize_.x;
@@ -178,17 +125,6 @@ void HP::HPBarScaleChange() {
 	float offsetX = (hpBarSize_.x - hpBarFill_.transform.scale.x) / 2.0f;
 	hpBarFill_.transform.position.x = hpBarPos_.x - offsetX;
 	hpBarAfter_.transform.position.x = hpBarPos_.x - offsetX;
-}
-
-void HP::InvincibleTimerUpdate() {
-	if (isInvincible_) {
-		invincibleTimer_ -= fpsObserver_->GetDeltatime(); // 無敵状態のカウントダウン
-
-		if (invincibleTimer_ <= 0.0f) {
-			isInvincible_ = false;                  // 無敵状態フラグを下す
-			invincibleTimer_ = invincibleDuration_; // タイマーのリセット
-		}
-	}
 }
 
 void HP::InitializeRenderHPBar(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, std::unique_ptr<SHEngine::RenderObject>& render) {
