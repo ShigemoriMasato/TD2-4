@@ -14,7 +14,7 @@ public:
 	struct Config
 	{
 		// 履歴
-		int maxSegments = 32;      // セグメント数（quad数）。頂点数は maxSegments*2
+		int maxSegments = 32;      // セグメント数。頂点数は maxSegments*2
 		float lifeTime = 0.20f;    // 寿命
 		float minDistance = 0.1f; // minDistance以上動いてないときは追加しない
 
@@ -35,8 +35,8 @@ public:
 	~Trail() = default;
 
 	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const Config& config = {});
-	void Update(float deltaTime);
-	void Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix);
+	void Update(float deltaTime, const Matrix4x4& vpMatrix);
+	void Draw(CmdObj* cmdObj);
 
 	// ワールド座標で2点を追加
 	void PushSegment(const Vector3& baseWS, const Vector3& tipWS);

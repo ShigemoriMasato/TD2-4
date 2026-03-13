@@ -1,7 +1,6 @@
 #include "YokoScene.h"
 #include <numbers>
 #include <algorithm>
-	//const auto isPress = input_->GetKeyState(DIK_SPACE);
 
 void YokoScene::Initialize()
 {
@@ -19,6 +18,10 @@ void YokoScene::Initialize()
 
 	testTrail3_ = std::make_unique<TestTrail3>();
 	testTrail3_->Initialize(drawDataManager_, textureManager_);
+
+	testTrail4_ = std::make_unique<TestTrail4>();
+	int swordModelHandle = modelManager_->LoadModel("Assets/Model/Item/Weapon/Sword");
+	testTrail4_->Initialize(drawDataManager_, textureManager_, modelManager_, swordModelHandle);
 }
 
 std::unique_ptr<IScene> YokoScene::Update()
@@ -29,9 +32,13 @@ std::unique_ptr<IScene> YokoScene::Update()
 	camera_->Update();
 
 	// トレイル更新
-	testTrail1_->Update(dt);
-	testTrail2_->Update(dt);
-	testTrail3_->Update(dt);
+	testTrail1_->Update(dt, camera_->GetVPMatrix());
+	testTrail2_->Update(dt, camera_->GetVPMatrix());
+	testTrail3_->Update(dt, camera_->GetVPMatrix());
+	testTrail4_->Update(dt, camera_->GetVPMatrix());
+
+	const auto isPress = input_->GetKeyState(DIK_SPACE);
+	if (isPress)testTrail3_->Trigger(Vector3(0.0f, 0.0f, 0.0f));
 
 	return nullptr;
 }
@@ -45,9 +52,10 @@ void YokoScene::Draw()
 	display->PreDraw(cmdObj, true);
 
 	// トレイル描画
-	testTrail1_->Draw(cmdObj, camera_->GetVPMatrix());
-	testTrail2_->Draw(cmdObj, camera_->GetVPMatrix());
-	testTrail3_->Draw(cmdObj, camera_->GetVPMatrix());
+	//testTrail1_->Draw(cmdObj);
+	//testTrail2_->Draw(cmdObj);
+	//testTrail3_->Draw(cmdObj);
+	testTrail4_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 

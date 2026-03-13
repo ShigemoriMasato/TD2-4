@@ -183,7 +183,7 @@ void Trail::PushSegment(const Vector3& baseWS, const Vector3& tipWS)
 	}
 }
 
-void Trail::Update(float deltaTime)
+void Trail::Update(float deltaTime, const Matrix4x4& vpMatrix)
 {
 	if (!enabled_) return;
 
@@ -196,6 +196,7 @@ void Trail::Update(float deltaTime)
 	{
 		samples_.pop_front();
 	}
+	RebuildVertices(vpMatrix);
 }
 
 void Trail::RebuildVertices(const Matrix4x4& vpMatrix)
@@ -271,12 +272,11 @@ void Trail::RebuildVertices(const Matrix4x4& vpMatrix)
 	renderAdd_->instanceNum_ = 1;
 }
 
-void Trail::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
+void Trail::Draw(CmdObj* cmdObj)
 {
 	if (!enabled_) return;
 	if (!renderNormal_ || !renderAdd_) return;
 
-	RebuildVertices(vpMatrix);
 
 	if (config_.drawNormal && renderNormal_->instanceNum_ > 0)
 	{

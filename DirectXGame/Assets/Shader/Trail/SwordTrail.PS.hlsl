@@ -32,7 +32,7 @@ PSOutput main(PSInput input)
     // 帯の基本：テクスチャ * 色 * 頂点色（頂点色でフェード）
     float4 c = tex * color * input.color;
 
-    // alphaが極小なら捨てる（IB固定で最大まで描く都合の“透明領域”対策）
+    // alphaが極小なら捨てる
     clip(c.a - 0.001f);
 
     o.color = c;

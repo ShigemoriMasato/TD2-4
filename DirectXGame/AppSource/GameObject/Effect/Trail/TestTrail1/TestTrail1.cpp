@@ -13,7 +13,7 @@ void TestTrail1::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine
 	trail_.Initialize(drawDataManager, textureManager, cfg);
 }
 
-void TestTrail1::Update(float deltaTime)
+void TestTrail1::Update(float deltaTime, const Matrix4x4& vpMatrix)
 {
 	time_ += deltaTime;
 
@@ -28,10 +28,10 @@ void TestTrail1::Update(float deltaTime)
 
 	trail_.PushSegment(baseWS, tipWS);
 
-	trail_.Update(deltaTime);
+	trail_.Update(deltaTime, vpMatrix);
 }
 
-void TestTrail1::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
+void TestTrail1::Draw(CmdObj* cmdObj)
 {
-	trail_.Draw(cmdObj, vpMatrix);
+	trail_.Draw(cmdObj);
 }

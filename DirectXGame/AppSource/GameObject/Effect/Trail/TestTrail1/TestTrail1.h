@@ -1,12 +1,12 @@
 #pragma once
-#include <GameObject/Effect/Trail.h>
+#include <GameObject/Effect/Trail/Trail.h>
 
-class TestTrail3
+class TestTrail1
 {
 public:
 	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager);
-	void Update(float deltaTime);
-	void Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix);
+	void Update(float deltaTime, const Matrix4x4& vpMatrix);
+	void Draw(CmdObj* cmdObj);
 
 private:
 	Trail trail_;
