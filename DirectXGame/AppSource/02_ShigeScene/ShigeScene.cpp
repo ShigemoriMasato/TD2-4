@@ -192,7 +192,11 @@ void ShigeScene::Draw() {
 	ImGui::DragFloat("baseRadius", &baseRadius_, 0.01f);
 	ImGui::End();
 
-	ImGui::Begin("ActiveController");
+	ImGui::Begin("KeyInfo");
+	ImGui::Text("1 : HP減少");
+	ImGui::Text("2 : HP回復");
+	ImGui::Text("3 : HP全回復");
+	ImGui::Text("4 : 自動と手動の切り換え");
 	ImGui::Text("%s", currentControllerIndex_ == 0 ? "AIController" : "InputController");
 	ImGui::End();
 

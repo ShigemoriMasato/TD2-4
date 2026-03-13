@@ -99,7 +99,7 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 	if (input_->GetKeyState(DIK_2) && !input_->GetPreKeyState(DIK_2)) {
 		Heal(1.0f);
 	}
-	if (input_->GetKeyState(DIK_5) && !input_->GetPreKeyState(DIK_5)) {
+	if (input_->GetKeyState(DIK_3) && !input_->GetPreKeyState(DIK_3)) {
 		currentHP_ = maxHP_;
 	}
 #endif
@@ -169,25 +169,6 @@ void Base::Draw(CmdObj* cmdObj) {
 	render_->Draw(cmdObj);
 
 #ifdef USE_IMGUI
-	ImGui::Begin("Player");
-
-	// --- 基本パラメータ ---
-	if (ImGui::CollapsingHeader("Basic Parameters")) {
-		ImGui::DragFloat3("scale", &transform_.scale.x, 0.01f);
-		ImGui::DragFloat3("rotate", &transform_.rotate.x, 0.01f);
-		ImGui::DragFloat3("translate", &transform_.position.x, 0.01f);
-		ImGui::DragFloat("velocity", &velocity_, 0.01f);
-	}
-
-	// --- ダッシュパラメータ ---
-	if (ImGui::CollapsingHeader("Dash Parameters")) {
-		ImGui::Text("CanDash : %s", CanDash() ? "True" : "False");
-		ImGui::DragFloat("dashSpeed", &dashSpeed_, 0.01f);
-		ImGui::DragFloat("dashDuration", &dashDuration_, 0.01f);
-		ImGui::DragFloat("dashCooldown", &dashCooldown_, 0.01f);
-	}
-
-	ImGui::End();
 #endif // USE_IMGUI
 }
 

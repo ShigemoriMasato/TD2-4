@@ -87,24 +87,6 @@ void HP::Draw(CmdObj* cmdObj) {
 	hpBarFill_.render->Draw(cmdObj);
 
 #ifdef USE_IMGUI
-	ImGui::Begin("PlayerHP");
-
-	// --- 基本パラメータ ---
-	if (ImGui::CollapsingHeader("Basic Parameters")) {
-		ImGui::DragFloat3("Fill - scale", &hpBarFill_.transform.scale.x, 0.01f);
-		ImGui::DragFloat3("Fill - rotate", &hpBarFill_.transform.rotate.x, 0.01f);
-		ImGui::DragFloat3("Fill - translate", &hpBarFill_.transform.position.x, 0.01f);
-		ImGui::Separator();
-		ImGui::DragFloat3("After - scale", &hpBarAfter_.transform.scale.x, 0.01f);
-		ImGui::DragFloat3("After - rotate", &hpBarAfter_.transform.rotate.x, 0.01f);
-		ImGui::DragFloat3("After - translate", &hpBarAfter_.transform.position.x, 0.01f);
-		ImGui::Separator();
-		ImGui::DragFloat3("BG - scale", &hpBarBG_.transform.scale.x, 0.01f);
-		ImGui::DragFloat3("BG - rotate", &hpBarBG_.transform.rotate.x, 0.01f);
-		ImGui::DragFloat3("BG - translate", &hpBarBG_.transform.position.x, 0.01f);
-	}
-
-	ImGui::End();
 #endif
 }
 
