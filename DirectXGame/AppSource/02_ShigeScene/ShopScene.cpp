@@ -81,7 +81,7 @@ std::unique_ptr<IScene> ShopScene::Update() {
 
 	shopDisplay_->Update();
 
-	debugCamera_->Update();
+	debugCamera_->Update(false);
 	grid_->Update(debugCamera_->GetCenter(), debugCamera_->GetVPMatrix());
 
 	//何かしらのトリガーでショップのピースを更新する

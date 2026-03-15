@@ -20,9 +20,10 @@ public:
 	/**
 	 * @brief カメラの更新
 	 * 
+	 * @param enableInput 入力を受け付けるかどうか
 	 * 球面座標に基づいてカメラの位置と向きを更新する。
 	 */
-	void Update();
+	void Update(bool enableInput = true);
 
 	/**
 	 * @brief カメラの中心点を取得

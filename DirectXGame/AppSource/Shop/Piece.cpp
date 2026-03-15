@@ -113,8 +113,11 @@ bool Piece::IsHovered(const Vector3& cursorPos, BackPack* backPack) {
 
 std::vector<DrawInfo> Piece::GetDrawInfos() const {
 	std::vector<DrawInfo> drawInfos;
+	int totalChips = static_cast<int>(chips_.size());
+	int currentIdx = 0;
 	for (const auto& chip : chips_) {
 		if(IsIgnored(chip)) {
+			currentIdx++;
 			continue;
 		}
 		DrawInfo info;
@@ -123,7 +126,17 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		info.scale = Vector3(1.0f, 0.2f, 1.0f);
 		info.modelIndex = 0;
 
-		info.color = 0x2020b0ff; // 青色
+		float t = 0.0f;
+		if (totalChips > 1) {
+			t = static_cast<float>(currentIdx) / (totalChips - 1);
+		}
+		uint32_t r = static_cast<uint32_t>(0.0f + t * (32.0f - 0.0f));
+		uint32_t g = static_cast<uint32_t>(255.0f + t * (32.0f - 255.0f));
+		uint32_t b = static_cast<uint32_t>(255.0f + t * (176.0f - 255.0f));
+		uint32_t a = 255;
+		
+		info.color = (r << 24) | (g << 16) | (b << 8) | a;
+
 		if (isHovered_) {
 			info.color = 0xffff00ff; // 黄色
 		}
@@ -135,6 +148,7 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		}
 
 		drawInfos.push_back(info);
+		currentIdx++;
 	}
 	DrawInfo info;
 	info.modelIndex = itemData_.modelID;

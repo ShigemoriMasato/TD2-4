@@ -24,7 +24,7 @@ void DebugCamera::Initialize(Input* input) {
 	SetProjectionMatrix(PerspectiveFovDesc());
 }
 
-void DebugCamera::Update() {
+void DebugCamera::Update(bool enableInput) {
 
 	Vector3 cameraVelocity{};
 	Vector3 centerVelocity{};
@@ -33,17 +33,20 @@ void DebugCamera::Update() {
 	//球面座標系
 	//===================
 	Vector2 mouseMove{};
-	if (input_->GetMouseButtonState()[1] || input_->GetMouseButtonState()[2]) {
-		mouseMove = input_->GetMouseMove();
-		mouseMove.y *= -1.0f; // Y軸を反転
-	}
-	float mouseWheel = -input_->GetMouseWheel();
+	float mouseWheel = 0.0f;
+	if (enableInput) {
+		if (input_->GetMouseButtonState()[1] || input_->GetMouseButtonState()[2]) {
+			mouseMove = input_->GetMouseMove();
+			mouseMove.y *= -1.0f; // Y軸を反転
+		}
+		mouseWheel = -input_->GetMouseWheel();
 
-	if (input_->GetMouseButtonState()[2] || input_->GetKeyState(DIK_LSHIFT)) {
-		float speed = spherical_.x * 0.2f;
-		center_ += Vector3(mouseMove.x * speed_, mouseMove.y * speed_, mouseWheel * 0.05f) * speed * MakeRotationMatrix(rotation_);
-	} else {
-		spherical_ += Vector3(mouseWheel * 0.05f, mouseMove.y * speed_, -mouseMove.x * speed_);
+		if (input_->GetMouseButtonState()[2] || input_->GetKeyState(DIK_LSHIFT)) {
+			float speed = spherical_.x * 0.2f;
+			center_ += Vector3(mouseMove.x * speed_, mouseMove.y * speed_, mouseWheel * 0.05f) * speed * MakeRotationMatrix(rotation_);
+		} else {
+			spherical_ += Vector3(mouseWheel * 0.05f, mouseMove.y * speed_, -mouseMove.x * speed_);
+		}
 	}
 
 	spherical_.x = std::max(0.01f, spherical_.x); // マイナスにならないようにする

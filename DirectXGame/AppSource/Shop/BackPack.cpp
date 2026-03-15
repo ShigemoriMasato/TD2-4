@@ -1,12 +1,12 @@
 #include "BackPack.h"
 
 void BackPack::Initialize() {
-	// 5x5のスロットを初期化
+	// 10x10のスロットを初期化
 	slots_.resize(10, std::vector<Slot>(10, Slot::Locked));
 
-	// 中央の5x5をEmptyにする
-	for (int i = 2; i < 8; ++i) {
-		for (int j = 2; j < 8; ++j) {
+	// 中央の高さ3、横幅5をEmptyにする
+	for (int i = 3; i < 6; ++i) {
+		for (int j = 2; j < 7; ++j) {
 			slots_[i][j] = Slot::Empty;
 		}
 	}
