@@ -78,7 +78,8 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	logger_ = getLogger("Player");
 
 	// HPの初期化
-	maxHP_ = parameterList_->GetParameter("MaxHP");
+	//maxHP_ = parameterList_->GetParameter("MaxHP");
+	maxHP_ = 10; // 仮の値
 	currentHP_ = maxHP_;
 }
 

@@ -1,6 +1,6 @@
 {
-    "attackCount": 0,
-    "attackSpeed": 1.5,
+    "attackCount": 3,
+    "attackSpeed": 1.0,
     "baseDamage": 6.0,
     "criticalChance": 0.0,
     "criticalMultiplier": 0.0,
@@ -8,7 +8,7 @@
     "id": 0,
     "knockbackPower": 0.0,
     "lifeStealChance": 0.0,
-    "penetration": 2,
+    "penetration": 1,
     "range": 31.0,
     "rarity": 0,
     "size": 4,

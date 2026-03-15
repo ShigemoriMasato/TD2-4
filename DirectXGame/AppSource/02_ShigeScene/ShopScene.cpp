@@ -10,7 +10,7 @@ void ShopScene::Initialize() {
 	debugCamera_ = std::make_unique<DebugCamera>();
 	debugCamera_->Initialize(input_);
 	
-	debugCamera_->SetCenter({ -5.0f, -35.0f, -5.0f });
+	debugCamera_->SetCenter({ -5.0f, -20.0f, -4.5f });
 	debugCamera_->SetSpherical({ 20.0f, 0.0f, -1.570f });
 
 	PerspectiveFovDesc desc;
@@ -84,9 +84,21 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	debugCamera_->Update(false);
 	grid_->Update(debugCamera_->GetCenter(), debugCamera_->GetVPMatrix());
 
+	// 時間経過で自動でショップの内容を更新する
+	if (useAutoReroll_) {
+		shopRerollTimer_ += deltaTime_;
+		if (shopRerollTimer_ >= shopRerollTime_) {
+			pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
+			shopRerollTimer_ = 0.0f;
+		}
+	} else {
+		shopRerollTimer_ = 0.0f;
+	}
+
 	//何かしらのトリガーでショップのピースを更新する
 	if (key[Key::Debug2]) {
 		pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
+		shopRerollTimer_ = 0.0f;
 	}
 
 	shopCursor_->Update(debugCamera_.get());

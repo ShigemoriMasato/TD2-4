@@ -54,4 +54,8 @@ private:
 	Vector4 debugColor_ = { 0.0f, 0.0f, 0.0f, 0.1f };
 
 	float deltaTime_ = 0.0f;
+
+	bool useAutoReroll_ = true;
+	float shopRerollTime_ = 15.0f;
+	float shopRerollTimer_ = 0.0f;
 };
