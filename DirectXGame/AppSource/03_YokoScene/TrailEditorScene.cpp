@@ -3,12 +3,12 @@
 #include <filesystem>
 #include <algorithm>
 #include <cstring>
+#include <numbers>
 
 using namespace SHEngine;
 
 namespace
 {
-	constexpr const char* kWeaponDir = "Assets/Model/Item/Weapon";
 
 	std::string GetLeafName(const std::string& path)
 	{
@@ -19,10 +19,9 @@ namespace
 	std::unique_ptr<RenderObject> CreateTexturedModelRO(
 		DrawDataManager* drawDataManager,
 		const NodeModelData& modelData,
-		int textureIndex,
-		const char* debugName)
+		int textureIndex)
 	{
-		auto ro = std::make_unique<RenderObject>(debugName);
+		auto ro = std::make_unique<RenderObject>();
 		ro->Initialize();
 
 		ro->psoConfig_.vs = "Game/Field.VS.hlsl";
@@ -78,98 +77,105 @@ void TrailEditorScene::Initialize()
 	camera_->SetPosition({ 0.0f, 3.0f, -10.0f });
 	camera_->Initialize(input_);
 
-	// マーカー用Cube（EngineResourceに確実にある）
-	markerModelHandle_ = modelManager_->LoadModel("Assets/.EngineResource/Model/Cube");
-	markerModelData_ = modelManager_->GetNodeModelData(markerModelHandle_);
+	// マーカー用Cube
+	int markerModelHandle = modelManager_->LoadModel("Assets/.EngineResource/Model/Cube");
+	markerModelData_ = modelManager_->GetNodeModelData(markerModelHandle);
 
 	// Trail初期値
-	trailCfg_ = Trail::Config{};
-	strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailCfg_.defaultTexturePath.c_str(), _TRUNCATE);
+	trailConfig_ = Trail::Config{};
 
-	// モデルリスト
-	BuildModelList();
-	if (!models_.empty())
+	int i = 0;
+	for (i = 0; i < trailConfig_.defaultTexturePath.size(); ++i)
 	{
-		SelectModel(0);
+		texturePathBuf_[i] = trailConfig_.defaultTexturePath[i];
 	}
+	texturePathBuf_[i] = '\0';
+
+	// モデルリスト作成
+	BuildModelList();
+
+	// 全モデルのRenderObject作成
+	CreateModelRender();
+	// マーカーのRenderObject作成
+	CreateMarkerRenders();
+
+	// Trail作り直し
+	RebuildTrail();
+
+	// 最初のモデルを選択
+	SelectModel(0);
+
+	// 保存済みがあればロード
+	LoadTrailData();
 }
 
+// Assets/Model/Item/Weapon配下モデルファイルをリストアップ
 void TrailEditorScene::BuildModelList()
 {
-	models_.clear();
+	modelRenders_.clear();
 
+	const char* kWeaponDir = "Assets/Model/Item/Weapon";
+
+	// kWeaponDirフォルダの存在確認
 	std::error_code ec;
 	if (!std::filesystem::exists(kWeaponDir, ec))
 	{
 		return;
 	}
 
+	// kWeaponDir配下の全フォルダを走査
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(kWeaponDir))
 	{
+		// entryがフォルダでなければスキップ
 		if (!entry.is_directory()) continue;
 
-		// 末端フォルダ（子ディレクトリを持たない）だけ対象
+		// 末端フォルダだけ対象
 		bool hasChildDir = false;
 		for (const auto& c : std::filesystem::directory_iterator(entry.path()))
 		{
+			// さらに下がいれば非末端判定
 			if (c.is_directory())
 			{
 				hasChildDir = true;
 				break;
 			}
 		}
+		// 走査して非末端ならスキップ
 		if (hasChildDir) continue;
 
-		ModelEntry m{};
-		m.path = entry.path().generic_string();
-		m.name = entry.path().filename().generic_string();
-		models_.push_back(std::move(m));
+		/// 末端じゃなければ追加
+		std::unique_ptr<editDataUnit> data = std::make_unique<editDataUnit>();
+		// モデルデータを取得
+		data->modelHandle = modelManager_->LoadModel(entry.path().generic_string());
+		// 表示用の名前をセット（例: Sword）
+		data->name = entry.path().filename().generic_string();
+		modelRenders_.push_back(std::move(data));
 	}
-
-	std::sort(models_.begin(), models_.end(), [](const ModelEntry& a, const ModelEntry& b)
-		{
-			return a.name < b.name;
-		});
 }
 
+// selectedModelIndex_を更新
 void TrailEditorScene::SelectModel(int index)
 {
-	if (index < 0 || index >= (int)models_.size()) return;
+	if (index < 0 || index >= int(modelRenders_.size())) return;
 
 	selectedModelIndex_ = index;
-	auto& m = models_[selectedModelIndex_];
-
-	m.modelHandle = modelManager_->LoadModel(m.path);
-	m.modelData = modelManager_->GetNodeModelData(m.modelHandle);
-
-	m.textureIndex = 0;
-	m.textureIndex = m.modelData.materials[m.modelData.materialIndex.front()].textureIndex;
-	modelTextureIndex_ = m.textureIndex;
-
-	// modelRender作り直し
-	CreateModelRender();
-	CreateMarkerRenders();
-
-	// 保存済みがあればロード
-	LoadTrailData();
-
-	// Trail作り直し
-	RebuildTrail();
 }
 
 // ターゲットオブジェクトのRenderObjectを作成
 void TrailEditorScene::CreateModelRender()
 {
-	if (selectedModelIndex_ < 0) return;
-	auto& m = models_[selectedModelIndex_];
-
-	modelRender_ = CreateTexturedModelRO(drawDataManager_, m.modelData, m.textureIndex, "TrailEditor_Model");
+	for (auto& data : modelRenders_)
+	{
+		auto modelData = modelManager_->GetNodeModelData(data->modelHandle);
+		// テクスチャインデックスを取得
+		data->textureIndex = modelData.materials[modelData.materialIndex.front()].textureIndex;
+		data->render = CreateTexturedModelRO(drawDataManager_, modelData, data->textureIndex);
+	}
 
 	modelTransform_.position = { 0.0f, 0.0f, 0.0f };
 	modelTransform_.rotate = { 0.0f, 0.0f, 0.0f };
 	modelTransform_.scale = { 1.0f, 1.0f, 1.0f };
 }
-
 // トレイルマーカーのRenderObjectを作成
 void TrailEditorScene::CreateMarkerRenders()
 {
@@ -180,17 +186,15 @@ void TrailEditorScene::CreateMarkerRenders()
 // Trailの初期化
 void TrailEditorScene::RebuildTrail()
 {
-	trail_.Initialize(drawDataManager_, textureManager_, trailCfg_);
-	trail_.SetTexturePath(trailCfg_.defaultTexturePath);
+	trail_.Initialize(drawDataManager_, textureManager_, trailConfig_);
+	trail_.SetTexturePath(trailConfig_.defaultTexturePath);
 	trail_.Clear();
 }
 
 // Jsonにトレイルデータ保存
 void TrailEditorScene::SaveTrailData()
 {
-	if (selectedModelIndex_ < 0) return;
-
-	const std::string modelName = models_[selectedModelIndex_].name;
+	const std::string modelName = modelRenders_[selectedModelIndex_]->name;
 	const std::string fileBaseName = modelName + "TrailData";
 
 	json_.Boot(fileBaseName);
@@ -205,17 +209,17 @@ void TrailEditorScene::SaveTrailData()
 
 	// config
 	{
-		int maxSeg = trailCfg_.maxSegments;
-		float life = trailCfg_.lifeTime;
-		float minDist = trailCfg_.minDistance;
+		int maxSeg = trailConfig_.maxSegments;
+		float life = trailConfig_.lifeTime;
+		float minDist = trailConfig_.minDistance;
 
-		Vector4 cN = trailCfg_.colorNormal;
-		Vector4 cA = trailCfg_.colorAdd;
+		Vector4 cN = trailConfig_.colorNormal;
+		Vector4 cA = trailConfig_.colorAdd;
 
-		bool dn = trailCfg_.drawNormal;
-		bool da = trailCfg_.drawAdd;
+		bool dn = trailConfig_.drawNormal;
+		bool da = trailConfig_.drawAdd;
 
-		std::string tex = trailCfg_.defaultTexturePath;
+		std::string tex = trailConfig_.defaultTexturePath;
 
 		json_.Add("maxSegments", maxSeg);
 		json_.Add("lifeTime", life);
@@ -232,12 +236,10 @@ void TrailEditorScene::SaveTrailData()
 
 	json_.Save();
 }
-
+// Jsonからトレイルデータ読み込み
 void TrailEditorScene::LoadTrailData()
 {
-	if (selectedModelIndex_ < 0) return;
-
-	const std::string modelName = models_[selectedModelIndex_].name;
+	const std::string modelName = modelRenders_[selectedModelIndex_]->name;
 	const std::string fileBaseName = modelName + "TrailData";
 
 	json_.Boot(fileBaseName);
@@ -247,43 +249,41 @@ void TrailEditorScene::LoadTrailData()
 	try { tipLocal_ = json_.Get<Vector3>("tipLocal"); }
 	catch (...) {}
 
-	try { trailCfg_.maxSegments = json_.Get<int>("maxSegments"); }
+	try { trailConfig_.maxSegments = json_.Get<int>("maxSegments"); }
 	catch (...) {}
-	try { trailCfg_.lifeTime = json_.Get<float>("lifeTime"); }
+	try { trailConfig_.lifeTime = json_.Get<float>("lifeTime"); }
 	catch (...) {}
-	try { trailCfg_.minDistance = json_.Get<float>("minDistance"); }
-	catch (...) {}
-
-	try { trailCfg_.colorNormal = json_.Get<Vector4>("colorNormal"); }
-	catch (...) {}
-	try { trailCfg_.colorAdd = json_.Get<Vector4>("colorAdd"); }
+	try { trailConfig_.minDistance = json_.Get<float>("minDistance"); }
 	catch (...) {}
 
-	try { trailCfg_.drawNormal = json_.Get<bool>("drawNormal"); }
+	try { trailConfig_.colorNormal = json_.Get<Vector4>("colorNormal"); }
 	catch (...) {}
-	try { trailCfg_.drawAdd = json_.Get<bool>("drawAdd"); }
+	try { trailConfig_.colorAdd = json_.Get<Vector4>("colorAdd"); }
 	catch (...) {}
 
-	try { trailCfg_.defaultTexturePath = json_.Get<std::string>("defaultTexturePath"); }
+	try { trailConfig_.drawNormal = json_.Get<bool>("drawNormal"); }
+	catch (...) {}
+	try { trailConfig_.drawAdd = json_.Get<bool>("drawAdd"); }
+	catch (...) {}
+
+	try { trailConfig_.defaultTexturePath = json_.Get<std::string>("defaultTexturePath"); }
 	catch (...) {}
 
 	std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
-	strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailCfg_.defaultTexturePath.c_str(), _TRUNCATE);
+	strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.defaultTexturePath.c_str(), _TRUNCATE);
 }
 
 void TrailEditorScene::UpdateRenders(const Matrix4x4& vpMatrix)
 {
-	lastVp_ = vpMatrix;
-
 	// model WVP
 	{
 		const Matrix4x4 w = MakeWorld(modelTransform_);
 		modelWvp_ = w * vpMatrix;
 
 		const Vector4 color = { 1,1,1,1 };
-		modelRender_->CopyBufferData(0, &modelWvp_, sizeof(Matrix4x4));
-		modelRender_->CopyBufferData(1, &color, sizeof(Vector4));
-		modelRender_->CopyBufferData(2, &modelTextureIndex_, sizeof(int));
+		modelRenders_[selectedModelIndex_]->render->CopyBufferData(0, &modelWvp_, sizeof(Matrix4x4));
+		modelRenders_[selectedModelIndex_]->render->CopyBufferData(1, &color, sizeof(Vector4));
+		modelRenders_[selectedModelIndex_]->render->CopyBufferData(2, &modelRenders_[selectedModelIndex_]->textureIndex, sizeof(int));
 	}
 
 	// marker WS（ローカル→ワールド）
@@ -295,24 +295,24 @@ void TrailEditorScene::UpdateRenders(const Matrix4x4& vpMatrix)
 	{
 		Transform tr{};
 		tr.position = originWS_;
-		tr.rotate = { 0,0,0 };
-		tr.scale = { markerScale_, markerScale_, markerScale_ };
+		tr.scale = { 0.5f, 0.5f, 0.5f };
 
 		Matrix4x4 wvp = MakeWorld(tr) * vpMatrix;
 		markerOriginRender_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
-		markerOriginRender_->CopyBufferData(1, &markerOriginColor_, sizeof(Vector4));
+		Vector4 color = Vector4{ 1.0f, 0.2f, 0.2f, 1.0f };
+		markerOriginRender_->CopyBufferData(1, &color, sizeof(Vector4));
 	}
 
 	// marker Tip
 	{
 		Transform tr{};
 		tr.position = tipWS_;
-		tr.rotate = { 0,0,0 };
-		tr.scale = { markerScale_, markerScale_, markerScale_ };
+		tr.scale = { 0.5f, 0.5f, 0.5f };
 
 		Matrix4x4 wvp = MakeWorld(tr) * vpMatrix;
 		markerTipRender_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
-		markerTipRender_->CopyBufferData(1, &markerTipColor_, sizeof(Vector4));
+		Vector4 color = Vector4{ 0.2f, 1.0f, 0.2f, 1.0f };
+		markerTipRender_->CopyBufferData(1, &color, sizeof(Vector4));
 	}
 }
 
@@ -324,10 +324,10 @@ void TrailEditorScene::DrawImGui()
 	// モデル選択
 	if (ImGui::BeginListBox("Weapon Models"))
 	{
-		for (int i = 0; i < (int)models_.size(); ++i)
+		for (int i = 0; i < modelRenders_.size(); ++i)
 		{
 			const bool selected = (i == selectedModelIndex_);
-			if (ImGui::Selectable(models_[i].name.c_str(), selected))
+			if (ImGui::Selectable(modelRenders_[i]->name.c_str(), selected))
 			{
 				SelectModel(i);
 			}
@@ -337,37 +337,30 @@ void TrailEditorScene::DrawImGui()
 
 	if (selectedModelIndex_ >= 0)
 	{
-		ImGui::SeparatorText("Point (Local)");
-		requestRebuildTrail_ |= ImGui::DragFloat3("Origin Local", &originLocal_.x, 0.01f);
-		requestRebuildTrail_ |= ImGui::DragFloat3("Tip Local", &tipLocal_.x, 0.01f);
-
-		ImGui::SeparatorText("Marker");
-		ImGui::DragFloat("Marker Scale", &markerScale_, 0.01f, 0.01f, 10.0f);
+		ImGui::SeparatorText("Point");
+		requestRebuildTrail_ |= ImGui::DragFloat3("Origin", &originLocal_.x, 0.01f);
+		requestRebuildTrail_ |= ImGui::DragFloat3("Tip", &tipLocal_.x, 0.01f);
 
 		ImGui::SeparatorText("Trail Config");
-		requestRebuildTrail_ |= ImGui::DragInt("maxSegments", &trailCfg_.maxSegments, 1.0f, 1, 512);
-		requestRebuildTrail_ |= ImGui::DragFloat("lifeTime", &trailCfg_.lifeTime, 0.01f, 0.001f, 10.0f);
-		requestRebuildTrail_ |= ImGui::DragFloat("minDistance", &trailCfg_.minDistance, 0.001f, 0.0f, 10.0f);
+		requestRebuildTrail_ |= ImGui::DragInt("maxSegments", &trailConfig_.maxSegments, 1.0f, 1, 512);
+		requestRebuildTrail_ |= ImGui::DragFloat("lifeTime", &trailConfig_.lifeTime, 0.01f, 0.001f, 10.0f);
+		requestRebuildTrail_ |= ImGui::DragFloat("minDistance", &trailConfig_.minDistance, 0.001f, 0.0f, 10.0f);
 
-		requestRebuildTrail_ |= ImGui::ColorEdit4("colorNormal", &trailCfg_.colorNormal.x);
-		requestRebuildTrail_ |= ImGui::ColorEdit4("colorAdd", &trailCfg_.colorAdd.x);
+		requestRebuildTrail_ |= ImGui::ColorEdit4("colorNormal", &trailConfig_.colorNormal.x);
+		requestRebuildTrail_ |= ImGui::ColorEdit4("colorAdd", &trailConfig_.colorAdd.x);
 
-		requestRebuildTrail_ |= ImGui::Checkbox("drawNormal", &trailCfg_.drawNormal);
-		requestRebuildTrail_ |= ImGui::Checkbox("drawAdd", &trailCfg_.drawAdd);
+		requestRebuildTrail_ |= ImGui::Checkbox("drawNormal", &trailConfig_.drawNormal);
+		requestRebuildTrail_ |= ImGui::Checkbox("drawAdd", &trailConfig_.drawAdd);
 
 		// texture path
 		if (ImGui::InputText("defaultTexturePath", texturePathBuf_, sizeof(texturePathBuf_)))
 		{
-			trailCfg_.defaultTexturePath = texturePathBuf_;
+			trailConfig_.defaultTexturePath = texturePathBuf_;
 			requestRebuildTrail_ = true;
 		}
 
 		ImGui::Separator();
 		ImGui::Checkbox("Emit Trail", &emitTrail_);
-		if (ImGui::Button("Clear Trail"))
-		{
-			trail_.Clear();
-		}
 
 		if (ImGui::Button("Save"))
 		{
@@ -380,7 +373,7 @@ void TrailEditorScene::DrawImGui()
 			requestRebuildTrail_ = true;
 		}
 
-		ImGui::Text("Save File: Assets/Json/%sTrailData.json", models_[selectedModelIndex_].name.c_str());
+		ImGui::Text("Save File: Assets/Json/%sTrailData.json", modelRenders_[selectedModelIndex_]->name.c_str());
 	}
 
 	ImGui::End();
@@ -423,9 +416,9 @@ void TrailEditorScene::Draw()
 
 	display->PreDraw(cmdObj, true);
 
-	if (modelRender_) modelRender_->Draw(cmdObj);
-	if (markerOriginRender_) markerOriginRender_->Draw(cmdObj);
-	if (markerTipRender_) markerTipRender_->Draw(cmdObj);
+	modelRenders_[selectedModelIndex_]->render->Draw(cmdObj);
+	markerOriginRender_->Draw(cmdObj);
+	markerTipRender_->Draw(cmdObj);
 
 	trail_.Draw(cmdObj);
 

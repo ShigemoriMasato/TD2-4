@@ -16,18 +16,18 @@ public:
 	void Draw() override;
 
 private:
-	struct ModelEntry
+	struct editDataUnit
 	{
 		std::string name; // 末端フォルダ名（例: Sword）
-		std::string path; // LoadModel用（例: Assets/Model/Item/Weapon/Sword）
-		int modelHandle = -1;
-		NodeModelData modelData{};
-		int textureIndex = 0;
+		std::unique_ptr<SHEngine::RenderObject> render; // モデル描画用RenderObject
+		int modelHandle; // モデルデータのハンドル（保存/ロード用）
+		int textureIndex; // テクスチャインデックス（保存/ロード用）
 	};
 
 private:
-	// モデル一覧
+	// Assets/Model/Item/Weapon配下モデルファイル走査&ロードしてリストアップ
 	void BuildModelList();
+	// リストからindex番目のモデルからRenderObject作成
 	void SelectModel(int index);
 
 	// 描画初期化
@@ -48,20 +48,17 @@ private:
 private:
 	std::unique_ptr<DebugCamera> camera_;
 
-	// 選択モデル一覧
-	std::vector<ModelEntry> models_;
+	// 選択モデルインデックス
 	int selectedModelIndex_ = -1;
 
-	// モデル描画
-	std::unique_ptr<SHEngine::RenderObject> modelRender_;
+	// モデルデータ
+	std::vector<std::unique_ptr<editDataUnit>> modelRenders_;
 	Transform modelTransform_{};
 	Matrix4x4 modelWvp_{};
-	int modelTextureIndex_ = 0;
 
 	// マーカー（Cube）
 	std::unique_ptr<SHEngine::RenderObject> markerOriginRender_;
 	std::unique_ptr<SHEngine::RenderObject> markerTipRender_;
-	int markerModelHandle_ = -1;
 	NodeModelData markerModelData_{};
 
 	Vector3 originLocal_{ 0.0f, 0.55f, 1.2f };
@@ -70,17 +67,10 @@ private:
 	Vector3 originWS_{};
 	Vector3 tipWS_{};
 
-	float markerScale_ = 0.15f;
-	Vector4 markerOriginColor_{ 1.0f, 0.2f, 0.2f, 1.0f };
-	Vector4 markerTipColor_{ 0.2f, 1.0f, 0.2f, 1.0f };
-
 	// Trail
 	Trail trail_;
-	Trail::Config trailCfg_{};
+	Trail::Config trailConfig_{};
 	bool emitTrail_ = true;
-
-	// Trail更新用VP（Trail::DrawがvpMatrixを受け取らない設計なのでUpdateで渡す）
-	Matrix4x4 lastVp_{ Matrix4x4::Identity() };
 
 	// Json
 	JsonManager json_;

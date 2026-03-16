@@ -1,0 +1,30 @@
+{
+    "colorAdd": [
+        0.6000000238418579,
+        0.8999999761581421,
+        1.0,
+        0.75
+    ],
+    "colorNormal": [
+        1.0,
+        1.0,
+        1.0,
+        0.6499999761581421
+    ],
+    "defaultTexturePath": "Assets/.EngineResource/Texture/white1x1.png",
+    "drawAdd": true,
+    "drawNormal": true,
+    "lifeTime": 0.20000000298023224,
+    "maxSegments": 32,
+    "minDistance": 0.10000000149011612,
+    "originLocal": [
+        0.0,
+        0.75,
+        3.2100000381469727
+    ],
+    "tipLocal": [
+        0.0,
+        0.75,
+        -0.9399999976158142
+    ]
+}
