@@ -55,15 +55,6 @@ void WeaponDebugger::Draw() {
 			weaponManager_->SaveWeaponData();
 			ImGui::OpenPopup("SaveSuccess");
 		}
-
-		// 保存成功ダイアログ
-		if (ImGui::BeginPopupModal("SaveSuccess", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-			ImGui::Text("Weapon data saved successfully!");
-			if (ImGui::Button("OK", ImVec2(120, 0))) {
-				ImGui::CloseCurrentPopup();
-			}
-			ImGui::EndPopup();
-		}
 	} else {
 		// 武器データが見つからない場合
 		ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Weapon ID %d not found", currentWeaponId);
@@ -74,15 +65,6 @@ void WeaponDebugger::Draw() {
 	if (ImGui::Button("Load Weapon Data", ImVec2(-1, 0))) {
 		weaponManager_->LoadWeaponData();
 		ImGui::OpenPopup("LoadSuccess");
-	}
-
-	// 読み込み成功ダイアログ
-	if (ImGui::BeginPopupModal("LoadSuccess", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-		ImGui::Text("Weapon data loaded successfully!");
-		if (ImGui::Button("OK", ImVec2(120, 0))) {
-			ImGui::CloseCurrentPopup();
-		}
-		ImGui::EndPopup();
 	}
 
 	ImGui::End();
