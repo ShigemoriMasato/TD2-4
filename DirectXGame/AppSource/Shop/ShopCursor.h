@@ -12,6 +12,8 @@ public:
 	void Update(Camera* camera);
 	void EditPiece(BackPack* backPack);
 
+	bool HasHeldPiece() const { return heldPiece_ != nullptr; }
+
 private:
 
 	KeyManager* keyManager_ = nullptr;

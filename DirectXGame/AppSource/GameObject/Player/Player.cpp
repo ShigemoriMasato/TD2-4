@@ -106,6 +106,9 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 	if (input_->GetKeyState(DIK_4) && !input_->GetPreKeyState(DIK_4)) {
 		currentHP_ = 0.0f;
 	}
+	if (input_->GetKeyState(DIK_6) && !input_->GetPreKeyState(DIK_6)) {
+		isDebugInvincible_ = !isDebugInvincible_;
+	}
 #endif
 
 	// 残像の更新
@@ -201,6 +204,11 @@ void Player::Base::OnCollision(Collider* other) {
 }
 
 void Player::Base::Damage(float amount){
+#ifdef _DEBUG
+	if (isDebugInvincible_)
+		return;
+#endif
+
 	if (amount <= 0.0f || isInvincible_)
 		return;
 
@@ -229,8 +237,8 @@ void Player::Base::UpdateAfterImages(float deltaTime) {
 
 void Player::Base::ClampPosition() {
 	// プレイヤーがステージ買いに出ないようにする
-	float posX = std::clamp(transform_.position.x, minX_, maxX_);
-	float posZ = std::clamp(transform_.position.z, minZ_, maxZ_);
+	float posX = std::clamp(transform_.position.x, mapInfo_.minX, mapInfo_.maxX);
+	float posZ = std::clamp(transform_.position.z, mapInfo_.minZ, mapInfo_.maxZ);
 
 	transform_.position = Vector3(posX, 0.0f, posZ);
 }

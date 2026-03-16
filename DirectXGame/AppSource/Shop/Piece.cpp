@@ -22,7 +22,9 @@ bool Piece::Update(BackPack* backPack, float deltaTime) {
 	}
 
 	useTimer_ += deltaTime;
-	if (useTimer_ >= 10.0f) {
+
+	// 使用時間が一定時間を超えたら使用終了
+	if (useTimer_ >= deleteTime_) {
 		isUsing_ = false;
 
 		// 使用が終わったらチップをひとつバックパックから外す
@@ -144,7 +146,11 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 			info.color = 0x00ffffff; // シアン
 		}
 		if (isUsing_) {
-			info.color = 0xff0000ff; // 赤色
+			uint32_t rU = 255; 
+			uint32_t gU = static_cast<uint32_t>(165.0f + t * (0.0f - 165.0f));
+			uint32_t bU = 0;
+			uint32_t aU = 255;
+			info.color = (rU << 24) | (gU << 16) | (bU << 8) | aU;
 		}
 
 		drawInfos.push_back(info);

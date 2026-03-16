@@ -36,7 +36,7 @@ void ShigeScene::Initialize() {
 
 	map_ = std::make_unique<Map>();
 	map_->Initialize(drawDataManager_, modelManager_);
-	player_->SetMapMinMax(map_->GetMinX(), map_->GetMaxX(), map_->GetMinZ(), map_->GetMaxZ());
+	player_->SetMapInfo(map_->GetMapInfo());
 
 	objectRender_ = std::make_unique<ObjectRender>();
 	objectRender_->Initialize(drawDataManager_, modelManager_);
@@ -50,7 +50,7 @@ void ShigeScene::Initialize() {
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 
 	waveSystem_ = std::make_unique<LevelSystem>();
-	waveSystem_->Initialize(enemyManager_.get(), commonData_->stageNum++, player_->GetPositionPtr(), map_->GetMinX(), map_->GetMaxX(), map_->GetMinZ(), map_->GetMaxZ());
+	waveSystem_->Initialize(enemyManager_.get(), commonData_->stageNum++, player_->GetPositionPtr(), map_->GetMapInfo());
 
 	gameTimer_ = std::make_unique<GameTimer>();
 	gameTimer_->Initialize();
@@ -180,6 +180,10 @@ void ShigeScene::Draw() {
 #ifdef USE_IMGUI
 
 	display->DrawImGui();
+
+	ImGui::Begin("Game Timer");
+	ImGui::Text("Game Time : %.2f s", gameTimer_->GetTimer());
+	ImGui::End();
 
 	ImGui::Begin("FPS");
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();

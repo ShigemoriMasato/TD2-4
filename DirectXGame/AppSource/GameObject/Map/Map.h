@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 #include <array>
+#include "MapInfo.h"
 
 using CmdObj = SHEngine::Command::Object;
 
@@ -17,7 +18,7 @@ public:
 	~Map() = default;
 
 	// @brief マップの初期化処理
-	void Initialize(SHEngine::DrawDataManager* drawDataManager = nullptr, SHEngine::ModelManager* modelManager = nullptr, float minX = 0.0f, float maxX = 38.0f, float minZ = 0.0f, float maxZ = 38.0f);
+	void Initialize(SHEngine::DrawDataManager* drawDataManager = nullptr, SHEngine::ModelManager* modelManager = nullptr, const MapInfo& mapInfo = MapInfo{});
 
 	// @brief マップの更新処理
 	void Update(const Matrix4x4& vpMatrix);
@@ -30,36 +31,29 @@ public:
 
 	// @brief 座標をマップの境界内に制限する
 	Vector3 ClampToBounds(const Vector3& position) const;
+	
+	const MapInfo& GetMapInfo() const { return mapInfo_; }
 
 	// @brief マップのx方向の最小値を取得
-	float GetMinX() const { return minX_; }
+	float GetMinX() const { return mapInfo_.minX; }
 
 	// @brief マップのx方向の最大値を取得
-	float GetMaxX() const { return maxX_; }
+	float GetMaxX() const { return mapInfo_.maxX; }
 
 	// @brief マップのz方向の最小値を取得
-	float GetMinZ() const { return minZ_; }
+	float GetMinZ() const { return mapInfo_.minZ; }
 
 	// @brief マップのz方向の最大値を取得
-	float GetMaxZ() const { return maxZ_; }
+	float GetMaxZ() const { return mapInfo_.maxZ; }
 
 	// @brief マップのx方向の幅を取得
-	float GetWidth() const { return maxX_ - minX_; }
+	float GetWidth() const { return mapInfo_.maxX - mapInfo_.minX; }
 
 	// @brief マップのz方向の奥行きを取得
-	float GetDepth() const { return maxZ_ - minZ_; }
+	float GetDepth() const { return mapInfo_.maxZ - mapInfo_.minZ; }
 
 private:
-
-	// x方向の最小値
-	float minX_ = 0.0f;
-	// x方向の最大値
-	float maxX_ = 38.0f;
-
-	// z方向の最小値
-	float minZ_ = 0.0f;
-	// z方向の最大値
-	float maxZ_ = 38.0f;
+	MapInfo mapInfo_;
 
 	// モデル管理用
 	SHEngine::DrawDataManager* drawDataManager_ = nullptr;

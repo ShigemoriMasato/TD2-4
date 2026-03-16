@@ -7,7 +7,7 @@ LevelSystem::~LevelSystem() {
 	}
 }
 
-void LevelSystem::Initialize(EnemyManager* enemyManager, int stageNum, Vector3* playerPosPtr, float minX, float maxX, float minZ, float maxZ) {
+void LevelSystem::Initialize(EnemyManager* enemyManager, int stageNum, Vector3* playerPosPtr, const MapInfo& mapInfo) {
 	enemyManager_ = enemyManager;
 	stageNum_ = stageNum;
 	std::string fileName = "Stage" + std::to_string(stageNum_) + ".bytes";
@@ -17,10 +17,7 @@ void LevelSystem::Initialize(EnemyManager* enemyManager, int stageNum, Vector3* 
 	Load();
 
 	// 座標範囲の設定
-	minX_ = minX;
-	maxX_ = maxX;
-	minZ_ = minZ;
-	maxZ_ = maxZ;
+	mapInfo_ = mapInfo;
 
 	playerPosPtr_ = playerPosPtr;
 }
@@ -36,9 +33,29 @@ void LevelSystem::Update(float deltaTime) {
 		timer_ = 0.0f;
 
 		for(int i = 0; i < static_cast<int>(config_.enemyCount); ++i) {
-			std::uniform_real_distribution<float> distX(minX_, maxX_);
-			std::uniform_real_distribution<float> distZ(minZ_, maxZ_);
-			Vector3 spawnPos = { distX(rng_), 0.0f, distZ(rng_) };
+			std::uniform_real_distribution<float> distX(mapInfo_.minX, mapInfo_.maxX);
+			std::uniform_real_distribution<float> distZ(mapInfo_.minZ, mapInfo_.maxZ);
+			Vector3 spawnPos;
+			
+			// プレイヤーから半径5m以上離れた位置にスポーンさせる
+			const float minSpawnDistanceSq = 5.0f * 5.0f;
+			int retryCount = 0;
+			do {
+				spawnPos = { distX(rng_), 0.0f, distZ(rng_) };
+				
+				if (playerPosPtr_) {
+					float dx = spawnPos.x - playerPosPtr_->x;
+					float dz = spawnPos.z - playerPosPtr_->z;
+					float distSq = dx * dx + dz * dz;
+					if (distSq >= minSpawnDistanceSq) {
+						break;
+					}
+				} else {
+					break;
+				}
+				retryCount++;
+			} while (retryCount < 10); // 無限ループ防止のため最大10回リトライ
+
 			enemyManager_->PopEnemy(spawnPos, static_cast<int>(config_.enemyHp));
 		}
 	}
@@ -59,12 +76,61 @@ void LevelSystem::DrawImGui() {
 }
 
 void LevelSystem::AdjustDifficult() {
+	// ゲーム開始から2分(120秒)まで10秒ごとのレベルデザイン
+
 	if (allTimer_ <= 10.0f) {
-
+		config_.spawnInterval = 3.0f;
+		config_.enemyCount    = 2.0f;
+		config_.enemyHp       = 5.0f;
 	} else if (allTimer_ <= 20.0f) {
-		float levelTimer = allTimer_ - 10.0f;
-
-
+		config_.spawnInterval = 2.5f;
+		config_.enemyCount    = 3.0f;
+		config_.enemyHp       = 10.0f;
+	} else if (allTimer_ <= 30.0f) {
+		config_.spawnInterval = 2.0f;
+		config_.enemyCount    = 4.0f;
+		config_.enemyHp       = 15.0f;
+	} else if (allTimer_ <= 40.0f) {
+		config_.spawnInterval = 1.8f;
+		config_.enemyCount    = 5.0f;
+		config_.enemyHp       = 20.0f;
+	} else if (allTimer_ <= 50.0f) {
+		config_.spawnInterval = 1.5f;
+		config_.enemyCount    = 6.0f;
+		config_.enemyHp       = 30.0f;
+	} else if (allTimer_ <= 60.0f) {
+		config_.spawnInterval = 1.2f;
+		config_.enemyCount    = 8.0f;
+		config_.enemyHp       = 40.0f;
+	} else if (allTimer_ <= 70.0f) {
+		config_.spawnInterval = 1.0f;
+		config_.enemyCount    = 10.0f;
+		config_.enemyHp       = 50.0f;
+	} else if (allTimer_ <= 80.0f) {
+		config_.spawnInterval = 0.9f;
+		config_.enemyCount    = 12.0f;
+		config_.enemyHp       = 60.0f;
+	} else if (allTimer_ <= 90.0f) {
+		config_.spawnInterval = 0.8f;
+		config_.enemyCount    = 14.0f;
+		config_.enemyHp       = 70.0f;
+	} else if (allTimer_ <= 100.0f) {
+		config_.spawnInterval = 0.7f;
+		config_.enemyCount    = 16.0f;
+		config_.enemyHp       = 80.0f;
+	} else if (allTimer_ <= 110.0f) {
+		config_.spawnInterval = 0.6f;
+		config_.enemyCount    = 18.0f;
+		config_.enemyHp       = 100.0f;
+	} else if (allTimer_ <= 120.0f) {
+		config_.spawnInterval = 0.5f;
+		config_.enemyCount    = 20.0f;
+		config_.enemyHp       = 120.0f;
+	} else {
+		// 120秒以降: 最大難易度
+		config_.spawnInterval = 0.3f;
+		config_.enemyCount    = 25.0f;
+		config_.enemyHp       = 150.0f;
 	}
 }
 
