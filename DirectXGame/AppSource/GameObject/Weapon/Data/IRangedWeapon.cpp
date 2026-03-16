@@ -15,7 +15,7 @@ void IRangedWeapon::Initialize(int weaponID, Player::Base* player) {
 	config_.penetration = weaponData_->penetration + player->GetParameter("Penetration");
 
 	// 武器データベースからパラメータを取得
-	rate_ = 2.0f / (weaponData_->attackSpeed + player->GetParameter("AttackSpeed"));
+	rate_ = weaponData_->attackSpeed / ((player->GetParameter("AttackSpeed") + 10.f) / 10.f);
 	speed_ = config_.speed;
 	range_ = config_.range;
 	penetration_ = config_.penetration;
