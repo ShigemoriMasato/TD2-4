@@ -3,6 +3,8 @@
 #include <Utility/Color.h>
 #include <imgui/imgui.h>
 #include <numbers>
+#include <windows.h>
+#include <format>
 
 void ShigeScene::Initialize() {
 	debugCamera_ = std::make_unique<DebugCamera>();
@@ -143,6 +145,8 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	}
 
 	if (player_->GetCurrentHP() <= 0){
+		std::string debugMsg = std::format("Player Survived Time: {:.2f} s\n", gameTimer_->GetTimer());
+		OutputDebugStringA(debugMsg.c_str());
 		return std::make_unique<TitleScene>();
 	}
 

@@ -1,7 +1,7 @@
 {
     "attackCount": 0,
-    "attackSpeed": 0.5,
-    "baseDamage": 27.100000381469727,
+    "attackSpeed": 1.2000000476837158,
+    "baseDamage": 5.0,
     "criticalChance": 0.5,
     "criticalMultiplier": 2.0,
     "gold": 20.0,
