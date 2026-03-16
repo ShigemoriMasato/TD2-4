@@ -21,12 +21,20 @@ enum class Key {
 	Reverse,//取消キー
 	Pause,//ポーズキー
 
+	ControllerChange,//コントローラーの切り換え
+
 	// Debug -===========
 
 	Restart,//リスタートキー
 	Debug1,
 	Debug2,
 	Debug3,
+
+	Heal,//回復
+	Damage,//ダメージ
+	FullHeal,//全回復
+	FullDamage,//全ダメージ
+	InvincibleChange,//無敵状態切り換え
 
 	Count
 };

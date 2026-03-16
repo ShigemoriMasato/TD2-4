@@ -10,6 +10,7 @@
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
 #include "../Map/MapInfo.h"
+#include <Common/KeyConfig/KeyManager.h>
 
 /// <summary>
 /// プレイヤー
@@ -23,10 +24,10 @@ struct AfterImage {
 class Base : public Collider {
 public:
 	// 初期化（デフォルトキャラクターID: 0）
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input, CharacterID characterID, ItemManager* itemManager);
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, CharacterID characterID, ItemManager* itemManager);
 
 	// 更新
-	void Update(Matrix4x4 vpMatrix, float deltaTime);
+	void Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, bool>& key);
 	// パラメータの更新
 	void UpdateParameter(const std::vector<Piece*>& items);
 

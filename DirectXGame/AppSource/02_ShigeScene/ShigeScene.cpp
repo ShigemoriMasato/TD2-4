@@ -29,7 +29,7 @@ void ShigeScene::Initialize() {
 	playerHP_->Initialize(modelManager_, drawDataManager_);
 
 	player_ = std::make_unique<Player::Base>();
-	player_->Initialize(modelManager_, drawDataManager_, input_, CharacterID::Warrior, shopScene_->GetItemManager());
+	player_->Initialize(modelManager_, drawDataManager_, CharacterID::Warrior, shopScene_->GetItemManager());
 	player_->UpdateParameter(commonData_->pieces);
 
 	enemyManager_ = std::make_unique<EnemyManager>();
@@ -83,7 +83,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	gameTimer_->Update(deltaTime);
 	waveSystem_->Update(deltaTime);
 
-	if (input_->GetKeyState(DIK_5) && !input_->GetPreKeyState(DIK_5)) {
+	if (key[Key::ControllerChange]) {
 		// インデックスを切り替える
 		currentControllerIndex_ = (currentControllerIndex_ + 1) % controllers_.size();
 
@@ -91,7 +91,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		player_->SetController(controllers_[currentControllerIndex_]);
 	}
 
-	player_->Update(camera_->GetVPMatrix(), deltaTime);
+	player_->Update(camera_->GetVPMatrix(), deltaTime, key);
 	player_->UpdateParameter(commonData_->pieces);
 	playerHP_->Update(orthoCamera_->GetVPMatrix(), deltaTime, player_->GetCurrentHP(), player_->GetMaxHP());
 

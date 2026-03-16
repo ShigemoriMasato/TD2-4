@@ -6,7 +6,7 @@
 using namespace SHEngine;
 using namespace Player;
 
-void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, Input* input, CharacterID characterID, ItemManager* itemManager) {
+void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, CharacterID characterID, ItemManager* itemManager) {
 	// 本体描画用オブジェクトの生成&初期化
 	render_ = std::make_unique<RenderObject>();
 	render_->Initialize();
@@ -51,9 +51,6 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	// 単位行列の代入
 	wvp_ = Matrix4x4::Identity();
 
-	// 入力
-	input_ = input;
-
 	// 状態の初期化
 	currentState_ = std::make_unique<StateNormal>(); // 通常
 
@@ -83,7 +80,7 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	currentHP_ = maxHP_;
 }
 
-void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
+void Base::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, bool>& key) {
 	// 描画用にVP行列を保存
 	vpMatrix_ = vpMatrix;
 
@@ -94,19 +91,19 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 
 #ifdef _DEBUG
 	// HP
-	if (input_->GetKeyState(DIK_1) && !input_->GetPreKeyState(DIK_1)) {
+	if (key[Key::Damage]) {
 		Damage(1.0f);
 	}
-	if (input_->GetKeyState(DIK_2) && !input_->GetPreKeyState(DIK_2)) {
+	if (key[Key::Heal]) {
 		Heal(1.0f);
 	}
-	if (input_->GetKeyState(DIK_3) && !input_->GetPreKeyState(DIK_3)) {
+	if (key[Key::FullHeal]) {
 		currentHP_ = maxHP_;
 	}
-	if (input_->GetKeyState(DIK_4) && !input_->GetPreKeyState(DIK_4)) {
+	if (key[Key::FullDamage]) {
 		currentHP_ = 0.0f;
 	}
-	if (input_->GetKeyState(DIK_6) && !input_->GetPreKeyState(DIK_6)) {
+	if (key[Key::InvincibleChange]) {
 		isDebugInvincible_ = !isDebugInvincible_;
 	}
 #endif

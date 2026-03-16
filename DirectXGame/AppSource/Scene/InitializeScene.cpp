@@ -112,6 +112,15 @@ void InitializeScene::Initialize() {
 	keyManager->SetKey(Key::Debug1, DIK_F1, KeyState::Trigger);
 	keyManager->SetKey(Key::Debug2, DIK_F2, KeyState::Trigger);
 	keyManager->SetKey(Key::Debug3, DIK_F3, KeyState::Trigger);
+
+	//================================================================================
+
+	keyManager->SetKey(Key::Damage, DIK_1, KeyState::Trigger);
+	keyManager->SetKey(Key::Heal, DIK_2, KeyState::Trigger);
+	keyManager->SetKey(Key::FullHeal, DIK_3, KeyState::Trigger);
+	keyManager->SetKey(Key::FullDamage, DIK_4, KeyState::Trigger);
+	keyManager->SetKey(Key::ControllerChange, DIK_5, KeyState::Trigger);
+	keyManager->SetKey(Key::InvincibleChange, DIK_6, KeyState::Trigger);
 #pragma endregion
 }
 
