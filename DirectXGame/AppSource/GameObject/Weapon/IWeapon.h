@@ -21,9 +21,12 @@ public:
 	void SetPiecePtr(Piece* piece) { piece_ = piece; }
 	Piece* GetPiecePtr() const { return piece_; }
 
-	bool GetIsAnimation() const { return isAnimation_;}
+	bool GetIsAnimation() const { return isAnimation_; }
 
 protected:
+
+	virtual bool EnemyCheck() = 0;
+	virtual void Shot(IEnemy* target) = 0;
 
 	static inline AttackManager* attackManager_ = nullptr;
 	static inline EnemyManager* enemyManager_ = nullptr;
@@ -36,6 +39,6 @@ protected:
 
 	Piece* piece_ = nullptr;
 
-	bool isAnimation_ = false;
+	bool isAnimation_ = false;	// 攻撃のアニメーション中かどうか
 
 };

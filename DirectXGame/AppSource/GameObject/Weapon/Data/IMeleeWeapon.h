@@ -1,5 +1,6 @@
 #pragma once
 #include "../IWeapon.h"
+#include <GameObject/Attack/Swing.h>
 
 class IMeleeWeapon : public IWeapon {
 public:
@@ -9,7 +10,8 @@ public:
 
 protected:
 
-	virtual void Attack();
+	virtual bool EnemyCheck() override;
+	virtual void Shot(IEnemy* target) override;
 
 	float rate_;				//攻撃の速さ(秒)
 	float attackRate_;			//連続攻撃の速さ(秒)

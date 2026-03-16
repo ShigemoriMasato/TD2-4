@@ -18,6 +18,7 @@ public:
 	virtual void Update(float deltaTime) {};
 	void UpdateCollider();
 
+	Vector3 GetPosition() const { return position_; }
 	DrawInfo GetDrawInfo() const { return drawInfo_; }
 	void OnCollision(Collider* other) override;
 

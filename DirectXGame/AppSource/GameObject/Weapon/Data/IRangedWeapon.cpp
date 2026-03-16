@@ -1,5 +1,4 @@
 #include "IRangedWeapon.h"
-#include <GameObject/Attack/Bullet.h>
 
 void IRangedWeapon::Initialize(int weaponID, Player::Base* player) {
 	IWeapon::Initialize(weaponID, player);
@@ -32,13 +31,13 @@ void IRangedWeapon::Update(float deltaTime) {
 	}
 
 	for (int i = 0; i < bulletNum_; ++i) {
-		if (!Shot()) {
+		if (!EnemyCheck()) {
 			break;
 		}
 	}
 }
 
-bool IRangedWeapon::Shot(bool regist) {
+bool IRangedWeapon::EnemyCheck() {
 	auto enemies = enemyManager_->GetEnemies();
 
 	// 近くに敵がいるかの判別
@@ -52,26 +51,29 @@ bool IRangedWeapon::Shot(bool regist) {
 		//一定距離内に敵がいた場合(少し射程に余裕を持たせる)
 		if (distance <= (range_ * 0.8f)) {
 
-			// 敵の方向に弾を生成
-			Vector3 dir = (ePos - pPos).Normalize();
-			std::unique_ptr<Bullet> bullet = std::make_unique<Bullet>();
-			config_.position = pPos;
-			config_.direction = atan2f(dir.z, dir.x);
-			bullet->Initialize(config_);
-			attackManager_->AddObj(std::move(bullet));
-
 			rateTimer_ = 0.0f;
 
-			if (regist) {
+			if (shotIDRegister_) {
 				int id = enemy->GetID(); // 敵のIDを取得
 				shotEnemyIDs_.push_back(id); // 射撃した敵のIDを保存
 			}
 
-			isAnimation_ = true;
+			Vector3 dir = (ePos - pPos).Normalize();
+			config_.position = pPos;
+			config_.direction = atan2f(dir.z, dir.x);
 
+			Shot(enemy);
 			return true;
 		}
 	}
 
 	return false;
+}
+
+void IRangedWeapon::Shot(IEnemy* target) {
+	// 敵の方向に弾を生成
+	isAnimation_ = true;
+	std::unique_ptr<Bullet> bullet = std::make_unique<Bullet>();
+	bullet->Initialize(config_);
+	attackManager_->AddObj(std::move(bullet));
 }

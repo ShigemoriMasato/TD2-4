@@ -8,6 +8,6 @@ public:
 
 private:
 
-	void Attack() override;
+	void Shot(IEnemy* target) override;
 
 };
