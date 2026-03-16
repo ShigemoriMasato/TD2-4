@@ -96,6 +96,26 @@ void Piece::SetPosition(const Vector3& pos) {
 	position_ = Vector3(std::round(mappedPos.x), 0.0f, std::round(mappedPos.z));
 }
 
+Vector3 Piece::GetCenterOffset() const {
+	Vector3 offset = middleLocalPos_;
+	Vector3 rotatedOffset = offset;
+	switch (direction_) {
+	case Direction::Up:
+		rotatedOffset = offset;
+		break;
+	case Direction::Right:
+		rotatedOffset = Vector3(offset.z, offset.y, -offset.x);
+		break;
+	case Direction::Down:
+		rotatedOffset = Vector3(-offset.x, offset.y, -offset.z);
+		break;
+	case Direction::Left:
+		rotatedOffset = Vector3(-offset.z, offset.y, offset.x);
+		break;
+	}
+	return rotatedOffset;
+}
+
 bool Piece::IsHovered(const Vector3& cursorPos, BackPack* backPack) {
 	for (const auto& chip : chips_) {
 		if (IsIgnored(chip)) {

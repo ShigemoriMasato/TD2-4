@@ -39,7 +39,7 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 				heldPiece_->RotateRight();
 				currentDir = heldPiece_->GetDirection();
 			}
-			heldPiece_->SetPosition(worldPos_);
+			heldPiece_->SetPosition(worldPos_ - heldPiece_->GetCenterOffset());
 
 			//おけるなら配置、無理なら元の場所に戻す
 			if (heldPiece_->CanPut(backPack)) {
@@ -59,7 +59,7 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 
 		} else {
 
-			heldPiece_->SetPosition(worldPos_);
+			heldPiece_->SetPosition(worldPos_ - heldPiece_->GetCenterOffset());
 
 		}
 

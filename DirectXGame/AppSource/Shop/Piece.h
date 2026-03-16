@@ -27,6 +27,7 @@ public:
 	void SetPosition(const Vector3& pos);
 
 	Vector3 GetPosition() const { return position_; }
+	Vector3 GetCenterOffset() const;
 	bool CanPut(BackPack* backPack) ;
 	bool Put(BackPack* backPack);
 	void Remove(BackPack* backPack);
