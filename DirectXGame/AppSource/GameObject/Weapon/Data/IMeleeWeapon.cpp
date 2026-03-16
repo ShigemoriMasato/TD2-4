@@ -15,7 +15,7 @@ void IMeleeWeapon::Initialize(int weaponID, Player::Base* player) {
 	config_.penetration = weaponData_->penetration + player->GetParameter("Penetration");
 
 	// 武器データベースからパラメータを取得
-	rate_ = 2.0f / (weaponData_->attackSpeed + player->GetParameter("AttackSpeed"));
+	rate_ = weaponData_->attackSpeed / ((player->GetParameter("AttackSpeed") + 10.f) / 10.f);
 	range_ = config_.range;
 	attackRate_ = rate_ / config_.speed;
 	attackCount_ = 0;
