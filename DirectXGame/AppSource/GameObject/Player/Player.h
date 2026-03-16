@@ -9,6 +9,7 @@
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
+#include "../Map/MapInfo.h"
 
 /// <summary>
 /// プレイヤー
@@ -59,11 +60,8 @@ public:
 
 	float GetRotationSpeed() const { return rotationSpeed_; }
 
-	void SetMapMinMax(float minX, float maxX, float minZ, float maxZ) {
-		minX_ = minX;
-		maxX_ = maxX;
-		minZ_ = minZ;
-		maxZ_ = maxZ;
+	void SetMapInfo(const MapInfo& mapInfo) {
+		mapInfo_ = mapInfo;
 	}
 
 	// パラメータ取得関数。スペルミスを防ぐため、こちらを推奨
@@ -143,10 +141,7 @@ private:
 	static const int kMaxInstanceAfterImage = 8;
 
 	// マップの移動制限
-	float minX_;
-	float maxX_;
-	float minZ_;
-	float maxZ_;
+	MapInfo mapInfo_;
 
 	// パラメータ
 	std::unique_ptr<ParameterList> parameterList_ = nullptr;
@@ -166,5 +161,8 @@ private:
 public: // 以下シゲモリ製
 	std::unique_ptr<Circle> collCircle_ = nullptr;
 	Logger logger_;
+#ifdef _DEBUG
+	bool isDebugInvincible_ = false;
+#endif
 };
 } // namespace Player

@@ -11,7 +11,10 @@ public:
 	static void SetModelManager(SHEngine::ModelManager* modelManager) { modelManager_ = modelManager; }
 
 	virtual void Initialize(Vector3* playerPos, EnemyManager* manager, int id);
-	void SetPosition(const Vector3& pos) { drawInfo_.position = pos; }
+	void SetPosition(const Vector3& pos) { 
+		drawInfo_.position = pos; 
+		position_ = pos;
+	}
 	virtual void Update(float deltaTime) {};
 	void UpdateCollider();
 

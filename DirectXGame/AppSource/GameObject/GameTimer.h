@@ -6,6 +6,7 @@ public:
 	void Initialize();
 	void Update(float deltaTime);
 	bool IsEnd() const;
+	float GetTimer() const { return timer_; }
 
 private:
 

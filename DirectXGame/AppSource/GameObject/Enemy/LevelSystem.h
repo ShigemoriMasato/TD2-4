@@ -3,13 +3,14 @@
 #include <Utility/DataStructures.h>
 #include <Tool/Binary/BinaryManager.h>
 #include <random>
+#include <GameObject/Map/MapInfo.h>
 
 class LevelSystem {
 public:
 
 	~LevelSystem();
 
-	void Initialize(EnemyManager* enemyManager, int stageNum, Vector3* playerPosPtr, float minX, float maxX, float minZ, float maxZ);
+	void Initialize(EnemyManager* enemyManager, int stageNum, Vector3* playerPosPtr, const MapInfo& mapInfo);
 
 	void Update(float deltaTime);
 	void Stop() { isActive_ = false; }
@@ -39,10 +40,7 @@ private:
 
 	std::mt19937 rng_{ std::random_device{}() };
 
-	float minX_ = -20;
-	float maxX_ = 20;
-	float minZ_ = -20;
-	float maxZ_ = 20;
+	MapInfo mapInfo_;
 
 	bool isActive_ = false;
 

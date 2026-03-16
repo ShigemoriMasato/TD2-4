@@ -88,8 +88,10 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	if (useAutoReroll_) {
 		shopRerollTimer_ += deltaTime_;
 		if (shopRerollTimer_ >= shopRerollTime_) {
-			pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
-			shopRerollTimer_ = 0.0f;
+			if (!shopCursor_->HasHeldPiece()) {
+				pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
+				shopRerollTimer_ = 0.0f;
+			}
 		}
 	} else {
 		shopRerollTimer_ = 0.0f;
@@ -97,8 +99,10 @@ std::unique_ptr<IScene> ShopScene::Update() {
 
 	//何かしらのトリガーでショップのピースを更新する
 	if (key[Key::Debug2]) {
-		pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
-		shopRerollTimer_ = 0.0f;
+		if (!shopCursor_->HasHeldPiece()) {
+			pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
+			shopRerollTimer_ = 0.0f;
+		}
 	}
 
 	shopCursor_->Update(debugCamera_.get());

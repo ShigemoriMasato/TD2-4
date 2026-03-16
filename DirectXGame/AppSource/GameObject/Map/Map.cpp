@@ -5,11 +5,8 @@
 
 Map::Map() {}
 
-void Map::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, float minX, float maxX, float minZ, float maxZ) {
-	minX_ = minX;
-	maxX_ = maxX;
-	minZ_ = minZ;
-	maxZ_ = maxZ;
+void Map::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, const MapInfo& mapInfo) {
+	mapInfo_ = mapInfo;
 
 	drawDataManager_ = drawDataManager;
 	modelManager_ = modelManager;
@@ -92,13 +89,13 @@ void Map::Draw(CmdObj* cmdObj) {
 }
 
 bool Map::IsInBounds(const Vector3& position) const {
-	return position.x >= minX_ && position.x <= maxX_ &&
-		position.z >= minZ_ && position.z <= maxZ_;
+	return position.x >= mapInfo_.minX && position.x <= mapInfo_.maxX &&
+		position.z >= mapInfo_.minZ && position.z <= mapInfo_.maxZ;
 }
 
 Vector3 Map::ClampToBounds(const Vector3& position) const {
 	Vector3 clamped = position;
-	clamped.x = std::clamp(clamped.x, minX_, maxX_);
-	clamped.z = std::clamp(clamped.z, minZ_, maxZ_);
+	clamped.x = std::clamp(clamped.x, mapInfo_.minX, mapInfo_.maxX);
+	clamped.z = std::clamp(clamped.z, mapInfo_.minZ, mapInfo_.maxZ);
 	return clamped;
 }
