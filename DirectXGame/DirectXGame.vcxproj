@@ -277,10 +277,12 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Effect\Particle\Particle1\Particle1.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\TestTrail4\TestTrail4.cpp" />
     <ClCompile Include="AppSource\03_YokoScene\TrailEditorScene.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail\TrailPresetRepository\TrailPresetRepository.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\DrawInfo.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Particle\IParticle.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\TrailPresetType.h" />
     <ClInclude Include="AppSource\GameObject\Item\ItemEditor.h" />
     <ClInclude Include="AppSource\GameObject\Player\Heatmap\PlayerHeatmap.h" />
     <ClInclude Include="AppSource\GameObject\Player\Parameter\ParameterData.h" />
@@ -399,6 +401,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Effect\Particle\Particle1\Particle1.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\TestTrail4\TestTrail4.h" />
     <ClInclude Include="AppSource\03_YokoScene\TrailEditorScene.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\TrailPresetRepository\TrailPresetRepository.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
