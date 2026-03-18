@@ -2,10 +2,10 @@
 #include <GameObject/Effect/Trail/Trail.h>
 #include <GameObject/Effect/Trail/Preset/TrailPresetTypes.h>
 
-class RibbonTrail2Point
+class RibbonTrail
 {
 public:
-	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const Ribbon2PointPreset& preset);
+	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const RibbonTrailPreset& preset);
 
 	/// @brief 紐づくモデルのワールド行列（ローカル2点をWSへ）
 	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
@@ -17,7 +17,7 @@ public:
 
 private:
 	Trail trail_;
-	Ribbon2PointPreset preset_{};
+	RibbonTrailPreset preset_{};
 	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
 	bool enabled_ = true;
 };

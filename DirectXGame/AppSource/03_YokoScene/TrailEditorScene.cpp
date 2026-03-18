@@ -73,7 +73,7 @@ void TrailEditorScene::Initialize()
 	int markerModelHandle = modelManager_->LoadModel("Assets/.EngineResource/Model/Cube");
 	markerModelData_ = modelManager_->GetNodeModelData(markerModelHandle);
 
-	ResetEditorDefaults_(TrailPresetType::Ribbon2Point);
+	ResetEditorDefaults_(TrailPresetType::RibbonTrail);
 
 	BuildModelList();
 	CreateModelRender();
@@ -148,7 +148,7 @@ void TrailEditorScene::SelectModel(int index)
 	// モデル選択が変わったらデフォルト名をそれっぽく更新（ユーザーが上書き可）
 	if (selectedModelIndex_ >= 0)
 	{
-		std::string suffix = (currentType_ == TrailPresetType::Ribbon2Point) ? "_Ribbon" : "_Shockwave";
+		std::string suffix = (currentType_ == TrailPresetType::RibbonTrail) ? "_Ribbon" : "_Shockwave";
 		std::string def = modelRenders_[selectedModelIndex_]->name + suffix;
 		std::memset(presetNameBuf_, 0, sizeof(presetNameBuf_));
 		strncpy_s(presetNameBuf_, sizeof(presetNameBuf_), def.c_str(), _TRUNCATE);
@@ -178,7 +178,7 @@ void TrailEditorScene::CreateMarkerRenders()
 void TrailEditorScene::RebuildTrail()
 {
 	// プレビュー用Trailは共通で1つ。typeに応じた設定を適用する
-	if (currentType_ == TrailPresetType::Ribbon2Point)
+	if (currentType_ == TrailPresetType::RibbonTrail)
 	{
 		trail_.Initialize(drawDataManager_, textureManager_, trailConfig_);
 		trail_.SetTexturePath(trailConfig_.defaultTexturePath);
@@ -234,7 +234,7 @@ void TrailEditorScene::SaveTrailData()
 	}
 
 	// type固有
-	if (currentType_ == TrailPresetType::Ribbon2Point)
+	if (currentType_ == TrailPresetType::RibbonTrail)
 	{
 		std::string modelName = (selectedModelIndex_ >= 0) ? modelRenders_[selectedModelIndex_]->name : ribbonModelName_;
 		json_.Add("ribbon.modelName", modelName);
@@ -307,7 +307,7 @@ void TrailEditorScene::LoadTrailData()
 	strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.defaultTexturePath.c_str(), _TRUNCATE);
 
 	// type固有
-	if (currentType_ == TrailPresetType::Ribbon2Point)
+	if (currentType_ == TrailPresetType::RibbonTrail)
 	{
 		try { ribbonModelName_ = json_.Get<std::string>("ribbon.modelName"); }
 		catch (...) {}
@@ -385,16 +385,16 @@ void TrailEditorScene::DrawImGui()
 
 	// type
 	{
-		int t = (currentType_ == TrailPresetType::Ribbon2Point) ? 0 : 1;
-		const char* items[] = { "Ribbon2Point", "ShockwaveRing" };
+		int t = (currentType_ == TrailPresetType::RibbonTrail) ? 0 : 1;
+		const char* items[] = { "RibbonTrail", "ShockwaveRing" };
 		if (ImGui::Combo("type", &t, items, 2))
 		{
-			currentType_ = (t == 0) ? TrailPresetType::Ribbon2Point : TrailPresetType::ShockwaveRing;
+			currentType_ = (t == 0) ? TrailPresetType::RibbonTrail : TrailPresetType::ShockwaveRing;
 
 			// モデル名サフィックスも更新
 			if (selectedModelIndex_ >= 0)
 			{
-				std::string suffix = (currentType_ == TrailPresetType::Ribbon2Point) ? "_Ribbon" : "_Shockwave";
+				std::string suffix = (currentType_ == TrailPresetType::RibbonTrail) ? "_Ribbon" : "_Shockwave";
 				std::string def = modelRenders_[selectedModelIndex_]->name + suffix;
 				std::memset(presetNameBuf_, 0, sizeof(presetNameBuf_));
 				strncpy_s(presetNameBuf_, sizeof(presetNameBuf_), def.c_str(), _TRUNCATE);
@@ -423,7 +423,7 @@ void TrailEditorScene::DrawImGui()
 	ImGui::SeparatorText("Config (shared keys)");
 	DrawConfigUI_();
 
-	if (currentType_ == TrailPresetType::Ribbon2Point)
+	if (currentType_ == TrailPresetType::RibbonTrail)
 	{
 		DrawRibbonUI_();
 	}
@@ -515,7 +515,7 @@ std::unique_ptr<IScene> TrailEditorScene::Update()
 	// プレビュー
 	if (emitTrail_)
 	{
-		if (currentType_ == TrailPresetType::Ribbon2Point)
+		if (currentType_ == TrailPresetType::RibbonTrail)
 		{
 			trail_.PushSegment(originWS_, tipWS_);
 		}
@@ -590,7 +590,7 @@ void TrailEditorScene::Draw()
 	modelRenders_[selectedModelIndex_]->render->Draw(cmdObj);
 
 	// Ribbonの時だけ2球を出す（衝撃波には不要）
-	if (currentType_ == TrailPresetType::Ribbon2Point)
+	if (currentType_ == TrailPresetType::RibbonTrail)
 	{
 		markerOriginRender_->Draw(cmdObj);
 		markerTipRender_->Draw(cmdObj);

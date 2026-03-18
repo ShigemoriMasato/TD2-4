@@ -4,7 +4,7 @@
 #include "GameObject/Effect/Trail/Preset/TrailPresetTypes.h"
 #include <Tool/Json/JsonManager.h>
 
-using TrailPresetVariant = std::variant<Ribbon2PointPreset, ShockwaveRingPreset>;
+using TrailPresetVariant = std::variant<RibbonTrailPreset, ShockwaveRingPreset>;
 
 class TrailPresetRepository final
 {

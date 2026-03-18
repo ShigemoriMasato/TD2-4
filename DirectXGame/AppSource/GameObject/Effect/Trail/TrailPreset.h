@@ -4,7 +4,7 @@
 
 enum class TrailPresetType
 {
-	Ribbon2Point,
+	RibbonTrail,
 	ShockwaveRing,
 };
 
@@ -12,7 +12,7 @@ inline const char* ToString(TrailPresetType t)
 {
 	switch (t)
 	{
-	case TrailPresetType::Ribbon2Point: return "Ribbon2Point";
+	case TrailPresetType::RibbonTrail: return "RibbonTrail";
 	case TrailPresetType::ShockwaveRing: return "ShockwaveRing";
 	default: return "Unknown";
 	}
@@ -20,15 +20,15 @@ inline const char* ToString(TrailPresetType t)
 
 inline bool FromString(const std::string& s, TrailPresetType& out)
 {
-	if (s == "Ribbon2Point") { out = TrailPresetType::Ribbon2Point; return true; }
+	if (s == "RibbonTrail") { out = TrailPresetType::RibbonTrail; return true; }
 	if (s == "ShockwaveRing") { out = TrailPresetType::ShockwaveRing; return true; }
 	return false;
 }
 
-struct Ribbon2PointPreset
+struct RibbonTrailPreset
 {
 	Trail::Config cfg{};
-	std::string modelName;   // •\¦/‰^—p‚Å•R‚Ã‚¯‚½‚¢ƒ‚ƒfƒ‹¯•Êq
+	std::string modelName;   // è¡¨ç¤º/é‹ç”¨ã§ç´ã¥ã‘ãŸã„ãƒ¢ãƒ‡ãƒ«è­˜åˆ¥å­
 	Vector3 originLocal{ 0.0f, 0.55f, 1.2f };
 	Vector3 tipLocal{ 0.0f, 0.55f, -3.2f };
 };
@@ -37,14 +37,14 @@ struct ShockwaveRingPreset
 {
 	Trail::Config cfg{};
 
-	// Œ`óiTrail::Config‚Æ‚Í•Êj
-	int segments = 32;           // ƒŠƒ“ƒO•ªŠ„”iPush‰ñ”j
-	float duration = 0.50f;      // ”­¶ŠÔ
-	float radiusStart = 0.0f;    // ‰Šú”¼Œa
-	float radiusEnd = 6.0f;      // I’[”¼Œa
-	float thickness = 0.5f;      // base-tip ŠÔ‚Ì‘¾‚³iƒŠƒ“ƒO‘Ñ‚Ì•j
+	// å½¢çŠ¶ï¼ˆTrail::Configã¨ã¯åˆ¥ï¼‰
+	int segments = 32;           // ãƒªãƒ³ã‚°åˆ†å‰²æ•°ï¼ˆPushå›æ•°ï¼‰
+	float duration = 0.50f;      // ç™ºç”Ÿæ™‚é–“
+	float radiusStart = 0.0f;    // åˆæœŸåŠå¾„
+	float radiusEnd = 6.0f;      // çµ‚ç«¯åŠå¾„
+	float thickness = 0.5f;      // base-tip é–“ã®å¤ªã•ï¼ˆãƒªãƒ³ã‚°å¸¯ã®å¹…ï¼‰
 
-	// ”CˆÓFƒMƒUƒMƒU/—‚êi0‚Å–³Œøj
+	// ä»»æ„ï¼šã‚®ã‚¶ã‚®ã‚¶/ä¹±ã‚Œï¼ˆ0ã§ç„¡åŠ¹ï¼‰
 	float noiseAmp = 0.0f;
 	float noiseFreq = 1.0f;
 };

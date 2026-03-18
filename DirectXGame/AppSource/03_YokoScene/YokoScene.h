@@ -5,7 +5,7 @@
 
 #include <Render/RenderObject.h>
 #include <GameObject/Effect/Trail/TrailPresetRepository/TrailPresetRepository.h>
-#include <GameObject/Effect/Trail/RibbonTrail2Point/RibbonTrail2Point.h>
+#include <GameObject/Effect/Trail/RibbonTrail/RibbonTrail.h>
 
 class YokoScene : public IScene
 {
@@ -18,14 +18,15 @@ private:
 	std::unique_ptr<DebugCamera> camera_;
 
 	// Axe model
-	int axeModelHandle_ = -1;
-	NodeModelData axeModelData_{};
-	int axeTextureIndex_ = 0;
-	std::unique_ptr<SHEngine::RenderObject> axeRender_;
-	Transform axeTransform_{};
-	Matrix4x4 axeWvp_{};
+	int modelHandle_ = -1;
+	NodeModelData modelData_{};
+	int textureIndex_ = 0;
+	std::unique_ptr<SHEngine::RenderObject> render_;
+	Transform transform_{};
+	Matrix4x4 wvp_{};
 
 	// Trail preset cache & runtime
 	TrailPresetRepository trailPresetRepo_;
-	RibbonTrail2Point ribbonTrail_;
+	RibbonTrail ribbonTrail1_;
+	RibbonTrail ribbonTrail2_;
 };

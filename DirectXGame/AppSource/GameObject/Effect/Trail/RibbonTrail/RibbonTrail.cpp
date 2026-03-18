@@ -1,6 +1,6 @@
-#include "RibbonTrail2Point.h"
+#include "RibbonTrail.h"
 
-void RibbonTrail2Point::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const Ribbon2PointPreset& preset)
+void RibbonTrail::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const RibbonTrailPreset& preset)
 {
 	preset_ = preset;
 	trail_.Initialize(drawDataManager, textureManager, preset_.cfg);
@@ -8,7 +8,7 @@ void RibbonTrail2Point::Initialize(SHEngine::DrawDataManager* drawDataManager, S
 	trail_.Clear();
 }
 
-void RibbonTrail2Point::Update(float dt, const Matrix4x4& vpMatrix)
+void RibbonTrail::Update(float dt, const Matrix4x4& vpMatrix)
 {
 	if (enabled_)
 	{
@@ -20,7 +20,7 @@ void RibbonTrail2Point::Update(float dt, const Matrix4x4& vpMatrix)
 	trail_.Update(dt, vpMatrix);
 }
 
-void RibbonTrail2Point::Draw(CmdObj* cmdObj)
+void RibbonTrail::Draw(CmdObj* cmdObj)
 {
 	trail_.Draw(cmdObj);
 }

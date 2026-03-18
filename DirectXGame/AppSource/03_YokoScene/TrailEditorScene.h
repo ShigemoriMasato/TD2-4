@@ -61,7 +61,7 @@ private:
 	NodeModelData markerModelData_{};
 
 	// === Editor State ===
-	TrailPresetType currentType_ = TrailPresetType::Ribbon2Point;
+	TrailPresetType currentType_ = TrailPresetType::RibbonTrail;
 
 	// 共通Config（全部使わなくてもOK）
 	Trail::Config trailConfig_{};

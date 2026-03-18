@@ -39,32 +39,28 @@ void YokoScene::Initialize()
 	camera_->SetPosition({ 0.0f, 8.0f, -25.0f });
 	camera_->Initialize(input_);
 
-	// === Axe model load ===
-	axeModelHandle_ = modelManager_->LoadModel("Assets/Model/Item/Weapon/Axe");
-	axeModelData_ = modelManager_->GetNodeModelData(axeModelHandle_);
+	modelHandle_ = modelManager_->LoadModel("Assets/Model/Item/Weapon/Axe");
+	modelData_ = modelManager_->GetNodeModelData(modelHandle_);
+	auto& material = modelData_.materials[modelData_.materialIndex.front()];
+	textureIndex_ = material.textureIndex;
 
-	// texture index from model data
-	auto& material = axeModelData_.materials[axeModelData_.materialIndex.front()];
-	axeTextureIndex_ = material.textureIndex;
+	render_ = CreateTexturedModelRO(drawDataManager_, modelData_, textureIndex_);
 
-	axeRender_ = CreateTexturedModelRO(drawDataManager_, axeModelData_, axeTextureIndex_);
+	transform_.position = { 0.0f, 0.0f, 0.0f };
+	transform_.rotate = { 0.0f, 0.0f, 0.0f };
+	transform_.scale = { 1.0f, 1.0f, 1.0f };
 
-	axeTransform_.position = { 0.0f, 0.0f, 0.0f };
-	axeTransform_.rotate = { 0.0f, 0.0f, 0.0f };
-	axeTransform_.scale = { 1.0f, 1.0f, 1.0f };
+	const auto& preset1 = trailPresetRepo_.Get("Axe_Ribbon");
+	const auto& preset2 = trailPresetRepo_.Get("Axe_Ribbon2");
 
-	// === Load preset & init trail ===
-	// 例：Assets/Json/Axe_Ribbon.json を作ったなら、拡張子なしで "Axe_Ribbon"
-	const auto& presetVar = trailPresetRepo_.Get("Axe_Ribbon");
-
-	const auto* ribbonPreset = std::get_if<Ribbon2PointPreset>(&presetVar);
-	if (ribbonPreset)
+	if (std::holds_alternative<RibbonTrailPreset>(preset1))
 	{
-		ribbonTrail_.Initialize(drawDataManager_, textureManager_, *ribbonPreset);
+		ribbonTrail1_.Initialize(drawDataManager_, textureManager_, std::get<RibbonTrailPreset>(preset1));
 	}
-	else
+	if (std::holds_alternative<RibbonTrailPreset>(preset2))
+
 	{
-		// typeが違う(JSONがShockwaveRingだった等)
+		ribbonTrail2_.Initialize(drawDataManager_, textureManager_, std::get<RibbonTrailPreset>(preset2));
 	}
 }
 
@@ -74,24 +70,22 @@ std::unique_ptr<IScene> YokoScene::Update()
 
 	// カメラ更新
 	camera_->Update();
-
 	const Matrix4x4 vp = camera_->GetVPMatrix();
 
-	// Axe world/wvp
-	const Matrix4x4 world = Matrix::MakeAffineMatrix(axeTransform_.scale, axeTransform_.rotate, axeTransform_.position);
-	axeWvp_ = world * vp;
-
-	// model cb update
+	// モデル更新
+	const Matrix4x4 world = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
+	wvp_ = world * vp;
 	const Vector4 color = { 1, 1, 1, 1 };
-	axeRender_->CopyBufferData(0, &axeWvp_, sizeof(Matrix4x4));
-	axeRender_->CopyBufferData(1, &color, sizeof(Vector4));
-	axeRender_->CopyBufferData(2, &axeTextureIndex_, sizeof(int));
+	render_->CopyBufferData(0, &wvp_, sizeof(Matrix4x4));
+	render_->CopyBufferData(1, &color, sizeof(Vector4));
+	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
 
-	axeTransform_.rotate.y += 0.1f;
 
 	// trail update (model world is required)
-	ribbonTrail_.SetModelWorld(world);
-	ribbonTrail_.Update(dt, vp);
+	ribbonTrail1_.SetModelWorld(world);
+	ribbonTrail1_.Update(dt, vp);
+	ribbonTrail2_.SetModelWorld(world);
+	ribbonTrail2_.Update(dt, vp);
 
 	// Zキーで決定
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z))
@@ -110,8 +104,9 @@ void YokoScene::Draw()
 
 	display->PreDraw(cmdObj, true);
 
-	axeRender_->Draw(cmdObj);
-	ribbonTrail_.Draw(cmdObj);
+	render_->Draw(cmdObj);
+	ribbonTrail1_.Draw(cmdObj);
+	ribbonTrail2_.Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 
@@ -121,9 +116,9 @@ void YokoScene::Draw()
 	display->DrawImGui();
 
 	ImGui::Begin("Axe Transform");
-	ImGui::DragFloat3("T", &axeTransform_.position.x, 0.1f);
-	ImGui::DragFloat3("R", &axeTransform_.rotate.x, 0.1f);
-	ImGui::DragFloat3("S", &axeTransform_.scale.x, 0.1f);
+	ImGui::DragFloat3("T", &transform_.position.x, 0.1f);
+	ImGui::DragFloat3("R", &transform_.rotate.x, 0.1f);
+	ImGui::DragFloat3("S", &transform_.scale.x, 0.1f);
 	ImGui::End();
 #endif
 

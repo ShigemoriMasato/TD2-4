@@ -4,7 +4,7 @@
 
 enum class TrailPresetType
 {
-	Ribbon2Point,
+	RibbonTrail,
 	ShockwaveRing,
 };
 
@@ -12,7 +12,7 @@ inline const char* ToString(TrailPresetType t)
 {
 	switch (t)
 	{
-	case TrailPresetType::Ribbon2Point: return "Ribbon2Point";
+	case TrailPresetType::RibbonTrail: return "RibbonTrail";
 	case TrailPresetType::ShockwaveRing: return "ShockwaveRing";
 	default: return "Unknown";
 	}
@@ -20,12 +20,12 @@ inline const char* ToString(TrailPresetType t)
 
 inline bool FromString(const std::string& s, TrailPresetType& out)
 {
-	if (s == "Ribbon2Point") { out = TrailPresetType::Ribbon2Point; return true; }
+	if (s == "RibbonTrail") { out = TrailPresetType::RibbonTrail; return true; }
 	if (s == "ShockwaveRing") { out = TrailPresetType::ShockwaveRing; return true; }
 	return false;
 }
 
-struct Ribbon2PointPreset
+struct RibbonTrailPreset
 {
 	Trail::Config cfg{};
 	std::string modelName;   // 表示/運用で紐づけたいモデル識別子

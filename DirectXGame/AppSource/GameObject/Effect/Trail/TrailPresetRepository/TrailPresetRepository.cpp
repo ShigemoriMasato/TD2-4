@@ -4,15 +4,8 @@
 
 const TrailPresetVariant& TrailPresetRepository::Get(const std::string& name)
 {
-	auto it = cache_.find(name);
-	if (it != cache_.end())
-	{
-		return it->second;
-	}
-
-	auto preset = Load_(name);
-	auto [insIt, _] = cache_.emplace(name, std::move(preset));
-	return insIt->second;
+	auto [it, inserted] = cache_.try_emplace(name, Load_(name));
+	return it->second;
 }
 
 void TrailPresetRepository::Invalidate(const std::string& name)
@@ -28,8 +21,9 @@ void TrailPresetRepository::Clear()
 TrailPresetType TrailPresetRepository::GetTypeOf(const std::string& name)
 {
 	const auto& v = Get(name);
-	if (std::holds_alternative<Ribbon2PointPreset>(v)) return TrailPresetType::Ribbon2Point;
-	return TrailPresetType::ShockwaveRing;
+	if (std::holds_alternative<RibbonTrailPreset>(v)) return TrailPresetType::RibbonTrail;
+	else if (std::holds_alternative<ShockwaveRingPreset>(v)) return TrailPresetType::ShockwaveRing;
+	return {};
 }
 
 Trail::Config TrailPresetRepository::LoadConfig_(JsonManager& json)
@@ -56,11 +50,6 @@ Trail::Config TrailPresetRepository::LoadConfig_(JsonManager& json)
 	try { cfg.defaultTexturePath = json.Get<std::string>("cfg.defaultTexturePath"); }
 	catch (...) {}
 
-	// 正常化（Trail側でもやるが念のため）
-	cfg.maxSegments = std::max(1, cfg.maxSegments);
-	cfg.lifeTime = std::max(0.001f, cfg.lifeTime);
-	cfg.minDistance = std::max(0.0f, cfg.minDistance);
-
 	return cfg;
 }
 
@@ -78,9 +67,9 @@ TrailPresetVariant TrailPresetRepository::Load_(const std::string& name)
 		throw std::runtime_error("TrailPresetRepository: unknown type '" + typeStr + "'");
 	}
 
-	if (type == TrailPresetType::Ribbon2Point)
+	if (type == TrailPresetType::RibbonTrail)
 	{
-		Ribbon2PointPreset p{};
+		RibbonTrailPreset p{};
 		p.cfg = LoadConfig_(json_);
 
 		try { p.modelName = json_.Get<std::string>("ribbon.modelName"); }
@@ -92,29 +81,33 @@ TrailPresetVariant TrailPresetRepository::Load_(const std::string& name)
 
 		return p;
 	}
+	else if (type == TrailPresetType::ShockwaveRing)
+	{
+		ShockwaveRingPreset p{};
+		p.cfg = LoadConfig_(json_);
 
-	ShockwaveRingPreset p{};
-	p.cfg = LoadConfig_(json_);
+		try { p.segments = json_.Get<int>("shock.segments"); }
+		catch (...) {}
+		try { p.duration = json_.Get<float>("shock.duration"); }
+		catch (...) {}
+		try { p.radiusStart = json_.Get<float>("shock.radiusStart"); }
+		catch (...) {}
+		try { p.radiusEnd = json_.Get<float>("shock.radiusEnd"); }
+		catch (...) {}
+		try { p.thickness = json_.Get<float>("shock.thickness"); }
+		catch (...) {}
+		try { p.noiseAmp = json_.Get<float>("shock.noiseAmp"); }
+		catch (...) {}
+		try { p.noiseFreq = json_.Get<float>("shock.noiseFreq"); }
+		catch (...) {}
 
-	try { p.segments = json_.Get<int>("shock.segments"); }
-	catch (...) {}
-	try { p.duration = json_.Get<float>("shock.duration"); }
-	catch (...) {}
-	try { p.radiusStart = json_.Get<float>("shock.radiusStart"); }
-	catch (...) {}
-	try { p.radiusEnd = json_.Get<float>("shock.radiusEnd"); }
-	catch (...) {}
-	try { p.thickness = json_.Get<float>("shock.thickness"); }
-	catch (...) {}
-	try { p.noiseAmp = json_.Get<float>("shock.noiseAmp"); }
-	catch (...) {}
-	try { p.noiseFreq = json_.Get<float>("shock.noiseFreq"); }
-	catch (...) {}
+		p.segments = std::max(3, p.segments);
+		p.duration = std::max(0.01f, p.duration);
+		p.thickness = std::max(0.0f, p.thickness);
+		p.noiseFreq = std::max(0.0f, p.noiseFreq);
 
-	p.segments = std::max(3, p.segments);
-	p.duration = std::max(0.01f, p.duration);
-	p.thickness = std::max(0.0f, p.thickness);
-	p.noiseFreq = std::max(0.0f, p.noiseFreq);
+		return p;
+	}
 
-	return p;
+	return {};
 }
