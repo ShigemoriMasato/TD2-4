@@ -50,17 +50,9 @@ void YokoScene::Initialize()
 	transform_.rotate = { 0.0f, 0.0f, 0.0f };
 	transform_.scale = { 1.0f, 1.0f, 1.0f };
 
-	const auto& preset1 = trailPresetRepo_.Get("Axe_Ribbon");
-	const auto& preset2 = trailPresetRepo_.Get("Axe_Ribbon2");
-
-	if (std::holds_alternative<RibbonTrailPreset>(preset1))
-	{
-		ribbonTrail1_.Initialize(drawDataManager_, textureManager_, std::get<RibbonTrailPreset>(preset1));
-	}
-	if (std::holds_alternative<RibbonTrailPreset>(preset2))
-	{
-		ribbonTrail2_.Initialize(drawDataManager_, textureManager_, std::get<RibbonTrailPreset>(preset2));
-	}
+	trails_.Initialize(drawDataManager_, textureManager_, &trailPresetRepo_);
+	trails_.AddFromPresetName("Axe_Ribbon");
+	trails_.AddFromPresetName("Axe_Ribbon2");
 }
 
 std::unique_ptr<IScene> YokoScene::Update()
@@ -80,13 +72,11 @@ std::unique_ptr<IScene> YokoScene::Update()
 	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
 
 
-	// trail update (model world is required)
-	ribbonTrail1_.SetModelWorld(world);
-	ribbonTrail1_.Update(dt, vp);
-	ribbonTrail2_.SetModelWorld(world);
-	ribbonTrail2_.Update(dt, vp);
+	// トレイル更新
+	trails_.SetModelWorld(world);
+	trails_.Update(dt, vp);
 
-	// Zキーで決定
+	// Zキーでエディタ切り替え
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z))
 	{
 		return std::make_unique<TrailEditorScene>();
@@ -104,8 +94,7 @@ void YokoScene::Draw()
 	display->PreDraw(cmdObj, true);
 
 	render_->Draw(cmdObj);
-	ribbonTrail1_.Draw(cmdObj);
-	ribbonTrail2_.Draw(cmdObj);
+	trails_.Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 

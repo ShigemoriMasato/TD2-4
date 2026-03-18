@@ -5,7 +5,7 @@
 
 #include <Render/RenderObject.h>
 #include <GameObject/Effect/Trail/TrailPresetRepository/TrailPresetRepository.h>
-#include <GameObject/Effect/Trail/RibbonTrail/RibbonTrail.h>
+#include <GameObject/Effect/Trail/MultiTrail/MultiTrail.h>
 
 class YokoScene : public IScene
 {
@@ -17,7 +17,6 @@ public:
 private:
 	std::unique_ptr<DebugCamera> camera_;
 
-	// Axe model
 	int modelHandle_ = -1;
 	NodeModelData modelData_{};
 	int textureIndex_ = 0;
@@ -25,8 +24,7 @@ private:
 	Transform transform_{};
 	Matrix4x4 wvp_{};
 
-	// Trail preset cache & runtime
 	TrailPresetRepository trailPresetRepo_;
-	RibbonTrail ribbonTrail1_;
-	RibbonTrail ribbonTrail2_;
+
+	MultiTrail trails_;
 };

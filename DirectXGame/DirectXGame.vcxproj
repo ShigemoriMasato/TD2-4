@@ -280,6 +280,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Effect\Trail\TrailPresetRepository\TrailPresetRepository.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\RibbonTrail\RibbonTrail.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\ShockwaveRingTrail\ShockwaveRingTrail.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail\MultiTrail\MultiTrail.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\DrawInfo.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
@@ -407,6 +408,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Effect\Trail\TrailPresetRepository\TrailPresetRepository.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\RibbonTrail\RibbonTrail.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\ShockwaveRingTrail\ShockwaveRingTrail.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\MultiTrail\MultiTrail.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
