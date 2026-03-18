@@ -1,24 +1,24 @@
-#include "TrailPresetRepository.h"
+#include "TrailPresetDataBank.h"
 #include <stdexcept>
 #include <algorithm>
 
-const TrailPresetVariant& TrailPresetRepository::Get(const std::string& name)
+const TrailPresetVariant& TrailPresetDataBank::Get(const std::string& name)
 {
 	auto [it, inserted] = cache_.try_emplace(name, Load_(name));
 	return it->second;
 }
 
-void TrailPresetRepository::Invalidate(const std::string& name)
+void TrailPresetDataBank::Invalidate(const std::string& name)
 {
 	cache_.erase(name);
 }
 
-void TrailPresetRepository::Clear()
+void TrailPresetDataBank::Clear()
 {
 	cache_.clear();
 }
 
-TrailPresetType TrailPresetRepository::GetTypeOf(const std::string& name)
+TrailPresetType TrailPresetDataBank::GetTypeOf(const std::string& name)
 {
 	const auto& v = Get(name);
 	if (std::holds_alternative<RibbonTrailPreset>(v)) return TrailPresetType::RibbonTrail;
@@ -26,7 +26,7 @@ TrailPresetType TrailPresetRepository::GetTypeOf(const std::string& name)
 	return {};
 }
 
-Trail::Config TrailPresetRepository::LoadConfig_(JsonManager& json)
+Trail::Config TrailPresetDataBank::LoadConfig_(JsonManager& json)
 {
 	Trail::Config cfg{};
 
@@ -53,18 +53,18 @@ Trail::Config TrailPresetRepository::LoadConfig_(JsonManager& json)
 	return cfg;
 }
 
-TrailPresetVariant TrailPresetRepository::Load_(const std::string& name)
+TrailPresetVariant TrailPresetDataBank::Load_(const std::string& name)
 {
 	json_.Boot(name);
 
 	std::string typeStr;
 	try { typeStr = json_.Get<std::string>("type"); }
-	catch (...) { throw std::runtime_error("TrailPresetRepository: missing key 'type'"); }
+	catch (...) { throw std::runtime_error("TrailPresetDataBank: missing key 'type'"); }
 
 	TrailPresetType type{};
 	if (!FromString(typeStr, type))
 	{
-		throw std::runtime_error("TrailPresetRepository: unknown type '" + typeStr + "'");
+		throw std::runtime_error("TrailPresetDataBank: unknown type '" + typeStr + "'");
 	}
 
 	if (type == TrailPresetType::RibbonTrail)

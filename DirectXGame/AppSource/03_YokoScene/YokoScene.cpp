@@ -39,12 +39,12 @@ void YokoScene::Initialize()
 	camera_->SetPosition({ 0.0f, 8.0f, -25.0f });
 	camera_->Initialize(input_);
 
-	modelHandle_ = modelManager_->LoadModel("Assets/Model/Item/Weapon/Axe");
-	modelData_ = modelManager_->GetNodeModelData(modelHandle_);
-	auto& material = modelData_.materials[modelData_.materialIndex.front()];
+	int modelHandle = modelManager_->LoadModel("Assets/Model/Item/Weapon/Axe");
+	NodeModelData modelData = modelManager_->GetNodeModelData(modelHandle);
+	auto& material = modelData.materials[modelData.materialIndex.front()];
 	textureIndex_ = material.textureIndex;
 
-	render_ = CreateTexturedModelRO(drawDataManager_, modelData_, textureIndex_);
+	render_ = CreateTexturedModelRO(drawDataManager_, modelData, textureIndex_);
 
 	transform_.position = { 0.0f, 0.0f, 0.0f };
 	transform_.rotate = { 0.0f, 0.0f, 0.0f };

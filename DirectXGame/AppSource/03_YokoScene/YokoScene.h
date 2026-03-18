@@ -4,7 +4,7 @@
 #include <Camera/DebugCamera.h>
 
 #include <Render/RenderObject.h>
-#include <GameObject/Effect/Trail/TrailPresetRepository/TrailPresetRepository.h>
+#include <GameObject/Effect/Trail/TrailPresetDataBank/TrailPresetDataBank.h>
 #include <GameObject/Effect/Trail/MultiTrail/MultiTrail.h>
 
 class YokoScene : public IScene
@@ -17,14 +17,12 @@ public:
 private:
 	std::unique_ptr<DebugCamera> camera_;
 
-	int modelHandle_ = -1;
-	NodeModelData modelData_{};
 	int textureIndex_ = 0;
 	std::unique_ptr<SHEngine::RenderObject> render_;
 	Transform transform_{};
 	Matrix4x4 wvp_{};
 
-	TrailPresetRepository trailPresetRepo_;
+	TrailPresetDataBank trailPresetRepo_;
 
 	MultiTrail trails_;
 };

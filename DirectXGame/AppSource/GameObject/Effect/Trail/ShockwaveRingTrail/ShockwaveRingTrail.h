@@ -1,19 +1,19 @@
 #pragma once
 #include <GameObject/Effect/Trail/Trail.h>
-#include <GameObject/Effect/Trail/Preset/TrailPresetTypes.h>
+#include <GameObject/Effect/Trail/Preset/TrailPreset.h>
 
 class ShockwaveRingTrail
 {
 public:
 	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const ShockwaveRingPreset& preset);
+	void Update(float dt, const Matrix4x4& vpMatrix);
+	void Draw(CmdObj* cmdObj);
 
-	/// @brief 発生（center + normalで平面指定）
-	void Trigger(const Vector3& centerWS, const Vector3& normalWS);
+	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
+	void Trigger(const Vector3& centerWS);
 
 	void Stop();
 
-	void Update(float dt, const Matrix4x4& vpMatrix);
-	void Draw(CmdObj* cmdObj);
 
 	bool IsActive() const { return active_; }
 
@@ -25,10 +25,10 @@ private:
 private:
 	Trail trail_;
 	ShockwaveRingPreset preset_{};
+	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
 
 	bool active_ = false;
 	float time_ = 0.0f;
 
-	Vector3 centerWS_{};
-	Vector3 normalWS_{ 0.0f, 1.0f, 0.0f };
+	Vector3 position_{};
 };

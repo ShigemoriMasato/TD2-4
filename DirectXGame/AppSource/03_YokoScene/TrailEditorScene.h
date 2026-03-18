@@ -4,7 +4,7 @@
 #include <Render/RenderObject.h>
 #include <Tool/Json/JsonManager.h>
 #include <GameObject/Effect/Trail/Trail.h>
-#include <GameObject/Effect/Trail/Preset/TrailPresetTypes.h>
+#include <GameObject/Effect/Trail/Preset/TrailPreset.h>
 #include <memory>
 #include <string>
 #include <vector>

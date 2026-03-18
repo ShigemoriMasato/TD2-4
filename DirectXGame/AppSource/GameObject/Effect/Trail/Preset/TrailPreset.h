@@ -6,6 +6,8 @@ enum class TrailPresetType
 {
 	RibbonTrail,
 	ShockwaveRing,
+
+	None
 };
 
 inline const char* ToString(TrailPresetType t)

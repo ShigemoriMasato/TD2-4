@@ -12,14 +12,12 @@ void ShockwaveRingTrail::Initialize(SHEngine::DrawDataManager* drawDataManager, 
 
 	active_ = false;
 	time_ = 0.0f;
-	centerWS_ = {};
-	normalWS_ = { 0.0f, 1.0f, 0.0f };
+	position_ = { 0.0f, 1.0f, 0.0f };
 }
 
-void ShockwaveRingTrail::Trigger(const Vector3& centerWS, const Vector3& normalWS)
+void ShockwaveRingTrail::Trigger(const Vector3& position)
 {
-	centerWS_ = centerWS;
-	normalWS_ = NormalizeSafe_(normalWS);
+	position_ = position;
 
 	active_ = true;
 	time_ = 0.0f;
@@ -69,12 +67,6 @@ void ShockwaveRingTrail::Update(float dt, const Matrix4x4& vpMatrix)
 	const float tt = t * t * (3.0f - 2.0f * t);
 	const float radius = preset_.radiusStart + (preset_.radiusEnd - preset_.radiusStart) * tt;
 
-	// 平面の基底（u,v）を作る
-	const Vector3 n = normalWS_;
-	Vector3 ref = (std::abs(n.y) > 0.99f) ? Vector3(0.0f, 0.0f, 1.0f) : Vector3(0.0f, 1.0f, 0.0f);
-	Vector3 u = NormalizeSafe_(Cross_(ref, n));
-	Vector3 v = NormalizeSafe_(Cross_(n, u));
-
 	const int seg = std::max(3, preset_.segments);
 	const float twoPi = std::numbers::pi_v<float> *2.0f;
 
@@ -87,14 +79,16 @@ void ShockwaveRingTrail::Update(float dt, const Matrix4x4& vpMatrix)
 		const float noise = (preset_.noiseAmp <= 0.0f) ? 0.0f : (Hash01_(i) * 2.0f - 1.0f) * preset_.noiseAmp;
 		const float r = std::max(0.0f, radius + noise);
 
-		const Vector3 pos = centerWS_ + u * (c * r) + v * (s * r);
+		const Vector3 pos = position_ + Vector3(c * r, 0.0f, s * r);
 
-		// 太さ方向：平面内で半径方向に直交（接線に近い）を使う
-		Vector3 tangent = NormalizeSafe_((u * (-s)) + (v * (c)));
-		Vector3 widthDir = tangent; // 見た目優先
+		// 法線は常に上向き(0,1,0)で、そこから幅方向のベクトルを求める
+		Vector3 widthDir = Vector3(-s, c, 0.0f).Normalize() * (preset_.thickness * 0.5f);
 
-		const Vector3 baseWS = pos - widthDir * (preset_.thickness * 0.5f);
-		const Vector3 tipWS = pos + widthDir * (preset_.thickness * 0.5f);
+		Vector3 baseWS = pos - widthDir * (preset_.thickness * 0.5f);
+		Vector3 tipWS = pos + widthDir * (preset_.thickness * 0.5f);
+
+		baseWS = baseWS * modelWorld_;
+		tipWS = tipWS * modelWorld_;
 
 		trail_.PushSegment(baseWS, tipWS);
 	}

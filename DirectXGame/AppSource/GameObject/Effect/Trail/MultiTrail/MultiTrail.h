@@ -3,7 +3,7 @@
 #include <string>
 #include <variant>
 
-#include <GameObject/Effect/Trail/TrailPresetRepository/TrailPresetRepository.h>
+#include <GameObject/Effect/Trail/TrailPresetDataBank/TrailPresetDataBank.h>
 #include <GameObject/Effect/Trail/RibbonTrail/RibbonTrail.h>
 #include <GameObject/Effect/Trail/ShockwaveRingTrail/ShockwaveRingTrail.h>
 
@@ -13,17 +13,16 @@ public:
 	void Initialize(
 		SHEngine::DrawDataManager* drawDataManager,
 		SHEngine::TextureManager* textureManager,
-		TrailPresetRepository* presetRepo);
+		TrailPresetDataBank* presetRepo);
 
 	// プリセット名で追加（例: "Axe_Ribbon"）
 	void AddFromPresetName(const std::string& presetName);
 
-	// モデルに追従するタイプ用（Ribbon等）
+	// モデルに追従するタイプ用。モデルに追従してなくても使ってOK
 	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
 
-	// Shockwave等、任意発生型を外から叩けるようにしたい場合
-	// まずは「全部」に投げる簡易版（activeでない個体は無視する実装でもOK）
-	void TriggerShockwave(const Vector3& centerWS, const Vector3& normalWS);
+	// Shockwave等、任意発動型トリガー
+	void Trigger(const std::string& presetName, const Vector3& position);
 
 	void SetEnabled(bool enabled) { enabled_ = enabled; }
 
@@ -33,21 +32,14 @@ public:
 	void Clear();
 
 private:
-	using TrailPtrVariant = std::variant<std::unique_ptr<RibbonTrail>, std::unique_ptr<ShockwaveRingTrail>>;
-
-	struct Entry
-	{
-		std::string presetName;
-		TrailPtrVariant trail;
-	};
-
-private:
 	SHEngine::DrawDataManager* drawDataManager_ = nullptr;
 	SHEngine::TextureManager* textureManager_ = nullptr;
-	TrailPresetRepository* presetRepo_ = nullptr;
+	TrailPresetDataBank* presetData_ = nullptr;
 
 	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
 	bool enabled_ = true;
 
-	std::vector<Entry> entries_;
+	std::unordered_map<std::string, std::unique_ptr<RibbonTrail>> ribbonTrailCache_;
+	std::unordered_map<std::string, std::unique_ptr<ShockwaveRingTrail>> shockwaveRingTrailCache_;
+
 };

@@ -4,85 +4,69 @@
 void MultiTrail::Initialize(
 	SHEngine::DrawDataManager* drawDataManager,
 	SHEngine::TextureManager* textureManager,
-	TrailPresetRepository* presetRepo)
+	TrailPresetDataBank* presetRepo)
 {
 	drawDataManager_ = drawDataManager;
 	textureManager_ = textureManager;
-	presetRepo_ = presetRepo;
+	presetData_ = presetRepo;
 
-	if (!drawDataManager_ || !textureManager_ || !presetRepo_)
-	{
-		throw std::runtime_error("MultiTrail::Initialize: null dependency");
-	}
-
-	entries_.clear();
+	ribbonTrailCache_.clear();
+	shockwaveRingTrailCache_.clear();
 	enabled_ = true;
 	modelWorld_ = Matrix4x4::Identity();
 }
 
 void MultiTrail::AddFromPresetName(const std::string& presetName)
 {
-	if (!presetRepo_) return;
+	if (!presetData_) return;
 
-	const auto& presetVar = presetRepo_->Get(presetName);
+	// プリセットデータを取得(トレイルタイプは分類されていない)
+	const auto& presetVar = presetData_->Get(presetName);
 
-	Entry e{};
-	e.presetName = presetName;
-
+	// トレイルタイプごとに生成
 	if (std::holds_alternative<RibbonTrailPreset>(presetVar))
 	{
-		auto& t = e.trail.emplace<RibbonTrail>();
-		t.Initialize(drawDataManager_, textureManager_, std::get<RibbonTrailPreset>(presetVar));
+		const auto& preset = std::get<RibbonTrailPreset>(presetVar);
+		auto trail = std::make_unique<RibbonTrail>();
+		trail->Initialize(drawDataManager_, textureManager_, preset);
+		trail->SetModelWorld(modelWorld_);
+		ribbonTrailCache_[presetName] = std::move(trail);
 	}
 	else if (std::holds_alternative<ShockwaveRingPreset>(presetVar))
 	{
-		auto& t = e.trail.emplace<ShockwaveRingTrail>();
-		t.Initialize(drawDataManager_, textureManager_, std::get<ShockwaveRingPreset>(presetVar));
+		const auto& preset = std::get<ShockwaveRingPreset>(presetVar);
+		auto trail = std::make_unique<ShockwaveRingTrail>();
+		trail->Initialize(drawDataManager_, textureManager_, preset);
+		trail->SetModelWorld(modelWorld_);
+		shockwaveRingTrailCache_[presetName] = std::move(trail);
 	}
-	else
-	{
-	}
-
-	entries_.push_back(std::move(e));
 }
 
-void MultiTrail::TriggerShockwave(const Vector3& centerWS, const Vector3& normalWS)
+void MultiTrail::Trigger(const std::string& presetName, const Vector3& position)
 {
-	for (auto& e : entries_)
-	{
-		if (auto* s = std::get_if<ShockwaveRingTrail>(&e.trail))
-		{
-			s->Trigger(centerWS, normalWS);
-		}
-	}
+	shockwaveRingTrailCache_.at(presetName)->Trigger(position);
 }
 
 void MultiTrail::Clear()
 {
-	entries_.clear();
+	ribbonTrailCache_.clear();
+	shockwaveRingTrailCache_.clear();
 }
 
 void MultiTrail::Update(float dt, const Matrix4x4& vpMatrix)
 {
 	if (!enabled_) return;
 
-	for (auto& e : entries_)
+	for (auto& [name, trail] : ribbonTrailCache_)
 	{
-		std::visit(
-			[&](auto& t)
-			{
-				using T = std::decay_t<decltype(t)>;
-				if constexpr (std::is_same_v<T, RibbonTrail>)
-				{
-					t.SetModelWorld(modelWorld_);
-					t.Update(dt, vpMatrix);
-				}
-				else if constexpr (std::is_same_v<T, ShockwaveRingTrail>)
-				{
-					t.Update(dt, vpMatrix);
-				}
-			},
-			e.trail);
+		trail->SetModelWorld(modelWorld_);
+		trail->Update(dt, vpMatrix);
+	}
+
+	for (auto& [name, trail] : shockwaveRingTrailCache_)
+	{
+		trail->SetModelWorld(modelWorld_);
+		trail->Update(dt, vpMatrix);
 	}
 }
 
@@ -90,13 +74,12 @@ void MultiTrail::Draw(CmdObj* cmdObj)
 {
 	if (!enabled_) return;
 
-	for (auto& e : entries_)
+	for (auto& [name, trail] : ribbonTrailCache_)
 	{
-		std::visit(
-			[&](auto& t)
-			{
-				t.Draw(cmdObj);
-			},
-			e.trail);
+		trail->Draw(cmdObj);
+	}
+	for (auto& [name, trail] : shockwaveRingTrailCache_)
+	{
+		trail->Draw(cmdObj);
 	}
 }
