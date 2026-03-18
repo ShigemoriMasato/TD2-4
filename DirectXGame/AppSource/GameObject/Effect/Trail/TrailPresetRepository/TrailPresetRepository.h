@@ -1,8 +1,8 @@
 #pragma once
-#include "GameObject/Effect/Trail/TrailPresetType.h"
-#include "Tool/Json/JsonManager.h"
 #include <unordered_map>
 #include <variant>
+#include "GameObject/Effect/Trail/Preset/TrailPresetTypes.h"
+#include <Tool/Json/JsonManager.h>
 
 using TrailPresetVariant = std::variant<Ribbon2PointPreset, ShockwaveRingPreset>;
 

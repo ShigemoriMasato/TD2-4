@@ -278,11 +278,14 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Effect\Trail\TestTrail4\TestTrail4.cpp" />
     <ClCompile Include="AppSource\03_YokoScene\TrailEditorScene.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\TrailPresetRepository\TrailPresetRepository.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail\RibbonTrail2Point\RibbonTrail2Point.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail\ShockwaveRingTrail\ShockwaveRingTrail.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\DrawInfo.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Particle\IParticle.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Trail\TrailPresetType.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\Ribbon2PointPreset.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\Preset\TrailPresetTypes.h" />
     <ClInclude Include="AppSource\GameObject\Item\ItemEditor.h" />
     <ClInclude Include="AppSource\GameObject\Player\Heatmap\PlayerHeatmap.h" />
     <ClInclude Include="AppSource\GameObject\Player\Parameter\ParameterData.h" />
@@ -402,6 +405,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Effect\Trail\TestTrail4\TestTrail4.h" />
     <ClInclude Include="AppSource\03_YokoScene\TrailEditorScene.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\TrailPresetRepository\TrailPresetRepository.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\RibbonTrail2Point\RibbonTrail2Point.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\ShockwaveRingTrail\ShockwaveRingTrail.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

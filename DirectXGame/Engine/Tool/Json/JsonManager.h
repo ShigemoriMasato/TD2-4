@@ -1,7 +1,6 @@
 #pragma once
 #include <nlohmann/json.hpp>
 #include <Tool/Binary/Value.h>
-#include "GameObject/Effect/Trail/TrailPresetRepository/TrailPresetRepository.h"
 
 class JsonManager {
 public:
