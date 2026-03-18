@@ -58,7 +58,6 @@ void YokoScene::Initialize()
 		ribbonTrail1_.Initialize(drawDataManager_, textureManager_, std::get<RibbonTrailPreset>(preset1));
 	}
 	if (std::holds_alternative<RibbonTrailPreset>(preset2))
-
 	{
 		ribbonTrail2_.Initialize(drawDataManager_, textureManager_, std::get<RibbonTrailPreset>(preset2));
 	}
