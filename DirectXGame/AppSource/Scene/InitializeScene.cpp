@@ -2,6 +2,7 @@
 #include <imgui/imgui.h>
 
 #include <02_ShigeScene/ShigeScene.h>
+#include <02_ShigeScene/TechnicalTestScene.h>
 #include <03_YokoScene/YokoScene.h>
 
 #include <Scene/01_Title/TitleScene.h>
@@ -127,6 +128,7 @@ void InitializeScene::Initialize() {
 std::unique_ptr<IScene> InitializeScene::Update() {
 	//更新処理
 	commonData_->cmdObject->ResetCommandList();
+	return std::make_unique<TechnicalTestScene>();
 	return std::make_unique<ShigeScene>();
 	return std::make_unique<YokoScene>();
 }

@@ -11,14 +11,14 @@ namespace SHEngine {
 
 		Text(int maxCharNum = 128) : maxCharNum_(maxCharNum) {};
 
-		void Initialize(const std::string& fontPath, int fontSize = 64);
+		void Initialize(DrawData& planeDrawData, const std::string& fontPath, int fontSize = 64);
 		void Initialize(int fontID);
 
 		void SetText(const std::wstring& text);
 		void SetSize(float size);
 		void SetTransform(const Transform& transform);
 		void SetColor(const Vector4& color) { color_ = color; }
-		void Update(float deltaTime, Matrix4x4 vpMat);
+		void Update(Matrix4x4 vpMat);
 		void Draw(Command::Object* cmdObj);
 
 	private:
@@ -36,7 +36,6 @@ namespace SHEngine {
 
 		Matrix4x4 charSizeMat_ = Matrix4x4::Identity();
 		Matrix4x4 worldMat_ = Matrix4x4::Identity();
-		Matrix4x4 wvpMat_ = Matrix4x4::Identity();
 
 		const int maxCharNum_;
 
