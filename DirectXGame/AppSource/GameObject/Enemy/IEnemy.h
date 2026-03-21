@@ -25,11 +25,13 @@ public:
 	void KillMe();
 	bool IsActive() const { return isActive_; }
 
-	void SetHP(int hp) { hp_ = hp; }
+	void SetHP(float hp) { hp_ = hp; }
+	float GetAttack() const { return attack_; }
 
 protected:
 
 	void SetModel(std::string path) { drawInfo_.modelIndex = modelManager_->LoadModel("Enemy/" + path); }
+	void SetAttack(float attack) { attack_ = attack; }
 
 	DrawInfo drawInfo_{};
 	std::unique_ptr<Circle> collCircle_;
@@ -45,7 +47,8 @@ private:
 	EnemyManager* manager_ = nullptr;
 	int id_ = -1;
 	bool isActive_ = true;
-	int hp_ = 1;
+	float hp_ = 1.0f;
+	float attack_ = 1.0f;
 
 	std::map<int, int> damageIDs_;
 };

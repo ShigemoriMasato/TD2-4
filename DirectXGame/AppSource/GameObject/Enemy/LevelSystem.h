@@ -24,10 +24,17 @@ private:
 	void Load();
 	void Save();
 
+	enum class SpawnMode {
+		NormalOnly,
+		FastOnly,
+		Both,
+	};
+
 	struct BaseSystem {
 		float spawnInterval = 3.0f; // 敵をスポーンする間隔
 		float enemyCount = 2; // スポーンする敵の数
 		float enemyHp = 5.0f; // スポーンする敵のHP
+		SpawnMode spawnMode = SpawnMode::Both; // 出現敵タイプ
 	};
 
 	BaseSystem config_;

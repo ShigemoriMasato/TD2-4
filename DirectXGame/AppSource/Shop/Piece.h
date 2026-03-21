@@ -19,6 +19,7 @@ public:
 	Piece(const Item& item, int rank) { Initialize(item, rank); }
 
 	static void SetPieceManager(PieceManager* manager) { pieceManager_ = manager; }
+	static void DrawImGui();
 
 	void Initialize(const Item& item, int rank);
 
@@ -30,6 +31,11 @@ public:
 	Vector3 GetCenterOffset() const;
 	bool CanPut(BackPack* backPack) ;
 	bool Put(BackPack* backPack);
+
+	bool CanHoldOutside(BackPack* backPack, const std::vector<Piece*>& allPieces) const;
+	void HoldOutside();
+	bool HasChipPos(std::pair<int, int> pos) const;
+
 	void Remove(BackPack* backPack);
 	void Use();
 
@@ -49,6 +55,7 @@ private:
 	std::pair<int, int> GetChipPos(const std::pair<int, int>& chip) const;
 
 	static inline PieceManager* pieceManager_ = nullptr;
+	static inline Vector3 hoverCursorOffset_ = { -0.5f, 0.0f, 0.5f };
 
 	Direction direction_ = Direction::Up;
 
@@ -60,13 +67,17 @@ private:
 	Vector3 middleLocalPos_ = { 0.0f, 0.0f, 0.0f };
 	Vector3 position_{};
 
+	Vector3 pieceBaseScale_ = { 1.0f, 0.2f, 1.0f };
+	Vector3 modelBaseScale_ = { 0.25f, 0.25f, 0.25f };
+
 	bool isHovered_ = false;
 	bool isPlaced_ = false;
+	bool isHoldOutside_ = false;
 
 	bool isUsing_ = false;
 	bool isActive_ = true;
 
 	float useTimer_ = 0.0f;
 
-	float deleteTime_ = 15.0f; // 使用してから消えるまでの時間
+	float deleteTime_ = 20.0f; // 使用してから消えるまでの時間
 };

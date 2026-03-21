@@ -10,7 +10,7 @@ void ShopScene::Initialize() {
 	debugCamera_ = std::make_unique<DebugCamera>();
 	debugCamera_->Initialize(input_);
 	
-	debugCamera_->SetCenter({ -5.0f, -20.0f, -4.5f });
+	debugCamera_->SetCenter({ -5.0f, -25.0f, 0.0f });
 	debugCamera_->SetSpherical({ 20.0f, 0.0f, -1.570f });
 
 	PerspectiveFovDesc desc;
@@ -76,6 +76,7 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	pieceManager_->UpdateItemInfo(itemManager_.get());
 	shop_->Initialize(itemManager_.get());
 	shop_->DrawImGui();
+	Piece::DrawImGui();
 
 #endif
 

@@ -1,5 +1,7 @@
 #include "EnemyManager.h"
 #include "NormalEnemy.h"
+#include <algorithm>
+#include <cmath>
 
 void EnemyManager::Initialize(Vector3* playerPos) {
 	playerPos_ = playerPos;
@@ -33,13 +35,25 @@ void EnemyManager::DrawImGui() {
 #endif
 }
 
-void EnemyManager::PopEnemy(Vector3 initPos, int hp) {
+void EnemyManager::PopEnemy(Vector3 initPos, int hp, EnemyType type) {
 	int id = nextEnemyId_++;
 	auto& enemy = enemies_[id];
-	enemy = std::make_unique<NormalEnemy>();
+	float enemyHp = static_cast<float>(hp);
+
+	switch (type) {
+	case EnemyType::Fast:
+		enemy = std::make_unique<FastEnemy>();
+		enemyHp *= 0.5f;
+		break;
+	case EnemyType::Normal:
+	default:
+		enemy = std::make_unique<NormalEnemy>();
+		break;
+	}
+
 	enemy->Initialize(playerPos_, this, id);
 	enemy->SetPosition(initPos);
-	enemy->SetHP(hp);
+	enemy->SetHP(std::max(enemyHp, 0.5f));
 }
 
 std::vector<DrawInfo> EnemyManager::GetEnemyDrawInfos() const {

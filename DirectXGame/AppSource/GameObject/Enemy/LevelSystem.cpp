@@ -56,7 +56,22 @@ void LevelSystem::Update(float deltaTime) {
 				retryCount++;
 			} while (retryCount < 10); // 無限ループ防止のため最大10回リトライ
 
-			enemyManager_->PopEnemy(spawnPos, static_cast<int>(config_.enemyHp));
+			EnemyManager::EnemyType type = EnemyManager::EnemyType::Normal;
+			switch (config_.spawnMode) {
+			case SpawnMode::NormalOnly:
+				type = EnemyManager::EnemyType::Normal;
+				break;
+			case SpawnMode::FastOnly:
+				type = EnemyManager::EnemyType::Fast;
+				break;
+			case SpawnMode::Both:
+			default:
+				std::uniform_int_distribution<int> typeDist(0, 1);
+				type = (typeDist(rng_) == 0) ? EnemyManager::EnemyType::Normal : EnemyManager::EnemyType::Fast;
+				break;
+			}
+
+			enemyManager_->PopEnemy(spawnPos, static_cast<int>(config_.enemyHp), type);
 		}
 	}
 }
@@ -70,6 +85,12 @@ void LevelSystem::DrawImGui() {
 	ImGui::DragFloat("Enemy Count", &config_.enemyCount, 0.1f, 0.1f, 100.0f);
 	ImGui::DragFloat("Enemy HP", &config_.enemyHp, 0.1f, 1.0f, 1000.0f);
 
+	const char* spawnModeItems[] = { "NormalOnly", "FastOnly", "Both" };
+	int spawnMode = static_cast<int>(config_.spawnMode);
+	if (ImGui::Combo("Spawn Mode", &spawnMode, spawnModeItems, IM_ARRAYSIZE(spawnModeItems))) {
+		config_.spawnMode = static_cast<SpawnMode>(spawnMode);
+	}
+
 	ImGui::End();
 
 #endif
@@ -82,55 +103,68 @@ void LevelSystem::AdjustDifficult() {
 		config_.spawnInterval = 2.0f;
 		config_.enemyCount    = 1.0f;
 		config_.enemyHp       = 1.0f;
+		config_.spawnMode     = SpawnMode::NormalOnly;
 	} else if (allTimer_ <= 20.0f) {
 		config_.spawnInterval = 2.0f;
 		config_.enemyCount    = 1.0f;
 		config_.enemyHp       = 2.0f;
+		config_.spawnMode     = SpawnMode::NormalOnly;
 	} else if (allTimer_ <= 30.0f) {
 		config_.spawnInterval = 2.0f;
 		config_.enemyCount    = 2.0f;
 		config_.enemyHp       = 3.0f;
+		config_.spawnMode     = SpawnMode::NormalOnly;
 	} else if (allTimer_ <= 40.0f) {
 		config_.spawnInterval = 1.8f;
 		config_.enemyCount    = 2.0f;
 		config_.enemyHp       = 4.0f;
+		config_.spawnMode     = SpawnMode::FastOnly;
 	} else if (allTimer_ <= 50.0f) {
 		config_.spawnInterval = 1.5f;
 		config_.enemyCount    = 3.0f;
 		config_.enemyHp       = 5.0f;
+		config_.spawnMode     = SpawnMode::FastOnly;
 	} else if (allTimer_ <= 60.0f) {
 		config_.spawnInterval = 1.2f;
 		config_.enemyCount    = 3.0f;
 		config_.enemyHp       = 6.0f;
+		config_.spawnMode     = SpawnMode::FastOnly;
 	} else if (allTimer_ <= 70.0f) {
 		config_.spawnInterval = 1.0f;
 		config_.enemyCount    = 4.0f;
 		config_.enemyHp       = 7.0f;
+		config_.spawnMode     = SpawnMode::Both;
 	} else if (allTimer_ <= 80.0f) {
 		config_.spawnInterval = 0.9f;
 		config_.enemyCount    = 4.0f;
 		config_.enemyHp       = 8.0f;
+		config_.spawnMode     = SpawnMode::Both;
 	} else if (allTimer_ <= 90.0f) {
 		config_.spawnInterval = 0.8f;
 		config_.enemyCount    = 5.0f;
 		config_.enemyHp       = 9.0f;
+		config_.spawnMode     = SpawnMode::Both;
 	} else if (allTimer_ <= 100.0f) {
 		config_.spawnInterval = 0.7f;
 		config_.enemyCount    = 5.0f;
 		config_.enemyHp       = 10.0f;
+		config_.spawnMode     = SpawnMode::Both;
 	} else if (allTimer_ <= 110.0f) {
 		config_.spawnInterval = 0.6f;
 		config_.enemyCount    = 6.0f;
 		config_.enemyHp       = 11.0f;
+		config_.spawnMode     = SpawnMode::Both;
 	} else if (allTimer_ <= 120.0f) {
 		config_.spawnInterval = 0.5f;
 		config_.enemyCount    = 6.0f;
 		config_.enemyHp       = 12.0f;
+		config_.spawnMode     = SpawnMode::Both;
 	} else {
 		// 120秒以降: 最大難易度
 		config_.spawnInterval = 0.3f;
 		config_.enemyCount    = 7.0f;
 		config_.enemyHp       = 15.0f;
+		config_.spawnMode     = SpawnMode::Both;
 	}
 }
 

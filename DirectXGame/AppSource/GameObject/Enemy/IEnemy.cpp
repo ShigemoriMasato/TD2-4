@@ -45,9 +45,9 @@ void IEnemy::OnCollision(Collider* other) {
 	}
 	damageIDs_[id] = 1;
 	auto attack = static_cast<IAttackObject*>(other);
-	hp_ -= static_cast<int>(attack->GetDamage());
+	hp_ -= static_cast<float>(attack->GetDamage());
 
-	if (hp_ <= 0) {
+	if (hp_ <= 0.0f) {
 		KillMe();
 	}
 }

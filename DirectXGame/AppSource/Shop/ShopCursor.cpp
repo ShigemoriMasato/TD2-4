@@ -46,6 +46,10 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 				//配置する
 				heldPiece_->Put(backPack);
 
+			} else if (heldPiece_->CanHoldOutside(backPack, pieces)) {
+				//バックパックの外側に保持する
+				heldPiece_->HoldOutside();
+
 			} else {
 				auto currentDir = heldPiece_->GetDirection();
 				while (currentDir != preHeldPieceDir_) {

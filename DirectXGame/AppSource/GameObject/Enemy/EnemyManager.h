@@ -3,11 +3,16 @@
 
 class EnemyManager {
 public:
+	enum class EnemyType {
+		Normal,
+		Fast,
+	};
+
 	void Initialize(Vector3* playerPos);
 	void Update(float deltaTime);
 	void DrawImGui();
 
-	void PopEnemy(Vector3 initPos = {0.0f, 0.0f, 0.0f}, int hp = 1);
+	void PopEnemy(Vector3 initPos = {0.0f, 0.0f, 0.0f}, int hp = 1, EnemyType type = EnemyType::Normal);
 
 	std::vector<DrawInfo> GetEnemyDrawInfos() const;
 	std::vector<IEnemy*> GetEnemies() const;

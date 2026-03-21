@@ -56,6 +56,6 @@ private:
 	float deltaTime_ = 0.0f;
 
 	bool useAutoReroll_ = true;
-	float shopRerollTime_ = 15.0f;
+	float shopRerollTime_ = 5.0f;
 	float shopRerollTimer_ = 0.0f;
 };

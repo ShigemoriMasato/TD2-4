@@ -1,6 +1,10 @@
 #include "Piece.h"
 #include "PieceManager.h"
 
+#ifdef USE_IMGUI
+#include <imgui/imgui.h>
+#endif
+
 void Piece::Initialize(const Item& item, int rank) {
 	itemData_ = item;
 	rank_ = rank;
@@ -17,6 +21,10 @@ void Piece::Initialize(const Item& item, int rank) {
 }
 
 bool Piece::Update(BackPack* backPack, float deltaTime) {
+	if (isHoldOutside_) {
+		return false;
+	}
+
 	if (!isUsing_) {
 		return false;
 	}
@@ -25,17 +33,17 @@ bool Piece::Update(BackPack* backPack, float deltaTime) {
 
 	// 使用時間が一定時間を超えたら使用終了
 	if (useTimer_ >= deleteTime_) {
-		isUsing_ = false;
-
 		// 使用が終わったらチップをひとつバックパックから外す
 		backPack->SetSlot(GetChipPos(chips_[ignores_.size()]), Slot::Empty);
 		ignores_.push_back(chips_[ignores_.size()]);
 		if (chips_.size() == ignores_.size()) {
+			isUsing_ = false;
 			isActive_ = false;
 			return false;
 		}
 
 		useTimer_ = 0.0f;
+		isUsing_ = true;
 	}
 
 	return true;
@@ -72,8 +80,44 @@ bool Piece::Put(BackPack* backPack) {
 	pieceManager_->MoveShopToHold(this);
 
 	isPlaced_ = false;
+	isHoldOutside_ = false;
+	isUsing_ = true;
 
 	return true;
+}
+
+bool Piece::CanHoldOutside(BackPack* backPack, const std::vector<Piece*>& allPieces) const {
+	for (const auto& chip : chips_) {
+		if (IsIgnored(chip)) continue;
+		std::pair<int, int> slotPos = GetChipPos(chip);
+		if (slotPos.second >= static_cast<int>(backPack->GetOriginPos().z)) {
+			return false;
+		}
+
+		for (const auto& other : allPieces) {
+			if (other == this) continue;
+			if (other->HasChipPos(slotPos)) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+void Piece::HoldOutside() {
+	pieceManager_->MoveShopToHold(this);
+	isPlaced_ = false;
+	isHoldOutside_ = true;
+	isUsing_ = false;
+}
+
+bool Piece::HasChipPos(std::pair<int, int> pos) const {
+	if (!isActive_) return false;
+	for (const auto& chip : chips_) {
+		if (IsIgnored(chip)) continue;
+		if (GetChipPos(chip) == pos) return true;
+	}
+	return false;
 }
 
 void Piece::Remove(BackPack* backPack) {
@@ -84,6 +128,7 @@ void Piece::Remove(BackPack* backPack) {
 		auto slot = GetChipPos(chip);
 		backPack->SetSlot(slot, Slot::Empty);
 	}
+	isUsing_ = false;
 }
 
 void Piece::Use() {
@@ -117,20 +162,31 @@ Vector3 Piece::GetCenterOffset() const {
 }
 
 bool Piece::IsHovered(const Vector3& cursorPos, BackPack* backPack) {
+	Vector3 adjustedCursorPos = cursorPos + hoverCursorOffset_;
+
 	for (const auto& chip : chips_) {
 		if (IsIgnored(chip)) {
 			continue;
 		}
 		std::pair<int, int> slotPos = GetChipPos(chip);
 		Vector3 slotWorldPos = backPack->GetWorldPos(slotPos);
-		if (std::abs(cursorPos.x - slotWorldPos.x) < 0.5f &&
-			std::abs(cursorPos.z - slotWorldPos.z) < 0.5f) {
+		if (std::abs(adjustedCursorPos.x - slotWorldPos.x) < 0.5f &&
+			std::abs(adjustedCursorPos.z - slotWorldPos.z) < 0.5f) {
 			isHovered_ = true;
 			return true;
 		}
 	}
 	isHovered_ = false;
 	return false;
+}
+
+void Piece::DrawImGui() {
+#ifdef USE_IMGUI
+	ImGui::Begin("Piece");
+	ImGui::DragFloat("Hover Offset X", &hoverCursorOffset_.x, 0.01f);
+	ImGui::DragFloat("Hover Offset Z", &hoverCursorOffset_.z, 0.01f);
+	ImGui::End();
+#endif
 }
 
 std::vector<DrawInfo> Piece::GetDrawInfos() const {
@@ -145,7 +201,7 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		DrawInfo info;
 		auto slotPos = GetChipPos(chip);
 		info.position = { (float)slotPos.first + 0.5f, 0.0f, (float)slotPos.second + 0.5f };
-		info.scale = Vector3(1.0f, 0.2f, 1.0f);
+		info.scale = pieceBaseScale_;
 		info.modelIndex = 0;
 
 		float t = 0.0f;
@@ -193,7 +249,7 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		break;
 	}
 	info.position += Vector3(0.5f, 0.0f, 0.5f) + position_;
-	info.scale = Vector3(0.5f, 0.5f, 0.5f);
+	info.scale = modelBaseScale_;
 	info.rotation.y = static_cast<float> (direction_) * 3.1415926535f * 0.5f;
 	info.color = 0xffffffff;
 	drawInfos.push_back(info);
