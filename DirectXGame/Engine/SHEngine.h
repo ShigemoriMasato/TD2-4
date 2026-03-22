@@ -61,8 +61,7 @@ public: // Getter
 	float GetDeltaTime() { return fpsObserver_->GetDeltatime(); }
 
 	std::unique_ptr<Command::Object> CreateCommandObject(Command::Type type, int index = 0, int listNum = 3) {
-		auto cmdObj = cmdManager_->CreateCommandObject(type, index, listNum);
-		return cmdObj;
+		return cmdManager_->CreateCommandObject(type, index, listNum);
 	}
 
 	std::unique_ptr<Screen::SwapChain> MakeWindow(Screen::WindowsAPI* windowsApi, uint32_t clearColor);

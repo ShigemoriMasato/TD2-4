@@ -12,7 +12,7 @@ void TextureManager::Initialize(DXDevice* device, Command::Manager* manager) {
 	srvManager_ = device->GetSRVManager();
 	manager_ = manager;
 
-	cmdObject_->WaitForCanExecute();
+	cmdObject_->WaitForGPUIdle();
 	cmdObject_->ResetCommandList();
 
 	LoadTexture("Assets/.EngineResource/Texture/white1x1.png");
@@ -170,14 +170,11 @@ void TextureManager::UploadResources() {
 	manager_->Execute(Command::Type::Texture);
 	manager_->SendSignal(Command::Type::Texture);
 
-	//待機
-	cmdObject_->WaitForCanExecute();
+	//コマンドリストをリセット
+	cmdObject_->ResetCommandList();
 
 	//中間リソースをクリア
 	intermediateResources_.clear();
-
-	//コマンドリストをリセット
-	cmdObject_->ResetCommandList();
 }
 
 void TextureManager::CheckMaxCount(int offset) {

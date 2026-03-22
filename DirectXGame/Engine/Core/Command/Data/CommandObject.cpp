@@ -3,12 +3,8 @@
 
 using namespace SHEngine::Command;
 
-Object::~Object() {
-	WaitForCanExecute(); // コマンドリストが実行可能になるまで待機してから解放する
-	manager_->ReleaseObject(type_, queueIndex_, id_);
-}
+Object::Object(DXDevice* device, Manager* manager, Type type, int index, int id, int listNum) {
 
-void Object::Initialize(DXDevice* device, Manager* manager, Type type, int index, int id, int listNum) {
 	device_ = device;
 
 	// コマンドリストを3つ作成
@@ -26,17 +22,17 @@ void Object::Initialize(DXDevice* device, Manager* manager, Type type, int index
 	ResetCommandList();
 }
 
+Object::~Object() {
+	WaitForGPUIdle(); // すべてのコマンドが終了されるのを待つ
+	manager_->ReleaseObject(type_, queueIndex_, id_);
+}
+
 bool Object::CanExecute() {
 	// 現在のコマンドリストが実行可能かどうかを確認
 	return commandLists_[dxListIndex_].CanExecute();
 }
 
-void Object::WaitForCanExecute() {
-	// 現在のコマンドリストが実行可能になるまで待機
-	commandLists_[dxListIndex_].WaitForCanExecute();
-}
-
-void SHEngine::Command::Object::WaitForStopGPU() {
+void SHEngine::Command::Object::WaitForGPUIdle() {
 	for(auto& cmdList : commandLists_) {
 		cmdList.WaitForCanExecute();
 	}
