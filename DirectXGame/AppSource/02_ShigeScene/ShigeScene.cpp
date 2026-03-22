@@ -127,12 +127,6 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		for (size_t i = 0; i < weaponCount; ++i) {
 			// 武器が1つ以上のときだけ計算
 			if (weaponCount > 0) {
-				// 円周上の角度を計算 (ラジアン)
-				float angle = (2.0f * std::numbers::pi_v<float> / weaponCount) * i;
-
-				// XZ平面での円周オフセット座標の計算 (baseRadius_とbaseHeight_を使用)
-				Vector3 offset = { std::cos(angle) * baseRadius_, baseHeight_, std::sin(angle) * baseRadius_ };
-
 				// プレイヤー座標にオフセットを加算
 				Vector3 weaponPos = player_->GetTransform().position;
 

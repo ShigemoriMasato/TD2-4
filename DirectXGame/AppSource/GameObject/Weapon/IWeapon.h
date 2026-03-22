@@ -22,6 +22,7 @@ public:
 	Piece* GetPiecePtr() const { return piece_; }
 
 	bool GetIsAnimation() const { return isAnimation_; }
+	void SetIsAnimation(bool isAnimation) { isAnimation_ = isAnimation; }
 
 protected:
 

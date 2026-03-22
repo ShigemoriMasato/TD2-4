@@ -48,8 +48,8 @@ void ShopScene::Initialize() {
 
 	weaponDebugger_ = std::make_unique<WeaponDebugger>(weaponManager_.get());
 
-	parameterRender_ = std::make_unique<ParameterRender>();
-	parameterRender_->Initialize(modelManager_, drawDataManager_, engine_);
+	//parameterRender_ = std::make_unique<ParameterRender>();
+	//parameterRender_->Initialize(modelManager_, drawDataManager_, engine_);
 
 	orthoCamera_ = std::make_unique<Camera>();
 
