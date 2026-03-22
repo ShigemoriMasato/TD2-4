@@ -27,6 +27,7 @@ public:
 	void SetDeltaTime(float& deltaTime) { deltaTime_ = deltaTime; }
 	ItemManager* GetItemManager() { return itemManager_.get(); }
 	DebugCamera* GetCamera() { return debugCamera_.get(); }
+	bool IsInteractingWithPiece() const { return shopCursor_ && shopCursor_->HasHeldPiece(); }
 
 private:
 

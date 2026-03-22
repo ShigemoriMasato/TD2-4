@@ -75,68 +75,72 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	shopScene_->SetDeltaTime(deltaTime);
 	shopScene_->Update();
 
-	gameCamera_->Update(deltaTime, player_->GetTransform().position);
-	Vector3 cameraPos = { 0.f, 0.f, 0.f };
-	grid_->Update(cameraPos, camera_->GetVPMatrix());
 	auto key = commonData_->keyManager->GetKeyStates();
+	const bool pauseGameUpdate = shopScene_->IsInteractingWithPiece();
 
-	gameTimer_->Update(deltaTime);
-	waveSystem_->Update(deltaTime);
+	if (!pauseGameUpdate) {
+		gameCamera_->Update(deltaTime, player_->GetTransform().position);
+		Vector3 cameraPos = { 0.f, 0.f, 0.f };
+		grid_->Update(cameraPos, camera_->GetVPMatrix());
 
-	if (key[Key::ControllerChange]) {
-		// インデックスを切り替える
-		currentControllerIndex_ = (currentControllerIndex_ + 1) % controllers_.size();
+		gameTimer_->Update(deltaTime);
+		waveSystem_->Update(deltaTime);
 
-		// プレイヤーに新しいコントローラーをセット
-		player_->SetController(controllers_[currentControllerIndex_]);
-	}
+		if (key[Key::ControllerChange]) {
+			// インデックスを切り替える
+			currentControllerIndex_ = (currentControllerIndex_ + 1) % controllers_.size();
 
-	player_->Update(camera_->GetVPMatrix(), deltaTime, key);
-	player_->UpdateParameter(commonData_->pieces);
-	playerHP_->Update(orthoCamera_->GetVPMatrix(), deltaTime, player_->GetCurrentHP(), player_->GetMaxHP());
+			// プレイヤーに新しいコントローラーをセット
+			player_->SetController(controllers_[currentControllerIndex_]);
+		}
 
-	OrthographicDesc orthDesc;
-	orthDesc.SetValue();
-	orthoCamera_->SetProjectionMatrix(orthDesc);
-	orthoCamera_->SetScale({1, -1, 1});
-	orthoCamera_->SetPosition({0, 0, 0});
-	orthoCamera_->MakeMatrix();
+		player_->Update(camera_->GetVPMatrix(), deltaTime, key);
+		player_->UpdateParameter(commonData_->pieces);
+		playerHP_->Update(orthoCamera_->GetVPMatrix(), deltaTime, player_->GetCurrentHP(), player_->GetMaxHP());
 
-	map_->Update(camera_->GetVPMatrix());
-	enemyManager_->Update(deltaTime);
-	for (const auto& weapon : weapons_) {
-		weapon->Update(deltaTime);
-	}
-	attackManager_->Update(deltaTime);
+		OrthographicDesc orthDesc;
+		orthDesc.SetValue();
+		orthoCamera_->SetProjectionMatrix(orthDesc);
+		orthoCamera_->SetScale({1, -1, 1});
+		orthoCamera_->SetPosition({0, 0, 0});
+		orthoCamera_->MakeMatrix();
 
-	colliderManager_->CollisionCheckAll();
+		map_->Update(camera_->GetVPMatrix());
+		enemyManager_->Update(deltaTime);
+		for (const auto& weapon : weapons_) {
+			weapon->Update(deltaTime);
+		}
+		attackManager_->Update(deltaTime);
 
-	// DrawInfoを収集して描画クラスに渡す
-	{
-		drawInfos_.clear();
-		auto enemyDI = enemyManager_->GetEnemyDrawInfos();
-		drawInfos_.insert(drawInfos_.end(), enemyDI.begin(), enemyDI.end());
-		auto attackDI = attackManager_->GetAttackDrawInfos();
-		drawInfos_.insert(drawInfos_.end(), attackDI.begin(), attackDI.end());
+		colliderManager_->CollisionCheckAll();
 
-		objectRender_->SetDrawInfo(drawInfos_.data(), drawInfos_.size(), camera_->GetVPMatrix());
-	}
+		// DrawInfoを収集して描画クラスに渡す
+		{
+			drawInfos_.clear();
+			auto enemyDI = enemyManager_->GetEnemyDrawInfos();
+			drawInfos_.insert(drawInfos_.end(), enemyDI.begin(), enemyDI.end());
+			auto attackDI = attackManager_->GetAttackDrawInfos();
+			drawInfos_.insert(drawInfos_.end(), attackDI.begin(), attackDI.end());
 
-	{
-		int weaponCount = static_cast<int>(weaponRenders_.size());
-		for (size_t i = 0; i < weaponCount; ++i) {
-			// 武器が1つ以上のときだけ計算
-			if (weaponCount > 0) {
-				// 円周上の角度を計算 (ラジアン)
-				float angle = (2.0f * std::numbers::pi_v<float> / weaponCount) * i;
+			objectRender_->SetDrawInfo(drawInfos_.data(), drawInfos_.size(), camera_->GetVPMatrix());
+		}
 
-				// XZ平面での円周オフセット座標の計算 (baseRadius_とbaseHeight_を使用)
-				Vector3 offset = { std::cos(angle) * baseRadius_, baseHeight_, std::sin(angle) * baseRadius_ };
+		{
+			int weaponCount = static_cast<int>(weaponRenders_.size());
+			for (size_t i = 0; i < weaponCount; ++i) {
+				// 武器が1つ以上のときだけ計算
+				if (weaponCount > 0) {
+					// 円周上の角度を計算 (ラジアン)
+					float angle = (2.0f * std::numbers::pi_v<float> / weaponCount) * i;
 
-				// プレイヤー座標にオフセットを加算
-				Vector3 weaponPos = player_->GetTransform().position;
+					// XZ平面での円周オフセット座標の計算 (baseRadius_とbaseHeight_を使用)
+					Vector3 offset = { std::cos(angle) * baseRadius_, baseHeight_, std::sin(angle) * baseRadius_ };
 
-				weaponRenders_[i]->Update(camera_->GetVPMatrix(), weaponPos, deltaTime);
+					// プレイヤー座標にオフセットを加算
+					Vector3 weaponPos = player_->GetTransform().position;
+
+					weaponRenders_[i]->Update(camera_->GetVPMatrix(), weaponPos, deltaTime);
+				}
 			}
 		}
 	}
