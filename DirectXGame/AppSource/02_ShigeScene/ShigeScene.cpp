@@ -122,7 +122,21 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 			// AIController経由でPlayerAIにターゲットを設定する
 			if (aiController_) {
-				aiController_->SetTargetEnemy(clickedEnemy);
+				// ターゲットの切り替えと解除の処理
+				IEnemy* currentTarget = aiController_->GetTargetEnemy();
+
+				if (clickedEnemy) {
+					if (clickedEnemy == currentTarget) {
+						// すでにターゲットしている敵をもう一度クリックしたら解除
+						aiController_->SetTargetEnemy(nullptr);
+					} else {
+						// 別の敵をクリックしたら新しいターゲットに設定
+						aiController_->SetTargetEnemy(clickedEnemy);
+					}
+				} else {
+					// 敵以外の場所をクリックした場合も解除
+					aiController_->SetTargetEnemy(nullptr);
+				}
 			}
 		}
 	}
