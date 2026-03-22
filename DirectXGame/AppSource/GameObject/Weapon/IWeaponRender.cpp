@@ -58,7 +58,8 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 		switch (wData->type) {
 		case WeaponType::Pistol: {
 			forwardDuration = 0.05f;
-			rotEnd = {0.0f, 0.0f, 0.5f};
+			float recoilAngle = 0.5f;
+			rotEnd = {-std::sinf(direction_) * recoilAngle, 0.0f, std::cosf(direction_) * recoilAngle};
 			break;
 		}
 		case WeaponType::ShotGun: {
@@ -69,8 +70,8 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 		}
 		case WeaponType::Sword: {
 			forwardDuration = 0.15f;
-			rotStart = {-std::numbers::pi_v<float> / 4.0f, 0.0f, 0.0f};
-			rotEnd = {std::numbers::pi_v<float> / 4.0f, 0.0f, 0.0f};
+			rotStart = {0.0f, -std::numbers::pi_v<float> / 4.0f, 0.0f};
+			rotEnd = {0.0f, std::numbers::pi_v<float> / 4.0f, 0.0f};
 			rotOffsetAnim_.temp = rotStart;
 			break;
 		}
@@ -131,14 +132,20 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 		}
 	}
 
+	float currentDir = direction_;
+
+	if (animState_ != AnimState::None && wData->type == WeaponType::Sword) {
+		currentDir += rotOffsetAnim_.temp.y;
+	}
+
 	// プレイヤーの周りに武器が配置されるようにするための処理
-	transform_.position.x = std::cosf(direction_) * 4.0f;
-	transform_.position.z = std::sinf(direction_) * 4.0f;
+	transform_.position.x = std::cosf(currentDir) * 4.0f;
+	transform_.position.z = std::sinf(currentDir) * 4.0f;
 	transform_.position.y = 3.0f;
 	transform_.position += playerPos;
 
 	// 回転はDirectionを向かせる
-	transform_.rotate = {direction_ - std::numbers::pi_v<float> / 2, 0.0f, -std::numbers::pi_v<float> / 2.0f};
+	transform_.rotate = {currentDir - std::numbers::pi_v<float> / 2, 0.0f, -std::numbers::pi_v<float> / 2.0f};
 
 	// アニメーション実行中であれば算出したオフセットを加算
 	if (animState_ != AnimState::None) {
@@ -146,9 +153,11 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 		transform_.position.y += posOffsetAnim_.temp.y;
 		transform_.position.z += posOffsetAnim_.temp.z;
 
-		transform_.rotate.x += rotOffsetAnim_.temp.x;
-		transform_.rotate.y += rotOffsetAnim_.temp.y;
-		transform_.rotate.z += rotOffsetAnim_.temp.z;
+		if (wData->type != WeaponType::Sword) {
+			transform_.rotate.x += rotOffsetAnim_.temp.x;
+			transform_.rotate.y += rotOffsetAnim_.temp.y;
+			transform_.rotate.z += rotOffsetAnim_.temp.z;
+		}
 	}
 
 	wvp_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
