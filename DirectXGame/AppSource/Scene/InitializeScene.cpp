@@ -121,6 +121,10 @@ void InitializeScene::Initialize() {
 	keyManager->SetKey(Key::FullDamage, DIK_4, KeyState::Trigger);
 	keyManager->SetKey(Key::ControllerChange, DIK_5, KeyState::Trigger);
 	keyManager->SetKey(Key::InvincibleChange, DIK_6, KeyState::Trigger);
+
+	//================================================================================
+
+	keyManager->SetMouse(Key::Target, 0, KeyState::Trigger);
 #pragma endregion
 }
 

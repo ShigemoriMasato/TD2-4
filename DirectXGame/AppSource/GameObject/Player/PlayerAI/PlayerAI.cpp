@@ -45,9 +45,19 @@ Vector3 PlayerAI::ComputeMoveDirection(const Vector3& playerPos, const std::vect
 				// 完全に囲まれて力が相殺された場合、まっすぐ進むようにする
 				targetDir = {0.0f, 0.0f, 1.0f};
 			}
-		} else if (nearest && minDist < chaseRange_) {
-			// 誰も逃走範囲におらず、追跡範囲に敵がいる場合は一番近い敵を追う
-			targetDir = (nearest->GetDrawInfo().position - playerPos).Normalize();
+		} else {
+			// ターゲットがいる場合はそれを最優先にし、いなければ一番近い敵を対象にする
+			IEnemy* target = targetEnemy_ ? targetEnemy_ : nearest;
+
+			if (target) {
+				// 距離を計算
+				float dist = Distance(playerPos, target->GetDrawInfo().position);
+
+				// ターゲット指定されている場合は少し遠くても追うか、指定がなければ追跡範囲内だけ追う
+				if (targetEnemy_ || dist < chaseRange_) {
+					targetDir = (target->GetDrawInfo().position - playerPos).Normalize();
+				}
+			}
 		}
 
 		// 移動方向を補間

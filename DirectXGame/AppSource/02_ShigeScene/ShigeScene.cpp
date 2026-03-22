@@ -1,5 +1,6 @@
 #include "ShigeScene.h"
 #include "ShopScene.h"
+#include <Common/KeyConfig/WorldCursor.h>
 #include <Utility/Color.h>
 #include <imgui/imgui.h>
 #include <numbers>
@@ -89,6 +90,41 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 		// プレイヤーに新しいコントローラーをセット
 		player_->SetController(controllers_[currentControllerIndex_]);
+	}
+
+	{
+		// マウスクリックによる敵のターゲット選択
+		if (key[Key::Target]) {
+
+			// マウスのカーソル座標を取得してワールド座標に変換
+			Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
+			Vector3 clickWorldPos = GetWorldCursor(camera_, cursorPos);
+
+			IEnemy* clickedEnemy = nullptr;
+			float minClickDist = FLT_MAX;
+			float clickHitRadius = 1.0f; // クリック判定の大きさ
+
+			// 敵のリストを調べて、クリックされた座標に一番近い敵を探す
+			for (IEnemy* enemy : enemyManager_->GetEnemies()) {
+				if (!enemy->IsActive())
+					continue;
+
+				float dx = enemy->GetPosition().x - clickWorldPos.x;
+				float dz = enemy->GetPosition().z - clickWorldPos.z;
+				float dist = std::sqrtf(dx * dx + dz * dz);
+
+				// クリック範囲内にいて、かつ一番近い敵を選ぶ
+				if (dist < clickHitRadius && dist < minClickDist) {
+					minClickDist = dist;
+					clickedEnemy = enemy;
+				}
+			}
+
+			// AIController経由でPlayerAIにターゲットを設定する
+			if (aiController_) {
+				aiController_->SetTargetEnemy(clickedEnemy);
+			}
+		}
 	}
 
 	player_->Update(camera_->GetVPMatrix(), deltaTime, key);
