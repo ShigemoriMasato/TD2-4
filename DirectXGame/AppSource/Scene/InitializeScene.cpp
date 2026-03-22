@@ -114,7 +114,7 @@ void InitializeScene::Initialize() {
 std::unique_ptr<IScene> InitializeScene::Update() {
 	//更新処理
 	commonData_->cmdObject->ResetCommandList();
-	return std::make_unique<YokoScene>();
+	return std::make_unique<TrailEditorScene>();
 }
 
 void InitializeScene::Draw() {

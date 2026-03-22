@@ -1,6 +1,6 @@
 #include "RibbonTrail.h"
 
-void RibbonTrail::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const RibbonTrailPreset& preset)
+void RibbonTrail::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const RibbonTrailConfig& preset)
 {
 	preset_ = preset;
 	trail_.Initialize(drawDataManager, textureManager, preset_.cfg);

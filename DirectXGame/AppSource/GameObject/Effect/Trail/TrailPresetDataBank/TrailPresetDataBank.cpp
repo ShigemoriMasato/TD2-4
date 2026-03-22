@@ -18,11 +18,11 @@ void TrailPresetDataBank::Clear()
 	cache_.clear();
 }
 
-TrailPresetType TrailPresetDataBank::GetTypeOf(const std::string& name)
+TrailType TrailPresetDataBank::GetTypeOf(const std::string& name)
 {
 	const auto& v = Get(name);
-	if (std::holds_alternative<RibbonTrailPreset>(v)) return TrailPresetType::RibbonTrail;
-	else if (std::holds_alternative<ShockwaveRingPreset>(v)) return TrailPresetType::ShockwaveRing;
+	if (std::holds_alternative<RibbonTrailConfig>(v)) return TrailType::RibbonTrail;
+	else if (std::holds_alternative<ShockwaveRingConfig>(v)) return TrailType::ShockwaveRing;
 	return {};
 }
 
@@ -61,15 +61,15 @@ TrailPresetVariant TrailPresetDataBank::Load_(const std::string& name)
 	try { typeStr = json_.Get<std::string>("type"); }
 	catch (...) { throw std::runtime_error("TrailPresetDataBank: missing key 'type'"); }
 
-	TrailPresetType type{};
+	TrailType type{};
 	if (!FromString(typeStr, type))
 	{
 		throw std::runtime_error("TrailPresetDataBank: unknown type '" + typeStr + "'");
 	}
 
-	if (type == TrailPresetType::RibbonTrail)
+	if (type == TrailType::RibbonTrail)
 	{
-		RibbonTrailPreset p{};
+		RibbonTrailConfig p{};
 		p.cfg = LoadConfig_(json_);
 
 		try { p.modelName = json_.Get<std::string>("ribbon.modelName"); }
@@ -81,9 +81,9 @@ TrailPresetVariant TrailPresetDataBank::Load_(const std::string& name)
 
 		return p;
 	}
-	else if (type == TrailPresetType::ShockwaveRing)
+	else if (type == TrailType::ShockwaveRing)
 	{
-		ShockwaveRingPreset p{};
+		ShockwaveRingConfig p{};
 		p.cfg = LoadConfig_(json_);
 
 		try { p.segments = json_.Get<int>("shock.segments"); }

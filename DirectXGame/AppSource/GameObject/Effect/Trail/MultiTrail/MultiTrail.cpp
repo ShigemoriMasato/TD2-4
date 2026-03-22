@@ -4,11 +4,11 @@
 void MultiTrail::Initialize(
 	SHEngine::DrawDataManager* drawDataManager,
 	SHEngine::TextureManager* textureManager,
-	TrailPresetDataBank* presetRepo)
+	TrailPresetDataBank* presetData)
 {
 	drawDataManager_ = drawDataManager;
 	textureManager_ = textureManager;
-	presetData_ = presetRepo;
+	presetData_ = presetData;
 
 	ribbonTrailCache_.clear();
 	shockwaveRingTrailCache_.clear();
@@ -16,25 +16,25 @@ void MultiTrail::Initialize(
 	modelWorld_ = Matrix4x4::Identity();
 }
 
-void MultiTrail::AddFromPresetName(const std::string& presetName)
+void MultiTrail::Add(const std::string& presetName)
 {
 	if (!presetData_) return;
 
-	// プリセットデータを取得(トレイルタイプは分類されていない)
+	// presetName.Jsonのプリセットデータを取得
 	const auto& presetVar = presetData_->Get(presetName);
 
 	// トレイルタイプごとに生成
-	if (std::holds_alternative<RibbonTrailPreset>(presetVar))
+	if (std::holds_alternative<RibbonTrailConfig>(presetVar))
 	{
-		const auto& preset = std::get<RibbonTrailPreset>(presetVar);
+		const auto& preset = std::get<RibbonTrailConfig>(presetVar);
 		auto trail = std::make_unique<RibbonTrail>();
 		trail->Initialize(drawDataManager_, textureManager_, preset);
 		trail->SetModelWorld(modelWorld_);
 		ribbonTrailCache_[presetName] = std::move(trail);
 	}
-	else if (std::holds_alternative<ShockwaveRingPreset>(presetVar))
+	else if (std::holds_alternative<ShockwaveRingConfig>(presetVar))
 	{
-		const auto& preset = std::get<ShockwaveRingPreset>(presetVar);
+		const auto& preset = std::get<ShockwaveRingConfig>(presetVar);
 		auto trail = std::make_unique<ShockwaveRingTrail>();
 		trail->Initialize(drawDataManager_, textureManager_, preset);
 		trail->SetModelWorld(modelWorld_);

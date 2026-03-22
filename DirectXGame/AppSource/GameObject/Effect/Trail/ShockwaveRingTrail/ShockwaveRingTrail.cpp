@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <numbers>
 
-void ShockwaveRingTrail::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const ShockwaveRingPreset& preset)
+void ShockwaveRingTrail::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const ShockwaveRingConfig& preset)
 {
 	preset_ = preset;
 	trail_.Initialize(drawDataManager, textureManager, preset_.cfg);

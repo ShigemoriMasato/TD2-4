@@ -22,7 +22,7 @@ private:
 	Transform transform_{};
 	Matrix4x4 wvp_{};
 
-	TrailPresetDataBank trailPresetRepo_;
+	TrailPresetDataBank trailDataBank_;
 
 	MultiTrail trails_;
 };

@@ -13,15 +13,15 @@ public:
 	void Initialize(
 		SHEngine::DrawDataManager* drawDataManager,
 		SHEngine::TextureManager* textureManager,
-		TrailPresetDataBank* presetRepo);
+		TrailPresetDataBank* presetData);
 
 	// プリセット名で追加（例: "Axe_Ribbon"）
-	void AddFromPresetName(const std::string& presetName);
+	void Add(const std::string& presetName);
 
 	// モデルに追従するタイプ用。モデルに追従してなくても使ってOK
 	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
 
-	// Shockwave等、任意発動型トリガー
+	// 衝撃波等、任意発動型トリガー
 	void Trigger(const std::string& presetName, const Vector3& position);
 
 	void SetEnabled(bool enabled) { enabled_ = enabled; }

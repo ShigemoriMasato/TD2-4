@@ -5,7 +5,7 @@
 class ShockwaveRingTrail
 {
 public:
-	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const ShockwaveRingPreset& preset);
+	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const ShockwaveRingConfig& preset);
 	void Update(float dt, const Matrix4x4& vpMatrix);
 	void Draw(CmdObj* cmdObj);
 
@@ -24,7 +24,7 @@ private:
 
 private:
 	Trail trail_;
-	ShockwaveRingPreset preset_{};
+	ShockwaveRingConfig preset_{};
 	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
 
 	bool active_ = false;

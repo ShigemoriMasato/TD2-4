@@ -17,10 +17,11 @@ public:
 	void Draw() override;
 
 private:
-	struct editDataUnit
+	struct DrawDataUnit
 	{
 		std::string name;
 		std::unique_ptr<SHEngine::RenderObject> render;
+		std::string modelPath;
 		int modelHandle = -1;
 		int textureIndex = 0;
 	};
@@ -28,6 +29,7 @@ private:
 private:
 	void BuildModelList();
 	void SelectModel(int index);
+	void SetDefaultName();
 
 	void CreateModelRender();
 	void CreateMarkerRenders();
@@ -44,39 +46,32 @@ private:
 	void DrawRibbonUI_();
 	void DrawShockwaveUI_();
 
-	void ApplyPresetToEditor_();
-	void ResetEditorDefaults_(TrailPresetType type);
+	void Reset(TrailType type);
 
 private:
 	std::unique_ptr<DebugCamera> camera_;
 
 	int selectedModelIndex_ = -1;
-	std::vector<std::unique_ptr<editDataUnit>> modelRenders_;
+
+	// モデル描画データ
+	std::vector<std::unique_ptr<DrawDataUnit>> modelRenders_;
 	Transform modelTransform_{};
-	Matrix4x4 modelWvp_{};
 
-	// Marker
-	std::unique_ptr<SHEngine::RenderObject> markerOriginRender_;
-	std::unique_ptr<SHEngine::RenderObject> markerTipRender_;
-	NodeModelData markerModelData_{};
+	// マーカー描画データ
+	DrawDataUnit marker[2];
 
-	// === Editor State ===
-	TrailPresetType currentType_ = TrailPresetType::RibbonTrail;
 
-	// 共通Config（全部使わなくてもOK）
+	TrailType currentType_ = TrailType::RibbonTrail;
+
+	// 共通Config
 	Trail::Config trailConfig_{};
-
 	// Ribbon 固有
-	std::string ribbonModelName_;
-	Vector3 originLocal_{ 0.0f, 0.55f, 1.2f };
-	Vector3 tipLocal_{ 0.0f, 0.55f, -3.2f };
-
+	RibbonTrailConfig ribbonPreset_{};
 	// Shock 固有
-	ShockwaveRingPreset shockPreset_{};
+	ShockwaveRingConfig shockPreset_{};
 
 	// 実行時計算
-	Vector3 originWS_{};
-	Vector3 tipWS_{};
+	Vector3 markerPos[2];
 
 	// Trail preview
 	Trail trail_;

@@ -4,7 +4,7 @@
 #include "GameObject/Effect/Trail/Preset/TrailPreset.h"
 #include <Tool/Json/JsonManager.h>
 
-using TrailPresetVariant = std::variant<RibbonTrailPreset, ShockwaveRingPreset>;
+using TrailPresetVariant = std::variant<RibbonTrailConfig, ShockwaveRingConfig>;
 
 class TrailPresetDataBank
 {
@@ -32,7 +32,7 @@ public:
 	/// </summary>
 	/// <param name="name"> 例："Axe_Ribbon" → Assets/Json/Axe_Ribbon.json </param>
 	/// <returns> Getしたときの型 </returns>
-	TrailPresetType GetTypeOf(const std::string& name);
+	TrailType GetTypeOf(const std::string& name);
 
 private:
 	TrailPresetVariant Load_(const std::string& name);

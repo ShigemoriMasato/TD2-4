@@ -43,16 +43,15 @@ void YokoScene::Initialize()
 	NodeModelData modelData = modelManager_->GetNodeModelData(modelHandle);
 	auto& material = modelData.materials[modelData.materialIndex.front()];
 	textureIndex_ = material.textureIndex;
-
 	render_ = CreateTexturedModelRO(drawDataManager_, modelData, textureIndex_);
 
 	transform_.position = { 0.0f, 0.0f, 0.0f };
 	transform_.rotate = { 0.0f, 0.0f, 0.0f };
 	transform_.scale = { 1.0f, 1.0f, 1.0f };
 
-	trails_.Initialize(drawDataManager_, textureManager_, &trailPresetRepo_);
-	trails_.AddFromPresetName("Axe_Ribbon");
-	trails_.AddFromPresetName("Axe_Ribbon2");
+	trails_.Initialize(drawDataManager_, textureManager_, &trailDataBank_);
+	trails_.Add("Axe_Ribbon");
+	trails_.Add("Axe_Ribbon2");
 }
 
 std::unique_ptr<IScene> YokoScene::Update()
