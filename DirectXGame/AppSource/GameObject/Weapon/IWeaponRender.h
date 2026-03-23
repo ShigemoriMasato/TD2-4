@@ -4,11 +4,13 @@
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
+#include <GameObject/Effect/Trail/DataBank/TrailPresetDataBank.h>
+#include <GameObject/Effect/Trail/MultiTrail/MultiTrail.h>
 
 class IWeaponRender {
 public:
 	// 初期化関数
-	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, IWeapon* weapon, Item itemData);
+	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, IWeapon* weapon, Item itemData);
 
 	// 更新関数
 	void Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTime);
@@ -63,4 +65,9 @@ protected:
 	AnimationBundle<Vector3> posOffsetAnim_;    // 座標
 	AnimationBundle<Vector3> rotOffsetAnim_;   // 回転
 	AnimationBundle<Vector3> scaleOffsetAnim_;  // スケール
+
+	// トレイル
+	TrailPresetDataBank trailDataBank_;
+	MultiTrail trailSpear_;
+	MultiTrail trailSword_;
 };

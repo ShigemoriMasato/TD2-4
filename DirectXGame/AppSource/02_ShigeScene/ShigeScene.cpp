@@ -216,7 +216,7 @@ void ShigeScene::Draw() {
 	player_->Draw(cmdObj);
 	playerHP_->Draw(cmdObj);
 
-	parameterRender_->Draw(cmdObj);
+	//parameterRender_->Draw(cmdObj);
 
 	waveSystem_->DrawImGui();
 
@@ -313,7 +313,7 @@ void ShigeScene::MakeWeapon() {
 				break;
 			}
 
-			weaponRender->Initialize(drawDataManager_, modelManager_, weapon.get(), piece->GetItem());
+			weaponRender->Initialize(drawDataManager_, modelManager_, textureManager_, weapon.get(), piece->GetItem());
 			weaponRenders_.push_back(std::move(weaponRender));
 
 			weapon->Initialize(weaponID, player_.get());
