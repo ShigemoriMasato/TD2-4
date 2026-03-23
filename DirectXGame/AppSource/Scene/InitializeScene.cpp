@@ -136,7 +136,6 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 
 	return std::make_unique<TrailEditorScene>();
 	return std::make_unique<TechnicalTestScene>();
-	return std::make_unique<ShigeScene>();
 	return std::make_unique<YokoScene>();
 }
 

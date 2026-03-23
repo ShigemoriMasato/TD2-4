@@ -76,7 +76,7 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 
 	// HPの初期化
 	//maxHP_ = parameterList_->GetParameter("MaxHP");
-	maxHP_ = 10; // 仮の値
+	maxHP_ = 500; // 仮の値
 	currentHP_ = maxHP_;
 }
 
