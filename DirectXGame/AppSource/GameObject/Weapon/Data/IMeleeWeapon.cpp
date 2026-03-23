@@ -66,6 +66,7 @@ bool IMeleeWeapon::EnemyCheck() {
 	}
 
 	Shot(closestEnemy);
+	isAnimation_ = true;
 
 	attackCount_++;
 	rateTimer_ = 0.0f;

@@ -1,5 +1,6 @@
 #include "ShigeScene.h"
 #include "ShopScene.h"
+#include <Common/KeyConfig/WorldCursor.h>
 #include <Utility/Color.h>
 #include <imgui/imgui.h>
 #include <numbers>
@@ -91,6 +92,55 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		player_->SetController(controllers_[currentControllerIndex_]);
 	}
 
+	{
+		// マウスクリックによる敵のターゲット選択
+		if (key[Key::Target]) {
+
+			// マウスのカーソル座標を取得してワールド座標に変換
+			Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
+			Vector3 clickWorldPos = GetWorldCursor(camera_, cursorPos);
+
+			IEnemy* clickedEnemy = nullptr;
+			float minClickDist = FLT_MAX;
+			float clickHitRadius = 1.0f; // クリック判定の大きさ
+
+			// 敵のリストを調べて、クリックされた座標に一番近い敵を探す
+			for (IEnemy* enemy : enemyManager_->GetEnemies()) {
+				if (!enemy->IsActive())
+					continue;
+
+				float dx = enemy->GetPosition().x - clickWorldPos.x;
+				float dz = enemy->GetPosition().z - clickWorldPos.z;
+				float dist = std::sqrtf(dx * dx + dz * dz);
+
+				// クリック範囲内にいて、かつ一番近い敵を選ぶ
+				if (dist < clickHitRadius && dist < minClickDist) {
+					minClickDist = dist;
+					clickedEnemy = enemy;
+				}
+			}
+
+			// AIController経由でPlayerAIにターゲットを設定する
+			if (aiController_) {
+				// ターゲットの切り替えと解除の処理
+				IEnemy* currentTarget = aiController_->GetTargetEnemy();
+
+				if (clickedEnemy) {
+					if (clickedEnemy == currentTarget) {
+						// すでにターゲットしている敵をもう一度クリックしたら解除
+						aiController_->SetTargetEnemy(nullptr);
+					} else {
+						// 別の敵をクリックしたら新しいターゲットに設定
+						aiController_->SetTargetEnemy(clickedEnemy);
+					}
+				} else {
+					// 敵以外の場所をクリックした場合も解除
+					aiController_->SetTargetEnemy(nullptr);
+				}
+			}
+		}
+	}
+
 	player_->Update(camera_->GetVPMatrix(), deltaTime, key);
 	player_->UpdateParameter(commonData_->pieces);
 	playerHP_->Update(orthoCamera_->GetVPMatrix(), deltaTime, player_->GetCurrentHP(), player_->GetMaxHP());
@@ -127,12 +177,6 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		for (size_t i = 0; i < weaponCount; ++i) {
 			// 武器が1つ以上のときだけ計算
 			if (weaponCount > 0) {
-				// 円周上の角度を計算 (ラジアン)
-				float angle = (2.0f * std::numbers::pi_v<float> / weaponCount) * i;
-
-				// XZ平面での円周オフセット座標の計算 (baseRadius_とbaseHeight_を使用)
-				Vector3 offset = { std::cos(angle) * baseRadius_, baseHeight_, std::sin(angle) * baseRadius_ };
-
 				// プレイヤー座標にオフセットを加算
 				Vector3 weaponPos = player_->GetTransform().position;
 

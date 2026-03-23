@@ -36,6 +36,8 @@ enum class Key {
 	FullDamage,//全ダメージ
 	InvincibleChange,//無敵状態切り換え
 
+	Target,//敵を選択
+
 	Count
 };
 

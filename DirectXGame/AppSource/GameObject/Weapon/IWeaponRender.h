@@ -1,9 +1,9 @@
 #pragma once
+#include "GameObject/EasingAnimation/AnimationBundle.h"
+#include <GameObject/Weapon/IWeapon.h>
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
-#include <GameObject/Weapon/IWeapon.h>
-#include "GameObject/EasingAnimation/AnimationBundle.h"
 
 class IWeaponRender {
 public:
@@ -27,6 +27,9 @@ public:
 
 	Piece* GetPiecePtr() const { return weapon_->GetPiecePtr(); }
 
+	// アニメーションの状態管理用
+	enum class AnimState { None, Forward, Return };
+
 protected:
 	static inline int nextID_ = 0;
 	int id_ = nextID_++;
@@ -47,6 +50,17 @@ protected:
 
 	Matrix4x4 rotationMatrix_ = Matrix4x4::Identity();
 
-	// アニメーション用の変数
-	AnimationBundle<Vector3> bundle_;
+	// アニメーションの状態
+	AnimState animState_ = AnimState::None;
+
+	// 前フレームのアニメーション状態
+	bool prevIsAnimation_ = false;
+
+	// 武器の向く方向
+	float direction_;
+
+	// アニメーション用の変数群
+	AnimationBundle<Vector3> posOffsetAnim_;    // 座標
+	AnimationBundle<Vector3> rotOffsetAnim_;   // 回転
+	AnimationBundle<Vector3> scaleOffsetAnim_;  // スケール
 };
