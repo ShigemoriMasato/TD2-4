@@ -32,16 +32,12 @@ public:
 	// 描画等で必要になったときに ID を解決する
 	int ResolveModelID(Item& item);
 
-#ifdef USE_IMGUI 
-
-	/// Editer用関数
+	/// Editor用関数
 	std::unordered_map<int, Item>& GetItemsForEdit() { return items_; }
 	int& GetUsedID() { return usedID_; }
 
 	std::unordered_map<std::string, float>& GetBaseParamsForEdit() { return baseParam_; }
 	const std::unordered_map<std::string, float>& GetBaseParamsForEdit() const { return baseParam_; }
-
-#endif
 
 private:
 

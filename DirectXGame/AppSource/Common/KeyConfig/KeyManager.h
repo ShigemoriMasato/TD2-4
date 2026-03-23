@@ -15,10 +15,13 @@ enum class Key {
 	Hold,//Chip持ち運び
 	Erase,//Chip消す
 	Rotate,//Chip回転
+	Use,//Piece使用
 	
 	Correct,//確定キー
 	Reverse,//取消キー
 	Pause,//ポーズキー
+
+	ControllerChange,//コントローラーの切り換え
 
 	// Debug -===========
 
@@ -26,6 +29,14 @@ enum class Key {
 	Debug1,
 	Debug2,
 	Debug3,
+
+	Heal,//回復
+	Damage,//ダメージ
+	FullHeal,//全回復
+	FullDamage,//全ダメージ
+	InvincibleChange,//無敵状態切り換え
+
+	Target,//敵を選択
 
 	Count
 };

@@ -3,6 +3,7 @@
 #include <Render/Screen/IDisplay.h>
 #include <Render/RenderObject.h>
 #include <Compute/ComputeObject.h>
+#include <Render/Font/Text.h>
 
 #pragma comment(lib, "Dbghelp.lib")
 
@@ -55,6 +56,7 @@ void Engine::Initialize(HINSTANCE hInstance) {
 
 	Screen::IDisplay::SetDevice(device_.get());
 	RenderObject::StaticInitialize(device_.get(), psoEditor_.get());
+	Text::SetFontLoader(fontLoader_.get());
 	ComputeObject::StaticInitialize(device_.get(), csPsoManager_.get());
 
 	fpsObserver_ = std::make_unique<FPSObserver>();

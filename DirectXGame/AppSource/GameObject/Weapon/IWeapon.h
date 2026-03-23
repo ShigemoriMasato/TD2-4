@@ -4,6 +4,8 @@
 #include <GameObject/Weapon/WeaponDatabase.h>
 #include <GameObject/Player/Player.h>
 
+class Piece;
+
 class IWeapon {
 public:
 
@@ -16,7 +18,16 @@ public:
 
 	WeaponData* GetWeaponData() {return weaponData_;}
 
+	void SetPiecePtr(Piece* piece) { piece_ = piece; }
+	Piece* GetPiecePtr() const { return piece_; }
+
+	bool GetIsAnimation() const { return isAnimation_; }
+	void SetIsAnimation(bool isAnimation) { isAnimation_ = isAnimation; }
+
 protected:
+
+	virtual bool EnemyCheck() = 0;
+	virtual void Shot(IEnemy* target) = 0;
 
 	static inline AttackManager* attackManager_ = nullptr;
 	static inline EnemyManager* enemyManager_ = nullptr;
@@ -26,5 +37,9 @@ protected:
 
 	WeaponData* weaponData_;
 	Player::Base* player_;
+
+	Piece* piece_ = nullptr;
+
+	bool isAnimation_ = false;	// 攻撃のアニメーション中かどうか
 
 };

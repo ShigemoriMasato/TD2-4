@@ -16,7 +16,7 @@ void ColliderManager::CollisionCheck(Collider* collider) {
 		}
 
 		//互いに当たってしかるべきタグか確認
-		if (!(collider->targetTag_ & other->ownTag_)) {
+		if (!(collider->targetTag_ & other->ownTag_) || (collider == other)) {
 			continue;
 		}
 

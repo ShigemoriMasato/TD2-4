@@ -5,12 +5,12 @@
 void GameCamera::Initialize() {
 	//初期位置を設定
 	position_ = { 0.0f, 0.0f, -10.0f };
-	rotation_.x = -0.3f;
+	rotation_.x = -0.5f;
 	SetProjectionMatrix(PerspectiveFovDesc());
 }
 
 void GameCamera::Update(float deltaTime, Vector3 position) {
-	position_ = lerp(position_, position + offset_, deltaTime * 5.0f);
+	position_ = lerp(position_, position + offset_, deltaTime * 10.0f);
 	MakeMatrix();
 }
 

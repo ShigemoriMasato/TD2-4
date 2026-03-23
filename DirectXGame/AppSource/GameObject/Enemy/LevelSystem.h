@@ -1,0 +1,58 @@
+#pragma once
+#include <GameObject/Enemy/EnemyManager.h>
+#include <Utility/DataStructures.h>
+#include <Tool/Binary/BinaryManager.h>
+#include <random>
+#include <GameObject/Map/MapInfo.h>
+
+class LevelSystem {
+public:
+
+	~LevelSystem();
+
+	void Initialize(EnemyManager* enemyManager, int stageNum, Vector3* playerPosPtr, const MapInfo& mapInfo);
+
+	void Update(float deltaTime);
+	void Stop() { isActive_ = false; }
+
+	void DrawImGui();
+
+private:
+
+	void AdjustDifficult();
+
+	void Load();
+	void Save();
+
+	struct BaseSystem {
+		float spawnInterval = 3.0f; // 敵をスポーンする間隔
+		float enemyCount = 2; // スポーンする敵の数
+		float enemyHp = 5.0f; // スポーンする敵のHP
+	};
+
+	BaseSystem config_;
+
+	EnemyManager* enemyManager_ = nullptr;
+
+	int stageNum_ = 0;
+	float timer_ = 0.0f;
+	float allTimer_ = 0.0f;
+
+	std::mt19937 rng_{ std::random_device{}() };
+
+	MapInfo mapInfo_;
+
+	bool isActive_ = false;
+
+private:	//Edit用
+
+	bool isSave_ = true;
+
+	float increaseIntercal_ = 0.1f; // スポーン間隔の増加量
+	float increaseEnemyCount_ = 0.5f; // スポーンする敵の数の増加量
+	float increaseHp_ = 5.0f; // 敵のHPの増加量
+
+	BinaryManager binaryManager_;
+
+	Vector3* playerPosPtr_ = nullptr;
+};

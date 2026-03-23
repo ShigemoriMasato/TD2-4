@@ -244,8 +244,23 @@ ComPtr<ID3D12Resource> TextureData::Create(uint32_t width, uint32_t height, std:
 		IID_PPV_ARGS(&intermediateResource)
 	);
 
-	//コマンドリストにコピーコマンドを記録
-	intermediateResource.Attach(UploadTextureData(textureResource_.Get(), DirectX::ScratchImage(), device, cmdList));
+	// colorMap から直接サブリソースを作ってアップロードする
+	assert(colorMap.size() == static_cast<size_t>(width) * static_cast<size_t>(height) && "colorMap size mismatch");
+	D3D12_SUBRESOURCE_DATA subresourceData{};
+	subresourceData.pData = colorMap.data();
+	subresourceData.RowPitch = static_cast<SIZE_T>(width) * sizeof(uint32_t);
+	subresourceData.SlicePitch = subresourceData.RowPitch * static_cast<SIZE_T>(height);
+
+	UpdateSubresources(cmdList, textureResource_.Get(), intermediateResource.Get(), 0, 0, 1, &subresourceData);
+
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = textureResource_.Get();
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	cmdList->ResourceBarrier(1, &barrier);
 
 	textureResource_->SetName(LPCWSTR(ConvertString("BitMapTexture : " + std::to_string(debugTextureCount++)).c_str()));
 

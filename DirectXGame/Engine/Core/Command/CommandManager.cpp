@@ -43,9 +43,8 @@ void Manager::Initialize(DXDevice* device) {
 }
 
 std::unique_ptr<Object> SHEngine::Command::Manager::CreateCommandObject(Type type, int index, int listNum) {
-	std::unique_ptr<Object> commandObject = std::make_unique<Object>();
 	int id = nextIDsForObject_[type]++;
-	commandObject->Initialize(device_, this, type, index, id, listNum);
+	std::unique_ptr<Object> commandObject = std::make_unique<Object>(device_, this, type, index, id, listNum);
 
 	// コマンドオブジェクトを管理用コンテナに登録
 	if (type != Type::Compute) {

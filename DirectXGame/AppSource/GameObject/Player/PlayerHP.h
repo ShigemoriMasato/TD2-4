@@ -8,22 +8,13 @@ namespace Player {
 class HP {
 public:
 	// 初期化関数
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input);
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager);
 
 	// 更新関数
-	void Update(Matrix4x4 vpMatrix, float deltaTime);
+	void Update(Matrix4x4 vpMatrix, float deltaTime, float currentHP, float maxHP);
 
 	// 描画関数
 	void Draw(CmdObj* cmdObj);
-
-	// ダメージ関数
-	void Damage(float amount);
-
-	// 回復関数
-	void Heal(float amount);
-
-	// Getter等
-	float GetCurrentHP() { return currentHP_; }
 
 private:
 	// HPバーの構造体
@@ -35,10 +26,7 @@ private:
 
 private:
 	// HP変化時にHPバーのスケールを変化させる関数
-	void HPBarScaleChange();
-
-	// 無敵状態のカウントダウン
-	void InvincibleTimerUpdate();
+	void HPBarScaleChange(float currentHP, float maxHP);
 
 	// 描画用変数の初期化関数
 	void InitializeRenderHPBar(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, std::unique_ptr<SHEngine::RenderObject>& render);
@@ -55,37 +43,19 @@ private:
 	// 説明用のUI
 	std::unique_ptr<SHEngine::RenderObject> uiRender_ = nullptr;
 
-	// 現在のHP
-	float currentHP_{};
-
-	// HPの最大値
-	float maxHP_{};
-
-	// 無敵フラグ
-	bool isInvincible_ = false;
-
-	// 無敵時間
-	float invincibleDuration_ = 1.0f;
-
-	// 無敵時間のカウントダウン
-	float invincibleTimer_ = invincibleDuration_;
-
-	// FPSObserver
-	std::unique_ptr<FPSObserver> fpsObserver_ = nullptr;
-
-	// 入力
-	SHEngine::Input* input_ = nullptr;
-
-	// HPバーの横幅
-	const float kHPBarWidth = 5.0f;
+	// HPバーのサイズ
+	Vector2 hpBarSize_ = {200.0f, 50.0f};
 
 	// モデルマネージャ
 	SHEngine::ModelManager* modelManager_ = nullptr;
 
 	// HPバー初期座標
-	float hpBarPosX_ = -20.0f;
+	Vector2 hpBarPos_ = {770.0f, -50.0f};
 
 	// HPバー　減った分のアニメーション用変数
 	AnimationBundle<float> scaleAnimationHPBarAfter_;
+
+	// 変化検知用
+	float previousHP_ = -1.0f;
 };
 } // namespace Player

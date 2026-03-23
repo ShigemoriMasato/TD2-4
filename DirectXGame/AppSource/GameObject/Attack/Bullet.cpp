@@ -47,6 +47,12 @@ DrawInfo Bullet::GetDrawInfo() {
 }
 
 void Bullet::OnCollision(Collider* other) {
+	// 貫通回数を超えている場合は何もしない
+	if(hitEnemyIds_.size() <= hitCount_) {
+		isActive_ = false;
+		return;
+	}
+
 	int id = other->GetID();
 	// すでに貫通している敵は無視する
 	for (int hitId : hitEnemyIds_) {

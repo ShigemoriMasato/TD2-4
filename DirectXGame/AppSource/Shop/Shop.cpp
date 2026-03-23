@@ -1,4 +1,7 @@
 #include "Shop.h"
+#ifdef USE_IMGUI
+#include <imgui/imgui.h>
+#endif
 
 void Shop::Initialize(ItemManager* itemManager) {
 	itemManager_ = itemManager;
@@ -25,9 +28,18 @@ std::vector<std::unique_ptr<Piece>> Shop::RefreshShopPieces() {
 		piece->Initialize(item, 0);
 
 		//初期位置(適当)
-		piece->SetPosition(Vector3(-8.0f, 0.0f, -8.0f + i * 8.0f));
+		piece->SetPosition(startPos_ + interval_ * static_cast<float>(i));
 
 		shopPieces.push_back(std::move(piece));
 	}
 	return shopPieces;
+}
+
+void Shop::DrawImGui() {
+#ifdef USE_IMGUI
+	ImGui::Begin("Shop");
+	ImGui::DragFloat3("Start Pos", &startPos_.x, 0.1f);
+	ImGui::DragFloat3("Interval", &interval_.x, 0.1f);
+	ImGui::End();
+#endif
 }

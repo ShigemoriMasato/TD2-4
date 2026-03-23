@@ -8,19 +8,14 @@ namespace SHEngine::Command {
 	class Object {
 	public:
 
-		Object() = default;
+		Object(DXDevice* device, Manager* manager, Type type, int index, int id, int listNum);
 		~Object();
-
-		/// @brief 初期化
-		void Initialize(DXDevice* device, Manager* manager, Type type, int index, int id, int listNum);
 
 		/// @brief コマンドを積めるかどうか
 		bool CanExecute();
-		/// @brief コマンドを積めるようになるまで待機する
-		void WaitForCanExecute();
 
 		/// @brief GPUの処理がすべて終わるのを待機する
-		void WaitForStopGPU();
+		void WaitForGPUIdle();
 
 		/// @brief コマンドリストをリセットして、コマンドを積める状態にする(実行できる状態でなかったら実行できるまで待つ)
 		void ResetCommandList();

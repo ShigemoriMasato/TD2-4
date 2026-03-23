@@ -1,14 +1,16 @@
 #pragma once
 #include "../Player/Parameter/ParameterData.h"
 #include "../Player/Parameter/ParameterList.h"
+#include "Controller/IController.h"
 #include "State/IPlayerState.h"
 #include "State/PlayerStateDash.h"
 #include "State/PlayerStateNormal.h"
+#include <Collision/Collider.h>
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
-#include <Collision/Collider.h>
-
+#include "../Map/MapInfo.h"
+#include <Common/KeyConfig/KeyManager.h>
 
 /// <summary>
 /// プレイヤー
@@ -22,10 +24,10 @@ struct AfterImage {
 class Base : public Collider {
 public:
 	// 初期化（デフォルトキャラクターID: 0）
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::Input* input, CharacterID characterID, ItemManager* itemManager);
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, CharacterID characterID, ItemManager* itemManager);
 
 	// 更新
-	void Update(Matrix4x4 vpMatrix, float deltaTime);
+	void Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, bool>& key);
 	// パラメータの更新
 	void UpdateParameter(const std::vector<Piece*>& items);
 
@@ -59,17 +61,30 @@ public:
 
 	float GetRotationSpeed() const { return rotationSpeed_; }
 
-	void SetMapMinMax(float minX, float maxX, float minZ, float maxZ) {
-		minX_ = minX;
-		maxX_ = maxX;
-		minZ_ = minZ;
-		maxZ_ = maxZ;
+	void SetMapInfo(const MapInfo& mapInfo) {
+		mapInfo_ = mapInfo;
 	}
 
-	//パラメータ取得関数。スペルミスを防ぐため、こちらを推奨
+	// パラメータ取得関数。スペルミスを防ぐため、こちらを推奨
 	float GetParameter(const std::string& paramName) const;
-	//全てのパラメータを取得する関数
+	// 全てのパラメータを取得する関数
 	std::unordered_map<std::string, float> GetParameters() const { return parameterList_->GetAllParameters(); }
+
+	// コントローラーの取得
+	IController* GetController() const { return controller_; }
+
+	// コントローラーの設定
+	void SetController(IController* controller) { controller_ = controller; }
+
+	// HPのアクセッサ
+	float GetCurrentHP() const { return currentHP_; }
+	float GetMaxHP() const { return maxHP_; }
+
+	// ダメージ
+	void Damage(float amount);
+
+	// 回復
+	void Heal(float amount);
 
 private:
 	// 残像の更新処理
@@ -77,6 +92,9 @@ private:
 
 	// プレイヤーの移動制限
 	void ClampPosition();
+
+	// 接触時処理
+	void OnCollision(Collider* other) override;
 
 private:
 	// 描画用変数
@@ -124,18 +142,28 @@ private:
 	static const int kMaxInstanceAfterImage = 8;
 
 	// マップの移動制限
-	float minX_;
-	float maxX_;
-	float minZ_;
-	float maxZ_;
+	MapInfo mapInfo_;
 
 	// パラメータ
 	std::unique_ptr<ParameterList> parameterList_ = nullptr;
 
-public:// 以下シゲモリ製
+	// コントローラー
+	IController* controller_ = nullptr;
 
+	// HP
+	float maxHP_ = 0.0f;
+	float currentHP_ = 0.0f;
+
+	// 無敵フラグ
+	bool isInvincible_ = false;
+	float invincibleTimer_ = 0.0f;
+	float invincibleDuration_ = 1.0f;
+
+public: // 以下シゲモリ製
 	std::unique_ptr<Circle> collCircle_ = nullptr;
 	Logger logger_;
-
+#ifdef _DEBUG
+	bool isDebugInvincible_ = false;
+#endif
 };
 } // namespace Player

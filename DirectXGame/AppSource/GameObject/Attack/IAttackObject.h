@@ -45,6 +45,7 @@ protected:
 
 	bool isActive_ = true;
 	Config config_{};
+	std::vector<int> hitEnemyIds_; // 当たった敵のIDを保存するベクター
 
 	int id_ = -1;
 };

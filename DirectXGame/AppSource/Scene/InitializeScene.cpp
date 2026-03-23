@@ -2,6 +2,7 @@
 #include <imgui/imgui.h>
 
 #include <02_ShigeScene/ShigeScene.h>
+#include <02_ShigeScene/TechnicalTestScene.h>
 #include <03_YokoScene/YokoScene.h>
 #include <03_YokoScene/TrailEditorScene.h>
 
@@ -82,8 +83,13 @@ void InitializeScene::Initialize() {
 	keyManager->SetStick(Key::Down, true, true, -0.5f);
 
 	keyManager->SetMouse(Key::Hold, 0, KeyState::Hold);
-	keyManager->SetMouse(Key::Erase, 1, KeyState::Trigger);
+	keyManager->SetMouse(Key::Erase, 2, KeyState::Trigger);
+	keyManager->SetMouse(Key::Rotate, 1, KeyState::Trigger);
 	keyManager->SetKey(Key::Rotate, DIK_R, KeyState::Trigger);
+
+	keyManager->SetKey(Key::Use, DIK_E, KeyState::Trigger);
+	keyManager->SetKey(Key::Use, DIK_SPACE, KeyState::Trigger);
+	keyManager->SetMouse(Key::Use, 1, KeyState::Trigger);
 
 	//================================================================================
 
@@ -108,13 +114,30 @@ void InitializeScene::Initialize() {
 	keyManager->SetKey(Key::Debug1, DIK_F1, KeyState::Trigger);
 	keyManager->SetKey(Key::Debug2, DIK_F2, KeyState::Trigger);
 	keyManager->SetKey(Key::Debug3, DIK_F3, KeyState::Trigger);
+
+	//================================================================================
+
+	keyManager->SetKey(Key::Damage, DIK_1, KeyState::Trigger);
+	keyManager->SetKey(Key::Heal, DIK_2, KeyState::Trigger);
+	keyManager->SetKey(Key::FullHeal, DIK_3, KeyState::Trigger);
+	keyManager->SetKey(Key::FullDamage, DIK_4, KeyState::Trigger);
+	keyManager->SetKey(Key::ControllerChange, DIK_5, KeyState::Trigger);
+	keyManager->SetKey(Key::InvincibleChange, DIK_6, KeyState::Trigger);
+
+	//================================================================================
+
+	keyManager->SetMouse(Key::Target, 0, KeyState::Trigger);
 #pragma endregion
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
 	//更新処理
 	commonData_->cmdObject->ResetCommandList();
+
 	return std::make_unique<TrailEditorScene>();
+	return std::make_unique<TechnicalTestScene>();
+	return std::make_unique<ShigeScene>();
+	return std::make_unique<YokoScene>();
 }
 
 void InitializeScene::Draw() {

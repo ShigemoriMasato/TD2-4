@@ -54,6 +54,9 @@ void WeaponManager::SaveWeaponData() {
 }
 
 void WeaponManager::LoadWeaponData() {
+	// JsonManagerを使ってデータベース全体を再読み込みする
+	weaponDatabase_->Initialize(*jsonManager_);
+
 	database_.clear();
 	const auto& allWeapons = weaponDatabase_->GetAllWeapons();
 	for (const auto& weapon : allWeapons) {

@@ -1,18 +1,23 @@
 #include "BackPack.h"
 
 void BackPack::Initialize() {
-	// 5x5のスロットを初期化
-	slots_.resize(10, std::vector<Slot>(10, Slot::Locked));
+	// 指定サイズのスロットを初期化
+	slots_.resize(height_, std::vector<Slot>(width_, Slot::Locked));
 
-	// 中央の5x5をEmptyにする
-	for (int i = 2; i < 8; ++i) {
-		for (int j = 2; j < 8; ++j) {
+	// 初期領域をEmptyにする
+	for (int i = emptyStartY_; i < emptyStartY_ + emptyAreaHeight_; ++i) {
+		for (int j = emptyStartX_; j < emptyStartX_ + emptyAreaWidth_; ++j) {
 			slots_[i][j] = Slot::Empty;
 		}
 	}
 }
 
-void BackPack::AddSlot(std::pair<int, int> pos) {
+void BackPack::AddSlot(std::pair<int, int> localPos) {
+	std::pair<int, int> pos = {
+		static_cast<int>(static_cast<float>(localPos.first) + originPos_.x),
+		static_cast<int>(static_cast<float>(localPos.second) + originPos_.z)
+	};
+
 	if(pos.first < 0 || pos.first >= static_cast<int>(slots_[0].size()) ||
 	   pos.second < 0 || pos.second >= static_cast<int>(slots_.size())) {
 		return; // 範囲外の位置は無視
@@ -21,7 +26,12 @@ void BackPack::AddSlot(std::pair<int, int> pos) {
 	slots_[pos.second][pos.first] = Slot::Empty;
 }
 
-Slot BackPack::GetSlot(std::pair<int, int> pos) const {
+Slot BackPack::GetSlot(std::pair<int, int> localPos) const {
+	std::pair<int, int> pos = { 
+		static_cast<int>(static_cast<float>(localPos.first) - originPos_.x), 
+		static_cast<int>(static_cast<float>(localPos.second) - originPos_.z) 
+	};
+
 	if(pos.first < 0 || pos.first >= static_cast<int>(slots_[0].size()) ||
 	   pos.second < 0 || pos.second >= static_cast<int>(slots_.size())) {
 		return Slot::Unknown; // 範囲外の位置はUnknownを返す
@@ -30,7 +40,12 @@ Slot BackPack::GetSlot(std::pair<int, int> pos) const {
 	return slots_[pos.second][pos.first];
 }
 
-void BackPack::SetSlot(std::pair<int, int> pos, Slot slot) {
+void BackPack::SetSlot(std::pair<int, int> localPos, Slot slot) {
+	std::pair<int, int> pos = {
+		static_cast<int>(static_cast<float>(localPos.first) - originPos_.x),
+		static_cast<int>(static_cast<float>(localPos.second) - originPos_.z)
+	};
+
 	if(pos.first < 0 || pos.first >= static_cast<int>(slots_[0].size()) ||
 	   pos.second < 0 || pos.second >= static_cast<int>(slots_.size())) {
 		return; // 範囲外の位置は無視
@@ -41,8 +56,22 @@ void BackPack::SetSlot(std::pair<int, int> pos, Slot slot) {
 	}
 }
 
+void BackPack::UnlockSlot(std::pair<int, int> pos) {
+	std::pair<int, int> localPos = {
+		static_cast<int>(static_cast<float>(pos.first) - originPos_.x),
+		static_cast<int>(static_cast<float>(pos.second) - originPos_.z)
+	};
+
+	if(localPos.first < 0 || localPos.first >= static_cast<int>(slots_[0].size()) ||
+	   localPos.second < 0 || localPos.second >= static_cast<int>(slots_.size())) {
+		return; // 範囲外の位置は無視
+	}
+
+	slots_[localPos.second][localPos.first] = Slot::Empty;
+}
+
 Vector3 BackPack::GetWorldPos(std::pair<int, int> pos) const {
-	return originPos_ + Vector3(static_cast<float>(pos.first) + 0.5f, 0.0f, static_cast<float>(pos.second) + 0.5f);
+	return Vector3(static_cast<float>(pos.first) + 0.5f, 0.0f, static_cast<float>(pos.second) + 0.5f);
 }
 
 std::vector<DrawInfo> BackPack::GetSlotDrawInfos() const {

@@ -4,10 +4,9 @@
 class ShotGun : public IRangedWeapon {
 public:
 
-	void Initialize(int weaponID, Player::Base* player) override;
-	void Update(float deltaTime) override;
-
 private:
+
+	void Shot(IEnemy* target) override;
 
 	const int shots_ = 5; //一回に飛ばすショットガンの弾数
 

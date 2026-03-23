@@ -1,8 +1,11 @@
 #include "ShigeScene.h"
 #include "ShopScene.h"
+#include <Common/KeyConfig/WorldCursor.h>
 #include <Utility/Color.h>
 #include <imgui/imgui.h>
 #include <numbers>
+#include <windows.h>
+#include <format>
 
 void ShigeScene::Initialize() {
 	debugCamera_ = std::make_unique<DebugCamera>();
@@ -13,23 +16,22 @@ void ShigeScene::Initialize() {
 
 	camera_ = gameCamera_.get();
 
+	shopScene_ = std::make_unique<ShopScene>();
+	shopScene_->Ready(engine_, commonData_);
+	shopScene_->Initialize();
+
 	grid_ = std::make_unique<Grid>();
 	grid_->Initialize(drawDataManager_);
 
 	colliderManager_ = std::make_unique<ColliderManager>();
 	Collider::SetColliderManager(colliderManager_.get());
 
-	itemManager_ = std::make_unique<ItemManager>();
-	itemManager_->Initialize(modelManager_);
-
-	pieces_.reserve(commonData_->pieces.size());
-	for (const auto& piece : commonData_->pieces) {
-		pieces_.push_back(piece.get());
-	}
+	playerHP_ = std::make_unique<Player::HP>();
+	playerHP_->Initialize(modelManager_, drawDataManager_);
 
 	player_ = std::make_unique<Player::Base>();
-	player_->Initialize(modelManager_, drawDataManager_, input_, CharacterID::Warrior, itemManager_.get());
-	player_->UpdateParameter(pieces_);
+	player_->Initialize(modelManager_, drawDataManager_, CharacterID::Warrior, shopScene_->GetItemManager());
+	player_->UpdateParameter(commonData_->pieces);
 
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize(player_->GetPositionPtr());
@@ -37,7 +39,7 @@ void ShigeScene::Initialize() {
 
 	map_ = std::make_unique<Map>();
 	map_->Initialize(drawDataManager_, modelManager_);
-	player_->SetMapMinMax(map_->GetMinX(), map_->GetMaxX(), map_->GetMinZ(), map_->GetMaxZ());
+	player_->SetMapInfo(map_->GetMapInfo());
 
 	objectRender_ = std::make_unique<ObjectRender>();
 	objectRender_->Initialize(drawDataManager_, modelManager_);
@@ -50,19 +52,29 @@ void ShigeScene::Initialize() {
 
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 
-	waveSystem_ = std::make_unique<WaveSystem>();
-	waveSystem_->Initialize(enemyManager_.get(), commonData_->stageNum++, map_->GetMinX(), map_->GetMaxX(), map_->GetMinZ(), map_->GetMaxZ());
+	waveSystem_ = std::make_unique<LevelSystem>();
+	waveSystem_->Initialize(enemyManager_.get(), commonData_->stageNum++, player_->GetPositionPtr(), map_->GetMapInfo());
 
 	gameTimer_ = std::make_unique<GameTimer>();
 	gameTimer_->Initialize();
 
-	MakeWeapon();
-	MakeWeaponRender();
+	aiController_ = std::make_unique<AIController>(player_->GetPositionPtr(), enemyManager_.get());
+	inputController_ = std::make_unique<InputController>(input_);
+	controllers_.push_back(aiController_.get());
+	controllers_.push_back(inputController_.get());
+	currentControllerIndex_ = 0;
+	player_->SetController(controllers_[currentControllerIndex_]); // AIコントローラーを適用
+
+	orthoCamera_=std::make_unique<Camera>();
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
 
+	MakeWeapon();
+
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
+	shopScene_->SetDeltaTime(deltaTime);
+	shopScene_->Update();
 
 	gameCamera_->Update(deltaTime, player_->GetTransform().position);
 	Vector3 cameraPos = { 0.f, 0.f, 0.f };
@@ -72,8 +84,74 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	gameTimer_->Update(deltaTime);
 	waveSystem_->Update(deltaTime);
 
-	player_->Update(camera_->GetVPMatrix(), deltaTime);
-	player_->UpdateParameter(pieces_);
+	if (key[Key::ControllerChange]) {
+		// インデックスを切り替える
+		currentControllerIndex_ = (currentControllerIndex_ + 1) % controllers_.size();
+
+		// プレイヤーに新しいコントローラーをセット
+		player_->SetController(controllers_[currentControllerIndex_]);
+	}
+
+	{
+		// マウスクリックによる敵のターゲット選択
+		if (key[Key::Target]) {
+
+			// マウスのカーソル座標を取得してワールド座標に変換
+			Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
+			Vector3 clickWorldPos = GetWorldCursor(camera_, cursorPos);
+
+			IEnemy* clickedEnemy = nullptr;
+			float minClickDist = FLT_MAX;
+			float clickHitRadius = 1.0f; // クリック判定の大きさ
+
+			// 敵のリストを調べて、クリックされた座標に一番近い敵を探す
+			for (IEnemy* enemy : enemyManager_->GetEnemies()) {
+				if (!enemy->IsActive())
+					continue;
+
+				float dx = enemy->GetPosition().x - clickWorldPos.x;
+				float dz = enemy->GetPosition().z - clickWorldPos.z;
+				float dist = std::sqrtf(dx * dx + dz * dz);
+
+				// クリック範囲内にいて、かつ一番近い敵を選ぶ
+				if (dist < clickHitRadius && dist < minClickDist) {
+					minClickDist = dist;
+					clickedEnemy = enemy;
+				}
+			}
+
+			// AIController経由でPlayerAIにターゲットを設定する
+			if (aiController_) {
+				// ターゲットの切り替えと解除の処理
+				IEnemy* currentTarget = aiController_->GetTargetEnemy();
+
+				if (clickedEnemy) {
+					if (clickedEnemy == currentTarget) {
+						// すでにターゲットしている敵をもう一度クリックしたら解除
+						aiController_->SetTargetEnemy(nullptr);
+					} else {
+						// 別の敵をクリックしたら新しいターゲットに設定
+						aiController_->SetTargetEnemy(clickedEnemy);
+					}
+				} else {
+					// 敵以外の場所をクリックした場合も解除
+					aiController_->SetTargetEnemy(nullptr);
+				}
+			}
+		}
+	}
+
+	player_->Update(camera_->GetVPMatrix(), deltaTime, key);
+	player_->UpdateParameter(commonData_->pieces);
+	playerHP_->Update(orthoCamera_->GetVPMatrix(), deltaTime, player_->GetCurrentHP(), player_->GetMaxHP());
+
+	OrthographicDesc orthDesc;
+	orthDesc.SetValue();
+	orthoCamera_->SetProjectionMatrix(orthDesc);
+	orthoCamera_->SetScale({1, -1, 1});
+	orthoCamera_->SetPosition({0, 0, 0});
+	orthoCamera_->MakeMatrix();
+
 	map_->Update(camera_->GetVPMatrix());
 	enemyManager_->Update(deltaTime);
 	for (const auto& weapon : weapons_) {
@@ -99,22 +177,21 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		for (size_t i = 0; i < weaponCount; ++i) {
 			// 武器が1つ以上のときだけ計算
 			if (weaponCount > 0) {
-				// 円周上の角度を計算 (ラジアン)
-				float angle = (2.0f * std::numbers::pi_v<float> / weaponCount) * i;
-
-				// XZ平面での円周オフセット座標の計算 (baseRadius_とbaseHeight_を使用)
-				Vector3 offset = { std::cos(angle) * baseRadius_, baseHeight_, std::sin(angle) * baseRadius_ };
-
 				// プレイヤー座標にオフセットを加算
 				Vector3 weaponPos = player_->GetTransform().position;
 
-				weaponRenders_[i]->Update(camera_->GetVPMatrix(), weaponPos);
+				weaponRenders_[i]->Update(camera_->GetVPMatrix(), weaponPos, deltaTime);
 			}
 		}
 	}
 
 	if (key[Key::Debug1] || gameTimer_->IsEnd()) {
-		return std::make_unique<ShopScene>();
+	}
+
+	if (player_->GetCurrentHP() <= 0){
+		std::string debugMsg = std::format("Player Survived Time: {:.2f} s\n", gameTimer_->GetTimer());
+		OutputDebugStringA(debugMsg.c_str());
+		return std::make_unique<TitleScene>();
 	}
 
 	return nullptr;
@@ -125,16 +202,23 @@ void ShigeScene::Draw() {
 	auto display = commonData_->display.get();
 	auto cmdObj = commonData_->cmdObject.get();
 
+	shopScene_->DrawReady();
+
 	display->PreDraw(cmdObj, true);
 
 	grid_->Draw(cmdObj);
 	map_->Draw(cmdObj);
 	objectRender_->Draw(cmdObj);
 	player_->Draw(cmdObj);
+	playerHP_->Draw(cmdObj);
+
+	waveSystem_->DrawImGui();
 
 	for (const auto& render : weaponRenders_) {
 		render->Draw(cmdObj);
 	}
+
+	shopScene_->Draw();
 
 	display->PostDraw(cmdObj);
 
@@ -144,6 +228,10 @@ void ShigeScene::Draw() {
 #ifdef USE_IMGUI
 
 	display->DrawImGui();
+
+	ImGui::Begin("Game Timer");
+	ImGui::Text("Game Time : %.2f s", gameTimer_->GetTimer());
+	ImGui::End();
 
 	ImGui::Begin("FPS");
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
@@ -156,6 +244,18 @@ void ShigeScene::Draw() {
 	ImGui::DragFloat("baseRadius", &baseRadius_, 0.01f);
 	ImGui::End();
 
+	ImGui::Begin("KeyInfo");
+	ImGui::Text("1 : HP減少");
+	ImGui::Text("2 : HP回復");
+	ImGui::Text("3 : HP全回復");
+	ImGui::Text("4 : HPゼロ");
+	ImGui::Text("5 : 自動と手動の切り換え");
+	ImGui::Text("%s", currentControllerIndex_ == 0 ? "AIController" : "InputController");
+	ImGui::End();
+
+	camera_->DrawImGui();
+	shopScene_->GetCamera()->DrawImGui();
+
 #endif
 
 	engine_->DrawImGui();
@@ -164,49 +264,88 @@ void ShigeScene::Draw() {
 
 void ShigeScene::MakeWeapon() {
 	for (const auto& piece : commonData_->pieces) {
+		//作成済みかどうか確認
+		{
+			bool found = false;
+			for (const auto& weapon : weapons_) {
+				if (weapon->GetPiecePtr() == piece) {
+					found = true;
+					break;
+				}
+			}
+
+			if (found) {
+				continue;
+			}
+		}
+
 		int weaponID = piece->GetItem().weaponID;
 
 		if (weaponID != -1) {
 			WeaponData* data = weaponDatabase_->GetWeapon(weaponID);
+			std::unique_ptr<IWeapon> weapon;
+			std::unique_ptr<IWeaponRender> weaponRender = std::make_unique<IWeaponRender>();
 
 			switch (data->type) {
 			case WeaponType::Pistol:
 			{
-				std::unique_ptr<Pistol> pistol = std::make_unique<Pistol>();
-				pistol->Initialize(weaponID, player_.get());
-				weapons_.emplace_back(std::move(pistol));
-
-				std::unique_ptr<PistolRender> rpistol = std::make_unique<PistolRender>();
-				rpistol->Initialize(drawDataManager_, modelManager_, weapons_.back().get(), piece->GetItem());
-				weaponRenders_.emplace_back(std::move(rpistol));
+				weapon = std::make_unique<Pistol>();
 				break;
 			}
 			case WeaponType::Sword:
 			{
-				std::unique_ptr<Sword> sword = std::make_unique<Sword>();
-				sword->Initialize(weaponID, player_.get());
-				weapons_.emplace_back(std::move(sword));
-
-				std::unique_ptr<SwordRender> rsword = std::make_unique<SwordRender>();
-				rsword->Initialize(drawDataManager_, modelManager_, weapons_.back().get(), piece->GetItem());
-				weaponRenders_.emplace_back(std::move(rsword));
+				weapon = std::make_unique<Sword>();
 				break;
 			}
 			case WeaponType::ShotGun:
 			{
-				std::unique_ptr<ShotGun> shotGun = std::make_unique<ShotGun>();
-				shotGun->Initialize(weaponID, player_.get());
-				weapons_.emplace_back(std::move(shotGun));
-
-				std::unique_ptr<ShotgunRender> rshotgun = std::make_unique<ShotgunRender>();
-				rshotgun->Initialize(drawDataManager_, modelManager_, weapons_.back().get(), piece->GetItem());
-				weaponRenders_.emplace_back(std::move(rshotgun));
+				weapon = std::make_unique<ShotGun>();
 				break;
 			}
+			case WeaponType::Spear:
+				weapon = std::make_unique<Spear>();
+				break;
 			}
+
+			weaponRender->Initialize(drawDataManager_, modelManager_, weapon.get(), piece->GetItem());
+			weaponRenders_.push_back(std::move(weaponRender));
+
+			weapon->Initialize(weaponID, player_.get());
+			weapon->SetPiecePtr(piece);
+			weapons_.push_back(std::move(weapon));
 		}
 	}
-}
 
-void ShigeScene::MakeWeaponRender() {
+	//Pieceから削除された武器を削除する
+	for (int i = 0; i < int(weaponRenders_.size()); ++i) {
+		auto& wr = weaponRenders_[i];
+		if(std::find_if(
+			commonData_->pieces.begin(),
+			commonData_->pieces.end(),
+			[&](const auto& p) { return wr->GetPiecePtr() == p; }
+		) == commonData_->pieces.end()) {
+			wrDeleting_.push_back(std::make_pair(0, std::move(wr)));
+			weaponRenders_.erase(weaponRenders_.begin() + i);
+		}
+	}
+
+	weapons_.erase(
+		std::remove_if(weapons_.begin(), weapons_.end(), [&](const auto& w) {
+			// Piece がまだ存在するかチェック
+			return std::none_of(
+				commonData_->pieces.begin(),
+				commonData_->pieces.end(),
+				[&](const auto& p) { return w->GetPiecePtr() == p; }
+			);
+			}),
+		weapons_.end()
+	);
+
+	// 削除予定の武器描画オブジェクトを更新して削除
+	for (auto& wrd : wrDeleting_) {
+		wrd.first++;
+		if (wrd.first > 5) { // 5フレーム後に完全に削除
+			wrd.second.reset();
+		}
+	}
 }

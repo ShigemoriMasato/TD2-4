@@ -6,7 +6,7 @@
 using namespace SHEngine;
 using namespace Player;
 
-void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, Input* input, CharacterID characterID, ItemManager* itemManager) {
+void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, CharacterID characterID, ItemManager* itemManager) {
 	// 本体描画用オブジェクトの生成&初期化
 	render_ = std::make_unique<RenderObject>();
 	render_->Initialize();
@@ -51,34 +51,36 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	// 単位行列の代入
 	wvp_ = Matrix4x4::Identity();
 
-	// 入力
-	input_ = input;
-
 	// 状態の初期化
 	currentState_ = std::make_unique<StateNormal>(); // 通常
 
+	// Transformの初期化
+	transform_.position = {19.0f, 0.0f, 19.0f};
+
 	collCircle_ = std::make_unique<Circle>();
-	collCircle_->center = transform_.position;
+	collCircle_->center = {transform_.position.x, transform_.position.z};
 	collCircle_->radius = 1.0f; // 仮の半径
 	CollConfig collConfig;
 	collConfig.ownTag = CollTag::Player;
-	collConfig.targetTag = static_cast<uint32_t>(CollTag::Enemy) | static_cast<uint32_t>(CollTag::Item);
+	collConfig.targetTag = CollTag::Enemy | CollTag::Item;
 	collConfig.colliderInfo = collCircle_.get();
 	collConfig.isActive = true;
 	Collider::Initialize();
 	SetColliderConfig(collConfig);
 
 	// パラメータリストの生成&初期化
-	parameterList_=std::make_unique<ParameterList>();
+	parameterList_ = std::make_unique<ParameterList>();
 	parameterList_->Initialize(itemManager);
 
-	// Transformの初期化
-	transform_.position = { 19.0f, 0.0f, 19.0f };
-
 	logger_ = getLogger("Player");
+
+	// HPの初期化
+	//maxHP_ = parameterList_->GetParameter("MaxHP");
+	maxHP_ = 10; // 仮の値
+	currentHP_ = maxHP_;
 }
 
-void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
+void Base::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, bool>& key) {
 	// 描画用にVP行列を保存
 	vpMatrix_ = vpMatrix;
 
@@ -87,9 +89,28 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 		currentState_->Update(this, deltaTime);
 	}
 
+#ifdef _DEBUG
+	// HP
+	if (key[Key::Damage]) {
+		Damage(1.0f);
+	}
+	if (key[Key::Heal]) {
+		Heal(1.0f);
+	}
+	if (key[Key::FullHeal]) {
+		currentHP_ = maxHP_;
+	}
+	if (key[Key::FullDamage]) {
+		currentHP_ = 0.0f;
+	}
+	if (key[Key::InvincibleChange]) {
+		isDebugInvincible_ = !isDebugInvincible_;
+	}
+#endif
+
 	// 残像の更新
 	UpdateAfterImages(deltaTime);
-	
+
 	// プレイヤーの移動制限
 	ClampPosition();
 
@@ -107,12 +128,19 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime) {
 	// テクスチャ
 	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
 
-	collCircle_->center = transform_.position;
+	collCircle_->center = {transform_.position.x, transform_.position.z};
+
+	// 無敵時間更新
+	if (isInvincible_) {
+		invincibleTimer_ -= deltaTime;
+		if (invincibleTimer_ <= 0.0f) {
+			isInvincible_ = false;
+			invincibleTimer_ = 0.0f;
+		}
+	}
 }
 
-void Player::Base::UpdateParameter(const std::vector<Piece*>& items) {
-	parameterList_->Update(items);
-}
+void Player::Base::UpdateParameter(const std::vector<Piece*>& items) { parameterList_->Update(items); }
 
 void Base::Draw(CmdObj* cmdObj) {
 	// 残像の描画
@@ -145,25 +173,6 @@ void Base::Draw(CmdObj* cmdObj) {
 	render_->Draw(cmdObj);
 
 #ifdef USE_IMGUI
-	ImGui::Begin("Player");
-
-	// --- 基本パラメータ ---
-	if (ImGui::CollapsingHeader("Basic Parameters")) {
-		ImGui::DragFloat3("scale", &transform_.scale.x, 0.01f);
-		ImGui::DragFloat3("rotate", &transform_.rotate.x, 0.01f);
-		ImGui::DragFloat3("translate", &transform_.position.x, 0.01f);
-		ImGui::DragFloat("velocity", &velocity_, 0.01f);
-	}
-
-	// --- ダッシュパラメータ ---
-	if (ImGui::CollapsingHeader("Dash Parameters")) {
-		ImGui::Text("CanDash : %s", CanDash() ? "True" : "False");
-		ImGui::DragFloat("dashSpeed", &dashSpeed_, 0.01f);
-		ImGui::DragFloat("dashDuration", &dashDuration_, 0.01f);
-		ImGui::DragFloat("dashCooldown", &dashCooldown_, 0.01f);
-	}
-
-	ImGui::End();
 #endif // USE_IMGUI
 }
 
@@ -187,6 +196,30 @@ void Player::Base::SpawnAfterImage() {
 	afterImages_.push_back(ai);
 }
 
+void Player::Base::OnCollision(Collider* other) {
+	Damage(1.0f);
+}
+
+void Player::Base::Damage(float amount){
+#ifdef _DEBUG
+	if (isDebugInvincible_)
+		return;
+#endif
+
+	if (amount <= 0.0f || isInvincible_)
+		return;
+
+	currentHP_ = std::max(currentHP_ - amount, 0.0f);
+	isInvincible_ = true;
+	invincibleTimer_ = invincibleDuration_; // タイマーをセット
+}
+
+void Player::Base::Heal(float amount) {
+	if (amount <= 0.0f)
+		return;
+	currentHP_ = std::min(currentHP_ + amount, maxHP_);
+}
+
 void Player::Base::UpdateAfterImages(float deltaTime) {
 	// 残像のタイマーを減らし0以下になったらリストから削除
 	for (auto it = afterImages_.begin(); it != afterImages_.end();) {
@@ -201,8 +234,8 @@ void Player::Base::UpdateAfterImages(float deltaTime) {
 
 void Player::Base::ClampPosition() {
 	// プレイヤーがステージ買いに出ないようにする
-	float posX = std::clamp(transform_.position.x, minX_, maxX_);
-	float posZ = std::clamp(transform_.position.z, minZ_, maxZ_);
+	float posX = std::clamp(transform_.position.x, mapInfo_.minX, mapInfo_.maxX);
+	float posZ = std::clamp(transform_.position.z, mapInfo_.minZ, mapInfo_.maxZ);
 
 	transform_.position = Vector3(posX, 0.0f, posZ);
 }
@@ -221,7 +254,7 @@ float Base::GetParameter(const std::string& paramName) const {
 		return it->second;
 	}
 
-	//間違っている場合ログを残す
+	// 間違っている場合ログを残す
 	logger_->warn("Parameter '{}' not found. Returning 0.", paramName);
 	return 0.0f; // パラメータが見つからない場合は0を返す
 }

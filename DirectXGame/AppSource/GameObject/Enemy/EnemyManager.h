@@ -7,7 +7,7 @@ public:
 	void Update(float deltaTime);
 	void DrawImGui();
 
-	void PopEnemy(Vector3 initPos = {0.0f, 0.0f, 0.0f});
+	void PopEnemy(Vector3 initPos = {0.0f, 0.0f, 0.0f}, int hp = 1);
 
 	std::vector<DrawInfo> GetEnemyDrawInfos() const;
 	std::vector<IEnemy*> GetEnemies() const;

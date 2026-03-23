@@ -14,6 +14,7 @@ void EnemyManager::Update(float deltaTime) {
 	std::vector<int> toRemove;
 	for (auto& [id, enemy] : enemies_) {
 		enemy->Update(deltaTime);
+		enemy->UpdateCollider();
 		if (!enemy->IsActive()) {
 			toRemove.push_back(id);
 		}
@@ -32,12 +33,13 @@ void EnemyManager::DrawImGui() {
 #endif
 }
 
-void EnemyManager::PopEnemy(Vector3 initPos) {
+void EnemyManager::PopEnemy(Vector3 initPos, int hp) {
 	int id = nextEnemyId_++;
 	auto& enemy = enemies_[id];
 	enemy = std::make_unique<NormalEnemy>();
 	enemy->Initialize(playerPos_, this, id);
 	enemy->SetPosition(initPos);
+	enemy->SetHP(hp);
 }
 
 std::vector<DrawInfo> EnemyManager::GetEnemyDrawInfos() const {

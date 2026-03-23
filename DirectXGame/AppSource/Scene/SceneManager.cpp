@@ -3,7 +3,7 @@
 
 SceneManager::~SceneManager() {
 	if (commonData_->cmdObject) {
-		commonData_->cmdObject->WaitForStopGPU();
+		commonData_->cmdObject->WaitForGPUIdle();
 	}
 }
 
@@ -25,7 +25,7 @@ void SceneManager::Update() {
 
 	if (nextScene_) {
 		if (commonData_->cmdObject) {
-			commonData_->cmdObject->WaitForStopGPU();
+			commonData_->cmdObject->WaitForGPUIdle();
 		}
 		currentScene_ = nullptr;
 		nextScene_->Ready(engine_, commonData_.get());

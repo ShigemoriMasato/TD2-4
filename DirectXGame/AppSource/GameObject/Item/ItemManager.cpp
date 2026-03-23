@@ -198,7 +198,7 @@ void ItemManager::LoadItem()
 		{
 			int x = binaryManager_.Reverse<int>();
 			int y = binaryManager_.Reverse<int>();
-			item.mapData.emplace_back(x, y);
+			item.mapData.push_back({ x, y });
 		}
 
 		// 見た目

@@ -1,7 +1,5 @@
 #include "ItemEditor.h"
 
-#ifdef USE_IMGUI
-
 #include "ItemManager.h"
 #include <Utility/ConvertString.h>
 #include <Utility/SearchFile.h>
@@ -12,10 +10,34 @@
 #include <filesystem>
 #include <map>
 #include <set>
+#include <Utility/Easing.h>
 
 namespace fs = std::filesystem;
 
+namespace {
+	using u32 = ImU32;
+	ImU32 ColLerp(ImU32 begin, ImU32 end, float ratio) {
+		u32 r1 = (begin >> 24) & 0xFF;
+		u32 g1 = (begin >> 16) & 0xFF;
+		u32 b1 = (begin >>  8) & 0xFF;
+		u32 a1 = (begin >>  0) & 0xFF;
+
+		u32 r2 = (end >> 24) & 0xFF;
+		u32 g2 = (end >> 16) & 0xFF;
+		u32 b2 = (end >>  8) & 0xFF;
+		u32 a2 = (end >>  0) & 0xFF;
+
+		u32 r = (u32)(r1 + (r2 - r1) * ratio) & 0xFF;
+		u32 g = (u32)(g1 + (g2 - g1) * ratio) & 0xFF;
+		u32 b = (u32)(b1 + (b2 - b1) * ratio) & 0xFF;
+		u32 a = (u32)(a1 + (a2 - a1) * ratio) & 0xFF;
+
+		return (a << 24) | (b << 16) | (g << 8) | r;
+	}
+}
+
 void ItemEditor::DrawNode(Node* node) {
+#ifdef USE_IMGUI
 	ImGuiTreeNodeFlags flags =
 		ImGuiTreeNodeFlags_OpenOnArrow |
 		ImGuiTreeNodeFlags_OpenOnDoubleClick;
@@ -40,6 +62,7 @@ void ItemEditor::DrawNode(Node* node) {
 		}
 		ImGui::TreePop();
 	}
+#endif
 }
 
 // モデルの候補を取得する
@@ -148,6 +171,8 @@ void ItemEditor::CreateItemFromModel(ItemManager& itemManager) {
 }
 
 void ItemEditor::Draw(ItemManager& itemManager) {
+#ifdef USE_IMGUI
+
 	auto& items = itemManager.GetItemsForEdit();
 	auto& baseParam = itemManager.GetBaseParamsForEdit();
 	int& nextID = itemManager.GetUsedID();
@@ -221,13 +246,6 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 			ImGui::Text("合計セル数: %d", (int)currentItem.mapData.size());
 			ImGui::Text("左クリック: セル追加   右クリック: セル削除");
 
-			std::unordered_set<std::pair<int, int>, PairHash> filled;
-			filled.reserve(currentItem.mapData.size() * 2);
-			for (const auto& c : currentItem.mapData) {
-				const int flippedY = (gridH_ - 1) - c.second;
-				filled.insert({ c.first, flippedY });
-			}
-
 			ImDrawList* dl = ImGui::GetWindowDrawList();
 			// グリッドの原点（左上の座標）
 			const ImVec2 origin = ImGui::GetCursorScreenPos();
@@ -262,16 +280,26 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 				const int cy = (int)(localY / cellSize_);
 
 				if (0 <= cx && cx < gridW_ && 0 <= cy && cy < gridH_) {
-					const std::pair<int, int> cell(cx, cy);
-					if (paintMode_ == 1) filled.insert(cell);
-					else if (paintMode_ == 2) filled.erase(cell);
+					const std::pair<int, int> cell(cx, (gridH_ - 1) - cy);
+					if (paintMode_ == 1) {
+						// 塗りモード: セルを追加
+						if (std::find_if(currentItem.mapData.begin(), currentItem.mapData.end(),
+							[&cell](const std::pair<int, int>& c) { return c == cell; }) == currentItem.mapData.end()) {
+							currentItem.mapData.emplace_back(cell);
+						}
+					} else if (paintMode_ == 2) {
+						// 消しモード: セルを削除
+						currentItem.mapData.erase(std::remove(currentItem.mapData.begin(), currentItem.mapData.end(), cell), currentItem.mapData.end());
+					}
 				}
 			}
 
 			// セルの色とグリッド線の色
 			const ImU32 colBg = IM_COL32(30, 30, 30, 255);
 			const ImU32 colGrid = IM_COL32(80, 80, 80, 255);
-			const ImU32 colFill = IM_COL32(120, 200, 120, 255);
+			const ImU32 colFillMin = IM_COL32(0, 0, 100, 255);
+			const ImU32 colFillMax = IM_COL32(255, 255, 0, 255);
+			const int chipNum = (int)currentItem.mapData.size();
 
 			dl->AddRectFilled(origin, ImVec2(origin.x + gridSize.x, origin.y + gridSize.y), colBg);
 
@@ -281,22 +309,21 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 					const ImVec2 p0(origin.x + x * cellSize_, origin.y + y * cellSize_);
 					const ImVec2 p1(p0.x + cellSize_, p0.y + cellSize_);
 
-					if (filled.contains({ x, y })) {
+					int index = -1;
+					for(int i = 0; i < (int)currentItem.mapData.size(); ++i) {
+						if (currentItem.mapData[i].first == x && currentItem.mapData[i].second == ((gridH_ - 1) - y)) {
+							index = i + 1;
+							break;
+						}
+					}
+
+					if (index != -1) {
+						ImU32 colFill = ColLerp(colFillMin, colFillMax, (float)index / std::max(1, chipNum));
 						dl->AddRectFilled(p0, p1, colFill);
 					}
 					dl->AddRect(p0, p1, colGrid);
 				}
 			}
-
-			// 編集結果をItemのmapDataに反映 & Y反転
-			currentItem.mapData.clear();
-			currentItem.mapData.reserve(filled.size());
-
-			for (const auto& cell : filled) {
-				const int flippedY = (gridH_ - 1) - cell.second;
-				currentItem.mapData.emplace_back(cell.first, flippedY);
-			}
-			std::sort(currentItem.mapData.begin(), currentItem.mapData.end());
 
 			ImGui::TreePop();
 		}
@@ -440,6 +467,5 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 	}
 
 	ImGui::End();
-}
-
 #endif
+}
