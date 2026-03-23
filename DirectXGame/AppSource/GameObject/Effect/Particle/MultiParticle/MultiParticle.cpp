@@ -36,22 +36,22 @@ void MultiParticle::Clear()
 	cache_.clear();
 }
 
-void MultiParticle::Update(float dt)
+void MultiParticle::Update(float dt, const Matrix4x4& vpMatrix)
 {
 	if (!enabled_) return;
 
 	for (auto& [name, p] : cache_)
 	{
-		p->Update(dt);
+		p->Update(dt, vpMatrix);
 	}
 }
 
-void MultiParticle::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
+void MultiParticle::Draw(CmdObj* cmdObj)
 {
 	if (!enabled_) return;
 
 	for (auto& [name, p] : cache_)
 	{
-		p->Draw(cmdObj, vpMatrix);
+		p->Draw(cmdObj);
 	}
 }

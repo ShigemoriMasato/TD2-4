@@ -4,7 +4,7 @@ void RibbonTrail::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngin
 {
 	preset_ = preset;
 	trail_.Initialize(drawDataManager, textureManager, preset_.cfg);
-	trail_.SetTexturePath(preset_.cfg.defaultTexturePath);
+	trail_.SetTexture(preset_.cfg.texturePath);
 	trail_.Clear();
 }
 

@@ -1,5 +1,4 @@
 #include "Particle.h"
-#include <Render/RenderObject.h>
 #include <algorithm>
 #include <random>
 
@@ -30,6 +29,9 @@ void Particle::Initialize(
 {
 	drawDataManager_ = drawDataManager;
 	textureManager_ = textureManager;
+	modelManager_ = modelManager;
+
+	gpuInstances_.resize(kMaxParticles_);
 
 	SetConfig(config);
 	EnsureRender_();
@@ -48,14 +50,15 @@ void Particle::SetConfig(const Config& config)
 
 void Particle::EnsureRender_()
 {
-	render_ = std::make_unique<SHEngine::RenderObject>("FountainParticle");
+	render_ = std::make_unique<SHEngine::RenderObject>("Particle");
 	render_->Initialize();
 
-	render_->psoConfig_.vs = "Game/Field.VS.hlsl";
-	render_->psoConfig_.ps = "Game/Field.PS.hlsl";
+	render_->psoConfig_.vs = "Game/Particle.VS.hlsl";
+	render_->psoConfig_.ps = "Game/Particle.PS.hlsl";
 	render_->SetUseTexture(true);
 
 	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
+	render_->CreateSRV(sizeof(Matrix4x4), kMaxParticles_, ShaderType::VERTEX_SHADER, "ParticleInstances");
 	render_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 	render_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
 
@@ -80,7 +83,7 @@ void Particle::Trigger(const Vector3& pos)
 	emitting_ = true;
 	emitPos_ = pos;
 
-	Emit_(pos);
+	Emit(pos);
 }
 
 void Particle::Stop()
@@ -88,10 +91,11 @@ void Particle::Stop()
 	emitting_ = false;
 }
 
-void Particle::Emit_(const Vector3& pos)
+void Particle::Emit(const Vector3& pos)
 {
 	for (int i = 0; i < config_.emitNum; ++i)
 	{
+		if (instances_.size() >= kMaxParticles_) break;
 		ParticleInstance temp{};
 		temp.translate.value = pos + RandInAABB(config_.emitterMin, config_.emitterMax);
 		temp.scale.value = config_.scale.value;
@@ -101,7 +105,7 @@ void Particle::Emit_(const Vector3& pos)
 	}
 }
 
-void Particle::Update(float deltaTime)
+void Particle::Update(float deltaTime, const Matrix4x4& vpMatrix)
 {
 	// 寿命更新 & 物理演算
 	for (auto& ins : instances_)
@@ -130,26 +134,37 @@ void Particle::Update(float deltaTime)
 		while (emitTimer_ >= config_.emitInterval)
 		{
 			emitTimer_ -= config_.emitInterval;
-			Emit_(emitPos_);
+			Emit(emitPos_);
 		}
 	}
-}
 
-void Particle::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
-{
-	if (!render_) return;
+	aliveCount_ = std::min(instances_.size(), static_cast<size_t>(kMaxParticles_));
 
-	// まずは「先頭1個だけ描ける」ことを優先（インスタンス対応は後で）
-	if (instances_.empty()) return;
+	for (uint32_t i = 0; i < aliveCount_; ++i)
+	{
+		const Matrix4x4 world = Matrix::MakeAffineMatrix(
+			instances_[i].scale.value,
+			instances_[i].rotate.value,
+			instances_[i].translate.value);
 
-	const auto& p = instances_.front();
-	Matrix4x4 wvp = Matrix::MakeAffineMatrix(p.tr.scale, p.tr.rotate, p.tr.position) * vpMatrix;
+		gpuInstances_[i] = world;
+	}
 
 	const Vector4 color = { 1, 1, 1, 1 };
 
-	render_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
-	render_->CopyBufferData(1, &color, sizeof(Vector4));
-	render_->CopyBufferData(2, &textureHandle_, sizeof(int));
+	render_->CopyBufferData(0, &vpMatrix, sizeof(Matrix4x4));
+	render_->CopyBufferData(1, gpuInstances_.data(), sizeof(Matrix4x4) * aliveCount_);
+	render_->CopyBufferData(2, &color, sizeof(Vector4));
+	render_->CopyBufferData(3, &textureHandle_, sizeof(int));
+}
 
+void Particle::Draw(CmdObj* cmdObj)
+{
+	if (!render_) return;
+
+	if (aliveCount_ == 0) { return; }
+
+
+	render_->instanceNum_ = uint32_t(aliveCount_);
 	render_->Draw(cmdObj);
 }

@@ -4,11 +4,12 @@
 #include <Render/DrawDataManager.h>
 #include <Assets/Texture/TextureManager.h>
 #include <Assets/Model/ModelManager.h>
-#include "GameObject/Effect/Particle/Preset/ParticlePreset.h"
+#include <Render/RenderObject.h>
 
 class Particle
 {
 public:
+	static constexpr uint32_t kMaxParticles_ = 4096;
 
 	struct VectorDynamics
 	{
@@ -43,16 +44,13 @@ public:
 	Particle() = default;
 	~Particle() = default;
 
-	// 種類選択 所詮enumなのでintを渡したってかまわない
-	void SetType(ParticleType type);
-
 	void Initialize(
 		SHEngine::DrawDataManager* drawDataManager,
 		SHEngine::TextureManager* textureManager,
 		SHEngine::ModelManager* modelManager,
 		const Config& config = {});
-	void Update(float deltaTime);
-	void Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix);
+	void Update(float deltaTime, const Matrix4x4& vpMatrix);
+	void Draw(CmdObj* cmdObj);
 	void Trigger(const Vector3& pos);
 	void Stop();
 
@@ -70,8 +68,9 @@ private:
 		float age = 0.0f;
 	};
 
+
 	void EnsureRender_();
-	void Emit_(const Vector3& pos);
+	void Emit(const Vector3& pos);
 
 	SHEngine::DrawDataManager* drawDataManager_ = nullptr;
 	SHEngine::TextureManager* textureManager_ = nullptr;
@@ -82,6 +81,7 @@ private:
 	bool emitting_ = false;
 	float emitTimer_ = 0.0f;
 	Vector3 emitPos_{};
+	size_t aliveCount_ = 0;
 
 	std::vector<ParticleInstance> instances_;
 
@@ -89,4 +89,7 @@ private:
 	std::unique_ptr<SHEngine::RenderObject> render_;
 	int modelHandle_ = -1;
 	int textureHandle_ = -1;
+
+	// GPUに送る用のインスタンスデータ
+	std::vector<Matrix4x4> gpuInstances_;
 };

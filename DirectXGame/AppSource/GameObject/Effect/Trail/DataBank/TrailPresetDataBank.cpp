@@ -47,7 +47,7 @@ Trail::Config TrailPresetDataBank::LoadConfig_(JsonManager& json)
 	try { cfg.drawAdd = json.Get<bool>("cfg.drawAdd"); }
 	catch (...) {}
 
-	try { cfg.defaultTexturePath = json.Get<std::string>("cfg.defaultTexturePath"); }
+	try { cfg.texturePath = json.Get<std::string>("cfg.texturePath"); }
 	catch (...) {}
 
 	return cfg;

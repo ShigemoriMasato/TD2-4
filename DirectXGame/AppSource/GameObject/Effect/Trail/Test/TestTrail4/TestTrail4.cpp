@@ -67,7 +67,7 @@ void TestTrail4::Initialize(
 	cfg.drawNormal = false;
 	cfg.drawAdd = true;
 	cfg.colorAdd = { 0.45f, 0.9f, 1.0f, 0.85f };
-	cfg.defaultTexturePath = "Assets/.EngineResource/Texture/white1x1.png";
+	cfg.texturePath = "Assets/.EngineResource/Texture/white1x1.png";
 	trail_.Initialize(drawDataManager_, textureManager_, cfg);
 
 	active_ = false;

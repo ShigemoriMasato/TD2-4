@@ -179,6 +179,7 @@ std::unique_ptr<IScene> PrticleEditorScene::Update()
 	const float dt = engine_->GetFPSObserver()->GetDeltatime();
 
 	camera_->Update();
+	const Matrix4x4 vp = camera_->GetVPMatrix();
 
 	if (requestRebuildParticle_)
 	{
@@ -190,7 +191,7 @@ std::unique_ptr<IScene> PrticleEditorScene::Update()
 	{
 	}
 
-	particle_.Update(dt);
+	particle_.Update(dt, vp);
 
 	return nullptr;
 }
@@ -203,8 +204,7 @@ void PrticleEditorScene::Draw()
 
 	display->PreDraw(cmdObj, true);
 
-	const Matrix4x4 vp = camera_->GetVPMatrix();
-	particle_.Draw(cmdObj, vp);
+	particle_.Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 

@@ -11,7 +11,7 @@
         1.0,
         0.6499999761581421
     ],
-    "cfg.defaultTexturePath": "Assets/.EngineResource/Texture/white1x1.png",
+    "cfg.texturePath": "Assets/.EngineResource/Texture/white1x1.png",
     "cfg.drawAdd": true,
     "cfg.drawNormal": true,
     "cfg.lifeTime": 0.5,

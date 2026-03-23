@@ -7,7 +7,7 @@ void ShockwaveRingTrail::Initialize(SHEngine::DrawDataManager* drawDataManager, 
 {
 	preset_ = preset;
 	trail_.Initialize(drawDataManager, textureManager, preset_.cfg);
-	trail_.SetTexturePath(preset_.cfg.defaultTexturePath);
+	trail_.SetTexture(preset_.cfg.texturePath);
 	trail_.Clear();
 
 	active_ = false;

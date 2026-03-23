@@ -32,7 +32,7 @@ void TestTrail3::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine
 	cfg.drawNormal = false;
 	cfg.drawAdd = true;
 	cfg.colorAdd = { 1.0f, 0.95f, 0.65f, 0.9f };
-	cfg.defaultTexturePath = "Assets/.EngineResource/Texture/uvChecker.png";
+	cfg.texturePath = "Assets/.EngineResource/Texture/uvChecker.png";
 	trail_.Initialize(drawDataManager, textureManager, cfg);
 
 	active_ = false;

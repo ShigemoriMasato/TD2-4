@@ -99,7 +99,7 @@ void TrailEditorScene::Reset(TrailType type)
 
 	trailConfig_ = Trail::Config{};
 	std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
-	strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.defaultTexturePath.c_str(), _TRUNCATE);
+	strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.texturePath.c_str(), _TRUNCATE);
 
 	// ribbon
 	ribbonPreset_ = RibbonTrailConfig{};
@@ -192,13 +192,13 @@ void TrailEditorScene::RebuildTrail()
 	if (currentType_ == TrailType::RibbonTrail)
 	{
 		trail_.Initialize(drawDataManager_, textureManager_, trailConfig_);
-		trail_.SetTexturePath(trailConfig_.defaultTexturePath);
+		trail_.SetTexture(trailConfig_.texturePath);
 		trail_.Clear();
 	}
 	else if (currentType_ == TrailType::ShockwaveRing)
 	{
 		trail_.Initialize(drawDataManager_, textureManager_, trailConfig_);
-		trail_.SetTexturePath(trailConfig_.defaultTexturePath);
+		trail_.SetTexture(trailConfig_.texturePath);
 		trail_.Clear();
 	}
 }
@@ -229,7 +229,7 @@ void TrailEditorScene::SaveTrailData()
 		bool dn = trailConfig_.drawNormal;
 		bool da = trailConfig_.drawAdd;
 
-		std::string tex = trailConfig_.defaultTexturePath;
+		std::string tex = trailConfig_.texturePath;
 
 		json_.Add("cfg.maxSegments", maxSeg);
 		json_.Add("cfg.lifeTime", life);
@@ -241,7 +241,7 @@ void TrailEditorScene::SaveTrailData()
 		json_.Add("cfg.drawNormal", dn);
 		json_.Add("cfg.drawAdd", da);
 
-		json_.Add("cfg.defaultTexturePath", tex);
+		json_.Add("cfg.texturePath", tex);
 	}
 
 	// type固有
@@ -311,11 +311,11 @@ void TrailEditorScene::LoadTrailData()
 	catch (...) {}
 	try { trailConfig_.drawAdd = json_.Get<bool>("cfg.drawAdd"); }
 	catch (...) {}
-	try { trailConfig_.defaultTexturePath = json_.Get<std::string>("cfg.defaultTexturePath"); }
+	try { trailConfig_.texturePath = json_.Get<std::string>("cfg.texturePath"); }
 	catch (...) {}
 
 	std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
-	strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.defaultTexturePath.c_str(), _TRUNCATE);
+	strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.texturePath.c_str(), _TRUNCATE);
 
 	// type固有
 	if (currentType_ == TrailType::RibbonTrail)
@@ -361,9 +361,9 @@ void TrailEditorScene::DrawConfigUI_()
 	requestRebuildTrail_ |= ImGui::Checkbox("cfg.drawNormal", &trailConfig_.drawNormal);
 	requestRebuildTrail_ |= ImGui::Checkbox("cfg.drawAdd", &trailConfig_.drawAdd);
 
-	if (ImGui::InputText("cfg.defaultTexturePath", texturePathBuf_, sizeof(texturePathBuf_)))
+	if (ImGui::InputText("cfg.texturePath", texturePathBuf_, sizeof(texturePathBuf_)))
 	{
-		trailConfig_.defaultTexturePath = texturePathBuf_;
+		trailConfig_.texturePath = texturePathBuf_;
 		requestRebuildTrail_ = true;
 	}
 }

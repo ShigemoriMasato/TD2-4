@@ -4,7 +4,7 @@
 #include <Camera/DebugCamera.h>
 
 #include <Render/RenderObject.h>
-#include <GameObject/Effect/Trail/TrailPresetDataBank/TrailPresetDataBank.h>
+#include <GameObject/Effect/Trail/DataBank/TrailPresetDataBank.h>
 #include <GameObject/Effect/Trail/MultiTrail/MultiTrail.h>
 
 class YokoScene : public IScene

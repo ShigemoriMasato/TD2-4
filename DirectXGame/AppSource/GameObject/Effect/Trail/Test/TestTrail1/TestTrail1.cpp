@@ -9,7 +9,7 @@ void TestTrail1::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine
 	cfg.minDistance = 0.0f;
 	cfg.drawNormal = true;
 	cfg.drawAdd = false;
-	cfg.defaultTexturePath = "Assets/.EngineResource/Texture/uvChecker.png";
+	cfg.texturePath = "Assets/.EngineResource/Texture/uvChecker.png";
 	trail_.Initialize(drawDataManager, textureManager, cfg);
 }
 

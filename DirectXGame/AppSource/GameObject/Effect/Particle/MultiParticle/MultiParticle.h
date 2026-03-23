@@ -26,8 +26,8 @@ public:
 
 	void SetEnabled(bool enabled) { enabled_ = enabled; }
 
-	void Update(float dt);
-	void Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix);
+	void Update(float dt, const Matrix4x4& vpMatrix);
+	void Draw(CmdObj* cmdObj);
 
 	void Clear();
 
