@@ -17,6 +17,8 @@ public:
 
 	void DrawImGui();
 
+	float GetShopRerollTime() const { return config_.shopRerollTime; }
+
 private:
 
 	void AdjustDifficult();
@@ -35,6 +37,7 @@ private:
 		float enemyCount = 2; // スポーンする敵の数
 		float enemyHp = 5.0f; // スポーンする敵のHP
 		SpawnMode spawnMode = SpawnMode::Both; // 出現敵タイプ
+		float shopRerollTime = 5.0f; // ショップのリロール時間
 	};
 
 	BaseSystem config_;

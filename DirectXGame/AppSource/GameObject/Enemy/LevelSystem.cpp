@@ -12,6 +12,7 @@ void LevelSystem::Initialize(EnemyManager* enemyManager, int stageNum, Vector3* 
 	stageNum_ = stageNum;
 	std::string fileName = "Stage" + std::to_string(stageNum_) + ".bytes";
 	timer_ = 0.0f;
+	allTimer_ = 0.0f;
 	isActive_ = true;
 
 	Load();
@@ -84,6 +85,7 @@ void LevelSystem::DrawImGui() {
 	ImGui::DragFloat("Spawn Interval", &config_.spawnInterval, 0.1f, 0.1f, 10.0f);
 	ImGui::DragFloat("Enemy Count", &config_.enemyCount, 0.1f, 0.1f, 100.0f);
 	ImGui::DragFloat("Enemy HP", &config_.enemyHp, 0.1f, 1.0f, 1000.0f);
+	ImGui::DragFloat("Shop Reroll Time", &config_.shopRerollTime, 0.1f, 1.0f, 30.0f);
 
 	const char* spawnModeItems[] = { "NormalOnly", "FastOnly", "Both" };
 	int spawnMode = static_cast<int>(config_.spawnMode);
@@ -99,72 +101,51 @@ void LevelSystem::DrawImGui() {
 void LevelSystem::AdjustDifficult() {
 	// ゲーム開始から2分(120秒)まで10秒ごとのレベルデザイン
 
-	if (allTimer_ <= 10.0f) {
-		config_.spawnInterval = 2.0f;
-		config_.enemyCount    = 1.0f;
-		config_.enemyHp       = 1.0f;
-		config_.spawnMode     = SpawnMode::NormalOnly;
-	} else if (allTimer_ <= 20.0f) {
-		config_.spawnInterval = 2.0f;
-		config_.enemyCount    = 1.0f;
-		config_.enemyHp       = 2.0f;
-		config_.spawnMode     = SpawnMode::NormalOnly;
-	} else if (allTimer_ <= 30.0f) {
-		config_.spawnInterval = 2.0f;
-		config_.enemyCount    = 2.0f;
-		config_.enemyHp       = 3.0f;
-		config_.spawnMode     = SpawnMode::NormalOnly;
-	} else if (allTimer_ <= 40.0f) {
-		config_.spawnInterval = 1.8f;
-		config_.enemyCount    = 2.0f;
-		config_.enemyHp       = 4.0f;
-		config_.spawnMode     = SpawnMode::FastOnly;
-	} else if (allTimer_ <= 50.0f) {
-		config_.spawnInterval = 1.5f;
-		config_.enemyCount    = 3.0f;
-		config_.enemyHp       = 5.0f;
-		config_.spawnMode     = SpawnMode::FastOnly;
+	if (allTimer_ <= 30.0f) {
+
+		config_.spawnInterval  = 2.5f;
+		config_.enemyCount     = 1.0f;
+		config_.enemyHp        = 5.0f;
+		config_.spawnMode      = SpawnMode::NormalOnly;
+
+		config_.shopRerollTime = 15.0f;
+
 	} else if (allTimer_ <= 60.0f) {
-		config_.spawnInterval = 1.2f;
-		config_.enemyCount    = 3.0f;
-		config_.enemyHp       = 6.0f;
-		config_.spawnMode     = SpawnMode::FastOnly;
-	} else if (allTimer_ <= 70.0f) {
-		config_.spawnInterval = 1.0f;
-		config_.enemyCount    = 4.0f;
-		config_.enemyHp       = 7.0f;
-		config_.spawnMode     = SpawnMode::Both;
-	} else if (allTimer_ <= 80.0f) {
-		config_.spawnInterval = 0.9f;
-		config_.enemyCount    = 4.0f;
-		config_.enemyHp       = 8.0f;
-		config_.spawnMode     = SpawnMode::Both;
+
+		config_.spawnInterval  = 3.0f;
+		config_.enemyCount     = 2.0f;
+		config_.enemyHp        = 7.0f;
+		config_.spawnMode      = SpawnMode::NormalOnly;
+
+		config_.shopRerollTime = 10.0f;
+
 	} else if (allTimer_ <= 90.0f) {
-		config_.spawnInterval = 0.8f;
-		config_.enemyCount    = 5.0f;
-		config_.enemyHp       = 9.0f;
-		config_.spawnMode     = SpawnMode::Both;
-	} else if (allTimer_ <= 100.0f) {
-		config_.spawnInterval = 0.7f;
-		config_.enemyCount    = 5.0f;
-		config_.enemyHp       = 10.0f;
-		config_.spawnMode     = SpawnMode::Both;
-	} else if (allTimer_ <= 110.0f) {
-		config_.spawnInterval = 0.6f;
-		config_.enemyCount    = 6.0f;
-		config_.enemyHp       = 11.0f;
-		config_.spawnMode     = SpawnMode::Both;
+
+		config_.spawnInterval  = 2.5f;
+		config_.enemyCount     = 1.0f;
+		config_.enemyHp        = 3.0f;
+		config_.spawnMode      = SpawnMode::FastOnly;
+
+		config_.shopRerollTime = 15.0f;
+
 	} else if (allTimer_ <= 120.0f) {
-		config_.spawnInterval = 0.5f;
-		config_.enemyCount    = 6.0f;
-		config_.enemyHp       = 12.0f;
-		config_.spawnMode     = SpawnMode::Both;
+
+		config_.spawnInterval  = 3.0f;
+		config_.enemyCount     = 2.0f;
+		config_.enemyHp        = 5.0f;
+		config_.spawnMode      = SpawnMode::Both;
+
+		config_.shopRerollTime = 10.0f;
+
 	} else {
-		// 120秒以降: 最大難易度
-		config_.spawnInterval = 0.3f;
-		config_.enemyCount    = 7.0f;
-		config_.enemyHp       = 15.0f;
-		config_.spawnMode     = SpawnMode::Both;
+
+		config_.spawnInterval = 2.0f;
+		config_.enemyCount    = 2.0f;
+		config_.enemyHp       = 10.0f;
+		config_.spawnMode = SpawnMode::Both;
+
+		config_.shopRerollTime = 5.0f;
+
 	}
 }
 

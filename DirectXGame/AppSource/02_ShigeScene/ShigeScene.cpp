@@ -72,16 +72,18 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	MakeWeapon();
 
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
+	
+	gameTimer_->Update(deltaTime);
+	waveSystem_->Update(deltaTime);
+
 	shopScene_->SetDeltaTime(deltaTime);
+	shopScene_->SetShopRerollTime(waveSystem_->GetShopRerollTime());
 	shopScene_->Update();
 
 	gameCamera_->Update(deltaTime, player_->GetTransform().position);
 	Vector3 cameraPos = { 0.f, 0.f, 0.f };
 	grid_->Update(cameraPos, camera_->GetVPMatrix());
 	auto key = commonData_->keyManager->GetKeyStates();
-
-	gameTimer_->Update(deltaTime);
-	waveSystem_->Update(deltaTime);
 
 	if (key[Key::ControllerChange]) {
 		// インデックスを切り替える

@@ -27,6 +27,16 @@ std::unique_ptr<IScene> TitleScene::Update() {
 	bool downPressed = input_->GetKeyState(DIK_DOWNARROW) && !input_->GetPreKeyState(DIK_DOWNARROW);
 	
 	titleUI_->UpdateSelection(upPressed, downPressed);
+
+	// 左クリックでもゲーム開始
+	BYTE* mouseState = input_->GetMouseButtonState();
+	BYTE* preMouseState = input_->GetPreMouseButtonState();
+	if (mouseState && preMouseState) {
+		bool leftClickPressed = (mouseState[0] & 0x80) && !(preMouseState[0] & 0x80);
+		if (leftClickPressed) {
+			return std::make_unique<ShigeScene>();
+		}
+	}
 	
 	// Zキーで決定
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z)) {

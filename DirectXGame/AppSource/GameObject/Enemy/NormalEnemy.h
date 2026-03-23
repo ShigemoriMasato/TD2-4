@@ -23,6 +23,6 @@ public:
 private:
 
 	float speed_ = 1.0f;
-	static inline float baseSpeed_ = 2.0f;
+	static inline float baseSpeed_ = 5.0f;
 
 };

@@ -44,6 +44,9 @@ public:
 	Item GetItem() const { return itemData_; }
 	int GetRank() const { return rank_; }
 	bool IsActive() const { return isActive_; }
+	
+	bool IsPlaced() const { return isPlaced_; }
+	bool IsHoldOutside() const { return isHoldOutside_; }
 
 	void RotateRight();
 	void RotateLeft();
@@ -68,7 +71,10 @@ private:
 	Vector3 position_{};
 
 	Vector3 pieceBaseScale_ = { 1.0f, 0.2f, 1.0f };
-	Vector3 modelBaseScale_ = { 0.25f, 0.25f, 0.25f };
+	Vector3 modelBaseScale_ = { 0.5f, 0.5f, 0.5f };
+
+	Vector3 modelStartScale_ = { 0.5f, 0.5f, 0.5f };
+	Vector3 modelEndScale_ = { 0.25f, 0.25f, 0.25f };
 
 	bool isHovered_ = false;
 	bool isPlaced_ = false;
@@ -79,5 +85,5 @@ private:
 
 	float useTimer_ = 0.0f;
 
-	float deleteTime_ = 20.0f; // 使用してから消えるまでの時間
+	float deleteTime_ = 10.0f; // 使用してから消えるまでの時間
 };

@@ -249,7 +249,17 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		break;
 	}
 	info.position += Vector3(0.5f, 0.0f, 0.5f) + position_;
-	info.scale = modelBaseScale_;
+	
+	if (isUsing_) {
+		float t = useTimer_ / deleteTime_;
+		if (t > 1.0f) t = 1.0f;
+		info.scale.x = modelStartScale_.x + (modelEndScale_.x - modelStartScale_.x) * t;
+		info.scale.y = modelStartScale_.y + (modelEndScale_.y - modelStartScale_.y) * t;
+		info.scale.z = modelStartScale_.z + (modelEndScale_.z - modelStartScale_.z) * t;
+	} else {
+		info.scale = modelBaseScale_;
+	}
+
 	info.rotation.y = static_cast<float> (direction_) * 3.1415926535f * 0.5f;
 	info.color = 0xffffffff;
 	drawInfos.push_back(info);

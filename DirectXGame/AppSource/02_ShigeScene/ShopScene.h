@@ -25,6 +25,7 @@ public:
 	void DrawReady();
 	void Draw() override;
 	void SetDeltaTime(float& deltaTime) { deltaTime_ = deltaTime; }
+	void SetShopRerollTime(float time) { shopRerollTime_ = time; }
 	ItemManager* GetItemManager() { return itemManager_.get(); }
 	DebugCamera* GetCamera() { return debugCamera_.get(); }
 
