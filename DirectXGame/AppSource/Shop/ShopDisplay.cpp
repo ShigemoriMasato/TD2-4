@@ -4,7 +4,7 @@
 void ShopDisplay::Initialize(CmdObj* cmdObj, SHEngine::DrawData& drawData, SHEngine::TextureManager* textureManager) {
 	cmdObj_ = cmdObj;
 	disp_ = std::make_unique<SHEngine::Screen::MultiDisplay>();
-	disp_->Initialize(640, 720, 0x000000ff, textureManager);
+	disp_->Initialize(624, 352, 0xff0000ff, textureManager);
 	
 	render_ = std::make_unique<SHEngine::RenderObject>("ShopDisplay");
 	render_->Initialize();
