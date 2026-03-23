@@ -23,6 +23,7 @@
 #include <02_ShigeScene/ShopScene.h>
 #include <Scene/01_Title/TitleScene.h>
 #include <GameObject/Player/PlayerHP.h>
+#include <GameObject/Player/Parameter/ParameterRender.h>
 
 class ShigeScene : public IScene {
 public:
@@ -65,6 +66,8 @@ private:// System系
 	std::vector<DrawInfo> drawInfos_;
 	std::unique_ptr<ObjectRender> objectRender_;
 	std::unique_ptr<Camera> orthoCamera_;
+
+	std::unique_ptr<ParameterRender> parameterRender_;
 
 	JsonManager jsonManager_;
 

@@ -66,6 +66,9 @@ void ShigeScene::Initialize() {
 	player_->SetController(controllers_[currentControllerIndex_]); // AIコントローラーを適用
 
 	orthoCamera_=std::make_unique<Camera>();
+
+	parameterRender_ = std::make_unique<ParameterRender>();
+	parameterRender_->Initialize(modelManager_,drawDataManager_,engine_);
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -152,6 +155,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	orthoCamera_->SetPosition({0, 0, 0});
 	orthoCamera_->MakeMatrix();
 
+	parameterRender_->Update(orthoCamera_->GetVPMatrix(), player_->GetParameters());
 	map_->Update(camera_->GetVPMatrix());
 	enemyManager_->Update(deltaTime);
 	for (const auto& weapon : weapons_) {
@@ -211,6 +215,8 @@ void ShigeScene::Draw() {
 	objectRender_->Draw(cmdObj);
 	player_->Draw(cmdObj);
 	playerHP_->Draw(cmdObj);
+
+	parameterRender_->Draw(cmdObj);
 
 	waveSystem_->DrawImGui();
 

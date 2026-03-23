@@ -45,7 +45,7 @@ public:
 	Transform& GetTransform() { return transform_; }
 	Vector3* GetPositionPtr() { return &transform_.position; }
 	void SetTransform(Transform t) { transform_ = t; }
-	float GetVelocity() const { return velocity_; }
+	float GetVelocity() const { return speed_; }
 
 	bool CanDash() const { return dashCooldownTimer_ <= 0.0f; }
 	void StartDashCooldown() { dashCooldownTimer_ = dashCooldown_; }
@@ -113,7 +113,7 @@ private:
 	Transform transform_{};
 
 	// 速度
-	float velocity_ = 5.0f;
+	float speed_ = 5.0f;
 
 	// 現在の状態
 	std::unique_ptr<IPlayerState> currentState_ = nullptr;
