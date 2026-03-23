@@ -158,7 +158,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Particle\IParticle.cpp" />
     <ClCompile Include="AppSource\GameObject\Item\Item.cpp" />
     <ClCompile Include="AppSource\GameObject\Item\ItemEditor.cpp" />
     <ClCompile Include="AppSource\GameObject\Item\ItemManager.cpp" />
@@ -264,9 +263,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Trail.cpp" />
     <ClCompile Include="AppSource\03_YokoScene\YokoScene.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Trail\TestTrail1\TestTrail1.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Trail\TestTrail2\TestTrail2.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Trail\TestTrail3\TestTrail3.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail\Test\TestTrail1\TestTrail1.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail\Test\TestTrail2\TestTrail2.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail\Test\TestTrail3\TestTrail3.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\IWeaponRender.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Render\PistolRender.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Render\SwordRender.cpp" />
@@ -274,17 +273,19 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Weapon\Render\ShotgunRender.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\ShotGun.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Particle\Particle.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Particle\Particle1\Particle1.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Trail\TestTrail4\TestTrail4.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail\Test\TestTrail4\TestTrail4.cpp" />
     <ClCompile Include="AppSource\03_YokoScene\TrailEditorScene.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Trail\TrailPresetDataBank\TrailPresetDataBank.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail\DataBank\TrailPresetDataBank.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\RibbonTrail\RibbonTrail.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\ShockwaveRingTrail\ShockwaveRingTrail.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\MultiTrail\MultiTrail.cpp" />
+    <ClCompile Include="AppSource\03_YokoScene\PrticleEditorScene.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Particle\MultiParticle\MultiParticle.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Particle\DataBank\ParticlePresetDataBank.cpp" />
     <ClInclude Include="AppSource\Common\KeyConfig\KeyManager.h" />
     <ClInclude Include="AppSource\GameObject\DrawInfo.h" />
     <ClInclude Include="AppSource\GameObject\EasingAnimation\AnimationBundle.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Particle\IParticle.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Particle\Preset\ParticlePreset.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\Preset\TrailPreset.h" />
     <ClInclude Include="AppSource\GameObject\Item\ItemEditor.h" />
     <ClInclude Include="AppSource\GameObject\Player\Heatmap\PlayerHeatmap.h" />
@@ -390,9 +391,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Camera\GameCamera.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\Trail.h" />
     <ClInclude Include="AppSource\03_YokoScene\YokoScene.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Trail\TestTrail1\TestTrail1.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Trail\TestTrail2\TestTrail2.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Trail\TestTrail3\TestTrail3.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\Test\TestTrail1\TestTrail1.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\Test\TestTrail2\TestTrail2.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\Test\TestTrail3\TestTrail3.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\IWeaponRender.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Render\PistolRender.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Render\SwordRender.h" />
@@ -401,13 +402,15 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\GameTimer.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Data\ShotGun.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Particle\Particle.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Particle\Particle1\Particle1.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Trail\TestTrail4\TestTrail4.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\Test\TestTrail4\TestTrail4.h" />
     <ClInclude Include="AppSource\03_YokoScene\TrailEditorScene.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Trail\TrailPresetDataBank\TrailPresetDataBank.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\DataBank\TrailPresetDataBank.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\RibbonTrail\RibbonTrail.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\ShockwaveRingTrail\ShockwaveRingTrail.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\MultiTrail\MultiTrail.h" />
+    <ClInclude Include="AppSource\03_YokoScene\PrticleEditorScene.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Particle\MultiParticle\MultiParticle.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Particle\DataBank\ParticlePresetDataBank.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

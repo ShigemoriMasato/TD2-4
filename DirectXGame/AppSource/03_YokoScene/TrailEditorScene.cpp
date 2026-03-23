@@ -5,6 +5,7 @@
 #include <cstring>
 #include <numbers>
 #include "03_YokoScene/YokoScene.h"
+#include "PrticleEditorScene.h"
 
 using namespace SHEngine;
 
@@ -152,7 +153,6 @@ void TrailEditorScene::CreateModelRender()
 		modelRenders_[i]->textureIndex = modelData.materials[modelData.materialIndex.front()].textureIndex;
 		modelRenders_[i]->render = CreateTexturedModelRO(drawDataManager_, modelData, modelRenders_[i]->textureIndex);
 	}
-
 }
 void TrailEditorScene::CreateMarkerRenders()
 {
@@ -161,7 +161,7 @@ void TrailEditorScene::CreateMarkerRenders()
 	{
 		marker[i].modelHandle = modelManager_->LoadModel("Assets/.EngineResource/Model/Cube");
 		auto modelData = modelManager_->GetNodeModelData(marker[i].modelHandle);
-		marker[i].textureIndex = 1;
+		marker[i].textureIndex = 0;
 		marker[i].render = CreateTexturedModelRO(drawDataManager_, modelData, marker[i].textureIndex);
 	}
 }
@@ -175,7 +175,6 @@ void TrailEditorScene::SelectModel(int index)
 	// モデル選択が変わったらデフォルト名を設定
 	SetDefaultName();
 }
-
 void TrailEditorScene::SetDefaultName()
 {
 	std::string type;
@@ -195,14 +194,13 @@ void TrailEditorScene::RebuildTrail()
 		trail_.Initialize(drawDataManager_, textureManager_, trailConfig_);
 		trail_.SetTexturePath(trailConfig_.defaultTexturePath);
 		trail_.Clear();
-		return;
 	}
-
-	// shockwaveはcfgをshockPreset_に持つが、UIでは共通cfg(trailConfig_)で編集させる
-	shockPreset_.cfg = trailConfig_;
-	trail_.Initialize(drawDataManager_, textureManager_, shockPreset_.cfg);
-	trail_.SetTexturePath(shockPreset_.cfg.defaultTexturePath);
-	trail_.Clear();
+	else if (currentType_ == TrailType::ShockwaveRing)
+	{
+		trail_.Initialize(drawDataManager_, textureManager_, trailConfig_);
+		trail_.SetTexturePath(trailConfig_.defaultTexturePath);
+		trail_.Clear();
+	}
 }
 
 // データ保存
@@ -278,7 +276,7 @@ void TrailEditorScene::SaveTrailData()
 
 	json_.Save();
 }
-
+// データ読み込み
 void TrailEditorScene::LoadTrailData()
 {
 	if (presetNameBuf_[0] == '\0') return;

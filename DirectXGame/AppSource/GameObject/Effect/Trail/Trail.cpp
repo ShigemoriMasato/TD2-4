@@ -76,8 +76,8 @@ void Trail::Initialize(DrawDataManager* drawDataManager, TextureManager* texture
 
 	auto drawData = drawDataManager_->GetDrawData(dummyDrawDataIndex_);
 
-	// テクスチャ（デフォルト）
-	textureHandle_ = textureManager_->LoadTexture(config_.defaultTexturePath);
+	// テクスチャ
+	SetTexture(config_.texturePath);
 
 	// RenderObject（Normal）
 	renderNormal_ = std::make_unique<RenderObject>("Trail_Normal");
@@ -108,13 +108,10 @@ void Trail::Initialize(DrawDataManager* drawDataManager, TextureManager* texture
 	// PS: b1 = textureIndex
 	srvVertexIndex_ = renderNormal_->CreateSRV(sizeof(GpuVertex), uint32_t(maxVertexCount_), ShaderType::VERTEX_SHADER, "TrailVertices");
 	renderAdd_->CreateSRV(sizeof(GpuVertex), uint32_t(maxVertexCount_), ShaderType::VERTEX_SHADER, "TrailVertices");
-
 	cbvVpIndex_ = renderNormal_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "VP");
 	renderAdd_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "VP");
-
 	cbvColorIndex_ = renderNormal_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 	renderAdd_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
-
 	cbvTextureIndex_ = renderNormal_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
 	renderAdd_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
 
@@ -139,16 +136,11 @@ void Trail::Clear()
 	}
 }
 
-void Trail::SetTexturePath(const std::string& texturePath)
+void Trail::SetTexture(const std::string& texturePath)
 {
-	if (!textureManager_) return;
 	textureHandle_ = textureManager_->LoadTexture(texturePath);
 }
 
-void Trail::SetTextureHandle(int textureHandle)
-{
-	textureHandle_ = textureHandle;
-}
 
 void Trail::PushSegment(const Vector3& baseWS, const Vector3& tipWS)
 {

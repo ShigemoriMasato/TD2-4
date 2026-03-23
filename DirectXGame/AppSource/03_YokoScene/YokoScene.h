@@ -17,12 +17,15 @@ public:
 private:
 	std::unique_ptr<DebugCamera> camera_;
 
-	int textureIndex_ = 0;
-	std::unique_ptr<SHEngine::RenderObject> render_;
-	Transform transform_{};
-	Matrix4x4 wvp_{};
-
 	TrailPresetDataBank trailDataBank_;
 
-	MultiTrail trails_;
+	/// Axe
+	MultiTrail trail_Axe;
+	int textureIndex_ = 0;
+	std::unique_ptr<SHEngine::RenderObject> render_;
+	Transform axeTransform_;
+
+	/// ええ感じ１
+	MultiTrail trail_test1;
+	//Transform transform_{};
 };

@@ -45,13 +45,20 @@ void YokoScene::Initialize()
 	textureIndex_ = material.textureIndex;
 	render_ = CreateTexturedModelRO(drawDataManager_, modelData, textureIndex_);
 
-	transform_.position = { 0.0f, 0.0f, 0.0f };
-	transform_.rotate = { 0.0f, 0.0f, 0.0f };
-	transform_.scale = { 1.0f, 1.0f, 1.0f };
+	axeTransform_.position = { 0.0f, 0.0f, 0.0f };
+	axeTransform_.rotate = { 0.0f, 0.0f, 0.0f };
+	axeTransform_.scale = { 1.0f, 1.0f, 1.0f };
 
-	trails_.Initialize(drawDataManager_, textureManager_, &trailDataBank_);
-	trails_.Add("Axe_Ribbon");
-	trails_.Add("Axe_Ribbon2");
+	trail_Axe.Initialize(drawDataManager_, textureManager_, &trailDataBank_);
+	trail_Axe.Add("Axe_Ribbon");
+	trail_Axe.Add("Axe_Ribbon2");
+
+	trail_test1.Initialize(drawDataManager_, textureManager_, &trailDataBank_);
+	trail_test1.Add("testTrail1_1");
+	trail_test1.Add("testTrail1_2");
+	trail_test1.Add("testTrail1_3");
+	trail_test1.Add("testTrail1_4");
+
 }
 
 std::unique_ptr<IScene> YokoScene::Update()
@@ -63,17 +70,19 @@ std::unique_ptr<IScene> YokoScene::Update()
 	const Matrix4x4 vp = camera_->GetVPMatrix();
 
 	// モデル更新
-	const Matrix4x4 world = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
-	wvp_ = world * vp;
+	const Matrix4x4 world = Matrix::MakeAffineMatrix(axeTransform_.scale, axeTransform_.rotate, axeTransform_.position);
+	const Matrix4x4 wvp = world * vp;
 	const Vector4 color = { 1, 1, 1, 1 };
-	render_->CopyBufferData(0, &wvp_, sizeof(Matrix4x4));
+	render_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
 	render_->CopyBufferData(1, &color, sizeof(Vector4));
 	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
 
 
 	// トレイル更新
-	trails_.SetModelWorld(world);
-	trails_.Update(dt, vp);
+	trail_Axe.SetModelWorld(world);
+	trail_Axe.Update(dt, vp);
+	trail_test1.SetModelWorld(world);
+	trail_test1.Update(dt, vp);
 
 	// Zキーでエディタ切り替え
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z))
@@ -93,7 +102,8 @@ void YokoScene::Draw()
 	display->PreDraw(cmdObj, true);
 
 	render_->Draw(cmdObj);
-	trails_.Draw(cmdObj);
+	trail_Axe.Draw(cmdObj);
+	trail_test1.Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 
@@ -103,9 +113,9 @@ void YokoScene::Draw()
 	display->DrawImGui();
 
 	ImGui::Begin("Axe Transform");
-	ImGui::DragFloat3("T", &transform_.position.x, 0.1f);
-	ImGui::DragFloat3("R", &transform_.rotate.x, 0.1f);
-	ImGui::DragFloat3("S", &transform_.scale.x, 0.1f);
+	ImGui::DragFloat3("T", &axeTransform_.position.x, 0.1f);
+	ImGui::DragFloat3("R", &axeTransform_.rotate.x, 0.1f);
+	ImGui::DragFloat3("S", &axeTransform_.scale.x, 0.1f);
 	ImGui::End();
 #endif
 

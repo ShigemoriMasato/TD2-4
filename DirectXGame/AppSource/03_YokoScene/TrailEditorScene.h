@@ -22,7 +22,7 @@ private:
 		std::string name;
 		std::unique_ptr<SHEngine::RenderObject> render;
 		std::string modelPath;
-		int modelHandle = -1;
+		int modelHandle = 0;
 		int textureIndex = 0;
 	};
 
@@ -70,10 +70,10 @@ private:
 	// Shock 固有
 	ShockwaveRingConfig shockPreset_{};
 
-	// 実行時計算
+	// マーカー最終座標
 	Vector3 markerPos[2];
 
-	// Trail preview
+	// Trail
 	Trail trail_;
 	bool emitTrail_ = true;
 	bool requestRebuildTrail_ = false;
@@ -81,7 +81,7 @@ private:
 	// Json
 	JsonManager json_;
 
-	// Save name (拡張子なし)
+	// ImGuiがstringを許容しないばかりに生まれてしまった産廃
 	char presetNameBuf_[256]{ "Sword_Ribbon" };
 	char texturePathBuf_[256]{};
 };

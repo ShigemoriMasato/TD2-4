@@ -1,37 +1,155 @@
 #include "Particle.h"
-#include "GameObject/Effect/Particle/Particle1/Particle1.h"
+#include <Render/RenderObject.h>
+#include <algorithm>
+#include <random>
 
-void Particle::SetType(ParticleType type)
+namespace
 {
-	type_ = type;
-
-	switch (type_)
+	float Rand01()
 	{
-	case ParticleType::None:
-		particle_.reset();
-		break;
+		static thread_local std::mt19937 rng{ std::random_device{}() };
+		static thread_local std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+		return dist(rng);
+	}
 
-	case ParticleType::Test1: particle_ = std::make_unique<Particle1>(); break;
-		// case ParticleType::Test2: particle_ = std::make_unique<Particle2>(); break;
-		// case ParticleType::Test3: particle_ = std::make_unique<Particle3>(); break;
-
-	default:
-		particle_.reset();
-		break;
+	Vector3 RandInAABB(const Vector3& min, const Vector3& max)
+	{
+		return Vector3(
+			min.x + (max.x - min.x) * Rand01(),
+			min.y + (max.y - min.y) * Rand01(),
+			min.z + (max.z - min.z) * Rand01()
+		);
 	}
 }
 
-void Particle::Initialize()
+void Particle::Initialize(
+	SHEngine::DrawDataManager* drawDataManager,
+	SHEngine::TextureManager* textureManager,
+	SHEngine::ModelManager* modelManager,
+	const Config& config)
 {
-	if (particle_) particle_->Initialize();
+	drawDataManager_ = drawDataManager;
+	textureManager_ = textureManager;
+
+	SetConfig(config);
+	EnsureRender_();
+	Clear();
+}
+
+void Particle::SetConfig(const Config& config)
+{
+	config_ = config;
+
+	config_.lifeTime = std::max(0.001f, config_.lifeTime);
+	config_.speed = std::max(0.0f, config_.speed);
+	config_.emitNum = std::max(0, config_.emitNum);
+	config_.emitInterval = std::max(0.0f, config_.emitInterval);
+}
+
+void Particle::EnsureRender_()
+{
+	render_ = std::make_unique<SHEngine::RenderObject>("FountainParticle");
+	render_->Initialize();
+
+	render_->psoConfig_.vs = "Game/Field.VS.hlsl";
+	render_->psoConfig_.ps = "Game/Field.PS.hlsl";
+	render_->SetUseTexture(true);
+
+	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
+	render_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+	render_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+
+	modelHandle_ = modelManager_->LoadModel(config_.modelPath);
+	auto modelData = modelManager_->GetNodeModelData(modelHandle_);
+	auto drawData = drawDataManager_->GetDrawData(modelData.drawDataIndex);
+	render_->SetDrawData(drawData);
+
+	textureHandle_ = textureManager_->LoadTexture(config_.texturePath);
+}
+
+void Particle::Clear()
+{
+	instances_.clear();
+	emitting_ = false;
+	emitTimer_ = 0.0f;
+	emitPos_ = {};
+}
+
+void Particle::Trigger(const Vector3& pos)
+{
+	emitting_ = true;
+	emitPos_ = pos;
+
+	Emit_(pos);
+}
+
+void Particle::Stop()
+{
+	emitting_ = false;
+}
+
+void Particle::Emit_(const Vector3& pos)
+{
+	for (int i = 0; i < config_.emitNum; ++i)
+	{
+		ParticleInstance temp{};
+		temp.translate.value = pos + RandInAABB(config_.emitterMin, config_.emitterMax);
+		temp.scale.value = config_.scale.value;
+		temp.rotate.value = config_.rotate.value;
+		temp.age = 0.0f;
+		instances_.push_back(temp);
+	}
 }
 
 void Particle::Update(float deltaTime)
 {
-	if (particle_) particle_->Update(deltaTime);
+	// 寿命更新 & 物理演算
+	for (auto& ins : instances_)
+	{
+		ins.age += deltaTime;
+
+		ins.translate.velocity += ins.translate.acceleration * deltaTime;
+		ins.rotate.velocity += ins.rotate.acceleration * deltaTime;
+		ins.scale.velocity += ins.scale.acceleration * deltaTime;
+
+		ins.translate.value += ins.translate.velocity * deltaTime * config_.speed;
+		ins.rotate.value += ins.rotate.velocity * deltaTime * config_.speed;
+		ins.scale.value += ins.scale.velocity * deltaTime * config_.speed;
+	}
+
+	// 寿命で削除
+	instances_.erase(
+		std::remove_if(instances_.begin(), instances_.end(),
+			[this](const ParticleInstance& p) { return p.age >= config_.lifeTime; }),
+		instances_.end());
+
+	// 連続発生
+	if (emitting_ && config_.emitInterval > 0.0f)
+	{
+		emitTimer_ += deltaTime;
+		while (emitTimer_ >= config_.emitInterval)
+		{
+			emitTimer_ -= config_.emitInterval;
+			Emit_(emitPos_);
+		}
+	}
 }
 
 void Particle::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
 {
-	if (particle_) particle_->Draw(cmdObj, vpMatrix);
+	if (!render_) return;
+
+	// まずは「先頭1個だけ描ける」ことを優先（インスタンス対応は後で）
+	if (instances_.empty()) return;
+
+	const auto& p = instances_.front();
+	Matrix4x4 wvp = Matrix::MakeAffineMatrix(p.tr.scale, p.tr.rotate, p.tr.position) * vpMatrix;
+
+	const Vector4 color = { 1, 1, 1, 1 };
+
+	render_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
+	render_->CopyBufferData(1, &color, sizeof(Vector4));
+	render_->CopyBufferData(2, &textureHandle_, sizeof(int));
+
+	render_->Draw(cmdObj);
 }

@@ -27,7 +27,7 @@ public:
 		bool drawAdd = true;
 
 		// テクスチャ
-		std::string defaultTexturePath = "Assets/.EngineResource/Texture/white1x1.png";
+		std::string texturePath = "Assets/.EngineResource/Texture/white1x1.png";
 	};
 
 public:
@@ -47,8 +47,7 @@ public:
 	bool IsEnabled() const { return enabled_; }
 
 	// テクスチャ差し替え
-	void SetTexturePath(const std::string& texturePath); // LoadTextureを内部で呼ぶ
-	void SetTextureHandle(int textureHandle);            // 既にLoad済みならこちら
+	void SetTexture(const std::string& texturePath);
 
 	// 設定
 	Config& GetConfig() { return config_; }
@@ -65,7 +64,7 @@ private:
 
 	struct GpuVertex
 	{
-		Vector4 position; // input layoutに合わせてfloat4
+		Vector4 position;
 		Vector2 uv;
 		Vector3 normal;
 		Vector4 color;
@@ -97,7 +96,7 @@ private:
 	std::unique_ptr<SHEngine::RenderObject> renderNormal_;
 	std::unique_ptr<SHEngine::RenderObject> renderAdd_;
 
-	// ダミーのDrawData（Plane相当ではなく、固定数の頂点・インデックス）
+	// ダミーのDrawData
 	int dummyDrawDataIndex_ = -1;
 
 	// SRV/CBVのindex（RenderObject側のバッファインデックス）
