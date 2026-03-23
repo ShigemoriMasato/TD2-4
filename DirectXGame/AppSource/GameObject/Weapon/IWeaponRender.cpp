@@ -3,7 +3,7 @@
 
 using namespace SHEngine;
 
-void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, IWeapon* weapon, Item itemData) {
+void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, IWeapon* weapon, Item itemData) {
 	render_ = std::make_unique<RenderObject>();
 	weapon_ = weapon;
 
@@ -38,6 +38,13 @@ void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEng
 
 	// 単位行列の代入
 	wvp_ = Matrix4x4::Identity();
+
+	// トレイル
+	WeaponData* wData = weapon_->GetWeaponData();
+	trailSword_.Initialize(drawDataManager, textureManager, &trailDataBank_);
+	trailSpear_.Initialize(drawDataManager, textureManager, &trailDataBank_);
+	trailSword_.Add("Sword_Ribbon");
+	trailSpear_.Add("Spear_Ribbon");
 }
 
 void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTime) {
@@ -161,6 +168,10 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 	}
 
 	wvp_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
+	trailSpear_.SetModelWorld(wvp_);
+	trailSpear_.Update(deltaTime, vpMatrix);
+	trailSword_.SetModelWorld(wvp_);
+	trailSword_.Update(deltaTime, vpMatrix);
 	wvp_ *= vpMatrix;
 	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
 	render_->CopyBufferData(0, &wvp_, sizeof(Matrix4x4));
@@ -168,7 +179,21 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
 }
 
-void IWeaponRender::Draw(CmdObj* cmdObj) { render_->Draw(cmdObj); }
+void IWeaponRender::Draw(CmdObj* cmdObj) {
+	render_->Draw(cmdObj);
+
+	WeaponData* wData = weapon_->GetWeaponData();
+	switch (wData->type) {
+	case WeaponType::Sword:
+		trailSword_.Draw(cmdObj);
+		break;
+	case WeaponType::Spear:
+		trailSpear_.Draw(cmdObj);
+		break;
+	default:
+		break;
+	}
+}
 
 Matrix4x4 IWeaponRender::LookAt(const Vector3& direction, const Vector3& up) {
 	Vector3 forward = MyMath::Normalize(direction);
