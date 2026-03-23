@@ -80,7 +80,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	shopScene_->SetShopRerollTime(waveSystem_->GetShopRerollTime());
 	shopScene_->Update();
 
-	gameCamera_->Update(deltaTime, player_->GetTransform().position);
+	gameCamera_->Update(deltaTime, { 0.0f, 0.0f, 0.0f });
 	Vector3 cameraPos = { 0.f, 0.f, 0.f };
 	grid_->Update(cameraPos, camera_->GetVPMatrix());
 	auto key = commonData_->keyManager->GetKeyStates();
@@ -164,7 +164,6 @@ void ShigeScene::Draw() {
 
 	display->PreDraw(cmdObj, true);
 
-	grid_->Draw(cmdObj);
 	map_->Draw(cmdObj);
 	objectRender_->Draw(cmdObj);
 	player_->Draw(cmdObj);

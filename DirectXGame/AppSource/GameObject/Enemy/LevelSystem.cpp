@@ -72,7 +72,7 @@ void LevelSystem::Update(float deltaTime) {
 				break;
 			}
 
-			enemyManager_->PopEnemy(spawnPos, static_cast<int>(config_.enemyHp), type);
+			enemyManager_->AddWarning(spawnPos, static_cast<int>(config_.enemyHp), type);
 		}
 	}
 }

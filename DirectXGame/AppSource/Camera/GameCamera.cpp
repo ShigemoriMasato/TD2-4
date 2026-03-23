@@ -4,8 +4,8 @@
 
 void GameCamera::Initialize() {
 	//初期位置を設定
-	position_ = { 0.0f, 0.0f, -10.0f };
-	rotation_.x = -0.5f;
+	position_ = { -1.5f, 53.0f, 10.5f };
+	rotation_ = { -1.57f, 0.0f, 0.0f };
 	SetProjectionMatrix(PerspectiveFovDesc());
 }
 
@@ -17,6 +17,17 @@ void GameCamera::Update(float deltaTime, Vector3 position) {
 void GameCamera::DrawImGui() {
 #ifdef USE_IMGUI
 	ImGui::Begin("Camera");
+
+	if (ImGui::Checkbox("Change View", &viewToggle_)) {
+		if (viewToggle_) {
+			offset_ = { -1.0f, 30.0f, -40.1f };
+			rotation_ = { -0.57f, 0.0f, 0.0f };
+		}
+		else {
+			offset_ = { -1.5f, 53.0f, 10.5f };
+			rotation_ = { -1.57f, 0.0f, 0.0f };
+		}
+	}
 
 	ImGui::DragFloat3("Offset", &offset_.x, 0.1f);
 

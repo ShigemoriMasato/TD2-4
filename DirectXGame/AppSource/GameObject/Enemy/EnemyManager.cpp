@@ -6,9 +6,25 @@
 void EnemyManager::Initialize(Vector3* playerPos) {
 	playerPos_ = playerPos;
 	enemies_.clear();
+	spawnWarnings_.clear();
 }
 
 void EnemyManager::Update(float deltaTime) {
+	for (auto it = spawnWarnings_.begin(); it != spawnWarnings_.end();) {
+		it->timer -= deltaTime;
+		
+		// スポーンに近づくにつれて（timerが0に近づくにつれて）Scaleを0.0に近づける
+		float scale = std::max(it->timer, 0.0f);
+		it->drawInfo.scale = {scale, scale, scale};
+
+		if (it->timer <= 0.0f) {
+			PopEnemy(it->pos, it->hp, it->type);
+			it = spawnWarnings_.erase(it);
+		} else {
+			++it;
+		}
+	}
+
 	if (enemies_.size() == 0) {
 		return;
 	}
@@ -56,8 +72,26 @@ void EnemyManager::PopEnemy(Vector3 initPos, int hp, EnemyType type) {
 	enemy->SetHP(std::max(enemyHp, 0.5f));
 }
 
+void EnemyManager::AddWarning(Vector3 pos, int hp, EnemyType type) {
+	SpawnWarning warning;
+	warning.pos = pos;
+	warning.hp = hp;
+	warning.type = type;
+	warning.timer = 1.0f; // 1秒後にスポーン
+	
+	warning.drawInfo.position = pos;
+	warning.drawInfo.scale = {1.0f, 1.0f, 1.0f};
+	warning.drawInfo.rotation = {0.0f, 0.0f, 0.0f};
+	warning.drawInfo.modelIndex = IEnemy::GetModelManager()->LoadModel("Assets/Model/Cross"); 
+	
+	spawnWarnings_.push_back(warning);
+}
+
 std::vector<DrawInfo> EnemyManager::GetEnemyDrawInfos() const {
 	std::vector<DrawInfo> drawInfos;
+	for (const auto& w : spawnWarnings_) {
+		drawInfos.push_back(w.drawInfo);
+	}
 	for (const auto& [id, enemy] : enemies_) {
 		drawInfos.push_back(enemy->GetDrawInfo());
 	}

@@ -25,7 +25,19 @@ public:
 
 	void Kill(int id);
 
+	void AddWarning(Vector3 pos, int hp, EnemyType type);
+
 private:
+
+	struct SpawnWarning {
+		Vector3 pos;
+		int hp;
+		EnemyType type;
+		float timer;
+		DrawInfo drawInfo;
+	};
+
+	std::vector<SpawnWarning> spawnWarnings_;
 
 	Vector3* playerPos_ = nullptr;
 	std::map<int, std::unique_ptr<IEnemy>> enemies_;

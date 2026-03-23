@@ -10,6 +10,6 @@ public:
 
 private:
 
-	Vector3 offset_ = { -8.7f, 22.7f, -40.0f };
-
+	Vector3 offset_ = { -1.5f, 53.0f, 10.5f };
+	bool viewToggle_ = false;
 };
