@@ -3,9 +3,9 @@
 #include <Camera/Camera.h>
 #include <Camera/DebugCamera.h>
 
-#include <GameObject/Effect/TestTrail1/TestTrail1.h>
-#include <GameObject/Effect/TestTrail2/TestTrail2.h>
-#include <GameObject/Effect/TestTrail3/TestTrail3.h>
+#include <Render/RenderObject.h>
+#include <GameObject/Effect/Trail/DataBank/TrailPresetDataBank.h>
+#include <GameObject/Effect/Trail/MultiTrail/MultiTrail.h>
 
 class YokoScene : public IScene
 {
@@ -17,8 +17,15 @@ public:
 private:
 	std::unique_ptr<DebugCamera> camera_;
 
-	std::unique_ptr<TestTrail1> testTrail1_;
-	std::unique_ptr<TestTrail2> testTrail2_;
-	std::unique_ptr<TestTrail3> testTrail3_;
+	TrailPresetDataBank trailDataBank_;
 
+	/// Axe
+	MultiTrail trail_Axe;
+	int textureIndex_ = 0;
+	std::unique_ptr<SHEngine::RenderObject> render_;
+	Transform axeTransform_;
+
+	/// ええ感じ１
+	MultiTrail trail_test1;
+	//Transform transform_{};
 };

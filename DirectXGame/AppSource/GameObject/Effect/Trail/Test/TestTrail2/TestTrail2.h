@@ -1,12 +1,12 @@
 #pragma once
-#include <GameObject/Effect/Trail.h>
+#include <GameObject/Effect/Trail/Trail.h>
 
 class TestTrail2
 {
 public:
 	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager);
-	void Update(float deltaTime);
-	void Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix);
+	void Update(float deltaTime, const Matrix4x4& vpMatrix);
+	void Draw(CmdObj* cmdObj);
 
 	// 後で剣に追従させるための入口（今はテスト用に任意設定できるように）
 	void SetSwordCenterWS(const Vector3& centerWS) { swordCenterWS_ = centerWS; }

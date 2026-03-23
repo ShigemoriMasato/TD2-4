@@ -40,7 +40,7 @@ void TestTrail2::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine
 	swordUpWS_ = { 0.0f, 1.0f, 0.0f };
 }
 
-void TestTrail2::Update(float deltaTime)
+void TestTrail2::Update(float deltaTime, const Matrix4x4& vpMatrix)
 {
 	time_ += deltaTime;
 
@@ -84,12 +84,12 @@ void TestTrail2::Update(float deltaTime)
 	const Vector3 tipWS = ringPos + widthDir * (auraWidth_ * 0.5f);
 
 	trail_.PushSegment(baseWS, tipWS);
-	trail_.Update(deltaTime);
+	trail_.Update(deltaTime, vpMatrix);
 }
 
-void TestTrail2::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
+void TestTrail2::Draw(CmdObj* cmdObj)
 {
-	trail_.Draw(cmdObj, vpMatrix);
+	trail_.Draw(cmdObj);
 
 #ifdef USE_IMGUI
 
