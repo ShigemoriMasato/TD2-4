@@ -71,4 +71,5 @@ protected:
 	MultiTrail trailSpear_;
 	MultiTrail trailSword_;
 	MultiTrail trailAxe_;
+	MultiTrail trailFist_;
 };

@@ -5,3 +5,5 @@
 #include "Data/ShotGun.h"
 #include "Data/Spear.h"
 #include "Data/Ax.h"
+#include "Data/Fist.h"
+#include "Data/Bow.h"

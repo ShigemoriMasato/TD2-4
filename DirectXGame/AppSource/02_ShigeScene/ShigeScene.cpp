@@ -317,6 +317,14 @@ void ShigeScene::MakeWeapon() {
 				weapon = std::make_unique<Ax>();
 				break;
 			}
+			case WeaponType::Fist: {
+				weapon = std::make_unique<Fist>();
+				break;
+			}
+			case WeaponType::Bow: {
+				weapon = std::make_unique<Bow>();
+				break;
+			}
 			}
 
 			weaponRender->Initialize(drawDataManager_, modelManager_, textureManager_, weapon.get(), piece->GetItem());

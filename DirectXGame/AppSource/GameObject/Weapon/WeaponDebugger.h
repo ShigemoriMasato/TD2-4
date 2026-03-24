@@ -1,7 +1,7 @@
 #pragma once
+#include "WeaponData.h"
 #include <map>
 #include <string>
-#include "WeaponData.h"
 
 class WeaponManager;
 
@@ -14,11 +14,13 @@ private:
 	int currentWeaponId = 0; // 現在のID
 
 	std::map<WeaponType, std::string> weaponTypeNames_ = {
-		{ WeaponType::Pistol, "Pistol" },
-		{ WeaponType::Sword, "Sword" },
-		{ WeaponType::ShotGun, "ShotGun" },
-		{ WeaponType::Spear, "Spear" },
-		{ WeaponType::Axe, "Axe" },
+	    {WeaponType::Pistol,  "Pistol" },
+        {WeaponType::Sword,   "Sword"  },
+        {WeaponType::ShotGun, "ShotGun"},
+        {WeaponType::Spear,   "Spear"  },
+	    {WeaponType::Axe,     "Axe"    },
+        {WeaponType::Fist,    "Fist"   },
+        {WeaponType::Bow,     "Bow"    },
 	};
 
 public:

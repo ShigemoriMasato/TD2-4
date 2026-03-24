@@ -44,9 +44,11 @@ void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEng
 	trailSword_.Initialize(drawDataManager, textureManager, &trailDataBank_);
 	trailSpear_.Initialize(drawDataManager, textureManager, &trailDataBank_);
 	trailAxe_.Initialize(drawDataManager, textureManager, &trailDataBank_);
+	trailFist_.Initialize(drawDataManager, textureManager, &trailDataBank_);
 	trailSword_.Add("Sword_Ribbon");
 	trailSpear_.Add("Spear_Ribbon");
 	trailAxe_.Add("Axe_Ribbon3");
+	trailFist_.Add("Fist_Ribbon");
 }
 
 void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTime) {
@@ -62,6 +64,8 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 		Vector3 posEnd = {0.0f, 0.0f, 0.0f};
 		Vector3 rotStart = {0.0f, 0.0f, 0.0f};
 		Vector3 rotEnd = {0.0f, 0.0f, 0.0f};
+		Vector3 scaleStart = {0.0f, 0.0f, 0.0f};
+		Vector3 scaleEnd = {0.0f, 0.0f, 0.0f};
 		float forwardDuration = 0.2f;
 
 		switch (wData->type) {
@@ -97,11 +101,24 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 			rotOffsetAnim_.temp = rotStart;
 			break;
 		}
+		case WeaponType::Fist: {
+			forwardDuration = 0.1f;
+			float thrustDistance = 2.0f;
+			posEnd = {std::cosf(direction_) * thrustDistance, 0.0f, std::sinf(direction_) * thrustDistance};
+			break;
+		}
+		case WeaponType::Bow: {
+			forwardDuration = 0.15f;
+			scaleStart = {0.5f, 0.5f, 0.5f};
+			scaleEnd = {0.6f, 0.6f, 0.6f};
+			break;
+		}
 		}
 
 		// 座標と回転のアニメーション開始
 		posOffsetAnim_.anim.Start(posStart, posEnd, forwardDuration, EaseType::EaseOutCubic);
 		rotOffsetAnim_.anim.Start(rotStart, rotEnd, forwardDuration, EaseType::EaseOutCubic);
+		scaleOffsetAnim_.anim.Start(scaleStart, scaleEnd, forwardDuration, EaseType::EaseOutCubic);
 
 		weapon_->SetIsAnimation(false); // アニメーションフラグを下す
 	}
@@ -110,9 +127,10 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 	if (animState_ == AnimState::Forward) {
 		bool posPlaying = posOffsetAnim_.anim.Update(deltaTime, posOffsetAnim_.temp);
 		bool rotPlaying = rotOffsetAnim_.anim.Update(deltaTime, rotOffsetAnim_.temp);
+		bool scalePlaying = scaleOffsetAnim_.anim.Update(deltaTime, scaleOffsetAnim_.temp);
 
 		// 位置と回転、両方のアニメーションが終わったら戻りアニメーションへ遷移
-		if (!posPlaying && !rotPlaying) {
+		if (!posPlaying && !rotPlaying && !scalePlaying) {
 			animState_ = AnimState::Return;
 
 			// 武器ごとに戻るスピードを調整
@@ -133,11 +151,18 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 			case WeaponType::Axe:
 				returnDuration = 0.3f;
 				break;
+			case WeaponType::Fist:
+				returnDuration = 0.3f;
+				break;
+			case WeaponType::Bow:
+				returnDuration = 0.3f;
+				break;
 			}
 
 			// アニメーションの開始
 			posOffsetAnim_.anim.Start(posOffsetAnim_.temp, {0.0f, 0.0f, 0.0f}, returnDuration, EaseType::EaseOutCubic);
 			rotOffsetAnim_.anim.Start(rotOffsetAnim_.temp, {0.0f, 0.0f, 0.0f}, returnDuration, EaseType::EaseOutCubic);
+			scaleOffsetAnim_.anim.Start(scaleOffsetAnim_.temp, {0.5f, 0.5f, 0.5f}, returnDuration, EaseType::EaseOutCubic);
 		}
 	} else if (animState_ == AnimState::Return) {
 		bool posPlaying = posOffsetAnim_.anim.Update(deltaTime, posOffsetAnim_.temp);
@@ -179,6 +204,10 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 
 	// アニメーション実行中であれば算出したオフセットを加算
 	if (animState_ != AnimState::None) {
+		transform_.scale.x = scaleOffsetAnim_.temp.x;
+		transform_.scale.y = scaleOffsetAnim_.temp.y;
+		transform_.scale.z = scaleOffsetAnim_.temp.z;
+
 		transform_.position.x += posOffsetAnim_.temp.x;
 		transform_.position.y += posOffsetAnim_.temp.y;
 		transform_.position.z += posOffsetAnim_.temp.z;
@@ -198,6 +227,8 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 	trailSword_.Update(deltaTime, vpMatrix);
 	trailAxe_.SetModelWorld(wvp_);
 	trailAxe_.Update(deltaTime, vpMatrix);
+	trailFist_.SetModelWorld(wvp_);
+	trailFist_.Update(deltaTime, vpMatrix);
 	wvp_ *= vpMatrix;
 	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
 	render_->CopyBufferData(0, &wvp_, sizeof(Matrix4x4));
@@ -219,6 +250,9 @@ void IWeaponRender::Draw(CmdObj* cmdObj) {
 			break;
 		case WeaponType::Axe:
 			trailAxe_.Draw(cmdObj);
+			break;
+		case WeaponType::Fist:
+			trailFist_.Draw(cmdObj);
 			break;
 		default:
 			break;
