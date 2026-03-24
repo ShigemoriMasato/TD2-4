@@ -18,6 +18,7 @@ private:
 		{ WeaponType::Sword, "Sword" },
 		{ WeaponType::ShotGun, "ShotGun" },
 		{ WeaponType::Spear, "Spear" },
+		{ WeaponType::Axe, "Axe" },
 	};
 
 public:

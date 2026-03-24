@@ -12,6 +12,7 @@ enum class WeaponType : int {
 	Sword = 1,       // ソード
 	ShotGun = 2,     // ショットガン
 	Spear = 3,       // スピア
+	Axe = 4          // アックス
 };
 
 struct WeaponData {

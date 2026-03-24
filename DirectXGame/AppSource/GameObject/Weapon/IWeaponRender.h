@@ -70,4 +70,5 @@ protected:
 	TrailPresetDataBank trailDataBank_;
 	MultiTrail trailSpear_;
 	MultiTrail trailSword_;
+	MultiTrail trailAxe_;
 };
