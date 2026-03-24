@@ -8,10 +8,14 @@ enum class WeaponRarity : int {
 };
 
 enum class WeaponType : int {
-	Pistol = 0,      // ピストル
-	Sword = 1,       // ソード
-	ShotGun = 2,     // ショットガン
-	Spear = 3,       // スピア
+	Pistol = 0,  // ピストル
+	Sword = 1,   // ソード
+	ShotGun = 2, // ショットガン
+	Spear = 3,   // スピア
+	Axe = 4,     // 斧
+	Fist = 5,    // 拳
+	Bow = 6,     // 弓
+	Gurepon = 7,     // グレポン
 };
 
 struct WeaponData {

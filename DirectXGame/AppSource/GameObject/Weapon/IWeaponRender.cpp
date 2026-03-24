@@ -43,8 +43,12 @@ void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEng
 	WeaponData* wData = weapon_->GetWeaponData();
 	trailSword_.Initialize(drawDataManager, textureManager, &trailDataBank_);
 	trailSpear_.Initialize(drawDataManager, textureManager, &trailDataBank_);
+	trailAxe_.Initialize(drawDataManager, textureManager, &trailDataBank_);
+	trailFist_.Initialize(drawDataManager, textureManager, &trailDataBank_);
 	trailSword_.Add("Sword_Ribbon");
 	trailSpear_.Add("Spear_Ribbon");
+	trailAxe_.Add("Axe_Ribbon3");
+	trailFist_.Add("Fist_Ribbon");
 }
 
 void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTime) {
@@ -60,6 +64,8 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 		Vector3 posEnd = {0.0f, 0.0f, 0.0f};
 		Vector3 rotStart = {0.0f, 0.0f, 0.0f};
 		Vector3 rotEnd = {0.0f, 0.0f, 0.0f};
+		Vector3 scaleStart = {0.5f, 0.5f, 0.5f};
+		Vector3 scaleEnd = {0.5f, 0.5f, 0.5f};
 		float forwardDuration = 0.2f;
 
 		switch (wData->type) {
@@ -88,11 +94,38 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 			posEnd = {std::cosf(direction_) * thrustDistance, 0.0f, std::sinf(direction_) * thrustDistance};
 			break;
 		}
+		case WeaponType::Axe: {
+			forwardDuration = 0.15f;
+			rotStart = {0.0f, -std::numbers::pi_v<float> / 4.0f, 0.0f};
+			rotEnd = {0.0f, std::numbers::pi_v<float> / 4.0f, 0.0f};
+			rotOffsetAnim_.temp = rotStart;
+			break;
+		}
+		case WeaponType::Fist: {
+			forwardDuration = 0.1f;
+			float thrustDistance = 2.0f;
+			posEnd = {std::cosf(direction_) * thrustDistance, 0.0f, std::sinf(direction_) * thrustDistance};
+			break;
+		}
+		case WeaponType::Bow: {
+			forwardDuration = 0.15f;
+			scaleStart = {0.5f, 0.5f, 0.5f};
+			scaleEnd = {0.6f, 0.6f, 0.6f};
+			break;
+		}
+		case WeaponType::Gurepon: {
+			forwardDuration = 0.05f;
+			float recoilAngle = 0.5f;
+			rotEnd = {0.0f, direction_ * recoilAngle, 0.0f};
+			rotOffsetAnim_.temp = {-(direction_ - std::numbers::pi_v<float> / 2.0f), 0.0f, std::numbers::pi_v<float> / 2.0f};
+			break;
+		}
 		}
 
 		// 座標と回転のアニメーション開始
 		posOffsetAnim_.anim.Start(posStart, posEnd, forwardDuration, EaseType::EaseOutCubic);
 		rotOffsetAnim_.anim.Start(rotStart, rotEnd, forwardDuration, EaseType::EaseOutCubic);
+		scaleOffsetAnim_.anim.Start(scaleStart, scaleEnd, forwardDuration, EaseType::EaseOutCubic);
 
 		weapon_->SetIsAnimation(false); // アニメーションフラグを下す
 	}
@@ -101,9 +134,10 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 	if (animState_ == AnimState::Forward) {
 		bool posPlaying = posOffsetAnim_.anim.Update(deltaTime, posOffsetAnim_.temp);
 		bool rotPlaying = rotOffsetAnim_.anim.Update(deltaTime, rotOffsetAnim_.temp);
+		bool scalePlaying = scaleOffsetAnim_.anim.Update(deltaTime, scaleOffsetAnim_.temp);
 
 		// 位置と回転、両方のアニメーションが終わったら戻りアニメーションへ遷移
-		if (!posPlaying && !rotPlaying) {
+		if (!posPlaying && !rotPlaying && !scalePlaying) {
 			animState_ = AnimState::Return;
 
 			// 武器ごとに戻るスピードを調整
@@ -121,11 +155,24 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 			case WeaponType::Spear:
 				returnDuration = 0.3f;
 				break;
+			case WeaponType::Axe:
+				returnDuration = 0.3f;
+				break;
+			case WeaponType::Fist:
+				returnDuration = 0.3f;
+				break;
+			case WeaponType::Bow:
+				returnDuration = 0.3f;
+				break;
+			case WeaponType::Gurepon:
+				returnDuration = 0.3f;
+				break;
 			}
 
 			// アニメーションの開始
 			posOffsetAnim_.anim.Start(posOffsetAnim_.temp, {0.0f, 0.0f, 0.0f}, returnDuration, EaseType::EaseOutCubic);
 			rotOffsetAnim_.anim.Start(rotOffsetAnim_.temp, {0.0f, 0.0f, 0.0f}, returnDuration, EaseType::EaseOutCubic);
+			scaleOffsetAnim_.anim.Start(scaleOffsetAnim_.temp, {0.5f, 0.5f, 0.5f}, returnDuration, EaseType::EaseOutCubic);
 		}
 	} else if (animState_ == AnimState::Return) {
 		bool posPlaying = posOffsetAnim_.anim.Update(deltaTime, posOffsetAnim_.temp);
@@ -141,7 +188,7 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 
 	float currentDir = direction_;
 
-	if (animState_ != AnimState::None && wData->type == WeaponType::Sword) {
+	if (animState_ != AnimState::None && (wData->type == WeaponType::Sword || wData->type == WeaponType::Axe)) {
 		currentDir += rotOffsetAnim_.temp.y;
 	}
 
@@ -154,13 +201,33 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 	// 回転はDirectionを向かせる
 	transform_.rotate = {currentDir - std::numbers::pi_v<float> / 2, 0.0f, -std::numbers::pi_v<float> / 2.0f};
 
+	if (wData->type == WeaponType::Pistol || wData->type == WeaponType::ShotGun) {
+		// 元の補正を維持
+		transform_.rotate.x = currentDir - std::numbers::pi_v<float> / 2.0f;
+		transform_.rotate.y = 0.0f;
+		transform_.rotate.z = -std::numbers::pi_v<float> / 2.0f;
+	} else if (wData->type == WeaponType::Sword || wData->type == WeaponType::Axe) {
+		transform_.rotate.x = 0.0f;
+		transform_.rotate.y = -(currentDir - std::numbers::pi_v<float> / 2.0f);
+		transform_.rotate.z = 0.0f;
+	} else if (wData->type == WeaponType::Gurepon) {
+		transform_.rotate.x = -(currentDir - std::numbers::pi_v<float> / 2.0f);
+		transform_.rotate.y = 0.0f;
+		transform_.rotate.z = std::numbers::pi_v<float> / 2.0f;
+	}
+
 	// アニメーション実行中であれば算出したオフセットを加算
 	if (animState_ != AnimState::None) {
+		transform_.scale.x = scaleOffsetAnim_.temp.x;
+		transform_.scale.y = scaleOffsetAnim_.temp.y;
+		transform_.scale.z = scaleOffsetAnim_.temp.z;
+
 		transform_.position.x += posOffsetAnim_.temp.x;
 		transform_.position.y += posOffsetAnim_.temp.y;
 		transform_.position.z += posOffsetAnim_.temp.z;
 
-		if (wData->type != WeaponType::Sword) {
+		if (wData->type != WeaponType::Sword && wData->type != WeaponType::Axe) {
+			// 傾いているモデルはここで直接回転オフセットを加算
 			transform_.rotate.x += rotOffsetAnim_.temp.x;
 			transform_.rotate.y += rotOffsetAnim_.temp.y;
 			transform_.rotate.z += rotOffsetAnim_.temp.z;
@@ -172,6 +239,10 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 	trailSpear_.Update(deltaTime, vpMatrix);
 	trailSword_.SetModelWorld(wvp_);
 	trailSword_.Update(deltaTime, vpMatrix);
+	trailAxe_.SetModelWorld(wvp_);
+	trailAxe_.Update(deltaTime, vpMatrix);
+	trailFist_.SetModelWorld(wvp_);
+	trailFist_.Update(deltaTime, vpMatrix);
 	wvp_ *= vpMatrix;
 	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
 	render_->CopyBufferData(0, &wvp_, sizeof(Matrix4x4));
@@ -182,16 +253,24 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 void IWeaponRender::Draw(CmdObj* cmdObj) {
 	render_->Draw(cmdObj);
 
-	WeaponData* wData = weapon_->GetWeaponData();
-	switch (wData->type) {
-	case WeaponType::Sword:
-		trailSword_.Draw(cmdObj);
-		break;
-	case WeaponType::Spear:
-		trailSpear_.Draw(cmdObj);
-		break;
-	default:
-		break;
+	if (rotOffsetAnim_.anim.GetIsActive() || posOffsetAnim_.anim.GetIsActive()) {
+		WeaponData* wData = weapon_->GetWeaponData();
+		switch (wData->type) {
+		case WeaponType::Sword:
+			trailSword_.Draw(cmdObj);
+			break;
+		case WeaponType::Spear:
+			trailSpear_.Draw(cmdObj);
+			break;
+		case WeaponType::Axe:
+			trailAxe_.Draw(cmdObj);
+			break;
+		case WeaponType::Fist:
+			trailFist_.Draw(cmdObj);
+			break;
+		default:
+			break;
+		}
 	}
 }
 
