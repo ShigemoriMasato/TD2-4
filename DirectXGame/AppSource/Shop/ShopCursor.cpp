@@ -8,8 +8,14 @@ void ShopCursor::Initialize(KeyManager* keyManager, PieceManager* pieceManager) 
 
 void ShopCursor::Update(Camera* camera) {
 	Vector2 cursor = keyManager_->GetCursorPos();
-	cursor.x *= 2.0f;
+	//x = 48.0f ~ 400.0f		width 352.0f
+	//y = 48.0f ~ 672.0f		width 624.0f
+	cursor.x = (cursor.x - 48.0f) / (352.0f / 1280.0f);
+	cursor.y = (cursor.y - 48.0f) / (624.0f / 720.0f);
+
 	worldPos_ = GetWorldCursor(camera, cursor);
+	worldPos_.x -= 0.5f;
+	worldPos_.y -= 0.5f;
 }
 
 void ShopCursor::EditPiece(BackPack* backPack) {

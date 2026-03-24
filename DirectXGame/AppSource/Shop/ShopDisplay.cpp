@@ -1,4 +1,5 @@
 #include "ShopDisplay.h"
+#include <imgui/imgui.h>
 #include <numbers>
 
 void ShopDisplay::Initialize(CmdObj* cmdObj, SHEngine::DrawData& drawData, SHEngine::TextureManager* textureManager) {
@@ -16,10 +17,15 @@ void ShopDisplay::Initialize(CmdObj* cmdObj, SHEngine::DrawData& drawData, SHEng
 	render_->SetUseTexture(true);
 
 	render_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Transparent;
+
+	transform_.scale = { 624.0f / 360.0f, 352.0f / 640.0f, 0.0f };
+	transform_.rotate.z = std::numbers::pi_v<float> / 2.0f;
+	transform_.position.z = 0.5f;
+	transform_.position.x = 224.0f / 640.0f - 1.0f;
 }
 
 void ShopDisplay::Update() {
-	Matrix4x4 wvp = Matrix::MakeScaleMatrix({2.0f, 1.0f, 2.0f}) * Matrix::MakeRotationZMatrix(std::numbers::pi_v<float> / 2.0f) * Matrix::MakeTranslationMatrix({-0.5f, 0, 1.0f});
+	Matrix4x4 wvp = Matrix::MakeScaleMatrix(transform_.scale) * Matrix::MakeRotationMatrix(transform_.rotate) * Matrix::MakeTranslationMatrix(transform_.position);
 	int textureIndex = disp_->GetTextureData()->GetOffset();
 
 	render_->CopyBufferData(0, &wvp, sizeof(wvp));
@@ -36,4 +42,16 @@ void ShopDisplay::PostDraw() {
 
 void ShopDisplay::Draw() {
 	render_->Draw(cmdObj_);
+
+#ifdef USE_IMGUI
+
+	ImGui::Begin("ShopDisplay");
+
+	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
+	ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
+	ImGui::DragFloat3("Position", &transform_.position.x, 0.01f);
+
+	ImGui::End();
+
+#endif
 }

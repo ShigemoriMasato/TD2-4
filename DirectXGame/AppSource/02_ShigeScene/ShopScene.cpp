@@ -14,7 +14,7 @@ void ShopScene::Initialize() {
 	debugCamera_->SetSpherical({ 20.0f, 0.0f, -1.570f });
 
 	PerspectiveFovDesc desc;
-	desc.SetValue(640.0f);
+	desc.SetValue(352.0f, 624.0f);
 	debugCamera_->SetProjectionMatrix(desc);
 
 	grid_ = std::make_unique<Grid>();

@@ -69,6 +69,17 @@ void ShigeScene::Initialize() {
 
 	parameterRender_ = std::make_unique<ParameterRender>();
 	parameterRender_->Initialize(modelManager_,drawDataManager_,engine_);
+
+	gameFrame_ = std::make_unique<GameFrame>();
+	SHEngine::DrawData planeDrawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
+	gameFrame_->Initialize(planeDrawData, textureManager_->LoadTexture("Frame.png"));
+
+	postEffect_ = std::make_unique<PostEffect>();
+	SHEngine::DrawData postEffectDrawData = drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex);
+	postEffect_->Initialize(textureManager_, postEffectDrawData);
+	postEffectConfig_.cmdObj = commonData_->cmdObject.get();
+	postEffectConfig_.origin = commonData_->display->GetDisplay();
+	postEffectConfig_.jobs_ = 0;
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -78,6 +89,8 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 	shopScene_->SetDeltaTime(deltaTime);
 	shopScene_->Update();
+
+	gameFrame_->Update();
 
 	gameCamera_->Update(deltaTime, player_->GetTransform().position);
 	Vector3 cameraPos = { 0.f, 0.f, 0.f };
@@ -226,6 +239,8 @@ void ShigeScene::Draw() {
 
 	shopScene_->Draw();
 
+	gameFrame_->Draw(cmdObj);
+
 	display->PostDraw(cmdObj);
 
 	window->PreDraw(cmdObj);
@@ -265,6 +280,12 @@ void ShigeScene::Draw() {
 #endif
 
 	engine_->DrawImGui();
+
+#ifdef SH_RELEASE
+	postEffectConfig_.output = commonData_->mainWindow.second->GetCurrentDisplay();
+	postEffect_->Draw(postEffectConfig_);
+#endif
+
 	window->PostDraw(cmdObj);
 }
 

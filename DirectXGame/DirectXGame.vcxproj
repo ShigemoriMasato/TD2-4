@@ -279,6 +279,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Camera\GameCamera.cpp" />
     <ClCompile Include="AppSource\GameObject\GameTimer.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Controller\InputController.cpp" />
+    <ClCompile Include="AppSource\UI\Game\GameFrame.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Trail.cpp" />
@@ -448,6 +449,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Shop\ShopDisplay.h" />
     <ClInclude Include="Engine\Render\Font\Text.h" />
     <ClInclude Include="AppSource\02_ShigeScene\TechnicalTestScene.h" />
+    <ClInclude Include="AppSource\UI\Game\GameFrame.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

@@ -24,6 +24,8 @@
 #include <Scene/01_Title/TitleScene.h>
 #include <GameObject/Player/PlayerHP.h>
 #include <GameObject/Player/Parameter/ParameterRender.h>
+#include <UI/Game/GameFrame.h>
+#include <Render/PostEffect.h>
 
 class ShigeScene : public IScene {
 public:
@@ -83,5 +85,11 @@ private:// System系
 private:// Shop
 
 	std::unique_ptr<ShopScene> shopScene_;
+
+private:// UI系
+
+	std::unique_ptr<GameFrame> gameFrame_;
+	std::unique_ptr<PostEffect> postEffect_;
+	PostEffectConfig postEffectConfig_;
 
 };
