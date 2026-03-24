@@ -6,13 +6,15 @@ void EnemyManager::Initialize(Vector3* playerPos) {
 	enemies_.clear();
 }
 
-void EnemyManager::Update(float deltaTime) {
+void EnemyManager::Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVpMatrix) {
 	if (enemies_.size() == 0) {
 		return;
 	}
 
 	std::vector<int> toRemove;
 	for (auto& [id, enemy] : enemies_) {
+		enemy->SetVPMatrix(vpMatrix);
+		enemy->SetOrthoVPMatrix(orthoVpMatrix);
 		enemy->Update(deltaTime);
 		enemy->UpdateCollider();
 		if (!enemy->IsActive()) {
@@ -31,6 +33,12 @@ void EnemyManager::DrawImGui() {
 	
 
 #endif
+}
+
+void EnemyManager::DrawUI(CmdObj* cmdObj){
+	for (auto& [id, enemy] : enemies_) {
+		enemy->DrawUI(cmdObj);
+	}
 }
 
 void EnemyManager::PopEnemy(Vector3 initPos, int hp) {

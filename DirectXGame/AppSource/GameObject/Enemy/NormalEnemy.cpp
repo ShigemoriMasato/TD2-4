@@ -8,6 +8,7 @@ void NormalEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id) 
 }
 
 void NormalEnemy::Update(float deltaTime) {
+	IEnemy::Update(deltaTime);
 	Vector3 direction = (*playerPos_ - drawInfo_.position).Normalize();
 	position_ += direction * speed_ * deltaTime;
 }

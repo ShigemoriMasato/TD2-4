@@ -36,6 +36,7 @@ void ShigeScene::Initialize() {
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize(player_->GetPositionPtr());
 	IEnemy::SetModelManager(modelManager_);
+	IEnemy::SetDrawDataManager(drawDataManager_);
 
 	map_ = std::make_unique<Map>();
 	map_->Initialize(drawDataManager_, modelManager_);
@@ -170,7 +171,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	parameterRender_->Update(orthoCamera_->GetVPMatrix(), player_->GetParameters());
 	map_->Update(camera_->GetVPMatrix());
-	enemyManager_->Update(deltaTime);
+	enemyManager_->Update(deltaTime, camera_->GetVPMatrix(), orthoCamera_->GetVPMatrix());
 	for (const auto& weapon : weapons_) {
 		weapon->Update(deltaTime);
 	}
@@ -228,6 +229,7 @@ void ShigeScene::Draw() {
 	objectRender_->Draw(cmdObj);
 	player_->Draw(cmdObj);
 	playerHP_->Draw(cmdObj);
+	enemyManager_->DrawUI(cmdObj);
 
 	//parameterRender_->Draw(cmdObj);
 
