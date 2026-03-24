@@ -21,6 +21,7 @@ private:
 	    {WeaponType::Axe,     "Axe"    },
         {WeaponType::Fist,    "Fist"   },
         {WeaponType::Bow,     "Bow"    },
+        {WeaponType::Gurepon, "Gurepon"},
 	};
 
 public:

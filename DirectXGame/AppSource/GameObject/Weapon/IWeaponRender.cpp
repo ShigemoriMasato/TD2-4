@@ -64,8 +64,8 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 		Vector3 posEnd = {0.0f, 0.0f, 0.0f};
 		Vector3 rotStart = {0.0f, 0.0f, 0.0f};
 		Vector3 rotEnd = {0.0f, 0.0f, 0.0f};
-		Vector3 scaleStart = {0.0f, 0.0f, 0.0f};
-		Vector3 scaleEnd = {0.0f, 0.0f, 0.0f};
+		Vector3 scaleStart = {0.5f, 0.5f, 0.5f};
+		Vector3 scaleEnd = {0.5f, 0.5f, 0.5f};
 		float forwardDuration = 0.2f;
 
 		switch (wData->type) {
@@ -113,6 +113,13 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 			scaleEnd = {0.6f, 0.6f, 0.6f};
 			break;
 		}
+		case WeaponType::Gurepon: {
+			forwardDuration = 0.05f;
+			float recoilAngle = 0.5f;
+			rotEnd = {0.0f, direction_ * recoilAngle, 0.0f};
+			rotOffsetAnim_.temp = {-(direction_ - std::numbers::pi_v<float> / 2.0f), 0.0f, std::numbers::pi_v<float> / 2.0f};
+			break;
+		}
 		}
 
 		// 座標と回転のアニメーション開始
@@ -155,6 +162,9 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 				returnDuration = 0.3f;
 				break;
 			case WeaponType::Bow:
+				returnDuration = 0.3f;
+				break;
+			case WeaponType::Gurepon:
 				returnDuration = 0.3f;
 				break;
 			}
@@ -200,6 +210,10 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 		transform_.rotate.x = 0.0f;
 		transform_.rotate.y = -(currentDir - std::numbers::pi_v<float> / 2.0f);
 		transform_.rotate.z = 0.0f;
+	} else if (wData->type == WeaponType::Gurepon) {
+		transform_.rotate.x = -(currentDir - std::numbers::pi_v<float> / 2.0f);
+		transform_.rotate.y = 0.0f;
+		transform_.rotate.z = std::numbers::pi_v<float> / 2.0f;
 	}
 
 	// アニメーション実行中であれば算出したオフセットを加算
