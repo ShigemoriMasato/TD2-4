@@ -182,7 +182,6 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	timerText_->Update(orthoCamera_->GetVPMatrix());
 	timerText_->SetTransform(timerTextTransform_);
 
-	parameterRender_->Update(orthoCamera_->GetVPMatrix(), player_->GetParameters());
 	parameterRender_->Update(orthoCamera_->GetVPMatrix(), player_->GetParameters(), deltaTime, key);
 	map_->Update(camera_->GetVPMatrix());
 	enemyManager_->Update(deltaTime, camera_->GetVPMatrix(), orthoCamera_->GetVPMatrix());
