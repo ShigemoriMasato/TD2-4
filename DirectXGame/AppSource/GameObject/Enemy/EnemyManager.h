@@ -1,6 +1,12 @@
 #pragma once
 #include "IEnemy.h"
 
+struct PendingEnemy {
+	Vector3 pos;
+	int hp;
+	float timer;
+};
+
 class EnemyManager {
 public:
 	void Initialize(Vector3* playerPos);
@@ -12,6 +18,7 @@ public:
 
 	std::vector<DrawInfo> GetEnemyDrawInfos() const;
 	std::vector<IEnemy*> GetEnemies() const;
+	std::vector<DrawInfo> GetPendingDrawInfos() const;
 	/// @brief 敵を削除
 	/// @param target 削除する敵
 	void RemoveEnemy(IEnemy* target);
@@ -25,6 +32,7 @@ private:
 
 	Vector3* playerPos_ = nullptr;
 	std::map<int, std::unique_ptr<IEnemy>> enemies_;
+	std::vector<PendingEnemy> pendingEnemies_;
 
 	int nextEnemyId_ = 0;
 

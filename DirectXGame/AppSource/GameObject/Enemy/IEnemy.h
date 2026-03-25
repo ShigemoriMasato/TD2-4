@@ -10,6 +10,7 @@ class IEnemy : public Collider {
 public:
 
 	static void SetModelManager(SHEngine::ModelManager* modelManager) { modelManager_ = modelManager; }
+	static SHEngine::ModelManager* GetModelManager() { return modelManager_; }
 	static void SetDrawDataManager(SHEngine::DrawDataManager* drawDataManager) { drawDataManager_ = drawDataManager; }
 
 	virtual void Initialize(Vector3* playerPos, EnemyManager* manager, int id);
