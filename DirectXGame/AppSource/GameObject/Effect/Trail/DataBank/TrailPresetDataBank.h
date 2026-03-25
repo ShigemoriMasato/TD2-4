@@ -42,5 +42,5 @@ private:
 	// 読み込みにのみ使用
 	JsonManager json_;
 	// データの保存にのみ使用。
-	std::unordered_map<std::string, TrailPresetVariant> cache_;
+	static std::unordered_map<std::string, TrailPresetVariant> cache_;
 };

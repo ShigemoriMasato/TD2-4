@@ -37,6 +37,7 @@ private:
 	// Fountain 固有
 	FountainConfig fountainPreset_{};
 
+
 	// Particle
 	Particle particle_;
 	bool emit_ = true;

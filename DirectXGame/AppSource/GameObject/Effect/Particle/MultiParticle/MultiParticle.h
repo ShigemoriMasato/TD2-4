@@ -1,14 +1,10 @@
 #pragma once
-#include <memory>
 #include <string>
 #include <unordered_map>
 #include <Render/DrawDataManager.h>
 #include <Assets/Texture/TextureManager.h>
-#include <Utility/Matrix.h>
-#include <Utility/Vector.h>
-
-class ParticlePresetDataBank;
-class Particle;
+#include <GameObject/Effect/Particle/DataBank/ParticlePresetDataBank.h>
+#include <GameObject/Effect/Particle/Type/FountainParticle/FountainParticle.h>
 
 class MultiParticle final
 {
@@ -38,5 +34,5 @@ private:
 
 	bool enabled_ = true;
 
-	std::unordered_map<std::string, std::unique_ptr<Particle>> cache_;
+	std::unordered_map<std::string, std::unique_ptr<FountainParticle>> fountainCache_;
 };

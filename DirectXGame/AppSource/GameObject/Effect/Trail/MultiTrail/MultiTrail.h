@@ -2,10 +2,11 @@
 #include <vector>
 #include <string>
 #include <variant>
+#include <unordered_map>
 
 #include <GameObject/Effect/Trail/DataBank/TrailPresetDataBank.h>
-#include <GameObject/Effect/Trail/RibbonTrail/RibbonTrail.h>
-#include <GameObject/Effect/Trail/ShockwaveRingTrail/ShockwaveRingTrail.h>
+#include <GameObject/Effect/Trail/Type/RibbonTrail/RibbonTrail.h>
+#include <GameObject/Effect/Trail/Type/ShockwaveRingTrail/ShockwaveRingTrail.h>
 
 class MultiTrail final
 {
