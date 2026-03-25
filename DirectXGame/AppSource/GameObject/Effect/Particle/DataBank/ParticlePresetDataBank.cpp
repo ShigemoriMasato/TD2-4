@@ -22,6 +22,7 @@ ParticleType ParticlePresetDataBank::GetTypeOf(const std::string& name)
 {
 	const auto& v = Get(name);
 	if (std::holds_alternative<FountainConfig>(v)) return ParticleType::Fountain;
+	else if (std::holds_alternative<OnTrailConfig>(v)) return ParticleType::OnTrail;
 	return ParticleType::None;
 }
 
@@ -48,7 +49,6 @@ Particle::Config ParticlePresetDataBank::LoadConfig_(JsonManager& json)
 	try { cfg.emitterMax = json.Get<Vector3>("cfg.emitterMax"); }
 	catch (...) {}
 
-	// 最低限のサニタイズ
 	cfg.lifeTime = std::max(0.001f, cfg.lifeTime);
 	cfg.speed = std::max(0.0f, cfg.speed);
 	cfg.emitNum = std::max(0, cfg.emitNum);
@@ -74,6 +74,12 @@ ParticlePresetVariant ParticlePresetDataBank::Load_(const std::string& name)
 	if (type == ParticleType::Fountain)
 	{
 		FountainConfig p{};
+		p.cfg = LoadConfig_(json_);
+		return p;
+	}
+	else if (type == ParticleType::OnTrail)
+	{
+		OnTrailConfig p{};
 		p.cfg = LoadConfig_(json_);
 		return p;
 	}

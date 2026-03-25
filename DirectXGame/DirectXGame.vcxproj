@@ -279,6 +279,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Camera\GameCamera.cpp" />
     <ClCompile Include="AppSource\GameObject\GameTimer.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Controller\InputController.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\FountainParticle\FountainParticle.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Trail.cpp" />
@@ -296,8 +297,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Test\TestTrail4\TestTrail4.cpp" />
     <ClCompile Include="AppSource\03_YokoScene\TrailEditorScene.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\DataBank\TrailPresetDataBank.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Trail\RibbonTrail\RibbonTrail.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Trail\ShockwaveRingTrail\ShockwaveRingTrail.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail\Type\RibbonTrail\RibbonTrail.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail\Type\ShockwaveRingTrail\ShockwaveRingTrail.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\MultiTrail\MultiTrail.cpp" />
     <ClCompile Include="AppSource\03_YokoScene\PrticleEditorScene.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Particle\MultiParticle\MultiParticle.cpp" />
@@ -435,8 +436,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Effect\Trail\Test\TestTrail4\TestTrail4.h" />
     <ClInclude Include="AppSource\03_YokoScene\TrailEditorScene.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\DataBank\TrailPresetDataBank.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Trail\RibbonTrail\RibbonTrail.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Trail\ShockwaveRingTrail\ShockwaveRingTrail.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\Type\RibbonTrail\RibbonTrail.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\Type\ShockwaveRingTrail\ShockwaveRingTrail.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\MultiTrail\MultiTrail.h" />
     <ClInclude Include="AppSource\03_YokoScene\PrticleEditorScene.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Particle\MultiParticle\MultiParticle.h" />
@@ -448,6 +449,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Shop\ShopDisplay.h" />
     <ClInclude Include="Engine\Render\Font\Text.h" />
     <ClInclude Include="AppSource\02_ShigeScene\TechnicalTestScene.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\FountainParticle\FountainParticle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
