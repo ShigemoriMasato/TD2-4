@@ -52,9 +52,19 @@ void ParameterRender::Initialize(SHEngine::ModelManager* modelManager, SHEngine:
 	backgroundWVP_ = Matrix::MakeAffineMatrix(backgroundTransform_.scale, backgroundTransform_.rotate, backgroundTransform_.position);
 }
 
-void ParameterRender::Update(Matrix4x4 vpMatrix, const std::unordered_map<std::string, float>& parameterData) {
+void ParameterRender::Update(Matrix4x4 vpMatrix, const std::unordered_map<std::string, float>& parameterData, float deltaTime, std::unordered_map<Key, bool> key) {
+	if (key[Key::Debug1]) {
+		if (!isAnimation_) {
+			AnimationStart();
+		} else {
+			ReturnAnimationStart();
+		}
+	}
+
+	offsetAnimation_.anim.Update(deltaTime, offsetAnimation_.temp);
+
 	for (int i = 0; i < kParameterCount; ++i) {
-		transforms_[i].position.x = posX_;
+		transforms_[i].position.x = posX_ + offsetAnimation_.temp;
 		transforms_[i].position.y = i * marginY_ + startPosY_;
 
 		// 数値テキストのTransform（ラベルからオフセット分ずらす）
@@ -117,4 +127,18 @@ void ParameterRender::Draw(CmdObj* cmdObj) {
 	}
 	ImGui::End();
 #endif
+}
+
+void ParameterRender::AnimationStart() {
+	if (!offsetAnimation_.anim.GetIsActive()) {
+		offsetAnimation_.anim.Start(0.0f, endPos_, 0.5f, EaseType::EaseOutCubic);
+		isAnimation_ = true;
+	}
+}
+
+void ParameterRender::ReturnAnimationStart() {
+	if (!offsetAnimation_.anim.GetIsActive()) {
+		offsetAnimation_.anim.Start(endPos_, 0.0f, 0.5f, EaseType::EaseOutCubic);
+		isAnimation_ = false;
+	}
 }

@@ -2,10 +2,10 @@
 #include "ShopScene.h"
 #include <Common/KeyConfig/WorldCursor.h>
 #include <Utility/Color.h>
+#include <format>
 #include <imgui/imgui.h>
 #include <numbers>
 #include <windows.h>
-#include <format>
 
 void ShigeScene::Initialize() {
 	debugCamera_ = std::make_unique<DebugCamera>();
@@ -66,10 +66,10 @@ void ShigeScene::Initialize() {
 	currentControllerIndex_ = 0;
 	player_->SetController(controllers_[currentControllerIndex_]); // AIコントローラーを適用
 
-	orthoCamera_=std::make_unique<Camera>();
+	orthoCamera_ = std::make_unique<Camera>();
 
 	parameterRender_ = std::make_unique<ParameterRender>();
-	parameterRender_->Initialize(modelManager_,drawDataManager_,engine_);
+	parameterRender_->Initialize(modelManager_, drawDataManager_, engine_);
 
 	gameFrame_ = std::make_unique<GameFrame>();
 	SHEngine::DrawData planeDrawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
@@ -93,8 +93,8 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	gameFrame_->Update();
 
-	gameCamera_->Update(deltaTime, Vector3{ 0.0f, 0.0f, 0.0f });
-	Vector3 cameraPos = { 0.f, 0.f, 0.f };
+	gameCamera_->Update(deltaTime, Vector3{0.0f, 0.0f, 0.0f});
+	Vector3 cameraPos = {0.f, 0.f, 0.f};
 	grid_->Update(cameraPos, camera_->GetVPMatrix());
 	auto key = commonData_->keyManager->GetKeyStates();
 
@@ -169,7 +169,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	orthoCamera_->SetPosition({0, 0, 0});
 	orthoCamera_->MakeMatrix();
 
-	parameterRender_->Update(orthoCamera_->GetVPMatrix(), player_->GetParameters());
+	parameterRender_->Update(orthoCamera_->GetVPMatrix(), player_->GetParameters(), deltaTime, key);
 	map_->Update(camera_->GetVPMatrix());
 	enemyManager_->Update(deltaTime, camera_->GetVPMatrix(), orthoCamera_->GetVPMatrix());
 	for (const auto& weapon : weapons_) {
@@ -206,7 +206,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	if (key[Key::Debug1] || gameTimer_->IsEnd()) {
 	}
 
-	if (player_->GetCurrentHP() <= 0){
+	if (player_->GetCurrentHP() <= 0) {
 		std::string debugMsg = std::format("Player Survived Time: {:.2f} s\n", gameTimer_->GetTimer());
 		OutputDebugStringA(debugMsg.c_str());
 		return std::make_unique<TitleScene>();
@@ -224,13 +224,13 @@ void ShigeScene::Draw() {
 
 	display->PreDraw(cmdObj, true);
 
-	//grid_->Draw(cmdObj);
+	// grid_->Draw(cmdObj);
 	map_->Draw(cmdObj);
 	objectRender_->Draw(cmdObj);
 	player_->Draw(cmdObj);
 	playerHP_->Draw(cmdObj);
 
-	//parameterRender_->Draw(cmdObj);
+	parameterRender_->Draw(cmdObj);
 
 	waveSystem_->DrawImGui();
 
@@ -292,7 +292,7 @@ void ShigeScene::Draw() {
 
 void ShigeScene::MakeWeapon() {
 	for (const auto& piece : commonData_->pieces) {
-		//作成済みかどうか確認
+		// 作成済みかどうか確認
 		{
 			bool found = false;
 			for (const auto& weapon : weapons_) {
@@ -315,23 +315,19 @@ void ShigeScene::MakeWeapon() {
 			std::unique_ptr<IWeaponRender> weaponRender = std::make_unique<IWeaponRender>();
 
 			switch (data->type) {
-			case WeaponType::Pistol:
-			{
+			case WeaponType::Pistol: {
 				weapon = std::make_unique<Pistol>();
 				break;
 			}
-			case WeaponType::Sword:
-			{
+			case WeaponType::Sword: {
 				weapon = std::make_unique<Sword>();
 				break;
 			}
-			case WeaponType::ShotGun:
-			{
+			case WeaponType::ShotGun: {
 				weapon = std::make_unique<ShotGun>();
 				break;
 			}
-			case WeaponType::Spear:
-			{
+			case WeaponType::Spear: {
 				weapon = std::make_unique<Spear>();
 				break;
 			}
@@ -362,30 +358,23 @@ void ShigeScene::MakeWeapon() {
 		}
 	}
 
-	//Pieceから削除された武器を削除する
+	// Pieceから削除された武器を削除する
 	for (int i = 0; i < int(weaponRenders_.size()); ++i) {
 		auto& wr = weaponRenders_[i];
-		if(std::find_if(
-			commonData_->pieces.begin(),
-			commonData_->pieces.end(),
-			[&](const auto& p) { return wr->GetPiecePtr() == p; }
-		) == commonData_->pieces.end()) {
+		if (std::find_if(commonData_->pieces.begin(), commonData_->pieces.end(), [&](const auto& p) { return wr->GetPiecePtr() == p; }) == commonData_->pieces.end()) {
 			wrDeleting_.push_back(std::make_pair(0, std::move(wr)));
 			weaponRenders_.erase(weaponRenders_.begin() + i);
 		}
 	}
 
 	weapons_.erase(
-		std::remove_if(weapons_.begin(), weapons_.end(), [&](const auto& w) {
-			// Piece がまだ存在するかチェック
-			return std::none_of(
-				commonData_->pieces.begin(),
-				commonData_->pieces.end(),
-				[&](const auto& p) { return w->GetPiecePtr() == p; }
-			);
-			}),
-		weapons_.end()
-	);
+	    std::remove_if(
+	        weapons_.begin(), weapons_.end(),
+	        [&](const auto& w) {
+		        // Piece がまだ存在するかチェック
+		        return std::none_of(commonData_->pieces.begin(), commonData_->pieces.end(), [&](const auto& p) { return w->GetPiecePtr() == p; });
+	        }),
+	    weapons_.end());
 
 	// 削除予定の武器描画オブジェクトを更新して削除
 	for (auto& wrd : wrDeleting_) {
