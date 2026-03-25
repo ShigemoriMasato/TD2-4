@@ -15,17 +15,17 @@ void ParameterRender::Initialize(SHEngine::ModelManager* modelManager, SHEngine:
 	for (int i = 0; i < kParameterCount; ++i) {
 		// ラベルテキストの初期化
 		texts_[i] = std::make_unique<Text>();
-		texts_[i]->Initialize(data, "YDWbananaslipplus.otf", 64);
+		texts_[i]->Initialize(data, "YDWbananaslipplus.otf", 64, "Parameter : " + std::to_string(i));
 		texts_[i]->SetText(texturePaths[i]);
 
 		// 数値テキストの初期化
 		valueTexts_[i] = std::make_unique<Text>();
-		valueTexts_[i]->Initialize(data, "YDWbananaslipplus.otf", 64);
+		valueTexts_[i]->Initialize(data, "YDWbananaslipplus.otf", 64, "ParameterNum : " + std::to_string(i));
 		valueTexts_[i]->SetText(L"0");
 	}
 
 	// 背景用モデル生成&初期化
-	backgroundRender_ = std::make_unique<RenderObject>();
+	backgroundRender_ = std::make_unique<RenderObject>("Parameter BG");
 	backgroundRender_->Initialize();
 
 	// シェーダー設定

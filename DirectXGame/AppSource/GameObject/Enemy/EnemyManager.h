@@ -12,7 +12,6 @@ public:
 	void Initialize(Vector3* playerPos);
 	void Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVpMatrix);
 	void DrawImGui();
-	void DrawUI(CmdObj* cmdObj);
 
 	void PopEnemy(Vector3 initPos = {0.0f, 0.0f, 0.0f}, int hp = 1);
 

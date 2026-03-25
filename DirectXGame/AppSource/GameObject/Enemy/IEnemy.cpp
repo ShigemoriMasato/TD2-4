@@ -11,7 +11,7 @@ void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id) {
 	collCircle_->radius = 0.5f;
 	CollConfig config;
 	config.ownTag = CollTag::Enemy;
-	config.targetTag = CollTag::Attack | CollTag::Enemy;
+	config.targetTag = uint32_t(CollTag::Attack);
 	config.colliderInfo = collCircle_.get();
 	config.isActive = true;
 	Collider::Initialize();
@@ -21,11 +21,7 @@ void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id) {
 }
 
 void IEnemy::Update(float deltaTime){
-	Vector2 screenPos = WorldToScreenPos(position_, vpMatrix_, 1280.0f, 720.0f);
-	screenPos.y *= -1.0f;
-	screenPos.y += 80.0f;
-	Matrix4x4 uiVpMatrix = orthoVpMatrix_;
-	enemyHP_->Update(uiVpMatrix, deltaTime, static_cast<float>(hp_), static_cast<float>(maxHp_), screenPos);
+	enemyHP_->Update(deltaTime, static_cast<float>(hp_), static_cast<float>(maxHp_), position_);
 }
 
 void IEnemy::UpdateCollider() {
@@ -37,7 +33,7 @@ void IEnemy::UpdateCollider() {
 void IEnemy::OnCollision(Collider* other) {
 	if (other->GetOwnTag() & CollTag::Enemy) {
 		auto enemy = static_cast<IEnemy*>(other);
-		Vector3 otherPos = enemy->GetDrawInfo().position;
+		Vector3 otherPos = enemy->GetPosition();
 		Vector3 dir = (otherPos - drawInfo_.position).Normalize();
 		float dist = (otherPos - drawInfo_.position).Length();
 		//大体のdeltaTimeで押す
@@ -68,10 +64,11 @@ void IEnemy::KillMe() {
 	}
 }
 
-void IEnemy::DrawUI(CmdObj* cmdObj) {
-	if (isActive_) {
-		enemyHP_->Draw(cmdObj);
-	}
+std::vector<DrawInfo> IEnemy::GetDrawInfos() const {
+	auto info = enemyHP_->GetDrawInfo();
+	// 敵の描画情報を追加
+	info.push_back(drawInfo_);
+	return info;
 }
 
 Vector2 IEnemy::WorldToScreenPos(const Vector3& worldPos, const Matrix4x4& viewProjectionMatrix, float screenWidth, float screenHeight) {

@@ -22,7 +22,7 @@ public:
 	void UpdateCollider();
 
 	Vector3 GetPosition() const { return position_; }
-	DrawInfo GetDrawInfo() const { return drawInfo_; }
+	std::vector<DrawInfo> GetDrawInfos() const;
 	void OnCollision(Collider* other) override;
 
 	void KillMe();
@@ -31,8 +31,6 @@ public:
 	void SetHP(int hp) { hp_ = hp; maxHp_ = hp; }
 	void SetVPMatrix(Matrix4x4 vpMatrix) { vpMatrix_ = vpMatrix; }
 	void SetOrthoVPMatrix(Matrix4x4 vpMatrix) { orthoVpMatrix_ = vpMatrix; }
-
-	void DrawUI(CmdObj* cmdObj);
 
 protected:
 

@@ -25,4 +25,8 @@ private:
 	SHEngine::DrawDataManager* drawDataManager_;
 	SHEngine::ModelManager* modelManager_;
 
+
+	//例外的に描画限界を増やすやつら
+	std::vector<int> extraIndexNums_{ 1 };
+
 };

@@ -59,12 +59,6 @@ void EnemyManager::DrawImGui() {
 #endif
 }
 
-void EnemyManager::DrawUI(CmdObj* cmdObj){
-	for (auto& [id, enemy] : enemies_) {
-		enemy->DrawUI(cmdObj);
-	}
-}
-
 void EnemyManager::PopEnemy(Vector3 initPos, int hp) {
 	PendingEnemy pending;
 	pending.pos = initPos;
@@ -75,6 +69,8 @@ void EnemyManager::PopEnemy(Vector3 initPos, int hp) {
 
 std::vector<DrawInfo> EnemyManager::GetEnemyDrawInfos() const {
 	std::vector<DrawInfo> drawInfos;
+	int totalSize = int(pendingEnemies_.size() + enemies_.size() * 4);
+	drawInfos.reserve(totalSize); // 敵の数に応じて適切な容量を確保
 	for (const auto& p : pendingEnemies_) {
 		DrawInfo info{};
 		info.position = p.pos;
@@ -92,7 +88,8 @@ std::vector<DrawInfo> EnemyManager::GetEnemyDrawInfos() const {
 	}
 
 	for (const auto& [id, enemy] : enemies_) {
-		drawInfos.push_back(enemy->GetDrawInfo());
+		auto drawInfo = enemy->GetDrawInfos();
+		drawInfos.insert(drawInfos.end(), drawInfo.begin(), drawInfo.end());
 	}
 	return drawInfos;
 }

@@ -2,12 +2,12 @@
 
 using namespace Matrix;
 
-void SHEngine::Text::Initialize(DrawData& planeDrawData, const std::string& fontPath, int fontSize) {
+void SHEngine::Text::Initialize(DrawData& planeDrawData, const std::string& fontPath, int fontSize, std::string debugName) {
 	textureIndex_ = fontLoader_->Load(fontPath, fontSize);
 	fontPath_ = fontPath;
 	fontSize_ = fontSize;
 
-	render_ = std::make_unique<RenderObject>();
+	render_ = std::make_unique<RenderObject>(debugName);
 	render_->Initialize();
 	render_->SetDrawData(planeDrawData);
 	render_->psoConfig_.vs = "Engine/FontBasic.VS.hlsl";

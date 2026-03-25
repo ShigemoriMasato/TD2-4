@@ -134,6 +134,9 @@ namespace SHEngine {
 		int index_ = 0;
 
 
+		//例外的に描画限界を増やすやつら
+		std::vector<int> extraIndexNums_{1};
+
 	private://寿命管理
 
 		/**

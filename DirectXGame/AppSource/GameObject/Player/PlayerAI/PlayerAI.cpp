@@ -14,7 +14,7 @@ Vector3 PlayerAI::ComputeMoveDirection(const Vector3& playerPos, const std::vect
 			continue;
 
 		// 一番近い敵を記録
-		float dist = Distance(playerPos, enemy->GetDrawInfo().position);
+		float dist = Distance(playerPos, enemy->GetPosition());
 		if (dist < minDist) {
 			minDist = dist;
 			nearest = enemy;
@@ -23,7 +23,7 @@ Vector3 PlayerAI::ComputeMoveDirection(const Vector3& playerPos, const std::vect
 		// 逃走範囲内にいるすべての敵から反発力を受ける
 		if (dist < escapeRange_) {
 			// 敵からプレイヤーへ向かうベクトル
-			Vector3 dirAway = (playerPos - enemy->GetDrawInfo().position).Normalize();
+			Vector3 dirAway = (playerPos - enemy->GetPosition()).Normalize();
 
 			// 敵が近いほど強い力で押し返されるように重み付けする
 			float weight = 1.0f - (dist / escapeRange_);
@@ -42,7 +42,7 @@ Vector3 PlayerAI::ComputeMoveDirection(const Vector3& playerPos, const std::vect
 		// 最終的な目標方向を決定
 		if (targetEnemy_) {
 			// ターゲットが存在する場合は逃走を無視して最優先で追跡
-			targetDir = (targetEnemy_->GetDrawInfo().position - playerPos).Normalize();
+			targetDir = (targetEnemy_->GetPosition() - playerPos).Normalize();
 
 		} else if (escapeCount > 0) {
 			// 誰もターゲットしておらず、逃走範囲に敵がいる場合
@@ -57,7 +57,7 @@ Vector3 PlayerAI::ComputeMoveDirection(const Vector3& playerPos, const std::vect
 
 		} else if (nearest && minDist < chaseRange_) {
 			// 誰も逃走範囲におらず、追跡範囲に敵がいる場合は一番近い敵を追う
-			targetDir = (nearest->GetDrawInfo().position - playerPos).Normalize();
+			targetDir = (nearest->GetPosition() - playerPos).Normalize();
 		}
 
 		// 移動方向を補間
@@ -86,7 +86,7 @@ IEnemy* PlayerAI::FindNearestEnemy(const Vector3& playerPos, const std::vector<I
 			continue;
 
 		// 距離を求める
-		float dist = Distance(playerPos, enemy->GetDrawInfo().position);
+		float dist = Distance(playerPos, enemy->GetPosition());
 		if (dist < minDist) {
 			minDist = dist;
 			nearest = enemy;

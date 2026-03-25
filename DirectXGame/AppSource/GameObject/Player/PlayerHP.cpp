@@ -9,9 +9,9 @@ using namespace Player;
 
 void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager) {
 	// HPバーの生成
-	hpBarFill_.render = std::make_unique<RenderObject>();  // 前面
-	hpBarAfter_.render = std::make_unique<RenderObject>(); // 減った分
-	hpBarBG_.render = std::make_unique<RenderObject>();    // 背景
+	hpBarFill_.render = std::make_unique<RenderObject>("HPBarFill");  // 前面
+	hpBarAfter_.render = std::make_unique<RenderObject>("HPBarAfter"); // 減った分
+	hpBarBG_.render = std::make_unique<RenderObject>("HPBarBackGround");    // 背景
 
 	// HPバーを初期化
 	InitializeRenderHPBar(modelManager, drawDataManager, hpBarFill_.render);  // 前面

@@ -229,7 +229,6 @@ void ShigeScene::Draw() {
 	objectRender_->Draw(cmdObj);
 	player_->Draw(cmdObj);
 	playerHP_->Draw(cmdObj);
-	enemyManager_->DrawUI(cmdObj);
 
 	//parameterRender_->Draw(cmdObj);
 

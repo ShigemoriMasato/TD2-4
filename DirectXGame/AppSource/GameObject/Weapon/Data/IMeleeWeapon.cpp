@@ -54,8 +54,7 @@ bool IMeleeWeapon::EnemyCheck() {
 	float closestDistance = range_ * 2.0f * 10.0f;
 	IEnemy* closestEnemy = nullptr;
 	for (const auto& enemy : enemies) {
-		auto drawInfo = enemy->GetDrawInfo();
-		Vector3 ePos = drawInfo.position;
+		Vector3 ePos = enemy->GetPosition();
 		Vector3 pPos = player_->GetTransform().position;
 		float distance = (ePos - pPos).Length();
 
