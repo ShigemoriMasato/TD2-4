@@ -42,8 +42,7 @@ bool IRangedWeapon::EnemyCheck() {
 
 	// 近くに敵がいるかの判別
 	for (const auto& enemy : enemies) {
-		auto drawInfo = enemy->GetDrawInfo();
-		Vector3 ePos = drawInfo.position;
+		Vector3 ePos = enemy->GetPosition();
 		Vector3 pPos = player_->GetTransform().position;
 
 		float distance = (ePos - pPos).Length();

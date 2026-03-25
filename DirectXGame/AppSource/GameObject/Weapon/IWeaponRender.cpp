@@ -15,7 +15,7 @@ void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEng
 	textureIndex_ = material.textureIndex;
 
 	// モデルを初期化
-	render_ = std::make_unique<RenderObject>();
+	render_ = std::make_unique<RenderObject>("IWeaponRender");
 	render_->Initialize();
 
 	// シェーダー設定

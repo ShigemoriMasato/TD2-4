@@ -3,18 +3,18 @@
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
+#include <GameObject/DrawInfo.h>
 
 class EnemyHP {
 public:
 	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager);
 
-	void Update(Matrix4x4 vpMatrix, float deltaTime, float currentHP, float maxHP, const Vector2& enemyScreenPos);
+	void Update(float deltaTime, float currentHP, float maxHP, const Vector3& enemyScreenPos);
 
-	void Draw(CmdObj* cmdObj);
+	std::vector<DrawInfo> GetDrawInfo() const;
 
 private:
 	struct HPBar {
-		std::unique_ptr<SHEngine::RenderObject> render = nullptr;
 		Matrix4x4 wvp;
 		Transform transform;
 	};
@@ -27,8 +27,8 @@ private:
 	HPBar hpBarAfter_;
 	HPBar hpBarBG_;
 
-	Vector2 hpBarSize_ = {60.0f, 10.0f};
-	Vector2 hpBarPos_ = {0.0f, 0.0f};
+	Vector2 hpBarSize_ = {2.0f, 0.3f};
+	Vector3 hpBarPos_ = {0.0f, 0.0f, 0.0f};
 
 	SHEngine::ModelManager* modelManager_ = nullptr;
 	AnimationBundle<float> scaleAnimationHPBarAfter_;

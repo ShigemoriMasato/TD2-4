@@ -15,17 +15,17 @@ void ParameterRender::Initialize(SHEngine::ModelManager* modelManager, SHEngine:
 	for (int i = 0; i < kParameterCount; ++i) {
 		// ラベルテキストの初期化
 		texts_[i] = std::make_unique<Text>();
-		texts_[i]->Initialize(data, "YDWbananaslipplus.otf", 64);
+		texts_[i]->Initialize(data, "YDWbananaslipplus.otf", 64, "Parameter : " + std::to_string(i));
 		texts_[i]->SetText(texturePaths[i]);
 
 		// 数値テキストの初期化
 		valueTexts_[i] = std::make_unique<Text>();
-		valueTexts_[i]->Initialize(data, "YDWbananaslipplus.otf", 64);
+		valueTexts_[i]->Initialize(data, "YDWbananaslipplus.otf", 64, "ParameterNum : " + std::to_string(i));
 		valueTexts_[i]->SetText(L"0");
 	}
 
 	// 背景用モデル生成&初期化
-	backgroundRender_ = std::make_unique<RenderObject>();
+	backgroundRender_ = std::make_unique<RenderObject>("Parameter BG");
 	backgroundRender_->Initialize();
 
 	// シェーダー設定
@@ -52,9 +52,19 @@ void ParameterRender::Initialize(SHEngine::ModelManager* modelManager, SHEngine:
 	backgroundWVP_ = Matrix::MakeAffineMatrix(backgroundTransform_.scale, backgroundTransform_.rotate, backgroundTransform_.position);
 }
 
-void ParameterRender::Update(Matrix4x4 vpMatrix, const std::unordered_map<std::string, float>& parameterData) {
+void ParameterRender::Update(Matrix4x4 vpMatrix, const std::unordered_map<std::string, float>& parameterData, float deltaTime, std::unordered_map<Key, bool> key) {
+	if (key[Key::Debug1]) {
+		if (!isAnimation_) {
+			AnimationStart();
+		} else {
+			ReturnAnimationStart();
+		}
+	}
+
+	offsetAnimation_.anim.Update(deltaTime, offsetAnimation_.temp);
+
 	for (int i = 0; i < kParameterCount; ++i) {
-		transforms_[i].position.x = posX_;
+		transforms_[i].position.x = posX_ + offsetAnimation_.temp;
 		transforms_[i].position.y = i * marginY_ + startPosY_;
 
 		// 数値テキストのTransform（ラベルからオフセット分ずらす）
@@ -117,4 +127,18 @@ void ParameterRender::Draw(CmdObj* cmdObj) {
 	}
 	ImGui::End();
 #endif
+}
+
+void ParameterRender::AnimationStart() {
+	if (!offsetAnimation_.anim.GetIsActive()) {
+		offsetAnimation_.anim.Start(0.0f, endPos_, 0.5f, EaseType::EaseOutCubic);
+		isAnimation_ = true;
+	}
+}
+
+void ParameterRender::ReturnAnimationStart() {
+	if (!offsetAnimation_.anim.GetIsActive()) {
+		offsetAnimation_.anim.Start(endPos_, 0.0f, 0.5f, EaseType::EaseOutCubic);
+		isAnimation_ = false;
+	}
 }

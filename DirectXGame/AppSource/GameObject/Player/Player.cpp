@@ -8,7 +8,7 @@ using namespace Player;
 
 void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, CharacterID characterID, ItemManager* itemManager) {
 	// 本体描画用オブジェクトの生成&初期化
-	render_ = std::make_unique<RenderObject>();
+	render_ = std::make_unique<RenderObject>("Player");
 	render_->Initialize();
 
 	// シェーダーの設定
@@ -32,7 +32,7 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	render_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
 
 	// 残像描画用オブジェクトの生成&初期化
-	afterImageRender_ = std::make_unique<RenderObject>();
+	afterImageRender_ = std::make_unique<RenderObject>("PlayerAfterImage");
 	afterImageRender_->Initialize();
 
 	// シェーダーの設定
