@@ -123,8 +123,8 @@ bool Piece::IsHovered(const Vector3& cursorPos, BackPack* backPack) {
 		}
 		std::pair<int, int> slotPos = GetChipPos(chip);
 		Vector3 slotWorldPos = backPack->GetWorldPos(slotPos);
-		if (std::abs(cursorPos.x - slotWorldPos.x) < 0.5f &&
-			std::abs(cursorPos.z - slotWorldPos.z) < 0.5f) {
+		if (std::abs((cursorPos.x + hoverOffsetX) - slotWorldPos.x) < hoverSizeX &&
+			std::abs((cursorPos.z + hoverOffsetZ) - slotWorldPos.z) < hoverSizeZ) {
 			isHovered_ = true;
 			return true;
 		}
