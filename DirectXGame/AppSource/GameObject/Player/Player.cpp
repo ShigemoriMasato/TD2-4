@@ -8,7 +8,7 @@ using namespace Player;
 
 void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, CharacterID characterID, ItemManager* itemManager) {
 	// 本体描画用オブジェクトの生成&初期化
-	render_ = std::make_unique<RenderObject>();
+	render_ = std::make_unique<RenderObject>("Player");
 	render_->Initialize();
 
 	// シェーダーの設定
@@ -32,7 +32,7 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	render_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
 
 	// 残像描画用オブジェクトの生成&初期化
-	afterImageRender_ = std::make_unique<RenderObject>();
+	afterImageRender_ = std::make_unique<RenderObject>("PlayerAfterImage");
 	afterImageRender_->Initialize();
 
 	// シェーダーの設定
@@ -76,7 +76,7 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 
 	// HPの初期化
 	//maxHP_ = parameterList_->GetParameter("MaxHP");
-	maxHP_ = 10; // 仮の値
+	maxHP_ = 500; // 仮の値
 	currentHP_ = maxHP_;
 }
 
@@ -88,6 +88,9 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, b
 	if (currentState_) {
 		currentState_->Update(this, deltaTime);
 	}
+
+	maxHP_ = std::clamp(maxHP_, lowerLimitHP_, upperLimitHP_);
+	currentHP_ = std::clamp(currentHP_, 0.0f, maxHP_);
 
 #ifdef _DEBUG
 	// HP

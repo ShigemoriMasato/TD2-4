@@ -23,6 +23,10 @@
 #include <02_ShigeScene/ShopScene.h>
 #include <Scene/01_Title/TitleScene.h>
 #include <GameObject/Player/PlayerHP.h>
+#include <GameObject/Player/Parameter/ParameterRender.h>
+#include <UI/Game/GameFrame.h>
+#include <Render/PostEffect.h>
+#include <Render/Font/Text.h>
 
 class ShigeScene : public IScene {
 public:
@@ -66,6 +70,8 @@ private:// System系
 	std::unique_ptr<ObjectRender> objectRender_;
 	std::unique_ptr<Camera> orthoCamera_;
 
+	std::unique_ptr<ParameterRender> parameterRender_;
+
 	JsonManager jsonManager_;
 
 	float worldTimer_ = 0.0f;
@@ -80,5 +86,14 @@ private:// System系
 private:// Shop
 
 	std::unique_ptr<ShopScene> shopScene_;
+
+private:// UI系
+
+	std::unique_ptr<GameFrame> gameFrame_;
+	std::unique_ptr<PostEffect> postEffect_;
+	PostEffectConfig postEffectConfig_;
+
+	std::unique_ptr<SHEngine::Text> timerText_;
+	Transform timerTextTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {640.0f, 600.0f, 0.0f} };
 
 };

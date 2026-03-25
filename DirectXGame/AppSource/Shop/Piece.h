@@ -42,6 +42,12 @@ public:
 	void RotateRight();
 	void RotateLeft();
 	Direction GetDirection() const { return direction_; }
+	
+public:
+	static inline float hoverSizeX = 0.5f;
+	static inline float hoverSizeZ = 0.5f;
+	static inline float hoverOffsetX = 0.5f;
+	static inline float hoverOffsetZ = 0.0f;
 
 private:
 

@@ -45,9 +45,9 @@ private:
 	int height_ = 10;
 
 	// 初期の空き領域
-	int emptyStartX_ = 3;
-	int emptyStartY_ = 3;
-	int emptyAreaWidth_ = 5;
-	int emptyAreaHeight_ = 4;
+	int emptyStartX_ = 2;
+	int emptyStartY_ = 2;
+	int emptyAreaWidth_ = 6;
+	int emptyAreaHeight_ = 6;
 
 };

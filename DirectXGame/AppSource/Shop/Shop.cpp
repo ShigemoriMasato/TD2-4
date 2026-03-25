@@ -40,6 +40,11 @@ void Shop::DrawImGui() {
 	ImGui::Begin("Shop");
 	ImGui::DragFloat3("Start Pos", &startPos_.x, 0.1f);
 	ImGui::DragFloat3("Interval", &interval_.x, 0.1f);
+	ImGui::Text("Hover Detect");
+	ImGui::DragFloat("Hover Size X", &Piece::hoverSizeX, 0.01f);
+	ImGui::DragFloat("Hover Size Z", &Piece::hoverSizeZ, 0.01f);
+	ImGui::DragFloat("Hover Offset X", &Piece::hoverOffsetX, 0.01f);
+	ImGui::DragFloat("Hover Offset Z", &Piece::hoverOffsetZ, 0.01f);
 	ImGui::End();
 #endif
 }

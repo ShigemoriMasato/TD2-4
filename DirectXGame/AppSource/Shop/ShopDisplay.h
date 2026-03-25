@@ -18,4 +18,6 @@ private:
 	std::unique_ptr<SHEngine::Screen::MultiDisplay> disp_;
 	std::unique_ptr<SHEngine::RenderObject> render_;
 
+	Transform transform_;
+
 };

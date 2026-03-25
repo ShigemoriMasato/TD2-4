@@ -46,6 +46,8 @@ void ObjectRender::AddRenderObject(int modelID) {
 		return;
 	}
 
+	int drawMax = 1024 * (std::find(extraIndexNums_.begin(), extraIndexNums_.end(), modelID) != extraIndexNums_.end() ? 4 : 1);
+
 	auto& render = renderObjects_[modelID];
 	render = std::make_unique<SHEngine::RenderObject>("ObjectRender_" + std::to_string(modelID));
 	render->Initialize();
@@ -55,8 +57,8 @@ void ObjectRender::AddRenderObject(int modelID) {
 
 	render->psoConfig_.vs = "Simples.VS.hlsl";
 	render->psoConfig_.ps = "TexColors.PS.hlsl";
-	render->CreateSRV(sizeof(Matrix4x4), 1024, ShaderType::VERTEX_SHADER, "WVP");
-	render->CreateSRV(sizeof(Vector4), 1024, ShaderType::PIXEL_SHADER, "Color");
+	render->CreateSRV(sizeof(Matrix4x4), drawMax, ShaderType::VERTEX_SHADER, "WVP");
+	render->CreateSRV(sizeof(Vector4), drawMax, ShaderType::PIXEL_SHADER, "Color");
 	render->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
 	render->SetUseTexture(true);
 }

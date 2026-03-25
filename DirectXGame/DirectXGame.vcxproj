@@ -205,6 +205,10 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Attack\AttackManager.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Bullet.cpp" />
     <ClCompile Include="AppSource\UI\Title\TitleUI.cpp" />
+    <ClCompile Include="AppSource\GameObject\Attack\AxeSwing.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\Data\Ax.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\Data\Bow.cpp" />
+    <ClCompile Include="AppSource\GameObject\Enemy\EnemyHP.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSPSOManager.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSRootSignature.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSShaderShelf.cpp" />
@@ -279,6 +283,10 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Camera\GameCamera.cpp" />
     <ClCompile Include="AppSource\GameObject\GameTimer.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Controller\InputController.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\Data\Fist.cpp" />
+    <ClCompile Include="AppSource\GameObject\Attack\GrenadeBullet.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\Data\Gurepon.cpp" />
+    <ClCompile Include="AppSource\UI\Game\GameFrame.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\FountainParticle\FountainParticle.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
@@ -353,6 +361,10 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Attack\AttackManager.h" />
     <ClInclude Include="AppSource\GameObject\Attack\Bullet.h" />
     <ClInclude Include="AppSource\UI\Title\TitleUI.h" />
+    <ClInclude Include="AppSource\GameObject\Attack\AxeSwing.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\Data\Ax.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\Data\Bow.h" />
+    <ClInclude Include="AppSource\GameObject\Enemy\EnemyHP.h" />
     <ClInclude Include="Engine\Compute\PSO\CSPSOManager.h" />
     <ClInclude Include="Engine\Compute\PSO\CSRootSignature.h" />
     <ClInclude Include="Engine\Compute\PSO\CSShaderShelf.h" />
@@ -449,6 +461,10 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Shop\ShopDisplay.h" />
     <ClInclude Include="Engine\Render\Font\Text.h" />
     <ClInclude Include="AppSource\02_ShigeScene\TechnicalTestScene.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\Data\Fist.h" />
+    <ClInclude Include="AppSource\GameObject\Attack\GrenadeBullet.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\Data\Gurepon.h" />
+    <ClInclude Include="AppSource\UI\Game\GameFrame.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\FountainParticle\FountainParticle.h" />
   </ItemGroup>
   <ItemGroup>
