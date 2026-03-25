@@ -2,6 +2,8 @@
 #include <stdexcept>
 #include <algorithm>
 
+std::unordered_map<std::string, TrailPresetVariant> TrailPresetDataBank::cache_{};
+
 const TrailPresetVariant& TrailPresetDataBank::Get(const std::string& name)
 {
 	auto [it, inserted] = cache_.try_emplace(name, Load_(name));

@@ -42,5 +42,5 @@ private:
 
 private:
 	JsonManager json_;
-	std::unordered_map<std::string, ParticlePresetVariant> cache_;
+	static std::unordered_map<std::string, ParticlePresetVariant> cache_;
 };
