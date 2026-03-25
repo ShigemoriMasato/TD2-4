@@ -81,6 +81,13 @@ void ShigeScene::Initialize() {
 	postEffectConfig_.cmdObj = commonData_->cmdObject.get();
 	postEffectConfig_.origin = commonData_->display->GetDisplay();
 	postEffectConfig_.jobs_ = 0;
+
+	timerText_ = std::make_unique<SHEngine::Text>(64);
+	timerText_->Initialize(planeDrawData, "YDWbananaslipplus.otf", 64);
+	timerText_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+
+	timerTextTransform_.position = { 775.0f, -295.0f, 0.0f }; // Top center or so // default
+	timerTextTransform_.scale = { 1.f, 1.f, 1.0f };
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -100,6 +107,9 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	gameTimer_->Update(deltaTime);
 	waveSystem_->Update(deltaTime);
+
+	std::wstring timerWStr = std::format(L"{:.0f}", gameTimer_->GetTimer());
+	timerText_->SetText(timerWStr);
 
 	if (key[Key::ControllerChange]) {
 		// インデックスを切り替える
@@ -168,6 +178,9 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	orthoCamera_->SetScale({1, -1, 1});
 	orthoCamera_->SetPosition({0, 0, 0});
 	orthoCamera_->MakeMatrix();
+
+	timerText_->Update(orthoCamera_->GetVPMatrix());
+	timerText_->SetTransform(timerTextTransform_);
 
 	parameterRender_->Update(orthoCamera_->GetVPMatrix(), player_->GetParameters());
 	map_->Update(camera_->GetVPMatrix());
@@ -239,6 +252,8 @@ void ShigeScene::Draw() {
 		render->Draw(cmdObj);
 	}
 
+	timerText_->Draw(cmdObj);
+
 	shopScene_->Draw();
 
 	gameFrame_->Draw(cmdObj);
@@ -254,6 +269,8 @@ void ShigeScene::Draw() {
 
 	ImGui::Begin("Game Timer");
 	ImGui::Text("Game Time : %.2f s", gameTimer_->GetTimer());
+	ImGui::DragFloat3("Pos", &timerTextTransform_.position.x, 1.0f);
+	ImGui::DragFloat3("Scale", &timerTextTransform_.scale.x, 0.01f);
 	ImGui::End();
 
 	ImGui::Begin("FPS");
