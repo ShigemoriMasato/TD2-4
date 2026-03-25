@@ -18,6 +18,16 @@ void GameCamera::DrawImGui() {
 #ifdef USE_IMGUI
 	ImGui::Begin("Camera");
 
+	if (ImGui::Checkbox("Change View", &isViewType2)) {
+		if (isViewType2) {
+			offset_ = { 2.0f, 34.0f, -45.0f };
+			rotation_ = { -0.500f, 0.0f, 0.0f };
+		} else {
+			offset_ = { -2.0f, 78.0f, 14.0f };
+			rotation_ = { -1.570f, 0.0f, 0.0f };
+		}
+	}
+
 	ImGui::DragFloat3("Offset", &offset_.x, 0.1f);
 
 	ImGui::Separator();
