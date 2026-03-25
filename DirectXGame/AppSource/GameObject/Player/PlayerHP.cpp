@@ -40,6 +40,17 @@ void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMana
 
 	// モデルマネージャー
 	modelManager_ = modelManager;
+
+	// テキストの初期化
+	int planeModelHandle = modelManager->LoadModel("Assets/.EngineResource/Model/Plane");
+	auto planeModelData = modelManager->GetNodeModelData(planeModelHandle);
+	DrawData data = drawDataManager->GetDrawData(planeModelData.drawDataIndex);
+
+	hpText_ = std::make_unique<SHEngine::Text>();
+	hpText_->Initialize(data, "YDWbananaslipplus.otf", 64);
+	hpText_->SetText(L"0/0");
+	hpText_->SetSize(hpTextSize_);
+	//hpTextTransform_.position = {hpBarPos_.x, hpBarPos_.y, 0.0f}; // HPバーの初期位置辺りに配置
 }
 
 void HP::Update(Matrix4x4 vpMatrix, float deltaTime, float currentHP, float maxHP) {
@@ -48,6 +59,21 @@ void HP::Update(Matrix4x4 vpMatrix, float deltaTime, float currentHP, float maxH
 		HPBarScaleChange(currentHP, maxHP);
 		previousHP_ = currentHP;
 	}
+
+#ifdef USE_IMGUI
+	// ImGuiでのサイズ・位置変更を即座に反映させるための再計算
+	hpBarBG_.transform.scale = {hpBarSize_.x, hpBarSize_.y, 1.0f};
+	hpBarBG_.transform.position = {hpBarPos_.x, hpBarPos_.y, 0.0f};
+	
+	hpBarFill_.transform.scale.y = hpBarSize_.y;
+	hpBarAfter_.transform.scale.y = hpBarSize_.y;
+
+	float offsetX = (hpBarSize_.x - hpBarFill_.transform.scale.x) / 2.0f;
+	hpBarFill_.transform.position = {hpBarPos_.x - offsetX, hpBarPos_.y, 0.0f};
+	
+	offsetX = (hpBarSize_.x - hpBarAfter_.transform.scale.x) / 2.0f;
+	hpBarAfter_.transform.position = {hpBarPos_.x - offsetX, hpBarPos_.y, 0.0f};
+#endif
 
 	// スケールアニメーションの更新
 	AnimationHPBarAfter(deltaTime);
@@ -78,6 +104,14 @@ void HP::Update(Matrix4x4 vpMatrix, float deltaTime, float currentHP, float maxH
 	color = {0.0f, 0.0f, 0.0f, 1.0f};
 
 	hpBarBG_.render->CopyBufferData(1, &color, sizeof(Vector4));
+
+	// HPテキスト更新
+	std::wstring hpString = std::to_wstring((int)currentHP) + L"/" + std::to_wstring((int)maxHP);
+	hpTextTransform_.scale = { hpTextSize_, hpTextSize_, 1.0f };
+	hpText_->SetText(hpString);
+	hpText_->SetColor(hpTextColor_);
+	hpText_->SetTransform(hpTextTransform_);
+	hpText_->Update(vpMatrix);
 }
 
 void HP::Draw(CmdObj* cmdObj) {
@@ -86,7 +120,21 @@ void HP::Draw(CmdObj* cmdObj) {
 	hpBarAfter_.render->Draw(cmdObj);
 	hpBarFill_.render->Draw(cmdObj);
 
+	// HPテキスト描画
+	hpText_->Draw(cmdObj);
+
 #ifdef USE_IMGUI
+	ImGui::Begin("Player HP Bar");
+	ImGui::Text("HP Bar Settings");
+	ImGui::DragFloat2("Bar Position", &hpBarPos_.x, 1.0f);
+	ImGui::DragFloat2("Bar Size", &hpBarSize_.x, 1.0f);
+	
+	ImGui::Separator();
+	ImGui::Text("HP Text Settings");
+	ImGui::DragFloat2("Text Position", &hpTextTransform_.position.x, 1.0f);
+	ImGui::DragFloat("Text Size", &hpTextSize_, 0.1f);
+	ImGui::ColorEdit4("Text Color", &hpTextColor_.x);
+	ImGui::End();
 #endif
 }
 

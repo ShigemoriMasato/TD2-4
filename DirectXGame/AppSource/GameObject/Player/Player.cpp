@@ -89,6 +89,9 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, b
 		currentState_->Update(this, deltaTime);
 	}
 
+	maxHP_ = std::clamp(maxHP_, lowerLimitHP_, upperLimitHP_);
+	currentHP_ = std::clamp(currentHP_, 0.0f, maxHP_);
+
 #ifdef _DEBUG
 	// HP
 	if (key[Key::Damage]) {

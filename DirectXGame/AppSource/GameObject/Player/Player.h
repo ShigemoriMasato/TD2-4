@@ -153,6 +153,8 @@ private:
 	// HP
 	float maxHP_ = 0.0f;
 	float currentHP_ = 0.0f;
+	float upperLimitHP_ = 999.0f; // HPの上限（バグ防止用）
+	float lowerLimitHP_ = 1.0f;   // HPの下限（バグ防止用）
 
 	// 無敵フラグ
 	bool isInvincible_ = false;

@@ -26,6 +26,7 @@
 #include <GameObject/Player/Parameter/ParameterRender.h>
 #include <UI/Game/GameFrame.h>
 #include <Render/PostEffect.h>
+#include <Render/Font/Text.h>
 
 class ShigeScene : public IScene {
 public:
@@ -91,5 +92,8 @@ private:// UI系
 	std::unique_ptr<GameFrame> gameFrame_;
 	std::unique_ptr<PostEffect> postEffect_;
 	PostEffectConfig postEffectConfig_;
+
+	std::unique_ptr<SHEngine::Text> timerText_;
+	Transform timerTextTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {640.0f, 600.0f, 0.0f} };
 
 };
