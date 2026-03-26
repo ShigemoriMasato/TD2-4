@@ -88,11 +88,6 @@ void Engine::PostDraw() {
 		imguiDrawed_ = true;
 	}
 
-	cmdManager_->Execute(Command::Type::Direct);
-}
-
-void Engine::EndFrame() {
-	cmdManager_->SendSignal(Command::Type::Direct);
 }
 
 std::unique_ptr<Screen::SwapChain> SHEngine::Engine::MakeWindow(Screen::WindowsAPI* windowsApi, uint32_t clearColor) {

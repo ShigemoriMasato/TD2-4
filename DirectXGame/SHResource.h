@@ -13,13 +13,14 @@ enum class BufferType : uint8_t {
 namespace SHEngine {
 
 	struct ResourceDesc {
+		BufferType type;
 		D3D12_RESOURCE_DESC desc;
 	};
 
 	class Resource {
 	public:
 		Resource(ID3D12Resource* resource);
-		Resource(ResourceDesc& desc)
+		Resource(ResourceDesc& desc);
 
 	private:
 
