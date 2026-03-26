@@ -88,6 +88,21 @@ void ShigeScene::Initialize() {
 
 	timerTextTransform_.position = { 775.0f, -295.0f, 0.0f }; // Top center or so // default
 	timerTextTransform_.scale = { 1.f, 1.f, 1.0f };
+
+	displayRange_.top = 390.0f;
+	displayRange_.bottom = 810.0f;
+	displayRange_.left = 560.0f;
+	displayRange_.right = 1340.0f;
+
+//#ifdef USE_IMGUI
+//
+//	displayRange_.top = 165.0f;
+//	displayRange_.bottom = 375.0f;
+//	displayRange_.left = 240.0f;
+//	displayRange_.right = 630.0f;
+//
+//#endif // DEBUG
+
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -100,7 +115,36 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	gameFrame_->Update();
 
-	gameCamera_->Update(deltaTime, Vector3{0.0f, 0.0f, 0.0f});
+	Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
+	bool inDisplayRange = false;
+	if (cursorPos.x >= displayRange_.left && cursorPos.x <= displayRange_.right &&
+	    cursorPos.y >= displayRange_.top && cursorPos.y <= displayRange_.bottom) {
+		inDisplayRange = true;
+	}
+
+	bool isRightClickHeld = (input_->GetMouseButtonState()[1] & 0x80) != 0;
+
+	if (inDisplayRange && isRightClickHeld && !isCameraDragging_) {
+		isCameraDragging_ = true;
+	}
+
+	if (isCameraDragging_) {
+		if (isRightClickHeld) {
+			Vector2 delta = input_->GetMouseMove();
+			float moveScale = 0.05f;
+			cameraTargetOffset_.x -= delta.x * moveScale;
+			cameraTargetOffset_.z += delta.y * moveScale;
+		} else {
+			isCameraDragging_ = false;
+			cameraTargetOffset_ = {0.0f, 0.0f, 0.0f};
+		}
+	} else {
+		cameraTargetOffset_ = {0.0f, 0.0f, 0.0f};
+	}
+
+	Vector3 cameraTargetPos = player_->GetTransform().position + cameraTargetOffset_;
+
+	gameCamera_->Update(deltaTime, cameraTargetPos);
 	Vector3 cameraPos = {0.f, 0.f, 0.f};
 	grid_->Update(cameraPos, camera_->GetVPMatrix());
 	auto key = commonData_->keyManager->GetKeyStates();

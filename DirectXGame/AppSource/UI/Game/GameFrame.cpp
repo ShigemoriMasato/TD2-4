@@ -1,6 +1,8 @@
 #include "GameFrame.h"
 #include <numbers>
 #include <imgui/imgui.h>
+#include <windows.h>
+#include <format>
 
 void GameFrame::Initialize(SHEngine::DrawData& drawData, int textureIndex) {
 	render_ = std::make_unique<SHEngine::RenderObject>("GameFrame");
@@ -21,6 +23,26 @@ void GameFrame::Initialize(SHEngine::DrawData& drawData, int textureIndex) {
 }
 
 void GameFrame::Update() {
+#ifdef USE_IMGUI
+	ImVec2 mousePos = ImGui::GetMousePos();
+	ImGui::Begin("Mouse Info");
+	ImGui::Text("Screen Position: (%.1f, %.1f)", mousePos.x, mousePos.y);
+	ImGui::End();
+#endif
+
+	static bool isLButtonDown = false;
+	if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+		if (!isLButtonDown) {
+			POINT pt;
+			GetCursorPos(&pt);
+			std::string logStr = std::format("Left Click Screen Position: ({}, {})\n", pt.x, pt.y);
+			OutputDebugStringA(logStr.c_str());
+			isLButtonDown = true;
+		}
+	} else {
+		isLButtonDown = false;
+	}
+
 	Matrix4x4 wvp = Matrix::MakeScaleMatrix(transform_.scale) * Matrix::MakeRotationMatrix(transform_.rotate) * Matrix::MakeTranslationMatrix(transform_.position);
 	render_->CopyBufferData(0, &wvp, sizeof(wvp));
 	render_->CopyBufferData(1, &textureIndex_, sizeof(textureIndex_));

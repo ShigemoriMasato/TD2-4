@@ -313,6 +313,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Player\PlayerAI\PlayerAI.cpp" />
     <ClCompile Include="Engine\Render\Font\Text.cpp" />
     <ClCompile Include="AppSource\02_ShigeScene\TechnicalTestScene.cpp" />
+    <ClInclude Include="AppSource\02_ShigeScene\GameDisplayRange.h" />
     <ClInclude Include="AppSource\GameObject\Map\MapInfo.h" />
     <ClInclude Include="AppSource\GameObject\Player\Controller\AIController.h" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Spear.cpp" />
