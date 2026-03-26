@@ -56,7 +56,8 @@ void LevelSystem::Update(float deltaTime) {
 				retryCount++;
 			} while (retryCount < 10); // 無限ループ防止のため最大10回リトライ
 
-			enemyManager_->PopEnemy(spawnPos, static_cast<int>(config_.enemyHp));
+			EnemyType type = (rand() % 2 == 0) ? EnemyType::Normal : EnemyType::Fast;
+			enemyManager_->PopEnemy(spawnPos, static_cast<int>(config_.enemyHp), type);
 		}
 	}
 }

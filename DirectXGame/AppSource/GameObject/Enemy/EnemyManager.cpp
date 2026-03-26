@@ -1,5 +1,6 @@
 #include "EnemyManager.h"
 #include "NormalEnemy.h"
+#include "FastEnemy.h"
 #include "IEnemy.h"
 
 void EnemyManager::Initialize(Vector3* playerPos) {
@@ -23,7 +24,11 @@ void EnemyManager::Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVp
 		
 		int id = nextEnemyId_++;
 		auto& enemy = enemies_[id];
-		enemy = std::make_unique<NormalEnemy>();
+		if (p.type == EnemyType::Fast) {
+			enemy = std::make_unique<FastEnemy>();
+		} else {
+			enemy = std::make_unique<NormalEnemy>();
+		}
 		enemy->Initialize(playerPos_, this, id);
 		enemy->SetPosition(p.pos);
 		enemy->SetHP(p.hp);
@@ -59,11 +64,12 @@ void EnemyManager::DrawImGui() {
 #endif
 }
 
-void EnemyManager::PopEnemy(Vector3 initPos, int hp) {
+void EnemyManager::PopEnemy(Vector3 initPos, int hp, EnemyType type) {
 	PendingEnemy pending;
 	pending.pos = initPos;
 	pending.hp = hp;
 	pending.timer = 1.0f; // 1 second warning
+	pending.type = type;
 	pendingEnemies_.push_back(pending);
 }
 
