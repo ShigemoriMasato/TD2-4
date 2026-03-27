@@ -67,6 +67,19 @@ void LevelSystem::Update(float deltaTime) {
 	}
 }
 
+std::vector<std::vector<EnemyType>> LevelSystem::GetNext5WaveTypes() const {
+	std::vector<std::vector<EnemyType>> waves;
+	
+	int currentWave = static_cast<int>(allTimer_ / 30.0f);
+	for (int i = 0; i < 5; ++i) {
+		int targetWave = currentWave + i;
+		float timeForWave = targetWave * 30.0f + 15.0f; // mid of that wave
+		waves.push_back(GetSpawnTypesAtTime(timeForWave));
+	}
+	
+	return waves;
+}
+
 void LevelSystem::DrawImGui() {
 #ifdef USE_IMGUI
 
@@ -79,6 +92,20 @@ void LevelSystem::DrawImGui() {
 	ImGui::End();
 
 #endif
+}
+
+std::vector<EnemyType> LevelSystem::GetSpawnTypesAtTime(float time) const {
+	if (time <= 30.0f) {
+		return { EnemyType::Normal };
+	} else if (time <= 60.0f) {
+		return { EnemyType::Normal };
+	} else if (time <= 90.0f) {
+		return { EnemyType::Fast };
+	} else if (time <= 120.0f) {
+		return { EnemyType::Normal, EnemyType::Fast };
+	} else {
+		return { EnemyType::Normal, EnemyType::Fast };
+	}
 }
 
 void LevelSystem::AdjustDifficult() {
@@ -122,9 +149,9 @@ void LevelSystem::AdjustDifficult() {
 		config_.enemyCount = 2.0f;
 		config_.enemyHp = 10.0f;
 
-		config_.spawnTypes = { EnemyType::Normal, EnemyType::Fast };
 	}
 
+	config_.spawnTypes = GetSpawnTypesAtTime(allTimer_);
 }
 
 void LevelSystem::Load() {
