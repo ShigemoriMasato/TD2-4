@@ -7,46 +7,31 @@ using namespace SHEngine;
 using namespace Player;
 
 void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, CharacterID characterID, ItemManager* itemManager) {
-	// 本体描画用オブジェクトの生成&初期化
-	render_ = std::make_unique<RenderObject>("Player");
-	render_->Initialize();
+	for (int i = 0; i < static_cast<int>(PartIndex::Count); ++i) {
+		// 本体描画用オブジェクトの生成&初期化
+		render_[i] = std::make_unique<RenderObject>("Player");
+		render_[i]->Initialize();
 
-	// シェーダーの設定
-	render_->psoConfig_.vs = "Game/Field.VS.hlsl";
-	render_->psoConfig_.ps = "Game/Field.PS.hlsl";
-	render_->SetUseTexture(true);
+		// シェーダーの設定
+		render_[i]->psoConfig_.vs = "Game/Field.VS.hlsl";
+		render_[i]->psoConfig_.ps = "Game/Field.PS.hlsl";
+		render_[i]->SetUseTexture(true);
 
-	// 描画するデータの読み込み
-	int modelHandle = modelManager->LoadModel("Assets/Model/player");
-	auto modelData = modelManager->GetNodeModelData(modelHandle);
-	auto drawData = drawDataManager->GetDrawData(modelData.drawDataIndex);
-	render_->SetDrawData(drawData);
+		// 描画するデータの読み込み
+		int modelHandle = modelManager->LoadModel("Assets/Model/player/player-" + std::to_string(i));
+		auto modelData = modelManager->GetNodeModelData(modelHandle);
+		auto drawData = drawDataManager->GetDrawData(modelData.drawDataIndex);
+		render_[i]->SetDrawData(drawData);
 
-	// テクスチャインデックスを保存
-	auto& material = modelData.materials[modelData.materialIndex.front()];
-	textureIndex_ = material.textureIndex;
+		// テクスチャインデックスを保存
+		auto& material = modelData.materials[modelData.materialIndex.front()];
+		textureIndex_ = material.textureIndex;
 
-	// CBVの設定
-	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
-	render_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
-	render_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
-
-	// 残像描画用オブジェクトの生成&初期化
-	afterImageRender_ = std::make_unique<RenderObject>("PlayerAfterImage");
-	afterImageRender_->Initialize();
-
-	// シェーダーの設定
-	afterImageRender_->psoConfig_.vs = "Game/AfterImage.VS.hlsl";
-	afterImageRender_->psoConfig_.ps = "Game/AfterImage.PS.hlsl";
-	afterImageRender_->SetUseTexture(true);
-	afterImageRender_->SetDrawData(drawData);
-
-	// CBVの設定
-	afterImageRender_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WorldMatrix");
-
-	// SRVの設定
-	afterImageRender_->CreateSRV(sizeof(Matrix4x4), kMaxInstanceAfterImage, ShaderType::VERTEX_SHADER, "ViwProj");
-	afterImageRender_->CreateSRV(sizeof(Vector4), kMaxInstanceAfterImage, ShaderType::PIXEL_SHADER, "Colors");
+		// CBVの設定
+		render_[i]->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
+		render_[i]->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+		render_[i]->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	}
 
 	// 単位行列の代入
 	wvp_ = Matrix4x4::Identity();
@@ -75,9 +60,21 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 	logger_ = getLogger("Player");
 
 	// HPの初期化
-	//maxHP_ = parameterList_->GetParameter("MaxHP");
+	// maxHP_ = parameterList_->GetParameter("MaxHP");
 	maxHP_ = 500; // 仮の値
 	currentHP_ = maxHP_;
+
+	// 各パーツのローカルTransformの初期化
+	for (auto& pTransform : partTransforms_) {
+		pTransform.scale = {1.0f, 1.0f, 1.0f};
+		pTransform.rotate = {0.0f, 0.0f, 0.0f};
+	}
+
+	partTransforms_[static_cast<int>(PartIndex::Body)].position = {0.0f, 2.8f, 0.0f};
+	partTransforms_[static_cast<int>(PartIndex::RightArm)].position = {-0.6f, 1.7f, 0.0f};
+	partTransforms_[static_cast<int>(PartIndex::LeftArm)].position = {0.6f, 1.7f, 0.0f};
+	partTransforms_[static_cast<int>(PartIndex::RightLeg)].position = {-0.25f, 0.4f, 0.0f};
+	partTransforms_[static_cast<int>(PartIndex::LeftLeg)].position = {0.25f, 0.4f, 0.0f};
 }
 
 void Base::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, bool>& key) {
@@ -108,9 +105,6 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, b
 	}
 #endif
 
-	// 残像の更新
-	UpdateAfterImages(deltaTime);
-
 	// プレイヤーの移動制限
 	ClampPosition();
 
@@ -118,15 +112,28 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, b
 	wvp_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 	wvp_ *= vpMatrix;
 
-	// wvp行列を描画に適用
-	render_->CopyBufferData(0, &wvp_, sizeof(Matrix4x4));
+	// プレイヤー本体のワールド行列を計算
+	Matrix4x4 matWorldBody = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 
-	// 色の指定
-	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
-	render_->CopyBufferData(1, &color, sizeof(Vector4));
+	for (int i = 0; i < static_cast<int>(PartIndex::Count); ++i) {
+		Matrix4x4 matLocal = Matrix::MakeAffineMatrix(partTransforms_[i].scale, partTransforms_[i].rotate, partTransforms_[i].position);
 
-	// テクスチャ
-	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
+		Matrix4x4 matWorldPart;
+		if (i == static_cast<int>(PartIndex::Count)) {
+			matWorldPart = matWorldBody; // 胴体
+		} else {
+			matWorldPart = matLocal * matWorldBody; // それ以外
+		}
+
+		// WVP行列を計算
+		Matrix4x4 wvp = matWorldPart * vpMatrix;
+
+		Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
+
+		render_[i]->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
+		render_[i]->CopyBufferData(1, &color, sizeof(Vector4));
+		render_[i]->CopyBufferData(2, &textureIndex_, sizeof(int));
+	}
 
 	collCircle_->center = {transform_.position.x, transform_.position.z};
 
@@ -143,37 +150,24 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, b
 void Player::Base::UpdateParameter(const std::vector<Piece*>& items) { parameterList_->Update(items); }
 
 void Base::Draw(CmdObj* cmdObj) {
-	// 残像の描画
-	if (!afterImages_.empty()) {
-		std::vector<Matrix4x4> worldMatrices;
-		std::vector<Vector4> colors;
-
-		for (const auto& ai : afterImages_) {
-			// Transformからワールド行列を計算
-			Matrix4x4 world = Matrix::MakeAffineMatrix(ai.transform.scale, ai.transform.rotate, ai.transform.position);
-			worldMatrices.push_back(world);
-
-			// 寿命に応じて透明度を下げる
-			float alpha = ai.timer / afterImageLifeTime_;
-
-			colors.push_back(Vector4(1.0f, 1.0f, 1.0f, alpha));
-		}
-
-		afterImageRender_->CopyBufferData(0, &vpMatrix_, sizeof(Matrix4x4));
-		afterImageRender_->CopyBufferData(1, worldMatrices.data(), sizeof(Matrix4x4) * worldMatrices.size());
-		afterImageRender_->CopyBufferData(2, colors.data(), sizeof(Vector4) * colors.size());
-
-		afterImageRender_->instanceNum_ = static_cast<int>(worldMatrices.size());
-
-		// 描画
-		afterImageRender_->Draw(cmdObj);
-	}
-
-	// 本体の描画
-	render_->Draw(cmdObj);
+	for (int i = 0; i < static_cast<int>(PartIndex::Count); ++i) {
+		// 本体の描画
+		render_[i]->Draw(cmdObj);
 
 #ifdef USE_IMGUI
-#endif // USE_IMGUI
+		ImGui::Begin("Param");
+
+		std::string labelScale = "Scale##" + std::to_string(i);
+		std::string labelRotate = "Rotate##" + std::to_string(i);
+		std::string labelPos = "Position##" + std::to_string(i);
+
+		ImGui::DragFloat3(labelScale.c_str(), &partTransforms_[i].scale.x, 0.01f);
+		ImGui::DragFloat3(labelRotate.c_str(), &partTransforms_[i].rotate.x, 0.01f);
+		ImGui::DragFloat3(labelPos.c_str(), &partTransforms_[i].position.x, 0.01f);
+
+		ImGui::End();
+#endif
+	}
 }
 
 void Base::ChangeState(std::unique_ptr<IPlayerState> newState) {
@@ -189,18 +183,9 @@ void Base::ChangeState(std::unique_ptr<IPlayerState> newState) {
 	}
 }
 
-void Player::Base::SpawnAfterImage() {
-	AfterImage ai;
-	ai.transform = transform_;      // 現在のプレイヤーの姿勢を代入
-	ai.timer = afterImageLifeTime_; // 寿命をセット
-	afterImages_.push_back(ai);
-}
+void Player::Base::OnCollision(Collider* other) { Damage(1.0f); }
 
-void Player::Base::OnCollision(Collider* other) {
-	Damage(1.0f);
-}
-
-void Player::Base::Damage(float amount){
+void Player::Base::Damage(float amount) {
 #ifdef _DEBUG
 	if (isDebugInvincible_)
 		return;
@@ -220,16 +205,69 @@ void Player::Base::Heal(float amount) {
 	currentHP_ = std::min(currentHP_ + amount, maxHP_);
 }
 
-void Player::Base::UpdateAfterImages(float deltaTime) {
-	// 残像のタイマーを減らし0以下になったらリストから削除
-	for (auto it = afterImages_.begin(); it != afterImages_.end();) {
-		it->timer -= deltaTime;
-		if (it->timer <= 0.0f) {
-			it = afterImages_.erase(it); // 削除
+void Player::Base::UpdateWalkAnimation(float deltaTime, bool isMoving) {
+	// 腕と脚を振る最大角度と片道の時間
+	const float maxAngle = std::numbers::pi_v<float> / 4.0f;
+	const float animDuration = 0.5f;
+
+	if (isMoving) {
+		// 停止状態から移動状態に切り替わった瞬間
+		if (!wasMoving_) {
+			// 現在の角度から、歩き始めの目標角度へアニメーションを開始
+			rotateAnimationRightArm_.anim.Start(rotateAnimationRightArm_.temp, {maxAngle, 0, 0}, animDuration / 2.0f, EaseType::EaseInOutSine);
+			rotateAnimationLeftArm_.anim.Start(rotateAnimationLeftArm_.temp, {-maxAngle, 0, 0}, animDuration / 2.0f, EaseType::EaseInOutSine);
+			rotateAnimationRightLeg_.anim.Start(rotateAnimationRightLeg_.temp, {-maxAngle, 0, 0}, animDuration / 2.0f, EaseType::EaseInOutSine);
+			rotateAnimationLeftLeg_.anim.Start(rotateAnimationLeftLeg_.temp, {maxAngle, 0, 0}, animDuration / 2.0f, EaseType::EaseInOutSine);
 		} else {
-			++it;
+			// アニメーションの更新
+			bool isPlayingRA = rotateAnimationRightArm_.anim.Update(deltaTime, rotateAnimationRightArm_.temp);
+			rotateAnimationLeftArm_.anim.Update(deltaTime, rotateAnimationLeftArm_.temp);
+			rotateAnimationRightLeg_.anim.Update(deltaTime, rotateAnimationRightLeg_.temp);
+			rotateAnimationLeftLeg_.anim.Update(deltaTime, rotateAnimationLeftLeg_.temp);
+
+			// 片道のアニメーションが終了したら、反転させてループ
+			if (!isPlayingRA) {
+				if (rotateAnimationRightArm_.temp.x > 0.0f) {
+					// 前から後ろ
+					rotateAnimationRightArm_.anim.Start({maxAngle, 0, 0}, {-maxAngle, 0, 0}, animDuration, EaseType::EaseInOutSine);
+					rotateAnimationLeftArm_.anim.Start({-maxAngle, 0, 0}, {maxAngle, 0, 0}, animDuration, EaseType::EaseInOutSine);
+					rotateAnimationRightLeg_.anim.Start({-maxAngle, 0, 0}, {maxAngle, 0, 0}, animDuration, EaseType::EaseInOutSine);
+					rotateAnimationLeftLeg_.anim.Start({maxAngle, 0, 0}, {-maxAngle, 0, 0}, animDuration, EaseType::EaseInOutSine);
+				} else {
+					// 後ろから前
+					rotateAnimationRightArm_.anim.Start({-maxAngle, 0, 0}, {maxAngle, 0, 0}, animDuration, EaseType::EaseInOutSine);
+					rotateAnimationLeftArm_.anim.Start({maxAngle, 0, 0}, {-maxAngle, 0, 0}, animDuration, EaseType::EaseInOutSine);
+					rotateAnimationRightLeg_.anim.Start({maxAngle, 0, 0}, {-maxAngle, 0, 0}, animDuration, EaseType::EaseInOutSine);
+					rotateAnimationLeftLeg_.anim.Start({-maxAngle, 0, 0}, {maxAngle, 0, 0}, animDuration, EaseType::EaseInOutSine);
+				}
+			}
 		}
+	} else {
+		// 移動状態から停止状態に切り替わった瞬間
+		if (wasMoving_) {
+			// 現在の途中の角度から、気をつけの姿勢に戻るアニメーションを開始
+			float returnDuration = 0.25f;
+			rotateAnimationRightArm_.anim.Start(rotateAnimationRightArm_.temp, {0.0f, 0.0f, 0.0f}, returnDuration, EaseType::EaseOutSine);
+			rotateAnimationLeftArm_.anim.Start(rotateAnimationLeftArm_.temp, {0.0f, 0.0f, 0.0f}, returnDuration, EaseType::EaseOutSine);
+			rotateAnimationRightLeg_.anim.Start(rotateAnimationRightLeg_.temp, {0.0f, 0.0f, 0.0f}, returnDuration, EaseType::EaseOutSine);
+			rotateAnimationLeftLeg_.anim.Start(rotateAnimationLeftLeg_.temp, {0.0f, 0.0f, 0.0f}, returnDuration, EaseType::EaseOutSine);
+		}
+
+		// 戻りアニメーションの更新
+		rotateAnimationRightArm_.anim.Update(deltaTime, rotateAnimationRightArm_.temp);
+		rotateAnimationLeftArm_.anim.Update(deltaTime, rotateAnimationLeftArm_.temp);
+		rotateAnimationRightLeg_.anim.Update(deltaTime, rotateAnimationRightLeg_.temp);
+		rotateAnimationLeftLeg_.anim.Update(deltaTime, rotateAnimationLeftLeg_.temp);
 	}
+
+	// 次のフレームの検知用に状態を保存
+	wasMoving_ = isMoving;
+
+	// 各パーツのローカル回転にアニメーションの計算結果を代入
+	partTransforms_[static_cast<int>(PartIndex::RightArm)].rotate = rotateAnimationRightArm_.temp;
+	partTransforms_[static_cast<int>(PartIndex::LeftArm)].rotate = rotateAnimationLeftArm_.temp;
+	partTransforms_[static_cast<int>(PartIndex::RightLeg)].rotate = rotateAnimationRightLeg_.temp;
+	partTransforms_[static_cast<int>(PartIndex::LeftLeg)].rotate = rotateAnimationLeftLeg_.temp;
 }
 
 void Player::Base::ClampPosition() {
@@ -238,13 +276,6 @@ void Player::Base::ClampPosition() {
 	float posZ = std::clamp(transform_.position.z, mapInfo_.minZ, mapInfo_.maxZ);
 
 	transform_.position = Vector3(posX, 0.0f, posZ);
-}
-
-void Base::UpdateDashCooldown(float deltaTime) {
-	// ダッシュタイマーの減算
-	if (dashCooldownTimer_ > 0.0f) {
-		dashCooldownTimer_ -= deltaTime;
-	}
 }
 
 float Base::GetParameter(const std::string& paramName) const {
