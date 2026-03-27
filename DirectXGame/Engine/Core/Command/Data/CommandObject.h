@@ -23,6 +23,8 @@ namespace SHEngine::Command {
 		/// @brief コマンドリストを取得
 		ID3D12GraphicsCommandList* GetCommandList() { return commandLists_[dxListIndex_].GetCommandList(); }
 
+		int GetListIndex() const { return dxListIndex_; }
+
 		/// @brief 現在の状態を簡単に文字列であらわす
 		std::string Log() const;
 
