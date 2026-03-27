@@ -5,6 +5,7 @@
 #include <02_ShigeScene/TechnicalTestScene.h>
 #include <03_YokoScene/YokoScene.h>
 #include <03_YokoScene/TrailEditorScene.h>
+#include <03_YokoScene/PrticleEditorScene.h>
 
 #include <Scene/01_Title/TitleScene.h>
 
@@ -134,9 +135,9 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	//更新処理
 	commonData_->cmdObject->ResetCommandList();
 
+	return std::make_unique<PrticleEditorScene>();
 	return std::make_unique<ShigeScene>();
 	return std::make_unique<TrailEditorScene>();
-	return std::make_unique<YokoScene>();
 	return std::make_unique<TechnicalTestScene>();
 }
 

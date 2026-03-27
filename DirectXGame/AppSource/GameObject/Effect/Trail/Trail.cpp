@@ -38,6 +38,7 @@ void Trail::Initialize(DrawDataManager* drawDataManager, TextureManager* texture
 	// InputLayoutに合わせたダミーのDrawDataを作成
 	if (dummyDrawDataIndex_ == -1)
 	{
+		// 初期化
 		std::vector<VertexData> dummyVertices(maxVertexCount_);
 		for (auto& v : dummyVertices)
 		{
@@ -251,14 +252,6 @@ void Trail::RebuildVertices(const Matrix4x4& vpMatrix)
 
 	renderNormal_->CopyBufferData(cbvTextureIndex_, &textureHandle_, sizeof(int));
 	renderAdd_->CopyBufferData(cbvTextureIndex_, &textureHandle_, sizeof(int));
-
-	// 描画する index 数（quad数 = (サンプル数-1)）
-	const int quadCount = int(samples_.size()) - 1;
-	// RenderObjectは「instanceNum_」をインスタンス数として使うが、ここではインスタンスではなく
-	// ただ描画をONにするため 1 を入れる（実際の描画頂点数はIBで決まる）。
-	// ただし「最大IB」分描いてしまうので、IBを可変にできない現状では「不要部分は透明にする」戦略を取る。
-	// → そのため、古い/未使用頂点はalpha=0にして消す。
-	(void)quadCount;
 
 	renderNormal_->instanceNum_ = 1;
 	renderAdd_->instanceNum_ = 1;

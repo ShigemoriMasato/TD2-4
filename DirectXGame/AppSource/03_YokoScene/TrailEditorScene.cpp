@@ -282,68 +282,39 @@ void TrailEditorScene::LoadTrailData()
 	if (presetNameBuf_[0] == '\0') return;
 
 	const std::string fileBaseName = presetNameBuf_;
-	json_.Boot(fileBaseName);
 
-	// type
+	TrailPresetVariant v{};
+	try
 	{
-		std::string typeStr;
-		try { typeStr = json_.Get<std::string>("type"); }
-		catch (...) { return; }
-
-		TrailType t{};
-		if (!FromString(typeStr, t)) return;
-
-		currentType_ = t;
+		v = presetDataBank_.Get(fileBaseName);
+	}
+	catch (...)
+	{
+		// エディタ用途：ファイルが無い/壊れてる等は黙って何もしない（現状の挙動に合わせる）
+		return;
 	}
 
-	// cfg.*
-	try { trailConfig_.maxSegments = json_.Get<int>("cfg.maxSegments"); }
-	catch (...) {}
-	try { trailConfig_.lifeTime = json_.Get<float>("cfg.lifeTime"); }
-	catch (...) {}
-	try { trailConfig_.minDistance = json_.Get<float>("cfg.minDistance"); }
-	catch (...) {}
-	try { trailConfig_.colorNormal = json_.Get<Vector4>("cfg.colorNormal"); }
-	catch (...) {}
-	try { trailConfig_.colorAdd = json_.Get<Vector4>("cfg.colorAdd"); }
-	catch (...) {}
-	try { trailConfig_.drawNormal = json_.Get<bool>("cfg.drawNormal"); }
-	catch (...) {}
-	try { trailConfig_.drawAdd = json_.Get<bool>("cfg.drawAdd"); }
-	catch (...) {}
-	try { trailConfig_.texturePath = json_.Get<std::string>("cfg.texturePath"); }
-	catch (...) {}
+	std::visit([&](const auto& preset)
+		{
+			using T = std::decay_t<decltype(preset)>;
 
-	std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
-	strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.texturePath.c_str(), _TRUNCATE);
+			trailConfig_ = preset.cfg;
 
-	// type固有
-	if (currentType_ == TrailType::RibbonTrail)
-	{
-		try { ribbonPreset_.modelName = json_.Get<std::string>("ribbon.modelName"); }
-		catch (...) {}
-		try { ribbonPreset_.originLocal = json_.Get<Vector3>("ribbon.originLocal"); }
-		catch (...) {}
-		try { ribbonPreset_.tipLocal = json_.Get<Vector3>("ribbon.tipLocal"); }
-		catch (...) {}
-	}
-	else if (currentType_ == TrailType::ShockwaveRing)
-	{
-		try { shockPreset_.segments = json_.Get<int>("shock.segments"); }
-		catch (...) {}
-		try { shockPreset_.duration = json_.Get<float>("shock.duration"); }
-		catch (...) {}
-		try { shockPreset_.radiusStart = json_.Get<float>("shock.radiusStart"); }
-		catch (...) {}
-		try { shockPreset_.radiusEnd = json_.Get<float>("shock.radiusEnd"); }
-		catch (...) {}
-		try { shockPreset_.thickness = json_.Get<float>("shock.thickness"); }
-		catch (...) {}
-		try { shockPreset_.noiseAmp = json_.Get<float>("shock.noiseAmp"); }
-		catch (...) {}
-		try { shockPreset_.noiseFreq = json_.Get<float>("shock.noiseFreq"); }
-		catch (...) {}
-	}
+			// ImGui用バッファ同期
+			std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
+			strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.texturePath.c_str(), _TRUNCATE);
+
+			if constexpr (std::is_same_v<T, RibbonTrailConfig>)
+			{
+				currentType_ = TrailType::RibbonTrail;
+				ribbonPreset_ = preset;
+			}
+			else if constexpr (std::is_same_v<T, ShockwaveRingConfig>)
+			{
+				currentType_ = TrailType::ShockwaveRing;
+				shockPreset_ = preset;
+			}
+		}, v);
 
 	requestRebuildTrail_ = true;
 }

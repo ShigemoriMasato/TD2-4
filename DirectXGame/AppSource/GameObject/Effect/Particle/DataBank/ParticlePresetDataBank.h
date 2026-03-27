@@ -6,7 +6,7 @@
 #include <Tool/Json/JsonManager.h>
 #include <GameObject/Effect/Particle/Preset/ParticlePreset.h>
 
-using ParticlePresetVariant = std::variant<FountainConfig>;
+using ParticlePresetVariant = std::variant<FountainConfig, OnTrailConfig>;
 
 class ParticlePresetDataBank
 {
@@ -42,5 +42,5 @@ private:
 
 private:
 	JsonManager json_;
-	std::unordered_map<std::string, ParticlePresetVariant> cache_;
+	static std::unordered_map<std::string, ParticlePresetVariant> cache_;
 };
