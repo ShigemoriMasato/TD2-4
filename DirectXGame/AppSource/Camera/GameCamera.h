@@ -10,7 +10,7 @@ public:
 
 private:
 
-	Vector3 offset_ = { -6.5f, 27.0f, -40.0f };
+	Vector3 offset_ = { -6.5f, 30.0f, -45.0f };
 	bool isViewType2 = false;
 
 };

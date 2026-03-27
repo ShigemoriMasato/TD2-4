@@ -95,6 +95,7 @@ private:// Shop
 private:// UI系
 
 	std::unique_ptr<GameFrame> gameFrame_;
+	std::unique_ptr<GameFrame> gameFrameBG_;
 	std::unique_ptr<PostEffect> postEffect_;
 	PostEffectConfig postEffectConfig_;
 

@@ -75,6 +75,9 @@ void ShigeScene::Initialize() {
 	SHEngine::DrawData planeDrawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
 	gameFrame_->Initialize(planeDrawData, textureManager_->LoadTexture("Frame.png"));
 
+	gameFrameBG_ = std::make_unique<GameFrame>();
+	gameFrameBG_->Initialize(planeDrawData, textureManager_->LoadTexture("FrameBG.png"));
+
 	postEffect_ = std::make_unique<PostEffect>();
 	SHEngine::DrawData postEffectDrawData = drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex);
 	postEffect_->Initialize(textureManager_, postEffectDrawData);
@@ -117,6 +120,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	shopScene_->SetDeltaTime(deltaTime);
 	shopScene_->Update();
 
+	gameFrameBG_->Update();
 	gameFrame_->Update();
 
 	Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
@@ -156,7 +160,10 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	gameTimer_->Update(deltaTime);
 	waveSystem_->Update(deltaTime);
 
-	std::wstring timerWStr = std::format(L"{:.0f}", gameTimer_->GetTimer());
+	float time = gameTimer_->GetTimer();
+	int minutes = static_cast<int>(time) / 60;
+	int seconds = static_cast<int>(time) % 60;
+	std::wstring timerWStr = std::format(L"{:d}:{:02d}", minutes, seconds);
 	timerText_->SetText(timerWStr);
 
 	if (key[Key::ControllerChange]) {
@@ -303,6 +310,7 @@ void ShigeScene::Draw() {
 
 	parameterRender_->Draw(cmdObj);
 
+	gameFrameBG_->Draw(cmdObj);
 	gameFrame_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
