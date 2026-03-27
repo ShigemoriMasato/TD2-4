@@ -52,6 +52,11 @@ public:
 		ParticleSRT rotate;
 		ParticleSRT translate;
 
+		// 目標位置（この方向に向かうようになる）
+		bool isMoveToTarget = false;
+		Vector3 TargetPos = { 0.0f, 0.0f, 0.0f };
+		float moveSpeed = 1.0f;
+
 		// 見た目
 		std::string texturePath = "Assets/.EngineResource/Texture/white1x1.png";
 		std::string modelPath = "Assets/.EngineResource/Model/Cube";

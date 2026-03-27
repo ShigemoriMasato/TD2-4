@@ -115,7 +115,8 @@ void TrailEditorScene::BuildModelList()
 {
 	modelRenders_.clear();
 
-	const char* kWeaponDir = "Assets/Model/Item/Weapon";
+	//const char* kWeaponDir = "Assets/Model/Item/Weapon";
+	const char* kWeaponDir = "Assets/Model";
 	std::error_code ec;
 	if (!std::filesystem::exists(kWeaponDir, ec))
 	{
