@@ -107,6 +107,10 @@ void ShigeScene::Initialize() {
 
 std::unique_ptr<IScene> ShigeScene::Update() {
 
+	if (input_->GetKeyState(DIK_TAB) && !input_->GetPreKeyState(DIK_TAB)) {
+		return std::make_unique<TitleScene>();
+	}
+
 	MakeWeapon();
 
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
@@ -287,8 +291,6 @@ void ShigeScene::Draw() {
 	player_->Draw(cmdObj);
 	playerHP_->Draw(cmdObj);
 
-	parameterRender_->Draw(cmdObj);
-
 	waveSystem_->DrawImGui();
 
 	for (const auto& render : weaponRenders_) {
@@ -298,6 +300,8 @@ void ShigeScene::Draw() {
 	timerText_->Draw(cmdObj);
 
 	shopScene_->Draw();
+
+	parameterRender_->Draw(cmdObj);
 
 	gameFrame_->Draw(cmdObj);
 
