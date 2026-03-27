@@ -175,6 +175,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AppSource\GameObject\Enemy\FastEnemy.cpp" />
+    <ClCompile Include="AppSource\GameObject\Enemy\TackleEnemy.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Controller\AIController.cpp" />
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
     <ClCompile Include="AppSource\GameObject\Item\Item.cpp" />
@@ -313,6 +315,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Player\PlayerAI\PlayerAI.cpp" />
     <ClCompile Include="Engine\Render\Font\Text.cpp" />
     <ClCompile Include="AppSource\02_ShigeScene\TechnicalTestScene.cpp" />
+    <ClInclude Include="AppSource\02_ShigeScene\GameDisplayRange.h" />
+    <ClInclude Include="AppSource\GameObject\Enemy\FastEnemy.h" />
+    <ClInclude Include="AppSource\GameObject\Enemy\TackleEnemy.h" />
     <ClInclude Include="AppSource\GameObject\Map\MapInfo.h" />
     <ClInclude Include="AppSource\GameObject\Player\Controller\AIController.h" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Spear.cpp" />

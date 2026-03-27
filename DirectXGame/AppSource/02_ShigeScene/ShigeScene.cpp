@@ -75,6 +75,9 @@ void ShigeScene::Initialize() {
 	SHEngine::DrawData planeDrawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
 	gameFrame_->Initialize(planeDrawData, textureManager_->LoadTexture("Frame.png"));
 
+	gameFrameBG_ = std::make_unique<GameFrame>();
+	gameFrameBG_->Initialize(planeDrawData, textureManager_->LoadTexture("FrameBG.png"));
+
 	postEffect_ = std::make_unique<PostEffect>();
 	SHEngine::DrawData postEffectDrawData = drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex);
 	postEffect_->Initialize(textureManager_, postEffectDrawData);
@@ -88,9 +91,28 @@ void ShigeScene::Initialize() {
 
 	timerTextTransform_.position = { 775.0f, -295.0f, 0.0f }; // Top center or so // default
 	timerTextTransform_.scale = { 1.f, 1.f, 1.0f };
+
+	displayRange_.top = 390.0f;
+	displayRange_.bottom = 810.0f;
+	displayRange_.left = 560.0f;
+	displayRange_.right = 1340.0f;
+
+//#ifdef USE_IMGUI
+//
+//	displayRange_.top = 165.0f;
+//	displayRange_.bottom = 375.0f;
+//	displayRange_.left = 240.0f;
+//	displayRange_.right = 630.0f;
+//
+//#endif // DEBUG
+
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
+
+	if (input_->GetKeyState(DIK_TAB) && !input_->GetPreKeyState(DIK_TAB)) {
+		return std::make_unique<TitleScene>();
+	}
 
 	MakeWeapon();
 
@@ -98,9 +120,39 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	shopScene_->SetDeltaTime(deltaTime);
 	shopScene_->Update();
 
+	gameFrameBG_->Update();
 	gameFrame_->Update();
 
-	gameCamera_->Update(deltaTime, Vector3{0.0f, 0.0f, 0.0f});
+	Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
+	bool inDisplayRange = false;
+	if (cursorPos.x >= displayRange_.left && cursorPos.x <= displayRange_.right &&
+	    cursorPos.y >= displayRange_.top && cursorPos.y <= displayRange_.bottom) {
+		inDisplayRange = true;
+	}
+
+	bool isRightClickHeld = (input_->GetMouseButtonState()[1] & 0x80) != 0;
+
+	if (inDisplayRange && isRightClickHeld && !isCameraDragging_) {
+		isCameraDragging_ = true;
+	}
+
+	if (isCameraDragging_) {
+		if (isRightClickHeld) {
+			Vector2 delta = input_->GetMouseMove();
+			float moveScale = 0.05f;
+			cameraTargetOffset_.x -= delta.x * moveScale;
+			cameraTargetOffset_.z += delta.y * moveScale;
+		} else {
+			isCameraDragging_ = false;
+			cameraTargetOffset_ = {0.0f, 0.0f, 0.0f};
+		}
+	} else {
+		cameraTargetOffset_ = {0.0f, 0.0f, 0.0f};
+	}
+
+	Vector3 cameraTargetPos = player_->GetTransform().position + cameraTargetOffset_;
+
+	gameCamera_->Update(deltaTime, cameraTargetPos);
 	Vector3 cameraPos = {0.f, 0.f, 0.f};
 	grid_->Update(cameraPos, camera_->GetVPMatrix());
 	auto key = commonData_->keyManager->GetKeyStates();
@@ -108,7 +160,10 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	gameTimer_->Update(deltaTime);
 	waveSystem_->Update(deltaTime);
 
-	std::wstring timerWStr = std::format(L"{:.0f}", gameTimer_->GetTimer());
+	float time = gameTimer_->GetTimer();
+	int minutes = static_cast<int>(time) / 60;
+	int seconds = static_cast<int>(time) % 60;
+	std::wstring timerWStr = std::format(L"{:d}:{:02d}", minutes, seconds);
 	timerText_->SetText(timerWStr);
 
 	if (key[Key::ControllerChange]) {
@@ -243,8 +298,6 @@ void ShigeScene::Draw() {
 	player_->Draw(cmdObj);
 	playerHP_->Draw(cmdObj);
 
-	parameterRender_->Draw(cmdObj);
-
 	waveSystem_->DrawImGui();
 
 	for (const auto& render : weaponRenders_) {
@@ -255,6 +308,9 @@ void ShigeScene::Draw() {
 
 	shopScene_->Draw();
 
+	parameterRender_->Draw(cmdObj);
+
+	gameFrameBG_->Draw(cmdObj);
 	gameFrame_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);

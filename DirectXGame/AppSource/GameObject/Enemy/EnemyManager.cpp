@@ -1,5 +1,7 @@
 #include "EnemyManager.h"
 #include "NormalEnemy.h"
+#include "FastEnemy.h"
+#include "TackleEnemy.h"
 #include "IEnemy.h"
 
 void EnemyManager::Initialize(Vector3* playerPos) {
@@ -23,7 +25,13 @@ void EnemyManager::Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVp
 		
 		int id = nextEnemyId_++;
 		auto& enemy = enemies_[id];
-		enemy = std::make_unique<NormalEnemy>();
+		if (p.type == EnemyType::Fast) {
+			enemy = std::make_unique<FastEnemy>();
+		} else if (p.type == EnemyType::Tackle) {
+			enemy = std::make_unique<TackleEnemy>();
+		} else {
+			enemy = std::make_unique<NormalEnemy>();
+		}
 		enemy->Initialize(playerPos_, this, id);
 		enemy->SetPosition(p.pos);
 		enemy->SetHP(p.hp);
@@ -59,11 +67,12 @@ void EnemyManager::DrawImGui() {
 #endif
 }
 
-void EnemyManager::PopEnemy(Vector3 initPos, int hp) {
+void EnemyManager::PopEnemy(Vector3 initPos, int hp, EnemyType type) {
 	PendingEnemy pending;
 	pending.pos = initPos;
 	pending.hp = hp;
 	pending.timer = 1.0f; // 1 second warning
+	pending.type = type;
 	pendingEnemies_.push_back(pending);
 }
 
@@ -77,8 +86,17 @@ std::vector<DrawInfo> EnemyManager::GetEnemyDrawInfos() const {
 		info.rotation = {0, 0, 0};
 		float scale = p.timer; // scale 1.0 to 0.0
 		info.scale = {scale, scale, scale};
-		info.color = 0xffffffff; // Ensure visible
 		
+		if (p.type == EnemyType::Normal) {
+			info.color = 0xff0000ff; // Red for Normal
+		} else if (p.type == EnemyType::Fast) {
+			info.color = 0x0000ffff; // Blue for Fast
+		} else if (p.type == EnemyType::Tackle) {
+			info.color = 0xffa500ff; // Orange for Tackle
+		} else {
+			info.color = 0xffffffff; // Default
+		}
+
 		auto modelManager = IEnemy::GetModelManager();
 		if (modelManager) {
 			info.modelIndex = modelManager->LoadModel("Cross"); 
