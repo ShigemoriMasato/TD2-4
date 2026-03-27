@@ -17,9 +17,13 @@ public:
 
 	void DrawImGui();
 
+	std::vector<std::vector<EnemyType>> GetNext5WaveTypes() const;
+	int GetCurrentWave() const { return static_cast<int>(allTimer_ / 30.0f); }
+
 private:
 
 	void AdjustDifficult();
+	std::vector<EnemyType> GetSpawnTypesAtTime(float time) const;
 
 	void Load();
 	void Save();

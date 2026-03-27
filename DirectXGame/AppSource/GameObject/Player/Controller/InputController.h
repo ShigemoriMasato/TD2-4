@@ -12,6 +12,19 @@ public:
 	// ダッシュ入力されたか
 	bool IsDashTriggered() override;
 
+	void SetTargetPosition(const Vector3& pos) override { targetPos_ = pos; hasTarget_ = true; }
+	void SetCurrentPosition(Vector3* pos) { currentPos_ = pos; }
+
+	bool HasTarget() const override { return hasTarget_; }
+	Vector3 GetTargetPosition() const override { return targetPos_; }
+
+	void SetFallbackController(IController* ai) { fallbackController_ = ai; }
+
 private:
 	SHEngine::Input* input_ = nullptr;
+	Vector3* currentPos_ = nullptr;
+	Vector3 targetPos_ = {};
+	bool hasTarget_ = false;
+
+	IController* fallbackController_ = nullptr;
 };

@@ -10,4 +10,13 @@ public:
 
 	// ダッシュが入力されたか
 	virtual bool IsDashTriggered() = 0;
+
+	// ターゲット位置を設定する（クリック移動用など）
+	virtual void SetTargetPosition(const Vector3& pos) {}
+
+	// ターゲットが存在するかどうか
+	virtual bool HasTarget() const { return false; }
+
+	// ターゲットの座標を取得する
+	virtual Vector3 GetTargetPosition() const { return {}; }
 };

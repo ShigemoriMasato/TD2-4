@@ -176,6 +176,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppSource\GameObject\Enemy\FastEnemy.cpp" />
+    <ClCompile Include="AppSource\GameObject\Enemy\LevelSystemUI.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\TackleEnemy.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Controller\AIController.cpp" />
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
@@ -318,6 +319,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\02_ShigeScene\TechnicalTestScene.cpp" />
     <ClInclude Include="AppSource\02_ShigeScene\GameDisplayRange.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\FastEnemy.h" />
+    <ClInclude Include="AppSource\GameObject\Enemy\LevelSystemUI.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\TackleEnemy.h" />
     <ClInclude Include="AppSource\GameObject\Map\MapInfo.h" />
     <ClInclude Include="AppSource\GameObject\Player\Controller\AIController.h" />

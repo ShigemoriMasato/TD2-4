@@ -2,6 +2,8 @@
 #include "ShopScene.h"
 #include <Common/KeyConfig/WorldCursor.h>
 #include <Utility/Color.h>
+#include <Utility/Matrix.h>
+#include <Utility/MatrixFactory.h>
 #include <format>
 #include <imgui/imgui.h>
 #include <numbers>
@@ -50,21 +52,49 @@ void ShigeScene::Initialize() {
 
 	attackManager_ = std::make_unique<AttackManager>();
 	attackManager_->Initialize(modelManager_);
+	// ターゲットマーカーの初期化
+	targetMarkerRender_ = std::make_unique<SHEngine::RenderObject>("TargetMarker");
+	targetMarkerRender_->Initialize();
+	targetMarkerRender_->psoConfig_.vs = "Game/Field.VS.hlsl";
+	targetMarkerRender_->psoConfig_.ps = "Game/Field.PS.hlsl";
+	targetMarkerRender_->SetUseTexture(true);
+
+	int maruHandle = modelManager_->LoadModel("Assets/Model/Maru");
+	auto maruModelData = modelManager_->GetNodeModelData(maruHandle);
+	auto maruDrawData = drawDataManager_->GetDrawData(maruModelData.drawDataIndex);
+	targetMarkerRender_->SetDrawData(maruDrawData);
+
+	targetMarkerRender_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
+	targetMarkerRender_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+	targetMarkerRender_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+
+	targetMarkerTexIndex_ = maruModelData.materials[maruModelData.materialIndex.front()].textureIndex;
+	Vector4 markerColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	targetMarkerRender_->CopyBufferData(1, &markerColor, sizeof(markerColor));
+	targetMarkerRender_->CopyBufferData(2, &targetMarkerTexIndex_, sizeof(targetMarkerTexIndex_));
+
+	targetMarkerTransform_.scale = { 1.0f, 1.0f, 1.0f };
 
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 
 	waveSystem_ = std::make_unique<LevelSystem>();
 	waveSystem_->Initialize(enemyManager_.get(), commonData_->stageNum++, player_->GetPositionPtr(), map_->GetMapInfo());
+	
+	waveSystemUI_ = std::make_unique<LevelSystemUI>();
+	waveSystemUI_->Initialize(modelManager_, drawDataManager_, textureManager_);
 
 	gameTimer_ = std::make_unique<GameTimer>();
 	gameTimer_->Initialize();
 
 	aiController_ = std::make_unique<AIController>(player_->GetPositionPtr(), enemyManager_.get());
 	inputController_ = std::make_unique<InputController>(input_);
+	inputController_->SetCurrentPosition(player_->GetPositionPtr());
+	inputController_->SetFallbackController(aiController_.get()); // AIをフォールバックに設定
+
 	controllers_.push_back(aiController_.get());
 	controllers_.push_back(inputController_.get());
-	currentControllerIndex_ = 0;
-	player_->SetController(controllers_[currentControllerIndex_]); // AIコントローラーを適用
+	currentControllerIndex_ = 1; // InputController(ハイブリッド動作)を設定
+	player_->SetController(controllers_[currentControllerIndex_]);
 
 	orthoCamera_ = std::make_unique<Camera>();
 
@@ -159,20 +189,13 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	gameTimer_->Update(deltaTime);
 	waveSystem_->Update(deltaTime);
+	waveSystemUI_->Update(deltaTime, waveSystem_->GetCurrentWave(), waveSystem_->GetNext5WaveTypes(), orthoCamera_->GetVPMatrix());
 
 	float time = gameTimer_->GetTimer();
 	int minutes = static_cast<int>(time) / 60;
 	int seconds = static_cast<int>(time) % 60;
 	std::wstring timerWStr = std::format(L"{:d}:{:02d}", minutes, seconds);
 	timerText_->SetText(timerWStr);
-
-	if (key[Key::ControllerChange]) {
-		// インデックスを切り替える
-		currentControllerIndex_ = (currentControllerIndex_ + 1) % controllers_.size();
-
-		// プレイヤーに新しいコントローラーをセット
-		player_->SetController(controllers_[currentControllerIndex_]);
-	}
 
 	{
 		// マウスクリックによる敵のターゲット選択
@@ -182,48 +205,35 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 			Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
 			Vector3 clickWorldPos = GetWorldCursor(camera_, cursorPos);
 
-			IEnemy* clickedEnemy = nullptr;
-			float minClickDist = FLT_MAX;
-			float clickHitRadius = 1.0f; // クリック判定の大きさ
-
-			// 敵のリストを調べて、クリックされた座標に一番近い敵を探す
-			for (IEnemy* enemy : enemyManager_->GetEnemies()) {
-				if (!enemy->IsActive())
-					continue;
-
-				float dx = enemy->GetPosition().x - clickWorldPos.x;
-				float dz = enemy->GetPosition().z - clickWorldPos.z;
-				float dist = std::sqrtf(dx * dx + dz * dz);
-
-				// クリック範囲内にいて、かつ一番近い敵を選ぶ
-				if (dist < clickHitRadius && dist < minClickDist) {
-					minClickDist = dist;
-					clickedEnemy = enemy;
-				}
-			}
-
-			// AIController経由でPlayerAIにターゲットを設定する
-			if (aiController_) {
-				// ターゲットの切り替えと解除の処理
-				IEnemy* currentTarget = aiController_->GetTargetEnemy();
-
-				if (clickedEnemy) {
-					if (clickedEnemy == currentTarget) {
-						// すでにターゲットしている敵をもう一度クリックしたら解除
-						aiController_->SetTargetEnemy(nullptr);
-					} else {
-						// 別の敵をクリックしたら新しいターゲットに設定
-						aiController_->SetTargetEnemy(clickedEnemy);
-					}
-				} else {
-					// 敵以外の場所をクリックした場合も解除
-					aiController_->SetTargetEnemy(nullptr);
-				}
-			}
+			// Playerを指定のワールド座標へ移動させる（InputController使用時用）
+			player_->GetController()->SetTargetPosition(clickWorldPos);
 		}
 	}
 
 	player_->Update(camera_->GetVPMatrix(), deltaTime, key);
+
+	// ターゲットマーカーの更新
+	if (player_->GetController()->HasTarget()) {
+		isTargetMarkerVisible_ = true;
+		targetMarkerTransform_.position = player_->GetController()->GetTargetPosition();
+		// Zファイティング（地面とのチラつき）を防ぐために少しY座標を浮かせる
+		targetMarkerTransform_.position.y += 0.02f;
+		
+		targetMarkerAnimTimer_ += deltaTime;
+		// XZに拡縮 (点滅のように見えないよう、速度を少し緩やかに調整)
+		float scale = 1.0f + 0.2f * std::sin(targetMarkerAnimTimer_ * 5.0f);
+		targetMarkerTransform_.scale = {scale, 1.0f, scale}; // Y軸方向は拡縮させない
+		
+		Matrix4x4 wvp = Matrix::MakeScaleMatrix(targetMarkerTransform_.scale) * 
+						Matrix::MakeRotationMatrix(targetMarkerTransform_.rotate) * 
+						Matrix::MakeTranslationMatrix(targetMarkerTransform_.position) * 
+						camera_->GetVPMatrix();
+		
+		targetMarkerRender_->CopyBufferData(0, &wvp, sizeof(wvp));
+	} else {
+		isTargetMarkerVisible_ = false;
+	}
+
 	player_->UpdateParameter(commonData_->pieces);
 	playerHP_->Update(orthoCamera_->GetVPMatrix(), deltaTime, player_->GetCurrentHP(), player_->GetMaxHP());
 
@@ -295,6 +305,11 @@ void ShigeScene::Draw() {
 	// grid_->Draw(cmdObj);
 	map_->Draw(cmdObj);
 	objectRender_->Draw(cmdObj);
+	
+	if (isTargetMarkerVisible_ && targetMarkerRender_) {
+		targetMarkerRender_->Draw(cmdObj);
+	}
+
 	player_->Draw(cmdObj);
 	playerHP_->Draw(cmdObj);
 
@@ -313,6 +328,8 @@ void ShigeScene::Draw() {
 	gameFrameBG_->Draw(cmdObj);
 	gameFrame_->Draw(cmdObj);
 
+	waveSystemUI_->Draw(cmdObj);
+
 	display->PostDraw(cmdObj);
 
 	window->PreDraw(cmdObj);
@@ -321,6 +338,8 @@ void ShigeScene::Draw() {
 #ifdef USE_IMGUI
 
 	display->DrawImGui();
+	
+	waveSystemUI_->DrawImGui();
 
 	ImGui::Begin("Game Timer");
 	ImGui::Text("Game Time : %.2f s", gameTimer_->GetTimer());
