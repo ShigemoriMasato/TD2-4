@@ -6,7 +6,7 @@ std::unordered_map<std::string, TrailPresetVariant> TrailPresetDataBank::cache_{
 
 const TrailPresetVariant& TrailPresetDataBank::Get(const std::string& name)
 {
-	auto [it, inserted] = cache_.try_emplace(name, Load_(name));
+	auto [it, inserted] = cache_.try_emplace(name, Load(name));
 	return it->second;
 }
 
@@ -28,7 +28,7 @@ TrailType TrailPresetDataBank::GetTypeOf(const std::string& name)
 	return {};
 }
 
-Trail::Config TrailPresetDataBank::LoadConfig_(JsonManager& json)
+Trail::Config TrailPresetDataBank::LoadConfig(JsonManager& json)
 {
 	Trail::Config cfg{};
 
@@ -55,7 +55,7 @@ Trail::Config TrailPresetDataBank::LoadConfig_(JsonManager& json)
 	return cfg;
 }
 
-TrailPresetVariant TrailPresetDataBank::Load_(const std::string& name)
+TrailPresetVariant TrailPresetDataBank::Load(const std::string& name)
 {
 	json_.Boot(name);
 
@@ -72,7 +72,7 @@ TrailPresetVariant TrailPresetDataBank::Load_(const std::string& name)
 	if (type == TrailType::RibbonTrail)
 	{
 		RibbonTrailConfig p{};
-		p.cfg = LoadConfig_(json_);
+		p.cfg = LoadConfig(json_);
 
 		try { p.modelName = json_.Get<std::string>("ribbon.modelName"); }
 		catch (...) {}
@@ -86,7 +86,7 @@ TrailPresetVariant TrailPresetDataBank::Load_(const std::string& name)
 	else if (type == TrailType::ShockwaveRing)
 	{
 		ShockwaveRingConfig p{};
-		p.cfg = LoadConfig_(json_);
+		p.cfg = LoadConfig(json_);
 
 		try { p.segments = json_.Get<int>("shock.segments"); }
 		catch (...) {}

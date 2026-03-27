@@ -46,11 +46,6 @@ Particle::Config ParticlePresetDataBank::LoadConfig_(JsonManager& json)
 	try { cfg.modelPath = json.Get<std::string>("cfg.modelPath"); }
 	catch (...) {}
 
-	try { cfg.emitterMin = json.Get<Vector3>("cfg.emitterMin"); }
-	catch (...) {}
-	try { cfg.emitterMax = json.Get<Vector3>("cfg.emitterMax"); }
-	catch (...) {}
-
 	cfg.lifeTime = std::max(0.001f, cfg.lifeTime);
 	cfg.speed = std::max(0.0f, cfg.speed);
 	cfg.emitNum = std::max(0, cfg.emitNum);

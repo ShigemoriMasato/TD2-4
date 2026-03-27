@@ -18,7 +18,7 @@ public:
 
 private:
 
-	void RebuildParticle();
+	void BuildParticle();
 
 	void SaveData();
 	void LoadData();
@@ -40,8 +40,7 @@ private:
 
 	// Particle
 	Particle particle_;
-	bool emit_ = true;
-	bool requestRebuildParticle_ = false;
+	bool ChangeConfig_ = false;
 
 	Vector3 emitPos_{ 0.0f, 0.0f, 0.0f };
 

@@ -5,6 +5,7 @@
 #include <Assets/Texture/TextureManager.h>
 #include <Assets/Model/ModelManager.h>
 #include <Render/RenderObject.h>
+#include <GameObject/Random/Random.h>
 
 class Particle
 {
@@ -18,6 +19,25 @@ public:
 		Vector3 acceleration;
 	};
 
+
+	struct ParticleSRT
+	{
+		VectorDynamics initial; // random生成されないときの初期値
+
+		bool isRandom_value = false; // trueならランダム生成
+		Vector3 randomRange_value_min;
+		Vector3 randomRange_value_max;
+
+		bool isRandom_velocity = false; // trueならランダム生成
+		Vector3 randomRange_velocity_min;
+		Vector3 randomRange_velocity_max;
+
+		bool isRandom_acceleration = false; // trueならランダム生成
+		Vector3 randomRange_acceleration_min;
+		Vector3 randomRange_acceleration_max;
+	};
+
+
 	struct Config
 	{
 		float lifeTime = 1.0f;    // 寿命
@@ -27,14 +47,12 @@ public:
 		int emitNum = 10; 
 		float emitInterval = 0.1f;
 		
-		
-		VectorDynamics scale;
-		VectorDynamics rotate;
-		VectorDynamics translate;
+		// 物理挙動
+		ParticleSRT scale;
+		ParticleSRT rotate;
+		ParticleSRT translate;
 
-		Vector3 emitterMin;
-		Vector3 emitterMax;
-
+		// 見た目
 		std::string texturePath = "Assets/.EngineResource/Texture/white1x1.png";
 		std::string modelPath = "Assets/.EngineResource/Model/Cube";
 	};
@@ -68,19 +86,27 @@ private:
 		float age = 0.0f;
 	};
 
-
-	void EnsureRender_();
+	void EnsureRender();
 	void Emit(const Vector3& pos);
 
 	SHEngine::DrawDataManager* drawDataManager_ = nullptr;
 	SHEngine::TextureManager* textureManager_ = nullptr;
 	SHEngine::ModelManager* modelManager_ = nullptr;
 
+	// 設定
 	Config config_{};
+	// 初期値
+	VectorDynamics scale;
+	VectorDynamics rotate;
+	VectorDynamics translate;
 
+	// 発生するか否かフラグ
 	bool emitting_ = false;
+	// 発生タイマー
 	float emitTimer_ = 0.0f;
+	// 発生位置
 	Vector3 emitPos_{};
+	// 生存しているパーティクルの数
 	size_t aliveCount_ = 0;
 
 	std::vector<ParticleInstance> instances_;

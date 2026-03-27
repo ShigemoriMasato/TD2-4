@@ -35,8 +35,8 @@ public:
 	TrailType GetTypeOf(const std::string& name);
 
 private:
-	TrailPresetVariant Load_(const std::string& name);
-	Trail::Config LoadConfig_(JsonManager& json);
+	TrailPresetVariant Load(const std::string& name);
+	Trail::Config LoadConfig(JsonManager& json);
 
 private:
 	// 読み込みにのみ使用
