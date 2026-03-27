@@ -1,0 +1,32 @@
+{
+    "cfg.colorAdd": [
+        1.0,
+        0.850806474685669,
+        0.850806474685669,
+        0.75
+    ],
+    "cfg.colorNormal": [
+        0.9960784316062927,
+        0.9058823585510254,
+        0.08235294371843338,
+        1.0
+    ],
+    "cfg.drawAdd": true,
+    "cfg.drawNormal": true,
+    "cfg.lifeTime": 0.20000000298023224,
+    "cfg.maxSegments": 32,
+    "cfg.minDistance": 0.10000000149011612,
+    "cfg.texturePath": "Assets/.EngineResource/Texture/white1x1.png",
+    "ribbon.modelName": "Grass",
+    "ribbon.originLocal": [
+        1.0,
+        0.30000001192092896,
+        0.0
+    ],
+    "ribbon.tipLocal": [
+        1.0,
+        0.0,
+        0.0
+    ],
+    "type": "RibbonTrail"
+}

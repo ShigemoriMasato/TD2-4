@@ -23,15 +23,10 @@ private:
 	ParticlePresetDataBank particleDataBank_;
 
 	/// Axeトレイル
-	MultiTrail trail_Axe;
+	MultiTrail trail;
 	int textureIndex_ = 0;
 	std::unique_ptr<SHEngine::RenderObject> render_;
-	Transform axeTransform_;
+	Transform transform_;
 
-	/// ええ感じトレイル１
-	MultiTrail trail_test1;
-	Transform test1Transform_;
-
-	/// Axeパーティクル
-	MultiParticle partcle_Axe;
+	bool start;
 };

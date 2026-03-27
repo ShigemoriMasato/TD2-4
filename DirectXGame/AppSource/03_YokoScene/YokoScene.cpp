@@ -45,44 +45,73 @@ void YokoScene::Initialize()
 	textureIndex_ = material.textureIndex;
 	render_ = CreateTexturedModelRO(drawDataManager_, modelData, textureIndex_);
 
-	axeTransform_.position = { 0.0f, 0.0f, 0.0f };
-	axeTransform_.rotate = { 0.0f, 0.0f, 0.0f };
-	axeTransform_.scale = { 1.0f, 1.0f, 1.0f };
+	transform_.position = { 0.0f, 0.0f, 0.0f };
+	transform_.rotate = { 0.0f, 0.0f, 0.0f };
+	transform_.scale = { 1.0f, 1.0f, 1.0f };
 
-	trail_Axe.Initialize(drawDataManager_, textureManager_, &trailDataBank_);
-	trail_Axe.Add("Axe_Ribbon");
-	trail_Axe.Add("Axe_Ribbon2");
-
-	trail_test1.Initialize(drawDataManager_, textureManager_, &trailDataBank_);
-	trail_test1.Add("testTrail1_1");
-	trail_test1.Add("testTrail1_2");
-	trail_test1.Add("testTrail1_3");
-	trail_test1.Add("testTrail1_4");
-
+	trail.Initialize(drawDataManager_, textureManager_, &trailDataBank_);
+	//trail.Add("testTrail1_1");
+	//trail.Add("testTrail1_2");
+	//trail.Add("testTrail1_3");
+	//trail.Add("testTrail1_4");
+	trail.Add("testTrail2");
+	trail.Add("testTrail2_1");
 }
 
 std::unique_ptr<IScene> YokoScene::Update()
 {
 	const float dt = engine_->GetFPSObserver()->GetDeltatime();
+	const bool isSpace = input_->GetKeyState(DIK_SPACE);
+	const bool isSpaceTrigger = isSpace && !input_->GetPreKeyState(DIK_SPACE);
 
 	// カメラ更新
 	camera_->Update();
 	const Matrix4x4 vp = camera_->GetVPMatrix();
 
 	// モデル更新
-	const Matrix4x4 world = Matrix::MakeAffineMatrix(axeTransform_.scale, axeTransform_.rotate, axeTransform_.position);
+	const Matrix4x4 world = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 	const Matrix4x4 wvp = world * vp;
 	const Vector4 color = { 1, 1, 1, 1 };
 	render_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
 	render_->CopyBufferData(1, &color, sizeof(Vector4));
 	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
 
+	if (isSpaceTrigger)
+	{
+		transform_.scale = { 0.0f, 0.0f, 0.0f };
+		transform_.position = { 0.0f, -2.0f, 0.0f };
+		transform_.rotate = { 0.0f, 0.0f, 0.0f };
+
+		start = true;
+	}
+	if (start)
+	{
+		transform_.position.y += 0.06f;
+		transform_.rotate.y += 0.4f;
+
+		if (transform_.position.y < 0.0f)
+		{
+			transform_.scale.x += 0.04f;
+			transform_.scale.y += 0.04f;
+			transform_.scale.z += 0.04f;
+		}
+		else if (transform_.position.y >= 0.0f)
+		{
+			transform_.scale.x -= 0.04f;
+			transform_.scale.y -= 0.04f;
+			transform_.scale.z -= 0.04f;
+		}
+
+		if (transform_.position.y > 2.0f)
+		{
+			start = false;
+		}
+	}
+
 
 	// トレイル更新
-	trail_Axe.SetModelWorld(world);
-	trail_Axe.Update(dt, vp);
-	trail_test1.SetModelWorld(world);
-	trail_test1.Update(dt, vp);
+	trail.SetModelWorld(world);
+	trail.Update(dt, vp);
 
 	// Zキーでエディタ切り替え
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z))
@@ -101,9 +130,8 @@ void YokoScene::Draw()
 
 	display->PreDraw(cmdObj, true);
 
-	render_->Draw(cmdObj);
-	trail_Axe.Draw(cmdObj);
-	trail_test1.Draw(cmdObj);
+	//render_->Draw(cmdObj);
+	trail.Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 
@@ -113,9 +141,9 @@ void YokoScene::Draw()
 	display->DrawImGui();
 
 	ImGui::Begin("Axe Transform");
-	ImGui::DragFloat3("T", &axeTransform_.position.x, 0.1f);
-	ImGui::DragFloat3("R", &axeTransform_.rotate.x, 0.1f);
-	ImGui::DragFloat3("S", &axeTransform_.scale.x, 0.1f);
+	ImGui::DragFloat3("T", &transform_.position.x, 0.1f);
+	ImGui::DragFloat3("R", &transform_.rotate.x, 0.1f);
+	ImGui::DragFloat3("S", &transform_.scale.x, 0.1f);
 	ImGui::End();
 #endif
 

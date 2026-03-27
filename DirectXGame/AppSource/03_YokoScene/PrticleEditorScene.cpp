@@ -264,7 +264,7 @@ void PrticleEditorScene::DrawImGui()
 		ChangeConfig_ |= ImGui::DragFloat("cfg.lifeTime", &particleConfig_.lifeTime, 0.01f, 0.001f, 10.0f);
 		ChangeConfig_ |= ImGui::DragFloat("cfg.speed", &particleConfig_.speed, 0.01f, 0.0f, 100.0f);
 		ChangeConfig_ |= ImGui::DragInt("cfg.emitNum", &particleConfig_.emitNum, 1.0f, 1, 10000);
-		ChangeConfig_ |= ImGui::DragFloat("cfg.emitInterval", &particleConfig_.emitInterval, 0.01f, 0.0f, 10.0f);
+		ChangeConfig_ |= ImGui::DragFloat("cfg.emitInterval", &particleConfig_.emitInterval, 0.01f, 0.01f, 10.0f);
 	}
 
 	if (ImGui::CollapsingHeader("scale"))
