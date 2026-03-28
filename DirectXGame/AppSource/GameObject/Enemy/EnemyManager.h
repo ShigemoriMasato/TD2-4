@@ -1,10 +1,18 @@
 #pragma once
+#pragma once
 #include "IEnemy.h"
+
+enum class EnemyType {
+	Normal,
+	Fast,
+	Tackle
+};
 
 struct PendingEnemy {
 	Vector3 pos;
 	int hp;
 	float timer;
+	EnemyType type;
 };
 
 class EnemyManager {
@@ -13,16 +21,16 @@ public:
 	void Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVpMatrix);
 	void DrawImGui();
 
-	void PopEnemy(Vector3 initPos = {0.0f, 0.0f, 0.0f}, int hp = 1);
+	void PopEnemy(Vector3 initPos = {0.0f, 0.0f, 0.0f}, int hp = 1, EnemyType type = EnemyType::Normal);
 
 	std::vector<DrawInfo> GetEnemyDrawInfos() const;
 	std::vector<IEnemy*> GetEnemies() const;
 	std::vector<DrawInfo> GetPendingDrawInfos() const;
-	/// @brief 敵を削除
-	/// @param target 削除する敵
+	/// @brief 謨ｵ繧貞炎髯､
+	/// @param target 蜑企勁縺吶ｋ謨ｵ
 	void RemoveEnemy(IEnemy* target);
 
-	/// @brief 全ての敵をクリア
+	/// @brief 蜈ｨ縺ｦ縺ｮ謨ｵ繧偵け繝ｪ繧｢
 	void Clear();
 
 	void Kill(int id);

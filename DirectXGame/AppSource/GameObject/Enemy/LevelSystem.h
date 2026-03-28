@@ -17,9 +17,13 @@ public:
 
 	void DrawImGui();
 
+	std::vector<std::vector<EnemyType>> GetNext5WaveTypes() const;
+	int GetCurrentWave() const { return static_cast<int>(allTimer_ / 30.0f); }
+
 private:
 
 	void AdjustDifficult();
+	std::vector<EnemyType> GetSpawnTypesAtTime(float time) const;
 
 	void Load();
 	void Save();
@@ -28,6 +32,7 @@ private:
 		float spawnInterval = 3.0f; // 敵をスポーンする間隔
 		float enemyCount = 2; // スポーンする敵の数
 		float enemyHp = 5.0f; // スポーンする敵のHP
+		std::vector<EnemyType> spawnTypes = { EnemyType::Normal }; // スポーンする敵の種類
 	};
 
 	BaseSystem config_;

@@ -20,7 +20,7 @@ void GameCamera::DrawImGui() {
 
 	if (ImGui::Checkbox("Change View", &isViewType2)) {
 		if (isViewType2) {
-			offset_ = { 2.0f, 34.0f, -45.0f };
+			offset_ = { -6.5f, 27.0f, -40.0f };
 			rotation_ = { -0.500f, 0.0f, 0.0f };
 		} else {
 			offset_ = { -2.0f, 78.0f, 14.0f };

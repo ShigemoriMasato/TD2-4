@@ -1,5 +1,6 @@
 #include "Piece.h"
 #include "PieceManager.h"
+#include "Utility/Easing.h"
 
 void Piece::Initialize(const Item& item, int rank) {
 	itemData_ = item;
@@ -193,7 +194,13 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		break;
 	}
 	info.position += Vector3(0.5f, 0.0f, 0.5f) + position_;
-	info.scale = Vector3(0.5f, 0.5f, 0.5f);
+
+	float scaleLerpT = 0.0f;
+	if (deleteTime_ > 0.0f) {
+		scaleLerpT = std::clamp(useTimer_ / deleteTime_, 0.0f, 1.0f);
+	}
+	info.scale = lerp(weaponStartScale_, weaponEndScale_, scaleLerpT, EaseType::Linear);
+
 	info.rotation.y = static_cast<float> (direction_) * 3.1415926535f * 0.5f;
 	info.color = 0xffffffff;
 	drawInfos.push_back(info);

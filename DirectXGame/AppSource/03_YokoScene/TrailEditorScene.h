@@ -5,6 +5,7 @@
 #include <Tool/Json/JsonManager.h>
 #include <GameObject/Effect/Trail/Trail.h>
 #include <GameObject/Effect/Trail/Preset/TrailPreset.h>
+#include <GameObject/Effect/Trail/DataBank/TrailPresetDataBank.h>
 #include <memory>
 #include <string>
 #include <vector>
@@ -80,6 +81,8 @@ private:
 
 	// Json
 	JsonManager json_;
+	// DataBank
+	TrailPresetDataBank presetDataBank_{};
 
 	// ImGuiがstringを許容しないばかりに生まれてしまった産廃
 	char presetNameBuf_[256]{ "Sword_Ribbon" };

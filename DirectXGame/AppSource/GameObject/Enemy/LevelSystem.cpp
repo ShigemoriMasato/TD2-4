@@ -56,9 +56,28 @@ void LevelSystem::Update(float deltaTime) {
 				retryCount++;
 			} while (retryCount < 10); // 無限ループ防止のため最大10回リトライ
 
-			enemyManager_->PopEnemy(spawnPos, static_cast<int>(config_.enemyHp));
+			EnemyType type = EnemyType::Normal;
+			if (!config_.spawnTypes.empty()) {
+				int randIndex = rand() % config_.spawnTypes.size();
+				type = config_.spawnTypes[randIndex];
+			}
+			
+			enemyManager_->PopEnemy(spawnPos, static_cast<int>(config_.enemyHp), type);
 		}
 	}
+}
+
+std::vector<std::vector<EnemyType>> LevelSystem::GetNext5WaveTypes() const {
+	std::vector<std::vector<EnemyType>> waves;
+	
+	int currentWave = static_cast<int>(allTimer_ / 30.0f);
+	for (int i = 0; i < 5; ++i) {
+		int targetWave = currentWave + i;
+		float timeForWave = targetWave * 30.0f + 15.0f; // mid of that wave
+		waves.push_back(GetSpawnTypesAtTime(timeForWave));
+	}
+	
+	return waves;
 }
 
 void LevelSystem::DrawImGui() {
@@ -75,63 +94,64 @@ void LevelSystem::DrawImGui() {
 #endif
 }
 
+std::vector<EnemyType> LevelSystem::GetSpawnTypesAtTime(float time) const {
+	if (time <= 30.0f) {
+		return { EnemyType::Normal };
+	} else if (time <= 60.0f) {
+		return { EnemyType::Normal };
+	} else if (time <= 90.0f) {
+		return { EnemyType::Fast };
+	} else if (time <= 120.0f) {
+		return { EnemyType::Normal, EnemyType::Fast };
+	} else {
+		return { EnemyType::Normal, EnemyType::Fast };
+	}
+}
+
 void LevelSystem::AdjustDifficult() {
 	// ゲーム開始から2分(120秒)まで10秒ごとのレベルデザイン
 
-	if (allTimer_ <= 10.0f) {
-		config_.spawnInterval = 2.0f;
-		config_.enemyCount    = 1.0f;
-		config_.enemyHp       = 1.0f;
-	} else if (allTimer_ <= 20.0f) {
-		config_.spawnInterval = 2.0f;
-		config_.enemyCount    = 1.0f;
-		config_.enemyHp       = 2.0f;
-	} else if (allTimer_ <= 30.0f) {
-		config_.spawnInterval = 2.0f;
-		config_.enemyCount    = 2.0f;
-		config_.enemyHp       = 3.0f;
-	} else if (allTimer_ <= 40.0f) {
-		config_.spawnInterval = 1.8f;
-		config_.enemyCount    = 2.0f;
-		config_.enemyHp       = 4.0f;
-	} else if (allTimer_ <= 50.0f) {
-		config_.spawnInterval = 1.5f;
-		config_.enemyCount    = 3.0f;
-		config_.enemyHp       = 5.0f;
+	if (allTimer_ <= 30.0f) {
+
+		config_.spawnInterval = 2.5f;
+		config_.enemyCount = 1.0f;
+		config_.enemyHp = 5.0f;
+		
+		config_.spawnTypes = { EnemyType::Normal };
+
 	} else if (allTimer_ <= 60.0f) {
-		config_.spawnInterval = 1.2f;
-		config_.enemyCount    = 3.0f;
-		config_.enemyHp       = 6.0f;
-	} else if (allTimer_ <= 70.0f) {
-		config_.spawnInterval = 1.0f;
-		config_.enemyCount    = 4.0f;
-		config_.enemyHp       = 7.0f;
-	} else if (allTimer_ <= 80.0f) {
-		config_.spawnInterval = 0.9f;
-		config_.enemyCount    = 4.0f;
-		config_.enemyHp       = 8.0f;
+
+		config_.spawnInterval = 3.0f;
+		config_.enemyCount = 2.0f;
+		config_.enemyHp = 7.0f;
+
+		config_.spawnTypes    = { EnemyType::Normal };
+
 	} else if (allTimer_ <= 90.0f) {
-		config_.spawnInterval = 0.8f;
-		config_.enemyCount    = 5.0f;
-		config_.enemyHp       = 9.0f;
-	} else if (allTimer_ <= 100.0f) {
-		config_.spawnInterval = 0.7f;
-		config_.enemyCount    = 5.0f;
-		config_.enemyHp       = 10.0f;
-	} else if (allTimer_ <= 110.0f) {
-		config_.spawnInterval = 0.6f;
-		config_.enemyCount    = 6.0f;
-		config_.enemyHp       = 11.0f;
+
+		config_.spawnInterval = 2.5f;
+		config_.enemyCount = 1.0f;
+		config_.enemyHp = 3.0f;
+		
+		config_.spawnTypes = { EnemyType::Fast };
+
 	} else if (allTimer_ <= 120.0f) {
-		config_.spawnInterval = 0.5f;
-		config_.enemyCount    = 6.0f;
-		config_.enemyHp       = 12.0f;
+
+		config_.spawnInterval = 3.0f;
+		config_.enemyCount = 2.0f;
+		config_.enemyHp = 5.0f;
+
+		config_.spawnTypes = { EnemyType::Normal, EnemyType::Fast };
+
 	} else {
-		// 120秒以降: 最大難易度
-		config_.spawnInterval = 0.3f;
-		config_.enemyCount    = 7.0f;
-		config_.enemyHp       = 15.0f;
+
+		config_.spawnInterval = 2.0f;
+		config_.enemyCount = 2.0f;
+		config_.enemyHp = 10.0f;
+
 	}
+
+	config_.spawnTypes = GetSpawnTypesAtTime(allTimer_);
 }
 
 void LevelSystem::Load() {

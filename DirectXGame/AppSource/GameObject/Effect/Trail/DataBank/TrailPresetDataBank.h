@@ -35,12 +35,12 @@ public:
 	TrailType GetTypeOf(const std::string& name);
 
 private:
-	TrailPresetVariant Load_(const std::string& name);
-	Trail::Config LoadConfig_(JsonManager& json);
+	TrailPresetVariant Load(const std::string& name);
+	Trail::Config LoadConfig(JsonManager& json);
 
 private:
 	// 読み込みにのみ使用
 	JsonManager json_;
 	// データの保存にのみ使用。
-	std::unordered_map<std::string, TrailPresetVariant> cache_;
+	static std::unordered_map<std::string, TrailPresetVariant> cache_;
 };

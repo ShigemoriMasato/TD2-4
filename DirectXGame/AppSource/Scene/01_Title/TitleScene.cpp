@@ -23,13 +23,14 @@ void TitleScene::Initialize() {
 std::unique_ptr<IScene> TitleScene::Update() {
 
 	// 上下キーで選択を変更
-	bool upPressed = input_->GetKeyState(DIK_UPARROW) && !input_->GetPreKeyState(DIK_UPARROW);
-	bool downPressed = input_->GetKeyState(DIK_DOWNARROW) && !input_->GetPreKeyState(DIK_DOWNARROW);
-	
+	bool upPressed =   input_->GetKeyState(DIK_UPARROW) && !input_->GetPreKeyState(DIK_UPARROW) || input_->GetKeyState(DIK_W) && !input_->GetPreKeyState(DIK_W);
+	bool downPressed = input_->GetKeyState(DIK_DOWNARROW) && !input_->GetPreKeyState(DIK_DOWNARROW) || input_->GetKeyState(DIK_S) && !input_->GetPreKeyState(DIK_S);
+
 	titleUI_->UpdateSelection(upPressed, downPressed);
 	
 	// Zキーで決定
-	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z)) {
+	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z) || 
+		input_->GetKeyState(DIK_SPACE) && !input_->GetPreKeyState(DIK_SPACE)) {
 		Title::Select currentSelect = titleUI_->GetCurrentSelect();
 		
 		// Startが選択されている場合はシーン遷移

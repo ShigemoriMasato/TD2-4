@@ -66,6 +66,9 @@ private:
 	Vector3 middleLocalPos_ = { 0.0f, 0.0f, 0.0f };
 	Vector3 position_{};
 
+	Vector3 weaponStartScale_ = { 0.35f, 0.35f, 0.35f };
+	Vector3 weaponEndScale_ = { 0.25f, 0.25f, 0.25f };
+
 	bool isHovered_ = false;
 	bool isPlaced_ = false;
 
@@ -74,5 +77,5 @@ private:
 
 	float useTimer_ = 0.0f;
 
-	float deleteTime_ = 15.0f; // 使用してから消えるまでの時間
+	float deleteTime_ = 5.0f; // 使用してから消えるまでの時間
 };

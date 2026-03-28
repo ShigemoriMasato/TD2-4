@@ -175,6 +175,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AppSource\GameObject\Enemy\FastEnemy.cpp" />
+    <ClCompile Include="AppSource\GameObject\Enemy\LevelSystemUI.cpp" />
+    <ClCompile Include="AppSource\GameObject\Enemy\TackleEnemy.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Controller\AIController.cpp" />
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
     <ClCompile Include="AppSource\GameObject\Item\Item.cpp" />
@@ -287,6 +290,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Attack\GrenadeBullet.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Gurepon.cpp" />
     <ClCompile Include="AppSource\UI\Game\GameFrame.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\FountainParticle\FountainParticle.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Trail.cpp" />
@@ -304,8 +308,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Test\TestTrail4\TestTrail4.cpp" />
     <ClCompile Include="AppSource\03_YokoScene\TrailEditorScene.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\DataBank\TrailPresetDataBank.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Trail\RibbonTrail\RibbonTrail.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Trail\ShockwaveRingTrail\ShockwaveRingTrail.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail\Type\RibbonTrail\RibbonTrail.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail\Type\ShockwaveRingTrail\ShockwaveRingTrail.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\MultiTrail\MultiTrail.cpp" />
     <ClCompile Include="AppSource\03_YokoScene\PrticleEditorScene.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Particle\MultiParticle\MultiParticle.cpp" />
@@ -316,6 +320,10 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Core\Command\Data\SHCmdQueue.cpp" />
     <ClCompile Include="Engine\Render\Renderer.cpp" />
     <ClCompile Include="Engine\Render\SHResource.cpp" />
+    <ClInclude Include="AppSource\02_ShigeScene\GameDisplayRange.h" />
+    <ClInclude Include="AppSource\GameObject\Enemy\FastEnemy.h" />
+    <ClInclude Include="AppSource\GameObject\Enemy\LevelSystemUI.h" />
+    <ClInclude Include="AppSource\GameObject\Enemy\TackleEnemy.h" />
     <ClInclude Include="AppSource\GameObject\Map\MapInfo.h" />
     <ClInclude Include="AppSource\GameObject\Player\Controller\AIController.h" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Spear.cpp" />
@@ -450,8 +458,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Effect\Trail\Test\TestTrail4\TestTrail4.h" />
     <ClInclude Include="AppSource\03_YokoScene\TrailEditorScene.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\DataBank\TrailPresetDataBank.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Trail\RibbonTrail\RibbonTrail.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Trail\ShockwaveRingTrail\ShockwaveRingTrail.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\Type\RibbonTrail\RibbonTrail.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\Type\ShockwaveRingTrail\ShockwaveRingTrail.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\MultiTrail\MultiTrail.h" />
     <ClInclude Include="AppSource\03_YokoScene\PrticleEditorScene.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Particle\MultiParticle\MultiParticle.h" />
@@ -467,6 +475,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Attack\GrenadeBullet.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Data\Gurepon.h" />
     <ClInclude Include="AppSource\UI\Game\GameFrame.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\FountainParticle\FountainParticle.h" />
     <ClInclude Include="Engine\Core\Command\Data\SHCmdQueue.h" />
     <ClInclude Include="Engine\Render\Renderer.h" />
     <ClInclude Include="Engine\Render\SHResource.h" />
