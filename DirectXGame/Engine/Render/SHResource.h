@@ -36,8 +36,9 @@ namespace SHEngine {
 
 		GPUBuffer(ResourceDesc& desc);
 
-		void CopyBuffer(const void* data, size_t dataSize, uint32_t bufferIndex);
-		void TransitionBarrier(CmdObj* cmdObj, D3D12_RESOURCE_STATES )
+		void CopyBuffer(const void* data, size_t dataSize);
+		void TransitionBarrier(D3D12_RESOURCE_STATES after);
+		void Flush(CmdObj* cmdObj, uint32_t bufferIndex);
 
 		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(BufferType type, uint32_t bufferIndex) const;
 
@@ -57,6 +58,11 @@ namespace SHEngine {
 		size_t sizeInBytes_ = 0;
 		std::vector<void*> mappedData_ = {};
 
+		std::vector<D3D12_RESOURCE_STATES> currentState_ = {};
+
+		//Flush時に切り替える用
+		std::vector<uint8_t> nextData_;
+		D3D12_RESOURCE_STATES nextState_ = {};
 	};
 
 }
