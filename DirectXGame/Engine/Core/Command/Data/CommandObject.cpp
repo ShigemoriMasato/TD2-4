@@ -3,8 +3,7 @@
 
 using namespace SHEngine::Command;
 
-Object::Object(DXDevice* device, Manager* manager, Type type, int index, int id, int listNum) {
-
+SHEngine::Command::Object::Object(DXDevice* device, Manager* manager, Type type, Queue* queue, int listNum) {
 	device_ = device;
 
 	// コマンドリストを3つ作成
@@ -14,17 +13,16 @@ Object::Object(DXDevice* device, Manager* manager, Type type, int index, int id,
 	}
 
 	// コマンドオブジェクトのタイプとキューインデックスを保存
-	manager_ = manager;
+	queue_ = queue;
 	type_ = type;
-	queueIndex_ = index;
-	id_ = id;
+	manager_ = manager;
 
 	ResetCommandList();
 }
 
 Object::~Object() {
 	WaitForGPUIdle(); // すべてのコマンドが終了されるのを待つ
-	manager_->ReleaseObject(type_, queueIndex_, id_);
+	manager_->ReleaseObject(queue_, this); // Managerからも削除する
 }
 
 bool Object::CanExecute() {
@@ -44,11 +42,6 @@ void SHEngine::Command::Object::ResetCommandList() {
 		return;
 	}
 
-	if(state_ == State::Execute) {
-		// コマンドリストが実行された後は、シグナルを送ってからリセットする
-		SendSignal(manager_->GetCommandQueue(type_, queueIndex_));
-	}
-
 	commandLists_[dxListIndex_].ResetCommandList();
 	state_ = State::Open;
 }
@@ -59,26 +52,7 @@ void SHEngine::Command::Object::Execute(std::vector<ID3D12CommandList*>& cmdList
 		ResetCommandList();
 	}
 
-	// 現在のコマンドリストを取得
-	auto& currentDXList = commandLists_[dxListIndex_];
-
-	// コマンドリストを取得して閉じる
-	ID3D12GraphicsCommandList* commandList = currentDXList.GetCommandList();
-	HRESULT hr = commandList->Close();
-	assert(SUCCEEDED(hr) && "Failed to close Command List");
-	// コマンドリストを引数に追加
-	cmdLists.push_back(commandList);
-
-	state_ = State::Execute;
-}
-
-void SHEngine::Command::Object::SendSignal(ID3D12CommandQueue* executedCmdQueue) {
-	// 現在のコマンドリストでシグナルを送信
-	auto& currentDXList = commandLists_[dxListIndex_];
-	currentDXList.SendSignal(executedCmdQueue);
-
-	// 次のコマンドリストに移動（3つのコマンドリストを循環）
-	dxListIndex_ = (dxListIndex_ + 1) % commandLists_.size();
+	commandLists_[dxListIndex_].Execute(queue_, cmdLists);
 
 	state_ = State::Close;
 }
@@ -86,8 +60,6 @@ void SHEngine::Command::Object::SendSignal(ID3D12CommandQueue* executedCmdQueue)
 std::string SHEngine::Command::Object::Log() const {
 	std::string ans;
 	ans = "CommandObject - Type: " + std::to_string(static_cast<int>(type_)) +
-		", QueueIndex: " + std::to_string(queueIndex_) +
-		", ID: " + std::to_string(id_) +
 		", CurrentDXListIndex: " + std::to_string(dxListIndex_);
 	return ans;
 }

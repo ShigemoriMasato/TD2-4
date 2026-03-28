@@ -313,6 +313,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Player\PlayerAI\PlayerAI.cpp" />
     <ClCompile Include="Engine\Render\Font\Text.cpp" />
     <ClCompile Include="AppSource\02_ShigeScene\TechnicalTestScene.cpp" />
+    <ClCompile Include="Engine\Core\Command\Data\SHCmdQueue.cpp" />
+    <ClCompile Include="Engine\Render\Renderer.cpp" />
+    <ClCompile Include="Engine\Render\SHResource.cpp" />
     <ClInclude Include="AppSource\GameObject\Map\MapInfo.h" />
     <ClInclude Include="AppSource\GameObject\Player\Controller\AIController.h" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Spear.cpp" />
@@ -464,6 +467,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Attack\GrenadeBullet.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Data\Gurepon.h" />
     <ClInclude Include="AppSource\UI\Game\GameFrame.h" />
+    <ClInclude Include="Engine\Core\Command\Data\SHCmdQueue.h" />
+    <ClInclude Include="Engine\Render\Renderer.h" />
+    <ClInclude Include="Engine\Render\SHResource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

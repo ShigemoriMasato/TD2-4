@@ -4,6 +4,7 @@
 #include <Render/RenderObject.h>
 #include <Compute/ComputeObject.h>
 #include <Render/Font/Text.h>
+#include <Render/Renderer.h>
 
 #pragma comment(lib, "Dbghelp.lib")
 
@@ -56,8 +57,10 @@ void Engine::Initialize(HINSTANCE hInstance) {
 
 	Screen::IDisplay::SetDevice(device_.get());
 	RenderObject::StaticInitialize(device_.get(), psoEditor_.get());
+	Renderer::SetPSOEditor(psoEditor_.get(), device_->GetSRVManager()->GetStartPtr());
+	GPUBuffer::SetDevice(device_.get());
 	Text::SetFontLoader(fontLoader_.get());
-	ComputeObject::StaticInitialize(device_.get(), csPsoManager_.get());
+	ComputeObject::StaticInitialize(csPsoManager_.get());
 
 	fpsObserver_ = std::make_unique<FPSObserver>();
 
@@ -88,11 +91,6 @@ void Engine::PostDraw() {
 		imguiDrawed_ = true;
 	}
 
-	cmdManager_->Execute(Command::Type::Direct);
-}
-
-void Engine::EndFrame() {
-	cmdManager_->SendSignal(Command::Type::Direct);
 }
 
 std::unique_ptr<Screen::SwapChain> SHEngine::Engine::MakeWindow(Screen::WindowsAPI* windowsApi, uint32_t clearColor) {

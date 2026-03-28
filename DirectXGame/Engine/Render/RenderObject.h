@@ -140,7 +140,7 @@ namespace SHEngine {
 	private://寿命管理
 
 		/**
-		 * @struct Resource
+		 * @struct GPUBuffer
 		 * @brief リソースラッパー
 		 */
 		struct Resource {
