@@ -226,7 +226,7 @@ void ShigeScene::Draw() {
 
 	// grid_->Draw(cmdObj);
 	map_->Draw(cmdObj);
-	//objectRender_->Draw(cmdObj);
+	objectRender_->Draw(cmdObj);
 	player_->Draw(cmdObj);
 	playerHP_->Draw(cmdObj);
 

@@ -115,15 +115,28 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, b
 	// プレイヤー本体のワールド行列を計算
 	Matrix4x4 matWorldBody = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 
-	for (int i = 0; i < static_cast<int>(PartIndex::Count); ++i) {
-		Matrix4x4 matLocal = Matrix::MakeAffineMatrix(partTransforms_[i].scale, partTransforms_[i].rotate, partTransforms_[i].position);
+	// 各パーツの関節位置のオフセット
+	Vector3 pivotOffset[static_cast<int>(PartIndex::Count)] = {
+	    {0.0f, 0.8f, 0.0f}, // RightArm
+	    {0.0f, 0.8f, 0.0f}, // LeftArm
+	    {0.0f, 0.8f, 0.0f}, // RightLeg
+	    {0.0f, 0.8f, 0.0f}, // LeftLeg
+	    {0.0f, 0.0f, 0.0f}  // Body
+	};
 
-		Matrix4x4 matWorldPart;
-		if (i == static_cast<int>(PartIndex::Count)) {
-			matWorldPart = matWorldBody; // 胴体
-		} else {
-			matWorldPart = matLocal * matWorldBody; // それ以外
-		}
+	for (int i = 0; i < static_cast<int>(PartIndex::Count); ++i) {
+		// モデルの中心を原点から関節位置へずらす行列
+		Matrix4x4 matOffset = Matrix::MakeAffineMatrix({1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {-pivotOffset[i].x, -pivotOffset[i].y, -pivotOffset[i].z});
+
+		// 本来の中心座標に関節オフセットを足して、関節自体のローカル座標を求める
+		Vector3 jointPos = {partTransforms_[i].position.x + pivotOffset[i].x, partTransforms_[i].position.y + pivotOffset[i].y, partTransforms_[i].position.z + pivotOffset[i].z};
+
+		// スケール・回転・関節座標への移動を行う行列
+		Matrix4x4 matSRT = Matrix::MakeAffineMatrix(partTransforms_[i].scale, partTransforms_[i].rotate, jointPos);
+
+		// オフセット行列と合成
+		Matrix4x4 matLocal = matOffset * matSRT;
+		Matrix4x4 matWorldPart = matLocal * matWorldBody;
 
 		// WVP行列を計算
 		Matrix4x4 wvp = matWorldPart * vpMatrix;
