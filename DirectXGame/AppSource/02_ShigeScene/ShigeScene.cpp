@@ -323,12 +323,11 @@ void ShigeScene::Draw() {
 
 	shopScene_->Draw();
 
-	parameterRender_->Draw(cmdObj);
-
 	gameFrameBG_->Draw(cmdObj);
 	gameFrame_->Draw(cmdObj);
 
 	waveSystemUI_->Draw(cmdObj);
+	parameterRender_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 

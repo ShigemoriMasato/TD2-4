@@ -60,7 +60,7 @@ private:
 
 	// パラメータ表示
 	float startPosY_ = -100.0f;   // 開始位置
-	float posX_ = 1240.0f;         // X座標
+	float posX_ = 1340.0f;         // X座標
 	float marginY_ = -40.0f;      // 間隔
 	float valueOffsetX_ = 270.0f; // ラベルから数値までのXオフセット
 
@@ -72,6 +72,6 @@ private:
 	// アニメーション用の変数
 	AnimationBundle<float> offsetAnimation_;
 	bool isAnimation_ = false;
-	static inline const float endPosX_ = -300.0f;
-	static inline const float bgPosX_ = 1400.0f;
+	static inline const float endPosX_ = -400.0f;
+	static inline const float bgPosX_ = 1500.0f;
 };
