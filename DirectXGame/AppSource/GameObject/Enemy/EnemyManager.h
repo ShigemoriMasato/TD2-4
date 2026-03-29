@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "IEnemy.h"
 
 enum class EnemyType {
@@ -13,6 +12,7 @@ struct PendingEnemy {
 	int hp;
 	float timer;
 	EnemyType type;
+	float attack; // 追加
 };
 
 class EnemyManager {
@@ -21,7 +21,7 @@ public:
 	void Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVpMatrix);
 	void DrawImGui();
 
-	void PopEnemy(Vector3 initPos = {0.0f, 0.0f, 0.0f}, int hp = 1, EnemyType type = EnemyType::Normal);
+	void PopEnemy(Vector3 initPos = {0.0f, 0.0f, 0.0f}, int hp = 1, EnemyType type = EnemyType::Normal, float attack = 1.0f); // 追加
 
 	std::vector<DrawInfo> GetEnemyDrawInfos() const;
 	std::vector<IEnemy*> GetEnemies() const;

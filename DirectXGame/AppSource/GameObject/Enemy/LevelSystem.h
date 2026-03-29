@@ -18,7 +18,7 @@ public:
 	void DrawImGui();
 
 	std::vector<std::vector<EnemyType>> GetNext5WaveTypes() const;
-	int GetCurrentWave() const { return static_cast<int>(allTimer_ / 30.0f); }
+	int GetCurrentWave() const { return waveCount_; }
 
 private:
 
@@ -28,14 +28,19 @@ private:
 	void Load();
 	void Save();
 
+	struct EnemyBaseStatus {
+		float hp = 1.0f;
+		float attack = 1.0f;
+	};
+
 	struct BaseSystem {
 		float spawnInterval = 3.0f; // 敵をスポーンする間隔
 		float enemyCount = 2; // スポーンする敵の数
-		float enemyHp = 5.0f; // スポーンする敵のHP
 		std::vector<EnemyType> spawnTypes = { EnemyType::Normal }; // スポーンする敵の種類
 	};
 
 	BaseSystem config_;
+	std::map<EnemyType, EnemyBaseStatus> baseStatusMap_;
 
 	EnemyManager* enemyManager_ = nullptr;
 
@@ -56,6 +61,9 @@ private:	//Edit用
 	float increaseIntercal_ = 0.1f; // スポーン間隔の増加量
 	float increaseEnemyCount_ = 0.5f; // スポーンする敵の数の増加量
 	float increaseHp_ = 5.0f; // 敵のHPの増加量
+
+	// 30秒が経過した回数
+	int waveCount_ = 0;
 
 	BinaryManager binaryManager_;
 

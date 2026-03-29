@@ -2,6 +2,7 @@
 #include <Utility/Matrix.h>
 #include <Utility/MatrixFactory.h>
 #include <imgui/imgui.h>
+#include <GameObject/Enemy/IEnemy.h>
 
 using namespace SHEngine;
 using namespace Player;
@@ -200,7 +201,12 @@ void Player::Base::SpawnAfterImage() {
 }
 
 void Player::Base::OnCollision(Collider* other) {
-	Damage(1.0f);
+	if (other->GetOwnTag() & CollTag::Enemy) {
+		auto enemy = static_cast<IEnemy*>(other);
+		Damage(enemy->GetAttack());
+	} else {
+		Damage(1.0f);
+	}
 }
 
 void Player::Base::Damage(float amount){
