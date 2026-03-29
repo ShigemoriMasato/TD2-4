@@ -107,3 +107,12 @@ void PieceManager::RemovePiece(Piece* piece) {
 std::vector<Piece*> PieceManager::GetAllPieces() {
 	return allPieces_;
 }
+
+bool PieceManager::IsShopPiece(Piece* piece) const {
+	for (const auto& shopPiece : shopPieces_) {
+		if (shopPiece.get() == piece) {
+			return true;
+		}
+	}
+	return false;
+}

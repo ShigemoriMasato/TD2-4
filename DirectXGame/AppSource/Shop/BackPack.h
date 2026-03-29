@@ -44,6 +44,20 @@ public:
 	bool IsInReserveArea(std::pair<int, int> pos) const;
 	Vector3 GetReserveAreaWorldPos() const;
 
+	// 通常エリア（非保留エリア）の範囲を取得
+	int GetNormalAreaStartX() const { return emptyStartX_; }
+	int GetNormalAreaStartY() const { return emptyStartY_; }
+	int GetNormalAreaWidth() const { return emptyAreaWidth_; }
+	int GetNormalAreaHeight() const { return emptyAreaHeight_; }
+
+	// 保留エリアの範囲を取得
+	int GetReserveAreaStartX() const { return reserveStartX_; }
+	int GetReserveAreaStartY() const { return reserveStartY_; }
+	int GetReserveAreaWidth() const { return reserveAreaWidth_; }
+	int GetReserveAreaHeight() const { return reserveAreaHeight_; }
+
+	Vector3 GetOriginPos() const { return originPos_; }
+
 private:
 
 	std::vector<std::vector<Slot>> slots_;

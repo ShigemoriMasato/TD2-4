@@ -71,6 +71,8 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 				}
 			}
 
+			// ピースを離すときに持たれている状態を解除
+			heldPiece_->SetHeld(false);
 			heldPiece_ = nullptr;
 
 		} else {
@@ -90,6 +92,8 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 				heldPiece_ = piece;
 				preHeldPieceDir_ = heldPiece_->GetDirection();
 				preHeldPiecePos_ = piece->GetPosition();
+				// ピースを持つときに持たれている状態を設定
+				heldPiece_->SetHeld(true);
 			}
 
 			if (keys[Key::Erase]) {
@@ -99,6 +103,37 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 
 			if (keys[Key::Use]) {
 				piece->Use();
+			}
+
+			// 右クリック（AutoPlace）の処理
+			if (keys[Key::AutoPlace]) {
+				// ショップエリアのピースかを確認
+				if (pieceManager_->IsShopPiece(piece)) {
+					// 元の位置と回転を保存
+					Vector3 originalPos = piece->GetPosition();
+					Piece::Direction originalDir = piece->GetDirection();
+					
+					// 自動配置を試みる
+					if (piece->AutoPlace(backPack)) {
+						// 配置成功：何もしない（既にPutが呼ばれている）
+					} else {
+						// 配置失敗：元の位置と回転に戻す
+						// 回転を元に戻す
+						while (piece->GetDirection() != originalDir) {
+							piece->RotateRight();
+						}
+						piece->SetPosition(originalPos);
+					}
+				} else {
+					// BackPack内のアイテムの場合
+					if (piece->IsReserved()) {
+						// 保留エリアにある場合、通常エリアに移動
+						piece->MoveToNormal(backPack);
+					} else {
+						// 通常エリアにある場合、保留エリアに移動
+						piece->MoveToReserve(backPack);
+					}
+				}
 			}
 
 			break;

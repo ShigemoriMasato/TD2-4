@@ -33,6 +33,15 @@ public:
 	void Remove(BackPack* backPack);
 	void Use();
 
+	// 自動配置：通常エリアに配置を試み、無理なら保留エリアに配置
+	bool AutoPlace(BackPack* backPack);
+
+	// 保留エリアに移動：BackPack内のアイテムを保留エリアに移動
+	bool MoveToReserve(BackPack* backPack);
+
+	// 通常エリアに移動：保留エリアのアイテムを通常エリアに移動
+	bool MoveToNormal(BackPack* backPack);
+
 	bool IsHovered(const Vector3& cursorPos, BackPack* backPack) ;
 	std::vector<DrawInfo> GetDrawInfos() const;
 	Item GetItem() const { return itemData_; }
@@ -46,6 +55,10 @@ public:
 	// 保留状態の管理
 	void SetReserved(bool reserved) { isReserved_ = reserved; }
 	bool IsReserved() const { return isReserved_; }
+
+	// 持たれている状態の管理
+	void SetHeld(bool held) { isHeld_ = held; }
+	bool IsHeld() const { return isHeld_; }
 	
 public:
 	static inline float hoverSizeX = 0.5f;
@@ -79,6 +92,7 @@ private:
 	bool isUsing_ = false;
 	bool isActive_ = true;
 	bool isReserved_ = false; // 保留エリアに置かれているか
+	bool isHeld_ = false; // 左クリックで持たれているか
 
 	float useTimer_ = 0.0f;
 
