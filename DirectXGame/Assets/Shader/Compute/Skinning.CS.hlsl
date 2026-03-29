@@ -25,8 +25,18 @@ struct Well
 StructuredBuffer<Well> matrices : register(t0);
 StructuredBuffer<Vertex> vertices : register(t1);
 StructuredBuffer<VertexInfluence> influences : register(t2);
-RWStructuredBuffer<Vertex> output : register(u0);
+RWStructuredBuffer<float4x4> output : register(u0);
 ConstantBuffer<SkinningInformation> skinninfInfo : register(b0);
+
+float4x4 Multiply(float4x4 a, float b)
+{
+    return float4x4(
+        a[0] * b,
+        a[1] * b,
+        a[2] * b,
+        a[3] * b
+    );
+}
 
 [numthreads(1024, 1, 1)]
 void main(uint3 DTid : SV_DispatchThreadID)
@@ -40,33 +50,23 @@ void main(uint3 DTid : SV_DispatchThreadID)
     //必要なデータの抽出
     Vertex input = vertices[vertexIndex];
     VertexInfluence influence = influences[vertexIndex];
-        
-    //Skinning後の頂点
-    Vertex skinned;
-    skinned.texcoord = input.texcoord;
+    
+    float4x4 skinMatrix;
         
     if (influence.weight.x + influence.weight.y + influence.weight.z + influence.weight.w == 0.0)
     {
-        skinned.position = input.position;
-        skinned.normal = input.normal;
+         skinMatrix = float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
     }
     else
     {
         float4 skinnedPosition = float4(0.0, 0.0, 0.0, 0.0);
         float3 skinnedNormal = float3(0.0, 0.0, 0.0);
-        skinnedPosition = mul(input.position, matrices[influence.index.x].skeletonSpaceMatrix) * influence.weight.x;
-        skinnedPosition += mul(input.position, matrices[influence.index.y].skeletonSpaceMatrix) * influence.weight.y;
-        skinnedPosition += mul(input.position, matrices[influence.index.z].skeletonSpaceMatrix) * influence.weight.z;
-        skinnedPosition += mul(input.position, matrices[influence.index.w].skeletonSpaceMatrix) * influence.weight.w;
-
-        skinnedNormal = normalize(mul(input.normal, (float3x3) matrices[influence.index.x].skeletonSpaceInverseTransposeMatrix)) * influence.weight.x;
-        skinnedNormal += normalize(mul(input.normal, (float3x3) matrices[influence.index.y].skeletonSpaceInverseTransposeMatrix)) * influence.weight.y;
-        skinnedNormal += normalize(mul(input.normal, (float3x3) matrices[influence.index.z].skeletonSpaceInverseTransposeMatrix)) * influence.weight.z;
-        skinnedNormal += normalize(mul(input.normal, (float3x3) matrices[influence.index.w].skeletonSpaceInverseTransposeMatrix)) * influence.weight.w;
-        
-        skinned.position = skinnedPosition;
-        skinned.normal = skinnedNormal;
+        skinMatrix =
+            Multiply(matrices[influence.index.x].skeletonSpaceMatrix, influence.weight.x) +
+            Multiply(matrices[influence.index.y].skeletonSpaceMatrix, influence.weight.y) +
+            Multiply(matrices[influence.index.z].skeletonSpaceMatrix, influence.weight.z) +
+            Multiply(matrices[influence.index.w].skeletonSpaceMatrix, influence.weight.w);
     }
         
-    output[vertexIndex] = skinned;
+    output[vertexIndex] = skinMatrix;
 }

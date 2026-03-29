@@ -42,32 +42,32 @@ void SHEngine::Renderer::Draw(CmdObj* cmdObj) {
 
 	int rootIndex = 0;
 	for (const auto& cbv : gpuBuffers_[ShaderType::VERTEX_SHADER][BufferType::CBV]) {
-		cbv->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
+		cbv->TransitionBarrier(D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 		cbv->Flush(cmdObj, cmdIndex);
 		cmdList->SetGraphicsRootConstantBufferView(rootIndex++, cbv->GetGPUDescriptorHandle(BufferType::CBV, cmdIndex).ptr);
 	}
 	for (const auto& cbv : gpuBuffers_[ShaderType::PIXEL_SHADER][BufferType::CBV]) {
-		cbv->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
+		cbv->TransitionBarrier(D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 		cbv->Flush(cmdObj, cmdIndex);
 		cmdList->SetGraphicsRootConstantBufferView(rootIndex++, cbv->GetGPUDescriptorHandle(BufferType::CBV, cmdIndex).ptr);
 	}
 	for (const auto& srv : gpuBuffers_[ShaderType::VERTEX_SHADER][BufferType::SRV]) {
-		srv->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
+		srv->TransitionBarrier(D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		srv->Flush(cmdObj, cmdIndex);
 		cmdList->SetGraphicsRootDescriptorTable(rootIndex++, srv->GetGPUDescriptorHandle(BufferType::SRV, cmdIndex));
 	}
 	for (const auto& srv : gpuBuffers_[ShaderType::PIXEL_SHADER][BufferType::SRV]) {
-		srv->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
+		srv->TransitionBarrier(D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 		srv->Flush(cmdObj, cmdIndex);
 		cmdList->SetGraphicsRootDescriptorTable(rootIndex++, srv->GetGPUDescriptorHandle(BufferType::SRV, cmdIndex));
 	}
 	for (const auto& uav : gpuBuffers_[ShaderType::VERTEX_SHADER][BufferType::UAV]) {
-		uav->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
+		uav->TransitionBarrier(D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 		uav->Flush(cmdObj, cmdIndex);
 		cmdList->SetGraphicsRootDescriptorTable(rootIndex++, uav->GetGPUDescriptorHandle(BufferType::UAV, cmdIndex));
 	}
 	for (const auto& uav : gpuBuffers_[ShaderType::PIXEL_SHADER][BufferType::UAV]) {
-		uav->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
+		uav->TransitionBarrier(D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 		uav->Flush(cmdObj, cmdIndex);
 		cmdList->SetGraphicsRootDescriptorTable(rootIndex++, uav->GetGPUDescriptorHandle(BufferType::UAV, cmdIndex));
 	}

@@ -32,12 +32,12 @@ void ComputeObject::Execute(CmdObj* cmdObj) {
 	int cmdListIndex = cmdObj->GetListIndex();
 	int rootIndex = 0;
 	for(const auto& cbv : gpuBuffers_[BufferType::CBV]) {
-		cbv->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
+		cbv->TransitionBarrier(D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 		cbv->Flush(cmdObj, cmdListIndex);
 		cmdList->SetComputeRootConstantBufferView(rootIndex++, cbv->GetGPUDescriptorHandle(BufferType::CBV, cmdListIndex).ptr);
 	}
 	for(const auto& srv : gpuBuffers_[BufferType::SRV]) {
-		srv->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
+		srv->TransitionBarrier(D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		srv->Flush(cmdObj, cmdListIndex);
 		cmdList->SetComputeRootDescriptorTable(rootIndex++, srv->GetGPUDescriptorHandle(BufferType::SRV, cmdListIndex));
 	}

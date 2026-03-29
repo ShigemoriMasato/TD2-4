@@ -23,7 +23,7 @@ namespace SHEngine {
 
 	struct ResourceDesc {
 		uint8_t bufferType;
-		D3D12_RESOURCE_STATES initialState = D3D12_RESOURCE_STATE_GENERIC_READ;
+		D3D12_RESOURCE_STATES initialState = {};
 		size_t sizeInBytes = 0;
 		uint32_t elementCount = 0;
 		uint32_t bufferNum = 3;		//バッファ数（SwapChain対策用）

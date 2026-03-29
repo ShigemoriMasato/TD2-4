@@ -17,7 +17,7 @@ SHEngine::GPUBuffer::GPUBuffer(ResourceDesc& desc) {
 
 	resources_.reserve(desc.bufferNum);
 	mappedData_.reserve(desc.bufferNum);
-	currentState_.resize(desc.bufferNum, desc.initialState);
+	currentState_.resize(desc.bufferNum, D3D12_RESOURCE_STATE_COMMON);
 	auto heapType = ((desc.bufferType & BufferType::UAV) == 0U ? D3D12_HEAP_TYPE_UPLOAD : D3D12_HEAP_TYPE_DEFAULT);
 
 	for (uint32_t i = 0; i < desc.bufferNum; ++i) {
@@ -36,13 +36,16 @@ SHEngine::GPUBuffer::GPUBuffer(ResourceDesc& desc) {
 		bufferResourceDesc.SampleDesc.Count = 1;
 		//バッファの場合はこれにする決まり
 		bufferResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+		if (desc.bufferType & BufferType::UAV) {
+			bufferResourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+		}
 
 		auto& bufferResource = resources_.emplace_back().res;
 
 		HRESULT reason = device_->GetDevice()->GetDeviceRemovedReason();
 
 		HRESULT hr = device_->GetDevice()->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
-			&bufferResourceDesc, desc.initialState, nullptr,
+			&bufferResourceDesc, D3D12_RESOURCE_STATE_COMMON, nullptr,
 			IID_PPV_ARGS(&bufferResource));
 		assert(SUCCEEDED(hr));
 
@@ -51,6 +54,8 @@ SHEngine::GPUBuffer::GPUBuffer(ResourceDesc& desc) {
 			hr = bufferResource->Map(0, nullptr, &mapped);
 		}
 	}
+
+	nextState_ = desc.initialState;
 
 	auto HasBuffer = [&](BufferType t) noexcept -> bool {
 		return (desc.bufferType & static_cast<uint8_t>(t)) != 0u;
@@ -143,7 +148,7 @@ void SHEngine::GPUBuffer::Flush(CmdObj* cmdObj, uint32_t bufferIndex) {
 	}
 
 	//同じだった場合の処理と過去の状態の更新は関数内に含まれている
-	Func::InsertBarrier(cmdObj->GetCommandList(), currentState_[bufferIndex], nextState_, resources_[bufferIndex].res.Get());
+	Func::InsertBarrier(cmdObj->GetCommandList(), nextState_, currentState_[bufferIndex], resources_[bufferIndex].res.Get());
 }
 
 BufferType operator|(BufferType a, BufferType b) {
