@@ -63,8 +63,8 @@ void Engine::Initialize(HINSTANCE hInstance) {
 	ComputeObject::StaticInitialize(csPsoManager_.get());
 
 	fpsObserver_ = std::make_unique<FPSObserver>();
-
 	hInstance_ = hInstance;
+
 }
 
 bool Engine::IsLoop() {
