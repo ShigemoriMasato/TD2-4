@@ -18,6 +18,11 @@ void Piece::Initialize(const Item& item, int rank) {
 }
 
 bool Piece::Update(BackPack* backPack, float deltaTime) {
+	// 武器は自動で使用状態にする
+	if (itemData_.category == Category::Weapon && !isUsing_) {
+		Use();
+	}
+
 	if (!isUsing_) {
 		return false;
 	}

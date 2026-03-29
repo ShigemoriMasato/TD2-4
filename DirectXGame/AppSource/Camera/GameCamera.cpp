@@ -1,6 +1,7 @@
 #include "GameCamera.h"
 #include <Utility/Easing.h>
 #include <imgui/imgui.h>
+#include <Input/Input.h>
 
 void GameCamera::Initialize() {
 	//初期位置を設定
@@ -10,7 +11,19 @@ void GameCamera::Initialize() {
 }
 
 void GameCamera::Update(float deltaTime, Vector3 position) {
-	position_ = lerp(position_, position + offset_, deltaTime * 10.0f);
+	// マウスホイールによるカメラ距離の調整
+	if (input_) {
+		float mouseWheel = input_->GetMouseWheel();
+		if (mouseWheel != 0.0f) {
+			// ホイール回転量に応じて距離スケールを調整
+			distanceScale_ += mouseWheel * wheelSensitivity_;
+			distanceScale_ = std::clamp(distanceScale_, minDistanceScale_, maxDistanceScale_);
+		}
+	}
+	
+	// offsetに距離スケールを適用
+	Vector3 scaledOffset = offset_ * distanceScale_;
+	position_ = lerp(position_, position + scaledOffset, deltaTime * 10.0f);
 	MakeMatrix();
 }
 
@@ -29,6 +42,7 @@ void GameCamera::DrawImGui() {
 	}
 
 	ImGui::DragFloat3("Offset", &offset_.x, 0.1f);
+	ImGui::SliderFloat("Distance Scale", &distanceScale_, minDistanceScale_, maxDistanceScale_);
 
 	ImGui::Separator();
 

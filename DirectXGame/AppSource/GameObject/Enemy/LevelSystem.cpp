@@ -23,10 +23,10 @@ void LevelSystem::Initialize(EnemyManager* enemyManager, int stageNum, Vector3* 
 
 	playerPosPtr_ = playerPosPtr;
 
-	// 敵ごとのベースステータスを初期化
-	baseStatusMap_[EnemyType::Normal] = { 5.0f, 1.0f };
-	baseStatusMap_[EnemyType::Fast]   = { 3.0f, 1.5f };
-	baseStatusMap_[EnemyType::Tackle] = { 10.0f, 2.0f };
+	// 敵ごとのベースステータスを初期化        // HP // Attack
+	baseStatusMap_[EnemyType::Normal] = { 3.0f, 1.0f };
+	baseStatusMap_[EnemyType::Fast]   = { 1.0f, 1.0f };
+	baseStatusMap_[EnemyType::Tackle] = { 5.0f, 2.0f };
 }
 
 void LevelSystem::Update(float deltaTime) {
@@ -76,8 +76,8 @@ void LevelSystem::Update(float deltaTime) {
 			float attackScale = 0.0f;
 
 			if (type == EnemyType::Normal) {
-				hpScale = 1.0f;
-				attackScale = 0.25f;
+				hpScale = 2.0f;
+				attackScale = 0.5f;
 			} else if (type == EnemyType::Fast) {
 				hpScale = 1.0f;
 				attackScale = 0.25f;

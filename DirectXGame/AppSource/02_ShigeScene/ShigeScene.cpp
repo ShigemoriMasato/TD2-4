@@ -15,6 +15,7 @@ void ShigeScene::Initialize() {
 
 	gameCamera_ = std::make_unique<GameCamera>();
 	gameCamera_->Initialize();
+	gameCamera_->SetInput(input_);
 
 	camera_ = gameCamera_.get();
 
@@ -122,10 +123,11 @@ void ShigeScene::Initialize() {
 	timerTextTransform_.position = { 775.0f, -295.0f, 0.0f }; // Top center or so // default
 	timerTextTransform_.scale = { 1.f, 1.f, 1.0f };
 
-	displayRange_.top = 390.0f;
-	displayRange_.bottom = 810.0f;
-	displayRange_.left = 560.0f;
-	displayRange_.right = 1340.0f;
+	// 1280x720の画面内座標系での正しい範囲に修正
+	displayRange_.top = 280.0f;
+	displayRange_.bottom = 685.0f;
+	displayRange_.left = 450.0f;
+	displayRange_.right = 1230.0f;
 
 //#ifdef USE_IMGUI
 //
@@ -133,6 +135,7 @@ void ShigeScene::Initialize() {
 //	displayRange_.bottom = 375.0f;
 //	displayRange_.left = 240.0f;
 //	displayRange_.right = 630.0f;
+//
 //
 //#endif // DEBUG
 
@@ -205,8 +208,14 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 			Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
 			Vector3 clickWorldPos = GetWorldCursor(camera_, cursorPos);
 
-			// Playerを指定のワールド座標へ移動させる（InputController使用時用）
-			player_->GetController()->SetTargetPosition(clickWorldPos);
+			// GameDisplayの内側でのみPlayerを移動させる
+			if (cursorPos.x >= displayRange_.left && cursorPos.x <= displayRange_.right &&
+				cursorPos.y >= displayRange_.top && cursorPos.y <= displayRange_.bottom) {
+				// マップ境界内に制限した座標を取得
+				Vector3 clampedPos = map_->ClampToBounds(clickWorldPos);
+				// Playerを指定のワールド座標へ移動させる（InputController使用時用）
+				player_->GetController()->SetTargetPosition(clampedPos);
+			}
 		}
 	}
 
@@ -355,23 +364,13 @@ void ShigeScene::Draw() {
 
 	ImGui::Begin("RenderDebug");
 	ImGui::DragFloat("baseHeight", &baseHeight_, 0.01f);
-	ImGui::DragFloat("baseRadius", &baseRadius_, 0.01f);
+	ImGui::DragFloat("displayLeft", &displayRange_.left, 1.0f);
+	ImGui::DragFloat("displayRight", &displayRange_.right, 1.0f);
+	ImGui::DragFloat("displayTop", &displayRange_.top, 1.0f);
+	ImGui::DragFloat("displayBottom", &displayRange_.bottom, 1.0f);
 	ImGui::End();
 
-	ImGui::Begin("KeyInfo");
-	ImGui::Text("1 : HP減少");
-	ImGui::Text("2 : HP回復");
-	ImGui::Text("3 : HP全回復");
-	ImGui::Text("4 : HPゼロ");
-	ImGui::Text("5 : 自動と手動の切り換え");
-	ImGui::Text("%s", currentControllerIndex_ == 0 ? "AIController" : "InputController");
-	ImGui::End();
-
-	camera_->DrawImGui();
-	shopScene_->GetCamera()->DrawImGui();
-
-#endif
-
+#endif // USE_IMGUI
 	engine_->DrawImGui();
 
 #ifdef SH_RELEASE
