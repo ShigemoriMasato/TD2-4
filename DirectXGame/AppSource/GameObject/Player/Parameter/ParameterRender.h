@@ -72,5 +72,6 @@ private:
 	// アニメーション用の変数
 	AnimationBundle<float> offsetAnimation_;
 	bool isAnimation_ = false;
-	float endPos_ = -300.0f;
+	static inline const float endPosX_ = -300.0f;
+	static inline const float bgPosX_ = 1400.0f;
 };

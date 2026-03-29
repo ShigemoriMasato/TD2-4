@@ -7,9 +7,6 @@
 using namespace Player;
 
 void StateNormal::Update(Base* player, float deltaTime) {
-	// クールダウンの更新
-	player->UpdateDashCooldown(deltaTime);
-
 	Vector3& rotate = player->GetTransform().rotate;
 
 	// 移動入力の取得
@@ -17,7 +14,10 @@ void StateNormal::Update(Base* player, float deltaTime) {
 
 	// 正規化
 	float length = std::sqrt(dir.x * dir.x + dir.y * dir.y);
-	if (length > 0.0f) {
+	
+	// 入力があるかどうかの判定
+	bool isMoving = (length > 0.0f);
+	if (isMoving) {
 		dir.x /= length;
 		dir.y /= length;
 
@@ -36,23 +36,14 @@ void StateNormal::Update(Base* player, float deltaTime) {
 
 		// 回転を補間
 		rotate.y += diff * player->GetRotationSpeed() * deltaTime;
+	
+		// 通常移動の適用
+		Transform& t = player->GetTransform();
+		t.position.x += dir.x * player->GetVelocity() * deltaTime;
+		t.position.z += dir.y * player->GetVelocity() * deltaTime;
 	}
 
-	// ダッシュのトリガー判定
-	if (player->GetController()->IsDashTriggered() && player->CanDash() && length > 0.0f) {
-		// ダッシュ方向をPlayerにセットして、状態をダッシュに切り替える
-		player->SetDashDir(dir);
-		player->ChangeState(std::make_unique<Player::StateDash>());
-		return; // 状態が変わったのでこのフレームの処理は終了
-	}
-
-	// 通常移動の適用
-	Transform& t = player->GetTransform();
-	t.position.x += dir.x * player->GetVelocity() * deltaTime;
-	t.position.z += dir.y * player->GetVelocity() * deltaTime;
-
-	// プレイヤーがステージ外に出ないようにする
-	//ClampPosition(player);
+	player->UpdateWalkAnimation(deltaTime, isMoving);
 }
 
 void Player::StateNormal::ClampPosition(Base* player) {

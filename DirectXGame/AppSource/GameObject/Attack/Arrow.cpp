@@ -1,0 +1,72 @@
+#include "Arrow.h"
+#include <random>
+
+void Arrow::Initialize(const Config& config) {
+	config_ = config;
+
+	// 当たり判定
+	collCircle_ = std::make_unique<Circle>();
+	collCircle_->center = {config.position.x, config.position.z};
+	collCircle_->radius = radius_ + 0.1f; // ちょっと大きめにしておく
+	CollConfig collConfig;
+	collConfig.ownTag = CollTag::Attack;
+	collConfig.targetTag = static_cast<uint32_t>(CollTag::Enemy);
+	collConfig.colliderInfo = collCircle_.get();
+	Collider::Initialize();
+	SetCollider(collConfig);
+
+	static std::mt19937 rng(std::random_device{}());
+	std::uniform_real_distribution<float> spreadDist(-config.spreadAngle / 2.0f, config.spreadAngle / 2.0f);
+
+	float radian = config.direction + spreadDist(rng);
+
+	direction_ = {cosf(radian), sinf(radian)};
+	constexpr float lifeTime = 0.5f;
+	speed_ = config.speed;
+	penetrationCount_ = static_cast<int>(config.penetration);
+
+	hitEnemyIds_.resize(penetrationCount_ + 1);
+}
+
+void Arrow::Update(float deltaTime) {
+	collCircle_->center += direction_ * speed_ * deltaTime;
+
+	timer_ += deltaTime;
+	if (timer_ >= lifeTime_) {
+		isActive_ = false;
+	}
+}
+
+DrawInfo Arrow::GetDrawInfo() {
+	DrawInfo info;
+	info.position = {collCircle_->center.x, 0.0f, collCircle_->center.y};
+	info.scale = {radius_ * 2.0f, radius_ * 2.0f, radius_ * 2.0f};
+	float yaw = std::atan2(direction_.x, direction_.y);
+	info.rotation = {0.0f, yaw, 0.0f};
+	info.modelIndex = modelManager_->LoadModel("Item/Weapon/Arrow"); // 仮のモデルインデックス
+	info.color = 0xffffffff;                                         // 白色
+	return info;
+}
+
+void Arrow::OnCollision(Collider* other) {
+	// 貫通回数を超えている場合は何もしない
+	if (hitEnemyIds_.size() <= hitCount_) {
+		isActive_ = false;
+		return;
+	}
+
+	int id = other->GetID();
+	// すでに貫通している敵は無視する
+	for (int hitId : hitEnemyIds_) {
+		if (hitId == id) {
+			return;
+		}
+	}
+	hitEnemyIds_[hitCount_] = id;
+
+	// 衝突したら非アクティブにする
+	hitCount_++;
+	if (hitCount_ > penetrationCount_) {
+		isActive_ = false;
+	}
+}
