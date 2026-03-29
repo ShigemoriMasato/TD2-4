@@ -74,7 +74,7 @@ void EnemyManager::PopEnemy(Vector3 initPos, int hp, EnemyType type, float attac
 	PendingEnemy pending;
 	pending.pos = initPos;
 	pending.hp = hp;
-	pending.timer = 1.0f; // 1 second warning
+	pending.timer = 1.5f; // 1 second warning
 	pending.type = type;
 	pending.attack = attack;
 	pendingEnemies_.push_back(pending);

@@ -27,6 +27,31 @@ private:
 
 	void Load();
 	void Save();
+	
+	// NormalEnemyのスケジュール管理
+	struct ScheduledNormalEnemy {
+		Vector3 position;
+		float spawnTime;
+		int hp;
+		float attack;
+	};
+	
+	// FastEnemyのスケジュール管理（グループ出現）
+	struct ScheduledFastGroup {
+		Vector3 centerPosition;
+		float spawnTime;
+		int hp;
+		float attack;
+		int count; // Wave数分
+	};
+	
+	// TackleEnemyのスケジュール管理
+	struct ScheduledTackleEnemy {
+		Vector3 position;
+		float spawnTime;
+		int hp;
+		float attack;
+	};
 
 	struct EnemyBaseStatus {
 		float hp = 1.0f;
@@ -53,6 +78,18 @@ private:
 	MapInfo mapInfo_;
 
 	bool isActive_ = false;
+	
+	// NormalEnemyのスケジュール管理用
+	std::vector<ScheduledNormalEnemy> scheduledNormals_;
+	int lastScheduledWave_ = -1;
+	
+	// FastEnemyのスケジュール管理用
+	std::vector<ScheduledFastGroup> scheduledFastGroups_;
+	float fastSpawnTimer_ = 0.0f;
+	
+	// TackleEnemyのスケジュール管理用
+	std::vector<ScheduledTackleEnemy> scheduledTackles_;
+	float tackleSpawnTimer_ = 0.0f;
 
 private:	//Edit用
 
@@ -63,7 +100,7 @@ private:	//Edit用
 	float increaseHp_ = 5.0f; // 敵のHPの増加量
 
 	// 30秒が経過した回数
-	int waveCount_ = 0;
+	int waveCount_ = 1;
 
 	BinaryManager binaryManager_;
 
