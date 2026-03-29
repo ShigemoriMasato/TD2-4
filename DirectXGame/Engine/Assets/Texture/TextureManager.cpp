@@ -167,8 +167,7 @@ void TextureManager::UploadResources() {
 	}
 
 	//実行
-	manager_->Execute(Command::Type::Texture);
-	manager_->SendSignal(Command::Type::Texture);
+	manager_->Execute(Command::Type::Texture, 0, { cmdObject_.get() });
 
 	//コマンドリストをリセット
 	cmdObject_->ResetCommandList();

@@ -13,5 +13,4 @@ private:
 	static constexpr float radius_ = 12.0f;
 	float timer_ = 0.0f;
 	float direction_ = 0.0f;
-	const static inline std::string modelPath_ = "Swing";
 };

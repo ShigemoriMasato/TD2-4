@@ -120,6 +120,23 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 			rotOffsetAnim_.temp = {-(direction_ - std::numbers::pi_v<float> / 2.0f), 0.0f, std::numbers::pi_v<float> / 2.0f};
 			break;
 		}
+		case WeaponType::Pickaxe: {
+			forwardDuration = 0.15f;
+			currentAnimIsThrust_ = isPickaxeThrust_; // 実行中の状態を保存
+
+			if (currentAnimIsThrust_) {
+				// 突き
+				float thrustDistance = 3.0f;
+				posEnd = {std::cosf(direction_) * thrustDistance, 0.0f, std::sinf(direction_) * thrustDistance};
+			} else {
+				// 薙ぎ払い
+				rotStart = {0.0f, -std::numbers::pi_v<float> / 4.0f, 0.0f};
+				rotEnd = {0.0f, std::numbers::pi_v<float> / 4.0f, 0.0f};
+				rotOffsetAnim_.temp = rotStart;
+			}
+			isPickaxeThrust_ = !isPickaxeThrust_; // 次回のアニメーション用に反転させる
+			break;
+		}
 		}
 
 		// 座標と回転のアニメーション開始
@@ -167,6 +184,9 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 			case WeaponType::Gurepon:
 				returnDuration = 0.3f;
 				break;
+			case WeaponType::Pickaxe:
+				returnDuration = 0.3f;
+				break;
 			}
 
 			// アニメーションの開始
@@ -188,7 +208,7 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 
 	float currentDir = direction_;
 
-	if (animState_ != AnimState::None && (wData->type == WeaponType::Sword || wData->type == WeaponType::Axe)) {
+	if (animState_ != AnimState::None && (wData->type == WeaponType::Sword || wData->type == WeaponType::Axe || (wData->type == WeaponType::Pickaxe && !currentAnimIsThrust_))) {
 		currentDir += rotOffsetAnim_.temp.y;
 	}
 
@@ -206,7 +226,7 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 		transform_.rotate.x = currentDir - std::numbers::pi_v<float> / 2.0f;
 		transform_.rotate.y = 0.0f;
 		transform_.rotate.z = -std::numbers::pi_v<float> / 2.0f;
-	} else if (wData->type == WeaponType::Sword || wData->type == WeaponType::Axe) {
+	} else if (wData->type == WeaponType::Sword || wData->type == WeaponType::Axe || wData->type == WeaponType::Pickaxe) {
 		transform_.rotate.x = 0.0f;
 		transform_.rotate.y = -(currentDir - std::numbers::pi_v<float> / 2.0f);
 		transform_.rotate.z = 0.0f;
@@ -267,6 +287,13 @@ void IWeaponRender::Draw(CmdObj* cmdObj) {
 			break;
 		case WeaponType::Fist:
 			trailFist_.Draw(cmdObj);
+			break;
+		case WeaponType::Pickaxe:
+			if (currentAnimIsThrust_) {
+				trailSpear_.Draw(cmdObj);
+			} else {
+				trailAxe_.Draw(cmdObj);
+			}
 			break;
 		default:
 			break;

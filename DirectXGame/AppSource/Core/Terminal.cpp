@@ -21,9 +21,9 @@ void Terminal::Run() {
 
 		sceneManager_->Present();
 
-		engine_->EndFrame();
-
 	}
+
+	engine_->StopGPU(SHEngine::Command::Type::Direct);
 
 }
 

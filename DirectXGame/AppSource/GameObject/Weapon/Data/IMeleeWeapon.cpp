@@ -18,6 +18,7 @@ void IMeleeWeapon::Initialize(int weaponID, Player::Base* player) {
 	range_ = config_.range;
 	attackRate_ = rate_ / config_.speed;
 	attackCount_ = 0;
+	attackNum_ = static_cast<float>(weaponData_->attackCount);
 }
 
 void IMeleeWeapon::Update(float deltaTime) {

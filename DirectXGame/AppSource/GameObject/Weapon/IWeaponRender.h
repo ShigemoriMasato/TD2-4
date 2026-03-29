@@ -1,11 +1,11 @@
 #pragma once
 #include "GameObject/EasingAnimation/AnimationBundle.h"
+#include <GameObject/Effect/Trail/DataBank/TrailPresetDataBank.h>
+#include <GameObject/Effect/Trail/MultiTrail/MultiTrail.h>
 #include <GameObject/Weapon/IWeapon.h>
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
-#include <GameObject/Effect/Trail/DataBank/TrailPresetDataBank.h>
-#include <GameObject/Effect/Trail/MultiTrail/MultiTrail.h>
 
 class IWeaponRender {
 public:
@@ -62,9 +62,13 @@ protected:
 	float direction_;
 
 	// アニメーション用の変数群
-	AnimationBundle<Vector3> posOffsetAnim_;    // 座標
+	AnimationBundle<Vector3> posOffsetAnim_;   // 座標
 	AnimationBundle<Vector3> rotOffsetAnim_;   // 回転
-	AnimationBundle<Vector3> scaleOffsetAnim_;  // スケール
+	AnimationBundle<Vector3> scaleOffsetAnim_; // スケール
+
+	// Pickaxe用の状態管理変数
+	bool isPickaxeThrust_ = true;     // 次のアニメーションが突きかどうか
+	bool currentAnimIsThrust_ = true; // 現在実行中のアニメーションが突きかどうか
 
 	// トレイル
 	TrailPresetDataBank trailDataBank_;

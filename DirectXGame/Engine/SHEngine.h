@@ -28,13 +28,14 @@ public:
 	void BeginFrame();
 	// コマンドのクローズ
 	void PostDraw();
-	// コマンドの実行
-	void EndFrame();
 
 	// コマンドの実行(Signalも送る)
-	void ExecuteCommand(Command::Type type, int index = 0) {
-		cmdManager_->Execute(type, index);
-		cmdManager_->SendSignal(type, index);
+	void ExecuteCommand(Command::Type type, int index = 0, std::vector<CmdObj*> cmdObjs = {}) {
+		cmdManager_->Execute(type, index, cmdObjs);
+	}
+
+	void StopGPU(Command::Type type, int index = 0) {
+		cmdManager_->StopGPU(type, index);
 	}
 
 	// ImGuiの有効化

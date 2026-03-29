@@ -45,13 +45,5 @@ void ShopDisplay::Draw() {
 
 #ifdef USE_IMGUI
 
-	ImGui::Begin("ShopDisplay");
-
-	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
-	ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
-	ImGui::DragFloat3("Position", &transform_.position.x, 0.01f);
-
-	ImGui::End();
-
 #endif
 }

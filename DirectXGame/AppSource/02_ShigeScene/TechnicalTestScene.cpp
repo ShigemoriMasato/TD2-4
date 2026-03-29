@@ -11,12 +11,39 @@ void TechnicalTestScene::Initialize() {
 	debugCamera_ = std::make_unique<DebugCamera>();
 	debugCamera_->Initialize(input_);
 	text_->SetColor({ 1.0f, 1.0f, 0.0f, 1.0f });
+
+	auto tableModelData = modelManager_->GetNodeModelData(3);
+	auto tableData = drawDataManager_->GetDrawData(tableModelData.drawDataIndex);
+	renderer_ = std::make_unique<Renderer>(tableData);
+	ResourceDesc desc{};
+	desc.bufferType = uint8_t(BufferType::CBV);
+	desc.elementCount = 1;
+	desc.sizeInBytes = sizeof(Matrix4x4);
+	gpuBuffers_.reserve(2);
+	auto& wvp = gpuBuffers_.emplace_back(std::make_unique<GPUBuffer>(desc));
+
+	desc.sizeInBytes = sizeof(int);
+	auto& textureIndex = gpuBuffers_.emplace_back(std::make_unique<GPUBuffer>(desc));
+
+	renderer_->SetGPUBuffer(wvp.get(), ShaderType::VERTEX_SHADER, BufferType::CBV);
+	renderer_->SetGPUBuffer(textureIndex.get(), ShaderType::PIXEL_SHADER, BufferType::CBV);
+
+	renderer_->isUseTexture_ = true;
+	renderer_->vs_ = "Simple.VS.hlsl";
+	renderer_->ps_ = "PostEffect/Simple.PS.hlsl";
+
+	gpuBuffers_[1]->CopyBuffer(&tableModelData.materials[tableModelData.materialIndex.front()].textureIndex, sizeof(int));
 }
 
 std::unique_ptr<IScene> TechnicalTestScene::Update() {
 	debugCamera_->Update();
 	text_->Update(debugCamera_->GetVPMatrix());
 	text_->SetTransform(textTransform_);
+
+	Matrix4x4 wvpMat = debugCamera_->GetVPMatrix();
+	auto tableModelData = modelManager_->GetNodeModelData(3);
+
+	gpuBuffers_[0]->CopyBuffer(&wvpMat, sizeof(Matrix4x4));
 
 	return nullptr;
 }
@@ -30,6 +57,7 @@ void TechnicalTestScene::Draw() {
 	display->PreDraw(cmdObj, true);
 
 	text_->Draw(cmdObj);
+	renderer_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 

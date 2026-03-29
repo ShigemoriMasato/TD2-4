@@ -328,16 +328,17 @@ void ShigeScene::Draw() {
 		render->Draw(cmdObj);
 	}
 
+	controllers_[0]->DrawImGui();
+
 	timerText_->Draw(cmdObj);
 
 	shopScene_->Draw();
-
-	parameterRender_->Draw(cmdObj);
 
 	gameFrameBG_->Draw(cmdObj);
 	gameFrame_->Draw(cmdObj);
 
 	waveSystemUI_->Draw(cmdObj);
+	parameterRender_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 
@@ -436,6 +437,14 @@ void ShigeScene::MakeWeapon() {
 			}
 			case WeaponType::Gurepon: {
 				weapon = std::make_unique<Gurepon>();
+				break;
+			}
+			case WeaponType::Pickaxe: {
+				weapon = std::make_unique<Pickaxe>();
+				break;
+			}
+			case WeaponType::Shuriken: {
+				weapon = std::make_unique<Shuriken>();
 				break;
 			}
 			}

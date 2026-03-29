@@ -5,5 +5,6 @@ class Bow : public IRangedWeapon {
 public:
 	void Initialize(int weaponID, Player::Base* player) override;
 
-private:
+protected:
+	void Shot(IEnemy* target) override;
 };
