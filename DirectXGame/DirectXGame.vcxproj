@@ -169,6 +169,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AppSource\GameObject\Enemy\DamagePopup.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\FastEnemy.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\LevelSystemUI.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\TackleEnemy.cpp" />
@@ -319,6 +320,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Shuriken.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\ShurikenBullet.cpp" />
     <ClInclude Include="AppSource\02_ShigeScene\GameDisplayRange.h" />
+    <ClInclude Include="AppSource\GameObject\Enemy\DamagePopup.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\FastEnemy.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\LevelSystemUI.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\TackleEnemy.h" />

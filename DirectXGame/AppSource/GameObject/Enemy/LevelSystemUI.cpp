@@ -52,6 +52,12 @@ void LevelSystemUI::Update(float deltaTime, int currentWave, const std::vector<s
         animTimer_ = 0.0f;
     }
 
+    // Update pulse timer for leftmost UI
+    pulseTimer_ += deltaTime;
+    if (pulseTimer_ >= pulseDuration_) {
+        pulseTimer_ = 0.0f;
+    }
+
     float t = 0.0f;
     if (animState_ != AnimState::Idle) {
         animTimer_ += deltaTime;
@@ -116,6 +122,17 @@ void LevelSystemUI::Update(float deltaTime, int currentWave, const std::vector<s
             if (i == 4) {
                scale = Apply(t, EaseType::EaseOutBack);
             }
+        }
+
+        // Apply pulsing effect to leftmost UI (i == 0)
+        if (i == 0 && animState_ == AnimState::Idle) {
+            float pulseT = pulseTimer_ / pulseDuration_;
+            // Use EaseInOutQuad for smooth pulsing effect (0 -> 1 -> 0)
+            float pulseProgress = pulseT < 0.5f 
+                ? Apply(pulseT * 2.0f, EaseType::EaseOutQuad) 
+                : Apply((1.0f - pulseT) * 2.0f, EaseType::EaseOutQuad);
+            float pulseScale = 1.0f - pulseProgress * 0.15f; // Scale from 1.0 to 0.85
+            scale *= pulseScale;
         }
 
         Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };

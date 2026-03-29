@@ -146,53 +146,87 @@ void LevelSystem::DrawImGui() {
 std::vector<EnemyType> LevelSystem::GetSpawnTypesAtTime(float time) const {
 	if (time <= 30.0f) {
 		return { EnemyType::Normal };
+		//return { EnemyType::Tackle };
 	} else if (time <= 60.0f) {
-		return { EnemyType::Normal };
-	} else if (time <= 90.0f) {
 		return { EnemyType::Fast };
+		//return { EnemyType::Tackle };
+	} else if (time <= 90.0f) {
+		return { EnemyType::Normal, EnemyType::Fast };
 	} else if (time <= 120.0f) {
-		return { EnemyType::Normal, EnemyType::Fast };
+		return { EnemyType::Tackle };
+	} else if (time <= 150.0f) {
+		return { EnemyType::Normal, EnemyType::Tackle };
+	} else if (time <= 180.0f) {
+		return { EnemyType::Fast, EnemyType::Tackle };
+	} else if (time <= 210.0f) {
+		return { EnemyType::Normal, EnemyType::Fast, EnemyType::Tackle };
+	} else if (time <= 240.0f) {
+		return { EnemyType::Normal, EnemyType::Fast, EnemyType::Tackle };
+	} else if (time <= 270.0f) {
+		return { EnemyType::Normal, EnemyType::Fast, EnemyType::Tackle };
+	} else if (time <= 300.0f) {
+		return { EnemyType::Normal, EnemyType::Fast, EnemyType::Tackle };
 	} else {
-		return { EnemyType::Normal, EnemyType::Fast };
+		// Wave 11以降はランダム
+		return { EnemyType::Normal, EnemyType::Fast, EnemyType::Tackle };
 	}
 }
 
 void LevelSystem::AdjustDifficult() {
-	// ゲーム開始から2分(120秒)まで10秒ごとのレベルデザイン
-
+	// Wave 1 (0-30秒)
 	if (allTimer_ <= 30.0f) {
-
 		config_.spawnInterval = 2.5f;
 		config_.enemyCount = 1.0f;
-		
-		config_.spawnTypes = { EnemyType::Normal };
-
-	} else if (allTimer_ <= 60.0f) {
-
+	}
+	// Wave 2 (30-60秒)
+	else if (allTimer_ <= 60.0f) {
 		config_.spawnInterval = 3.0f;
 		config_.enemyCount = 2.0f;
-
-		config_.spawnTypes    = { EnemyType::Normal };
-
-	} else if (allTimer_ <= 90.0f) {
-
+	}
+	// Wave 3 (60-90秒)
+	else if (allTimer_ <= 90.0f) {
 		config_.spawnInterval = 2.5f;
 		config_.enemyCount = 1.0f;
-		
-		config_.spawnTypes = { EnemyType::Fast };
-
-	} else if (allTimer_ <= 120.0f) {
-
+	}
+	// Wave 4 (90-120秒)
+	else if (allTimer_ <= 120.0f) {
 		config_.spawnInterval = 3.0f;
 		config_.enemyCount = 2.0f;
-
-		config_.spawnTypes = { EnemyType::Normal, EnemyType::Fast };
-
-	} else {
-
+	}
+	// Wave 5 (120-150秒)
+	else if (allTimer_ <= 150.0f) {
+		config_.spawnInterval = 2.5f;
+		config_.enemyCount = 2.0f;
+	}
+	// Wave 6 (150-180秒)
+	else if (allTimer_ <= 180.0f) {
+		config_.spawnInterval = 2.5f;
+		config_.enemyCount = 1.0f;
+	}
+	// Wave 7 (180-210秒)
+	else if (allTimer_ <= 210.0f) {
+		config_.spawnInterval = 2.5f;
+		config_.enemyCount = 2.0f;
+	}
+	// Wave 8 (210-240秒)
+	else if (allTimer_ <= 240.0f) {
+		config_.spawnInterval = 2.5f;
+		config_.enemyCount = 2.0f;
+	}
+	// Wave 9 (240-270秒)
+	else if (allTimer_ <= 270.0f) {
 		config_.spawnInterval = 2.0f;
-		config_.enemyCount = 2.0f;
-
+		config_.enemyCount = 3.0f;
+	}
+	// Wave 10 (270-300秒)
+	else if (allTimer_ <= 300.0f) {
+		config_.spawnInterval = 2.0f;
+		config_.enemyCount = 3.0f;
+	}
+	// Wave 11以降 (300秒以降) - ランダムパターン
+	else {
+		config_.spawnInterval = 1.8f;
+		config_.enemyCount = 3.0f;
 	}
 
 	config_.spawnTypes = GetSpawnTypesAtTime(allTimer_);
