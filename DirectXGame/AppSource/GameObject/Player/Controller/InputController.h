@@ -7,7 +7,7 @@ public:
 	InputController(SHEngine::Input* input) : input_(input) {}
 
 	// 移動方向を返す
-	Vector2 GetMoveDirection() override;
+	Vector2 GetMoveDirection(float deltaTime) override;
 
 	// ダッシュ入力されたか
 	bool IsDashTriggered() override;
@@ -19,6 +19,8 @@ public:
 	Vector3 GetTargetPosition() const override { return targetPos_; }
 
 	void SetFallbackController(IController* ai) { fallbackController_ = ai; }
+
+	void DrawImGui()override;
 
 private:
 	SHEngine::Input* input_ = nullptr;

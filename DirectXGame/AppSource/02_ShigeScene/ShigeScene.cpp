@@ -319,6 +319,8 @@ void ShigeScene::Draw() {
 		render->Draw(cmdObj);
 	}
 
+	controllers_[0]->DrawImGui();
+
 	timerText_->Draw(cmdObj);
 
 	shopScene_->Draw();

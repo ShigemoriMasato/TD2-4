@@ -6,7 +6,7 @@ public:
 	virtual ~IController() = default;
 
 	// 移動方向を返す
-	virtual Vector2 GetMoveDirection() = 0;
+	virtual Vector2 GetMoveDirection(float deltaTime) = 0;
 
 	// ダッシュが入力されたか
 	virtual bool IsDashTriggered() = 0;
@@ -19,4 +19,6 @@ public:
 
 	// ターゲットの座標を取得する
 	virtual Vector3 GetTargetPosition() const { return {}; }
+
+	virtual void DrawImGui() = 0;
 };
