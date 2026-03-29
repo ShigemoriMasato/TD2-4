@@ -19,6 +19,7 @@ void PieceManager::UpdateItemInfo(ItemManager* itemManager) {
 std::vector<Piece*> PieceManager::Update(BackPack* backPack, float deltaTime) {
 	std::vector<Piece*> usedPieces;
 	for (const auto& piece : holdPieces_) {
+		// Piece::Update内で保留中のPieceはスキップされる
 		if (piece->Update(backPack, deltaTime)) {
 			usedPieces.push_back(piece.get());
 		}
@@ -105,4 +106,13 @@ void PieceManager::RemovePiece(Piece* piece) {
 
 std::vector<Piece*> PieceManager::GetAllPieces() {
 	return allPieces_;
+}
+
+bool PieceManager::IsShopPiece(Piece* piece) const {
+	for (const auto& shopPiece : shopPieces_) {
+		if (shopPiece.get() == piece) {
+			return true;
+		}
+	}
+	return false;
 }

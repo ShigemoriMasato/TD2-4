@@ -69,8 +69,8 @@ private:
 	std::unique_ptr<SHEngine::RenderObject> render_;
 
 	// マップのグリッドサイズ
-	static constexpr int kMapWidth = 50;  // 20ブロック
-	static constexpr int kMapDepth = 50;  // 20ブロック
+	static constexpr int kMapWidth = 25;  // 20ブロック
+	static constexpr int kMapDepth = 25;  // 20ブロック
 	static constexpr int kMaxInstances = 4096;  // 最大インスタンス数
 	
 	// ブロックのサイズと間隔

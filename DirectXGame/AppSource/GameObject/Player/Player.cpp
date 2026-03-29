@@ -2,6 +2,7 @@
 #include <Utility/Matrix.h>
 #include <Utility/MatrixFactory.h>
 #include <imgui/imgui.h>
+#include <GameObject/Enemy/IEnemy.h>
 
 using namespace SHEngine;
 using namespace Player;
@@ -199,6 +200,21 @@ void Base::ChangeState(std::unique_ptr<IPlayerState> newState) {
 	}
 }
 
+void Player::Base::SpawnAfterImage() {
+	AfterImage ai;
+	ai.transform = transform_;      // 現在のプレイヤーの姿勢を代入
+	ai.timer = afterImageLifeTime_; // 寿命をセット
+	afterImages_.push_back(ai);
+}
+
+void Player::Base::OnCollision(Collider* other) {
+	if (other->GetOwnTag() & CollTag::Enemy) {
+		auto enemy = static_cast<IEnemy*>(other);
+		Damage(enemy->GetAttack());
+	} else {
+		Damage(1.0f);
+	}
+}
 void Player::Base::OnCollision(Collider* other) { Damage(1.0f); }
 
 void Player::Base::Damage(float amount) {

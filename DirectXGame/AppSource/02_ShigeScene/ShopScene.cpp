@@ -10,11 +10,11 @@ void ShopScene::Initialize() {
 	debugCamera_ = std::make_unique<DebugCamera>();
 	debugCamera_->Initialize(input_);
 	
-	debugCamera_->SetCenter({ -5.0f, -40.0f, -1.5f });
-	debugCamera_->SetSpherical({ 20.0f, 0.0f, -1.570f });
+	debugCamera_->SetCenter(cameraCenter_);
+	debugCamera_->SetSpherical(cameraSpherical_);
 
 	PerspectiveFovDesc desc;
-	desc.SetValue(352.0f, 624.0f);
+	desc.SetValue(cameraPerspectiveSize_.x, cameraPerspectiveSize_.y);
 	debugCamera_->SetProjectionMatrix(desc);
 
 	grid_ = std::make_unique<Grid>();
@@ -25,15 +25,20 @@ void ShopScene::Initialize() {
 
 	objectRender_ = std::make_unique<ObjectRender>();
 	objectRender_->Initialize(drawDataManager_, modelManager_);
+	
+	// piece.objモデルを読み込み
+	pieceModelID_ = modelManager_->LoadModel("Assets/Model/Piece");
 
 	backPack_ = std::make_unique<BackPack>();
 	backPack_->Initialize();
+	backPack_->SetPieceModelID(pieceModelID_);
 
 	pieceManager_ = std::make_unique<PieceManager>();
 	pieceManager_->Initialize();
 	//PieceManager内でstd::moveを行っているため、クリアを行う
 	commonData_->pieces.clear();
 	Piece::SetPieceManager(pieceManager_.get());
+	Piece::pieceModelID = pieceModelID_;
 
 	shop_ = std::make_unique<Shop>();
 	shop_->Initialize(itemManager_.get());
@@ -71,6 +76,20 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	auto key = commonData_->keyManager->GetKeyStates();
 
 #ifdef USE_IMGUI
+
+	ImGui::Begin("ShopScene Camera Settings");
+	if (ImGui::DragFloat3("Camera Center", &cameraCenter_.x, 0.1f)) {
+		debugCamera_->SetCenter(cameraCenter_);
+	}
+	if (ImGui::DragFloat3("Camera Spherical", &cameraSpherical_.x, 0.01f)) {
+		debugCamera_->SetSpherical(cameraSpherical_);
+	}
+	if (ImGui::DragFloat2("Perspective Size", &cameraPerspectiveSize_.x, 1.0f)) {
+		PerspectiveFovDesc desc;
+		desc.SetValue(cameraPerspectiveSize_.x, cameraPerspectiveSize_.y);
+		debugCamera_->SetProjectionMatrix(desc);
+	}
+	ImGui::End();
 
 	itemManager_->DrawImGui();
 	pieceManager_->UpdateItemInfo(itemManager_.get());
@@ -146,7 +165,7 @@ void ShopScene::DrawReady() {
 
 	shopDisplay_->PreDraw();
 
-	grid_->Draw(cmdObj);
+	//grid_->Draw(cmdObj);
 	objectRender_->Draw(cmdObj);
 	weaponDebugger_->Draw();
 	//parameterRender_->Draw(cmdObj);

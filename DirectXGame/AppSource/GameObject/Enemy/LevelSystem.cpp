@@ -12,6 +12,8 @@ void LevelSystem::Initialize(EnemyManager* enemyManager, int stageNum, Vector3* 
 	stageNum_ = stageNum;
 	std::string fileName = "Stage" + std::to_string(stageNum_) + ".bytes";
 	timer_ = 0.0f;
+	allTimer_ = 0.0f;
+	waveCount_ = 0;
 	isActive_ = true;
 
 	Load();
@@ -20,11 +22,18 @@ void LevelSystem::Initialize(EnemyManager* enemyManager, int stageNum, Vector3* 
 	mapInfo_ = mapInfo;
 
 	playerPosPtr_ = playerPosPtr;
+
+	// 敵ごとのベースステータスを初期化        // HP // Attack
+	baseStatusMap_[EnemyType::Normal] = { 3.0f, 1.0f };
+	baseStatusMap_[EnemyType::Fast]   = { 1.0f, 1.0f };
+	baseStatusMap_[EnemyType::Tackle] = { 5.0f, 2.0f };
 }
 
 void LevelSystem::Update(float deltaTime) {
 	timer_ += deltaTime;
 	allTimer_ += deltaTime;
+
+	waveCount_ = static_cast<int>(allTimer_ / 30.0f);
 
 	//レベルデザインだお
 	AdjustDifficult();
@@ -62,7 +71,29 @@ void LevelSystem::Update(float deltaTime) {
 				type = config_.spawnTypes[randIndex];
 			}
 			
-			enemyManager_->PopEnemy(spawnPos, static_cast<int>(config_.enemyHp), type);
+			// 敵の種類ごとにWave上昇時のボーナススケールを変更
+			float hpScale = 0.0f;
+			float attackScale = 0.0f;
+
+			if (type == EnemyType::Normal) {
+				hpScale = 2.0f;
+				attackScale = 0.5f;
+			} else if (type == EnemyType::Fast) {
+				hpScale = 1.0f;
+				attackScale = 0.25f;
+			} else if (type == EnemyType::Tackle) {
+				hpScale = 3.0f;
+				attackScale = 1.0f;
+			}
+
+			// ベースステータスの取得とWaveボーナスの適用
+			float baseHp = baseStatusMap_[type].hp;
+			float baseAttack = baseStatusMap_[type].attack;
+
+			float finalHp = baseHp + waveCount_ * hpScale;
+			float finalAttack = baseAttack + waveCount_ * attackScale;
+
+			enemyManager_->PopEnemy(spawnPos, static_cast<int>(finalHp), type, finalAttack);
 		}
 	}
 }
@@ -70,7 +101,7 @@ void LevelSystem::Update(float deltaTime) {
 std::vector<std::vector<EnemyType>> LevelSystem::GetNext5WaveTypes() const {
 	std::vector<std::vector<EnemyType>> waves;
 	
-	int currentWave = static_cast<int>(allTimer_ / 30.0f);
+	int currentWave = waveCount_;
 	for (int i = 0; i < 5; ++i) {
 		int targetWave = currentWave + i;
 		float timeForWave = targetWave * 30.0f + 15.0f; // mid of that wave
@@ -87,7 +118,25 @@ void LevelSystem::DrawImGui() {
 
 	ImGui::DragFloat("Spawn Interval", &config_.spawnInterval, 0.1f, 0.1f, 10.0f);
 	ImGui::DragFloat("Enemy Count", &config_.enemyCount, 0.1f, 0.1f, 100.0f);
-	ImGui::DragFloat("Enemy HP", &config_.enemyHp, 0.1f, 1.0f, 1000.0f);
+
+	if (ImGui::TreeNode("Enemy Base Status")) {
+		if (ImGui::TreeNode("Normal")) {
+			ImGui::DragFloat("HP", &baseStatusMap_[EnemyType::Normal].hp, 0.1f, 1.0f, 1000.0f);
+			ImGui::DragFloat("Attack", &baseStatusMap_[EnemyType::Normal].attack, 0.1f, 1.0f, 1000.0f);
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Fast")) {
+			ImGui::DragFloat("HP", &baseStatusMap_[EnemyType::Fast].hp, 0.1f, 1.0f, 1000.0f);
+			ImGui::DragFloat("Attack", &baseStatusMap_[EnemyType::Fast].attack, 0.1f, 1.0f, 1000.0f);
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Tackle")) {
+			ImGui::DragFloat("HP", &baseStatusMap_[EnemyType::Tackle].hp, 0.1f, 1.0f, 1000.0f);
+			ImGui::DragFloat("Attack", &baseStatusMap_[EnemyType::Tackle].attack, 0.1f, 1.0f, 1000.0f);
+			ImGui::TreePop();
+		}
+		ImGui::TreePop();
+	}
 
 	ImGui::End();
 
@@ -115,7 +164,6 @@ void LevelSystem::AdjustDifficult() {
 
 		config_.spawnInterval = 2.5f;
 		config_.enemyCount = 1.0f;
-		config_.enemyHp = 5.0f;
 		
 		config_.spawnTypes = { EnemyType::Normal };
 
@@ -123,7 +171,6 @@ void LevelSystem::AdjustDifficult() {
 
 		config_.spawnInterval = 3.0f;
 		config_.enemyCount = 2.0f;
-		config_.enemyHp = 7.0f;
 
 		config_.spawnTypes    = { EnemyType::Normal };
 
@@ -131,7 +178,6 @@ void LevelSystem::AdjustDifficult() {
 
 		config_.spawnInterval = 2.5f;
 		config_.enemyCount = 1.0f;
-		config_.enemyHp = 3.0f;
 		
 		config_.spawnTypes = { EnemyType::Fast };
 
@@ -139,7 +185,6 @@ void LevelSystem::AdjustDifficult() {
 
 		config_.spawnInterval = 3.0f;
 		config_.enemyCount = 2.0f;
-		config_.enemyHp = 5.0f;
 
 		config_.spawnTypes = { EnemyType::Normal, EnemyType::Fast };
 
@@ -147,7 +192,6 @@ void LevelSystem::AdjustDifficult() {
 
 		config_.spawnInterval = 2.0f;
 		config_.enemyCount = 2.0f;
-		config_.enemyHp = 10.0f;
 
 	}
 

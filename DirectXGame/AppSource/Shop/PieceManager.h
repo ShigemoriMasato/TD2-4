@@ -23,6 +23,9 @@ public:
 	// 場にあるピースを全て取得する。当たり判定用
 	std::vector<Piece*> GetAllPieces();
 
+	// ピースがショップエリアにあるかを判定
+	bool IsShopPiece(Piece* piece) const;
+
 private:
 
 	std::vector<std::unique_ptr<Piece>> shopPieces_;

@@ -58,4 +58,10 @@ private:
 	bool useAutoReroll_ = true;
 	float shopRerollTime_ = 15.0f;
 	float shopRerollTimer_ = 0.0f;
+
+	Vector3 cameraCenter_ = { -5.0f, -30.0f, -5.5f };
+	Vector3 cameraSpherical_ = { 20.0f, 0.0f, -1.570f };
+	Vector2 cameraPerspectiveSize_ = { 352.0f, 624.0f };
+	
+	int pieceModelID_ = -1;
 };

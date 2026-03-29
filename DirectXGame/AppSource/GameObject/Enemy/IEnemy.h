@@ -29,6 +29,8 @@ public:
 	bool IsActive() const { return isActive_; }
 
 	void SetHP(int hp) { hp_ = hp; maxHp_ = hp; }
+	void SetAttack(float attack) { attack_ = attack; }
+	float GetAttack() const { return attack_; }
 	void SetVPMatrix(Matrix4x4 vpMatrix) { vpMatrix_ = vpMatrix; }
 	void SetOrthoVPMatrix(Matrix4x4 vpMatrix) { orthoVpMatrix_ = vpMatrix; }
 
@@ -61,6 +63,7 @@ private:
 	bool isActive_ = true;
 	int hp_ = 1;
 	int maxHp_ = 1;
+	float attack_ = 1.0f;
 
 	std::map<int, int> damageIDs_;
 };

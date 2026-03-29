@@ -35,6 +35,7 @@ void EnemyManager::Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVp
 		enemy->Initialize(playerPos_, this, id);
 		enemy->SetPosition(p.pos);
 		enemy->SetHP(p.hp);
+		enemy->SetAttack(p.attack);
 		
 		pendingEnemies_.erase(pendingEnemies_.begin() + index);
 	}
@@ -67,12 +68,13 @@ void EnemyManager::DrawImGui() {
 #endif
 }
 
-void EnemyManager::PopEnemy(Vector3 initPos, int hp, EnemyType type) {
+void EnemyManager::PopEnemy(Vector3 initPos, int hp, EnemyType type, float attack) {
 	PendingEnemy pending;
 	pending.pos = initPos;
 	pending.hp = hp;
 	pending.timer = 1.0f; // 1 second warning
 	pending.type = type;
+	pending.attack = attack;
 	pendingEnemies_.push_back(pending);
 }
 
