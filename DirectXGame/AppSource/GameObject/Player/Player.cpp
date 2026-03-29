@@ -200,13 +200,6 @@ void Base::ChangeState(std::unique_ptr<IPlayerState> newState) {
 	}
 }
 
-void Player::Base::SpawnAfterImage() {
-	AfterImage ai;
-	ai.transform = transform_;      // 現在のプレイヤーの姿勢を代入
-	ai.timer = afterImageLifeTime_; // 寿命をセット
-	afterImages_.push_back(ai);
-}
-
 void Player::Base::OnCollision(Collider* other) {
 	if (other->GetOwnTag() & CollTag::Enemy) {
 		auto enemy = static_cast<IEnemy*>(other);
@@ -215,7 +208,6 @@ void Player::Base::OnCollision(Collider* other) {
 		Damage(1.0f);
 	}
 }
-void Player::Base::OnCollision(Collider* other) { Damage(1.0f); }
 
 void Player::Base::Damage(float amount) {
 #ifdef _DEBUG
