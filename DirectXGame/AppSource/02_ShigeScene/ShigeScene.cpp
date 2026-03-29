@@ -438,6 +438,10 @@ void ShigeScene::MakeWeapon() {
 				weapon = std::make_unique<Gurepon>();
 				break;
 			}
+			case WeaponType::Pickaxe: {
+				weapon = std::make_unique<Pickaxe>();
+				break;
+			}
 			}
 
 			weaponRender->Initialize(drawDataManager_, modelManager_, textureManager_, weapon.get(), piece->GetItem());

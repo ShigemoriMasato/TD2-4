@@ -8,3 +8,4 @@
 #include "Data/Fist.h"
 #include "Data/Bow.h"
 #include "Data/Gurepon.h"
+#include "Data/Pickaxe.h"

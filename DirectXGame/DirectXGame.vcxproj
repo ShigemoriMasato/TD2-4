@@ -321,6 +321,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Core\Command\Data\SHCmdQueue.cpp" />
     <ClCompile Include="Engine\Render\Renderer.cpp" />
     <ClCompile Include="Engine\Render\SHResource.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\Data\Pickaxe.cpp" />
     <ClInclude Include="AppSource\02_ShigeScene\GameDisplayRange.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\FastEnemy.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\LevelSystemUI.h" />
@@ -483,6 +484,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="Engine\Render\Renderer.h" />
     <ClInclude Include="Engine\Render\SHResource.h" />
     <ClInclude Include="AppSource\GameObject\Player\PlayerRender.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\Data\Pickaxe.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
