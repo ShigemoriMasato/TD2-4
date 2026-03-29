@@ -65,6 +65,7 @@ public:
 	static inline float hoverSizeZ = 0.5f;
 	static inline float hoverOffsetX = 0.5f;
 	static inline float hoverOffsetZ = 0.0f;
+	static inline int pieceModelID = 0;
 
 private:
 

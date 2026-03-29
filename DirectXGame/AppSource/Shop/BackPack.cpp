@@ -108,8 +108,8 @@ std::vector<DrawInfo> BackPack::GetSlotDrawInfos() const {
 		for (size_t j = 0; j < slots_[i].size(); ++j) {
 			DrawInfo info;
 			info.position = originPos_ + Vector3(static_cast<float>(j) + 0.5f, 0.0f, static_cast<float>(i) + 0.5f);
-			info.scale = Vector3(1.0f, 0.2f, 1.0f);
-			info.modelIndex = 0;
+			info.scale = Vector3(0.5f, 0.1f, 0.5f);
+			info.modelIndex = pieceModelID_;
 
 			// 保留エリアかどうかをチェック
 			bool isReserveArea = (static_cast<int>(i) >= reserveStartY_ && static_cast<int>(i) < reserveStartY_ + reserveAreaHeight_ &&

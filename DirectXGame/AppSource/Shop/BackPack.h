@@ -25,6 +25,8 @@ public:
 	Vector3 GetWorldPos(std::pair<int, int> pos) const;
 
 	std::vector<DrawInfo> GetSlotDrawInfos() const;
+	
+	void SetPieceModelID(int modelID) { pieceModelID_ = modelID; }
 
 	void SetSize(int width, int height) { width_ = width; height_ = height; }
 	void SetInitialEmptyArea(int startX, int startY, int width, int height) {
@@ -79,5 +81,7 @@ private:
 	int reserveStartY_ = 0;
 	int reserveAreaWidth_ = 10;
 	int reserveAreaHeight_ = 3;
+	
+	int pieceModelID_ = 0;
 
 };

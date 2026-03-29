@@ -25,15 +25,20 @@ void ShopScene::Initialize() {
 
 	objectRender_ = std::make_unique<ObjectRender>();
 	objectRender_->Initialize(drawDataManager_, modelManager_);
+	
+	// piece.objモデルを読み込み
+	pieceModelID_ = modelManager_->LoadModel("Assets/Model/Piece");
 
 	backPack_ = std::make_unique<BackPack>();
 	backPack_->Initialize();
+	backPack_->SetPieceModelID(pieceModelID_);
 
 	pieceManager_ = std::make_unique<PieceManager>();
 	pieceManager_->Initialize();
 	//PieceManager内でstd::moveを行っているため、クリアを行う
 	commonData_->pieces.clear();
 	Piece::SetPieceManager(pieceManager_.get());
+	Piece::pieceModelID = pieceModelID_;
 
 	shop_ = std::make_unique<Shop>();
 	shop_->Initialize(itemManager_.get());
@@ -160,7 +165,7 @@ void ShopScene::DrawReady() {
 
 	shopDisplay_->PreDraw();
 
-	grid_->Draw(cmdObj);
+	//grid_->Draw(cmdObj);
 	objectRender_->Draw(cmdObj);
 	weaponDebugger_->Draw();
 	//parameterRender_->Draw(cmdObj);

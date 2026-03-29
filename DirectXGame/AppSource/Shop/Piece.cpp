@@ -175,8 +175,8 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		DrawInfo info;
 		auto slotPos = GetChipPos(chip);
 		info.position = { (float)slotPos.first + 0.5f, 0.0f, (float)slotPos.second + 0.5f };
-		info.scale = Vector3(1.0f, 0.2f, 1.0f);
-		info.modelIndex = 0;
+		info.scale = Vector3(0.5f, 0.1f, 0.5f);
+		info.modelIndex = pieceModelID;
 
 		float t = 0.0f;
 		if (totalChips > 1) {
