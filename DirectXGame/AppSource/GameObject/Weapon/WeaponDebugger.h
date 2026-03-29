@@ -14,15 +14,16 @@ private:
 	int currentWeaponId = 0; // 現在のID
 
 	std::map<WeaponType, std::string> weaponTypeNames_ = {
-	    {WeaponType::Pistol,  "Pistol" },
-        {WeaponType::Sword,   "Sword"  },
-        {WeaponType::ShotGun, "ShotGun"},
-        {WeaponType::Spear,   "Spear"  },
-	    {WeaponType::Axe,     "Axe"    },
-        {WeaponType::Fist,    "Fist"   },
-        {WeaponType::Bow,     "Bow"    },
-        {WeaponType::Gurepon, "Gurepon"},
-        {WeaponType::Pickaxe, "Pickaxe"},
+	    {WeaponType::Pistol,   "Pistol"  },
+        {WeaponType::Sword,    "Sword"   },
+        {WeaponType::ShotGun,  "ShotGun" },
+        {WeaponType::Spear,    "Spear"   },
+        {WeaponType::Axe,      "Axe"     },
+	    {WeaponType::Fist,     "Fist"    },
+        {WeaponType::Bow,      "Bow"     },
+        {WeaponType::Gurepon,  "Gurepon" },
+        {WeaponType::Pickaxe,  "Pickaxe" },
+        {WeaponType::Shuriken, "Shuriken"},
 	};
 
 public:
