@@ -42,6 +42,10 @@ public:
 	void RotateRight();
 	void RotateLeft();
 	Direction GetDirection() const { return direction_; }
+
+	// 保留状態の管理
+	void SetReserved(bool reserved) { isReserved_ = reserved; }
+	bool IsReserved() const { return isReserved_; }
 	
 public:
 	static inline float hoverSizeX = 0.5f;
@@ -74,6 +78,7 @@ private:
 
 	bool isUsing_ = false;
 	bool isActive_ = true;
+	bool isReserved_ = false; // 保留エリアに置かれているか
 
 	float useTimer_ = 0.0f;
 

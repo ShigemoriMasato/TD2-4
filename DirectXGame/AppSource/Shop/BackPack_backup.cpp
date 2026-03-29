@@ -1,4 +1,4 @@
-#include "BackPack.h"
+﻿#include "BackPack.h"
 
 void BackPack::Initialize() {
 	// 指定サイズのスロットを初期化（保留エリアも含めて拡張）

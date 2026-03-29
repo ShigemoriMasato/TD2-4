@@ -34,6 +34,16 @@ public:
 		emptyAreaHeight_ = height;
 	}
 
+	// 保留エリア関連
+	void SetReserveArea(int startX, int startY, int width, int height) {
+		reserveStartX_ = startX;
+		reserveStartY_ = startY;
+		reserveAreaWidth_ = width;
+		reserveAreaHeight_ = height;
+	}
+	bool IsInReserveArea(std::pair<int, int> pos) const;
+	Vector3 GetReserveAreaWorldPos() const;
+
 private:
 
 	std::vector<std::vector<Slot>> slots_;
@@ -46,8 +56,14 @@ private:
 
 	// 初期の空き領域
 	int emptyStartX_ = 2;
-	int emptyStartY_ = 2;
+	int emptyStartY_ = 6;
 	int emptyAreaWidth_ = 6;
 	int emptyAreaHeight_ = 6;
+
+	// 保留エリア（BackPackの下側)
+	int reserveStartX_ = 0;
+	int reserveStartY_ = 0;
+	int reserveAreaWidth_ = 10;
+	int reserveAreaHeight_ = 3;
 
 };

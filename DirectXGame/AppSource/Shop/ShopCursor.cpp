@@ -41,6 +41,10 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 			heldPiece_->SetPosition(preHeldPiecePos_);
 			heldPiece_->Remove(backPack);//削除
 
+			// 以前の保留状態をリセット
+			bool wasReserved = heldPiece_->IsReserved();
+			heldPiece_->SetReserved(false);
+
 			while (currentDir != tmpDir) {
 				heldPiece_->RotateRight();
 				currentDir = heldPiece_->GetDirection();
@@ -53,12 +57,18 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 				heldPiece_->Put(backPack);
 
 			} else {
+				// 元の場所に戻す
 				auto currentDir = heldPiece_->GetDirection();
 				while (currentDir != preHeldPieceDir_) {
 					heldPiece_->RotateRight();
 					currentDir = heldPiece_->GetDirection();
 				}
 				heldPiece_->SetPosition(preHeldPiecePos_);
+				heldPiece_->SetReserved(wasReserved); // 元の保留状態に戻す
+				// Putメソッドを使って元の場所に配置し直す
+				if (heldPiece_->CanPut(backPack)) {
+					heldPiece_->Put(backPack);
+				}
 			}
 
 			heldPiece_ = nullptr;

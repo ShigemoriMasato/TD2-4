@@ -18,6 +18,11 @@ void Piece::Initialize(const Item& item, int rank) {
 }
 
 bool Piece::Update(BackPack* backPack, float deltaTime) {
+	// 保留エリアに置かれている場合はUpdateしない
+	if (isReserved_) {
+		return false;
+	}
+
 	// 武器は自動で使用状態にする
 	if (itemData_.category == Category::Weapon && !isUsing_) {
 		Use();
@@ -76,6 +81,20 @@ bool Piece::Put(BackPack* backPack) {
 	}
 
 	pieceManager_->MoveShopToHold(this);
+
+	// 保留エリアに置かれたかをチェック
+	bool inReserveArea = true;
+	for (const auto& chip : chips_) {
+		if (IsIgnored(chip)) {
+			continue;
+		}
+		auto slot = GetChipPos(chip);
+		if (!backPack->IsInReserveArea(slot)) {
+			inReserveArea = false;
+			break;
+		}
+	}
+	isReserved_ = inReserveArea;
 
 	isPlaced_ = false;
 
@@ -165,6 +184,14 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		
 		info.color = (r << 24) | (g << 16) | (b << 8) | a;
 
+		if (isReserved_) {
+			// 保留エリアに置かれている場合は灰色で表示
+			uint32_t rR = static_cast<uint32_t>(128.0f);
+			uint32_t gR = static_cast<uint32_t>(128.0f);
+			uint32_t bR = static_cast<uint32_t>(128.0f);
+			uint32_t aR = 255;
+			info.color = (rR << 24) | (gR << 16) | (bR << 8) | aR;
+		}
 		if (isHovered_) {
 			info.color = 0xffff00ff; // 黄色
 		}
