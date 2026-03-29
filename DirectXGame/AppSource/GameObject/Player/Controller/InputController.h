@@ -7,7 +7,7 @@ public:
 	InputController(SHEngine::Input* input) : input_(input) {}
 
 	// 移動方向を返す
-	Vector2 GetMoveDirection(float deltaTime) override;
+	Vector2 GetMoveDirection(float deltaTime, const MapInfo& mapInfo) override;
 
 	// ダッシュ入力されたか
 	bool IsDashTriggered() override;

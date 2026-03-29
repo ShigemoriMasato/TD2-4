@@ -10,7 +10,7 @@ void StateNormal::Update(Base* player, float deltaTime) {
 	Vector3& rotate = player->GetTransform().rotate;
 
 	// 移動入力の取得
-	Vector2 dir = player->GetController()->GetMoveDirection(deltaTime);
+	Vector2 dir = player->GetController()->GetMoveDirection(deltaTime, player->GetMapInfo());
 
 	// 正規化
 	float length = std::sqrt(dir.x * dir.x + dir.y * dir.y);

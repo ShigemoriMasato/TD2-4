@@ -41,6 +41,7 @@ public:
 	Vector3* GetPositionPtr() { return &transform_.position; }
 	void SetTransform(Transform t) { transform_ = t; }
 	float GetVelocity() const { return speed_; }
+	MapInfo GetMapInfo() const { return mapInfo_; }
 
 	void SetPosition(Vector3 position) { transform_.position = position; }
 	void SetRotate(Vector3 rotate) { transform_.rotate = rotate; }

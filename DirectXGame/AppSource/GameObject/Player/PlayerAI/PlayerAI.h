@@ -1,4 +1,5 @@
 #pragma once
+#include "GameObject/Map/MapInfo.h"
 #include <../Engine/Utility/Vector.h>
 #include <GameObject/Enemy/IEnemy.h>
 #include <vector>
@@ -13,7 +14,7 @@ public:
 	};
 
 	// 敵のリストから移動方向を求める
-	Vector3 ComputeMoveDirection(const Vector3& playerPos, const std::vector<IEnemy*>& enemies, float deltaTime);
+	Vector3 ComputeMoveDirection(const Vector3& playerPos, const std::vector<IEnemy*>& enemies, const MapInfo& mapInfo, float deltaTime);
 
 	// ターゲットの設定
 	void SetTargetEnemy(IEnemy* target) { targetEnemy_ = target; }
@@ -53,4 +54,9 @@ private:
 	// タイマー乱数
 	float minTime_ = 0.5f;
 	float maxTime_ = 1.0f;
+
+	// 回避用のパラメータ
+	float dangerDist_ = 3.0f;     // この距離内に敵が来たら強制的に再計算
+	float wallMargin_ = 5.0f;     // 壁からの反発を受け始める距離
+	float wallRepulsion_ = 20.0f; // 壁からの反発力の強さ
 };

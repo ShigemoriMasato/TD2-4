@@ -1,6 +1,6 @@
 #include "InputController.h"
 
-Vector2 InputController::GetMoveDirection(float deltaTime) {
+Vector2 InputController::GetMoveDirection(float deltaTime, const MapInfo& mapInfo) {
 	Vector2 dir = {0.0f, 0.0f};
 	if (input_->GetKeyState(DIK_W))
 		dir.y += 1.0f;
@@ -27,7 +27,7 @@ Vector2 InputController::GetMoveDirection(float deltaTime) {
 
 	// 入力もターゲット移動もない場合はAIに任せる
 	if (dir.x == 0.0f && dir.y == 0.0f && !hasTarget_ && fallbackController_) {
-		return fallbackController_->GetMoveDirection(deltaTime);
+		return fallbackController_->GetMoveDirection(deltaTime, mapInfo);
 	}
 
 	return dir;

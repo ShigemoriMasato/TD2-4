@@ -1,12 +1,13 @@
 #pragma once
 #include <../Engine/Utility/Vector.h>
+#include "GameObject/Map/MapInfo.h"
 
 class IController {
 public:
 	virtual ~IController() = default;
 
 	// 移動方向を返す
-	virtual Vector2 GetMoveDirection(float deltaTime) = 0;
+	virtual Vector2 GetMoveDirection(float deltaTime, const MapInfo& mapInfo) = 0;
 
 	// ダッシュが入力されたか
 	virtual bool IsDashTriggered() = 0;
