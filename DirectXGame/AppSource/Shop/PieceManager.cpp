@@ -19,6 +19,8 @@ void PieceManager::UpdateItemInfo(ItemManager* itemManager) {
 std::vector<Piece*> PieceManager::Update(BackPack* backPack, float deltaTime) {
 	std::vector<Piece*> usedPieces;
 	for (const auto& piece : holdPieces_) {
+		// 現在のWave数を各Pieceに設定
+		piece->SetCurrentWave(currentWave_);
 		// Piece::Update内で保留中のPieceはスキップされる
 		if (piece->Update(backPack, deltaTime)) {
 			usedPieces.push_back(piece.get());

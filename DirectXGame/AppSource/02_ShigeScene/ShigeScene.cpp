@@ -151,6 +151,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 	shopScene_->SetDeltaTime(deltaTime);
+	shopScene_->SetCurrentWave(waveSystem_->GetCurrentWave());
 	shopScene_->Update();
 
 	gameFrameBG_->Update();

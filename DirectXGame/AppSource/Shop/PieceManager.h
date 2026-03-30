@@ -26,6 +26,9 @@ public:
 	// ピースがショップエリアにあるかを判定
 	bool IsShopPiece(Piece* piece) const;
 
+	// 現在のWave数を設定
+	void SetCurrentWave(int wave) { currentWave_ = wave; }
+
 private:
 
 	std::vector<std::unique_ptr<Piece>> shopPieces_;
@@ -33,4 +36,5 @@ private:
 
 	std::vector<Piece*> allPieces_;
 
+	int currentWave_ = 1; // 現在のWave数
 };

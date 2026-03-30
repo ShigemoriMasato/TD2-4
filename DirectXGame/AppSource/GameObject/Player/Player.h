@@ -40,7 +40,13 @@ public:
 	Transform& GetTransform() { return transform_; }
 	Vector3* GetPositionPtr() { return &transform_.position; }
 	void SetTransform(Transform t) { transform_ = t; }
-	float GetVelocity() const { return speed_; }
+	float GetVelocity() const { 
+		// マーカーに移動している場合はmarkerSpeed_、AI移動の場合はaiSpeed_を返す
+		if (controller_ && controller_->HasTarget()) {
+			return markerSpeed_;
+		}
+		return aiSpeed_;
+	}
 	MapInfo GetMapInfo() const { return mapInfo_; }
 
 	void SetPosition(Vector3 position) { transform_.position = position; }
@@ -95,7 +101,8 @@ private:
 	Transform transform_{};
 
 	// 速度
-	float speed_ = 5.0f;
+	float aiSpeed_ = 5.0f;
+	float markerSpeed_ = 6.5f;
 
 	// 現在の状態
 	std::unique_ptr<IPlayerState> currentState_ = nullptr;
