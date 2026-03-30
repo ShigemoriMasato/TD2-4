@@ -103,10 +103,9 @@ private:// Shop
 
 private:// UI系
 
+	std::unique_ptr<ShopDisplay> gameDisplay_;
 	std::unique_ptr<GameFrame> gameFrame_;
 	std::unique_ptr<GameFrame> gameFrameBG_;
-	std::unique_ptr<PostEffect> postEffect_;
-	PostEffectConfig postEffectConfig_;
 
 	std::unique_ptr<SHEngine::Text> timerText_;
 	Transform timerTextTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {640.0f, 600.0f, 0.0f} };

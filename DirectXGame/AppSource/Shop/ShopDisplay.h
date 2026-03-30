@@ -6,6 +6,7 @@ class ShopDisplay {
 public:
 
 	void Initialize(CmdObj* cmdObj, SHEngine::DrawData& drawData, SHEngine::TextureManager* textureManager);
+	void SetTransform(const Vector2& leftTop, const Vector2& size);
 	void Update();
 	void PreDraw();
 	void PostDraw();

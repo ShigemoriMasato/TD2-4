@@ -109,12 +109,9 @@ void ShigeScene::Initialize() {
 	gameFrameBG_ = std::make_unique<GameFrame>();
 	gameFrameBG_->Initialize(planeDrawData, textureManager_->LoadTexture("FrameBG.png"));
 
-	postEffect_ = std::make_unique<PostEffect>();
-	SHEngine::DrawData postEffectDrawData = drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex);
-	postEffect_->Initialize(textureManager_, postEffectDrawData);
-	postEffectConfig_.cmdObj = commonData_->cmdObject.get();
-	postEffectConfig_.origin = commonData_->display->GetDisplay();
-	postEffectConfig_.jobs_ = 0;
+	gameDisplay_ = std::make_unique<ShopDisplay>();
+	gameDisplay_->Initialize(commonData_->cmdObject.get(), planeDrawData, textureManager_);
+	gameDisplay_->SetTransform({ 450.0f, 256.0f }, { 784.0f, 416.0f });
 
 	timerText_ = std::make_unique<SHEngine::Text>(64);
 	timerText_->Initialize(planeDrawData, "YDWbananaslipplus.otf", 64);
@@ -156,6 +153,8 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	gameFrameBG_->Update();
 	gameFrame_->Update();
+
+	gameDisplay_->Update();
 
 	Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
 	bool inDisplayRange = false;
@@ -310,12 +309,13 @@ void ShigeScene::Draw() {
 
 	shopScene_->DrawReady();
 
-	display->PreDraw(cmdObj, true);
+	//GameSceneの描画
+	gameDisplay_->PreDraw();
 
 	// grid_->Draw(cmdObj);
 	map_->Draw(cmdObj);
 	objectRender_->Draw(cmdObj);
-	
+
 	if (isTargetMarkerVisible_ && targetMarkerRender_) {
 		targetMarkerRender_->Draw(cmdObj);
 	}
@@ -333,13 +333,22 @@ void ShigeScene::Draw() {
 
 	timerText_->Draw(cmdObj);
 
-	shopScene_->Draw();
+	parameterRender_->Draw(cmdObj);
+
+	gameDisplay_->PostDraw();
+
+	//画面全体の描画
+	display->PreDraw(cmdObj, true);
 
 	gameFrameBG_->Draw(cmdObj);
-	gameFrame_->Draw(cmdObj);
+
+	shopScene_->Draw();
+
+	gameDisplay_->Draw();
 
 	waveSystemUI_->Draw(cmdObj);
-	parameterRender_->Draw(cmdObj);
+
+	gameFrame_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 
