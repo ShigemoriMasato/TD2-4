@@ -117,6 +117,8 @@ std::unique_ptr<IScene> TechnicalTestScene::Update() {
 	Matrix4x4 vpMat = debugCamera_->GetVPMatrix();
 	gpuBuffers_.back()->CopyBuffer(&vpMat, sizeof(vpMat));
 
+	engine_->ExecuteCommand(SHEngine::Command::Type::Compute, 0, { computeCmdObj_.get() });
+
 	return nullptr;
 }
 

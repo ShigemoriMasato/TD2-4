@@ -12,9 +12,9 @@ void Manager::Initialize(DXDevice* device) {
 	auto& directQueue = queue_[Type::Direct].emplace_back();
 	directQueue = std::make_unique<Queue>(device, Type::Direct);
 
-	queue_[Type::Compute].resize(6);
+	queue_[Type::Compute].reserve(6);
 	for (int i = 0; i < 6; ++i) {
-		auto& computeQueue = queue_[Type::Compute][i];
+		auto& computeQueue = queue_[Type::Compute].emplace_back();
 		computeQueue = std::make_unique<Queue>(device, Type::Compute);
 	}
 
@@ -29,7 +29,7 @@ std::unique_ptr<Object> SHEngine::Command::Manager::CreateCommandObject(Type typ
 	QueueChecker;
 
 	auto queue = queue_[type][index].get();
-	std::unique_ptr<Object> commandObject = std::make_unique<Object>(device_, this, type, queue, listNum);
+	std::unique_ptr<Object> commandObject = std::make_unique<Object>(device_, type, queue, listNum);
 
 	queue->RegisterObject(commandObject.get());
 
@@ -41,16 +41,4 @@ void SHEngine::Command::Manager::Execute(Type type, int index, std::vector<CmdOb
 
 	auto& cmdQueue = queue_[type][index];
 	cmdQueue->Execute(cmdObj);
-}
-
-void SHEngine::Command::Manager::ReleaseObject(Queue* queue, Object* obj) {
-	for (auto& [type, queues] : queue_) {
-		for (const auto& q : queues) {
-			if (q.get() == queue) {
-				auto& objects = objects_[type][&q - &queues[0]];
-				objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
-				return;
-			}
-		}
-	}
 }

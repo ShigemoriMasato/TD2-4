@@ -12,6 +12,9 @@ namespace SHEngine::Command {
 		//CommandObjectの登録
 		void RegisterObject(Object* object);
 
+		//CommandObjectの解放(Queueの実行時、自動で実行されなくなる。)
+		void ReleaseObject(Object* object);
+
 		//実行する
 		void Execute(std::vector<Object*> cmdObjs);
 

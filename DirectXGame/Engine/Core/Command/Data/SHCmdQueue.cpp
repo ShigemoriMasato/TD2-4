@@ -37,6 +37,13 @@ void SHEngine::Command::Queue::RegisterObject(Object* object) {
 	objects_.push_back(object);
 }
 
+void SHEngine::Command::Queue::ReleaseObject(Object* object) {
+	auto it = std::find(objects_.begin(), objects_.end(), object);
+	if (it != objects_.end()) {
+		objects_.erase(it);
+	}
+}
+
 void SHEngine::Command::Queue::Execute(std::vector<Object*> cmdObjs) {
 	std::vector<ID3D12CommandList*> cmdLists;
 	if (cmdObjs.empty()) {

@@ -8,7 +8,7 @@ namespace SHEngine::Command {
 	class Object {
 	public:
 
-		Object(DXDevice* device, Manager* manager, Type type, Queue* queue, int listNum);
+		Object(DXDevice* device, Type type, Queue* queue, int listNum);
 		~Object();
 
 		/// @brief コマンドを積めるかどうか
@@ -40,8 +40,6 @@ namespace SHEngine::Command {
 		std::vector<DXList> commandLists_;
 		DXDevice* device_ = nullptr;
 
-		//デストラクタで解放する用
-		Manager* manager_ = nullptr;
 		Type type_;
 		Queue* queue_;
 
