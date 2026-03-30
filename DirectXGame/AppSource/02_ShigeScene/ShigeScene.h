@@ -29,6 +29,7 @@
 #include <Render/Font/Text.h>
 #include <02_ShigeScene/GameDisplayRange.h>
 #include <GameObject/Enemy/LevelSystemUI.h>
+#include <GameObject/Enemy/TackleEnemy.h>
 
 class ShigeScene : public IScene {
 public:

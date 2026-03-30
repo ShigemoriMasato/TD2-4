@@ -70,6 +70,9 @@ void ShopScene::Initialize() {
 	debugObj_->psoConfig_.ps = "Color.PS.hlsl";
 	debugObj_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
 	debugObj_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+
+	// リロールバーの初期化
+	InitializeRerollBar();
 }
 
 std::unique_ptr<IScene> ShopScene::Update() {
@@ -153,6 +156,9 @@ std::unique_ptr<IScene> ShopScene::Update() {
 
 	commonData_->pieces = pieceManager_->Update(backPack_.get(), deltaTime_);
 
+	// リロールバーの更新
+	UpdateRerollBar(orthoCamera_->GetVPMatrix());
+
 	Matrix4x4 wvp = Matrix::MakeAffineMatrix(debugTransform_.scale, debugTransform_.rotate, debugTransform_.position) * debugCamera_->GetVPMatrix();
 	debugObj_->CopyBufferData(0, &wvp, sizeof(wvp));
 	debugObj_->CopyBufferData(1, &debugColor_, sizeof(debugColor_));
@@ -171,9 +177,131 @@ void ShopScene::DrawReady() {
 	//parameterRender_->Draw(cmdObj);
 	//debugObj_->Draw(cmdObj);
 
+	// リロールバーの描画
+	DrawRerollBar(cmdObj);
+
 	shopDisplay_->PostDraw();
 }
 
 void ShopScene::Draw() {
 	shopDisplay_->Draw();
+}
+
+void ShopScene::InitializeRerollBar() {
+	// リロールバーの生成
+	rerollBarFill_.render = std::make_unique<SHEngine::RenderObject>("RerollBarFill");
+	rerollBarBG_.render = std::make_unique<SHEngine::RenderObject>("RerollBarBG");
+
+	// DrawDataの取得（Planeモデルを使用）
+	auto drawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(0).drawDataIndex);
+
+	// 前面バーの初期化
+	rerollBarFill_.render->Initialize();
+	rerollBarFill_.render->SetDrawData(drawData);
+	rerollBarFill_.render->psoConfig_.vs = "Simple.VS.hlsl";
+	rerollBarFill_.render->psoConfig_.ps = "Color.PS.hlsl";
+	rerollBarFill_.render->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+	rerollBarFill_.render->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+
+	// 背景バーの初期化
+	rerollBarBG_.render->Initialize();
+	rerollBarBG_.render->SetDrawData(drawData);
+	rerollBarBG_.render->psoConfig_.vs = "Simple.VS.hlsl";
+	rerollBarBG_.render->psoConfig_.ps = "Color.PS.hlsl";
+	rerollBarBG_.render->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+	rerollBarBG_.render->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+
+	// 単位行列の代入
+	rerollBarFill_.wvp = Matrix4x4::Identity();
+	rerollBarBG_.wvp = Matrix4x4::Identity();
+
+	// 前面バー
+	rerollBarFill_.transform.scale = { rerollBarSize_.x, rerollBarSize_.y, 1.0f };
+	rerollBarFill_.transform.rotate = { 0.0f, 0.0f, 0.0f };
+	rerollBarFill_.transform.position = { rerollBarPos_.x, rerollBarPos_.y, 0.0f };
+
+	// 背景バー
+	rerollBarBG_.transform.scale = { rerollBarSize_.x, rerollBarSize_.y, 1.0f };
+	rerollBarBG_.transform.rotate = { 0.0f, 0.0f, 0.0f };
+	rerollBarBG_.transform.position = { rerollBarPos_.x, rerollBarPos_.y, 0.0f };
+
+	// テキストの初期化
+	int planeModelHandle = modelManager_->LoadModel("Assets/.EngineResource/Model/Plane");
+	auto planeModelData = modelManager_->GetNodeModelData(planeModelHandle);
+	SHEngine::DrawData textDrawData = drawDataManager_->GetDrawData(planeModelData.drawDataIndex);
+
+	rerollText_ = std::make_unique<SHEngine::Text>();
+	rerollText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
+	rerollText_->SetText(L"リロール");
+	rerollText_->SetSize(rerollTextSize_);
+}
+
+void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
+	// リロール進行率の計算
+	float progress = shopRerollTimer_ / shopRerollTime_;
+	if (progress > 1.0f) progress = 1.0f;
+
+	// 前面バーのスケールを進行率に応じて変更
+	float currentScale = rerollBarSize_.x * progress;
+	rerollBarFill_.transform.scale.x = currentScale;
+
+	// バーの位置調整（左端から右に伸びるように）
+	float offsetX = (rerollBarSize_.x - currentScale) / 2.0f;
+	rerollBarFill_.transform.position.x = rerollBarPos_.x - offsetX;
+	rerollBarFill_.transform.position.y = rerollBarPos_.y;
+
+#ifdef USE_IMGUI
+	// ImGuiでのサイズ・位置変更を即座に反映
+	rerollBarBG_.transform.scale = { rerollBarSize_.x, rerollBarSize_.y, 1.0f };
+	rerollBarBG_.transform.position = { rerollBarPos_.x, rerollBarPos_.y, 0.0f };
+	rerollBarFill_.transform.scale.y = rerollBarSize_.y;
+#endif
+
+	// 前面バーの行列計算
+	rerollBarFill_.wvp = Matrix::MakeAffineMatrix(rerollBarFill_.transform.scale, rerollBarFill_.transform.rotate, rerollBarFill_.transform.position);
+	rerollBarFill_.wvp *= vpMatrix;
+	rerollBarFill_.render->CopyBufferData(0, &rerollBarFill_.wvp, sizeof(Matrix4x4));
+
+	Vector4 fillColor = { 0.0f, 0.8f, 1.0f, 1.0f }; // 青色
+	rerollBarFill_.render->CopyBufferData(1, &fillColor, sizeof(Vector4));
+
+	// 背景バーの行列計算
+	rerollBarBG_.wvp = Matrix::MakeAffineMatrix(rerollBarBG_.transform.scale, rerollBarBG_.transform.rotate, rerollBarBG_.transform.position);
+	rerollBarBG_.wvp *= vpMatrix;
+	rerollBarBG_.render->CopyBufferData(0, &rerollBarBG_.wvp, sizeof(Matrix4x4));
+
+	Vector4 bgColor = { 0.3f, 0.3f, 0.3f, 0.8f }; // 暗い灰色
+	rerollBarBG_.render->CopyBufferData(1, &bgColor, sizeof(Vector4));
+
+	// テキストの更新
+	rerollTextTransform_.scale = { rerollTextSize_, rerollTextSize_, 1.0f };
+	rerollText_->SetText(L"リロール");
+	rerollText_->SetColor(rerollTextColor_);
+	rerollText_->SetTransform(rerollTextTransform_);
+	rerollText_->Update(vpMatrix);
+
+#ifdef USE_IMGUI
+	ImGui::Begin("Shop Reroll Bar");
+	ImGui::Text("Reroll Bar Settings");
+	ImGui::DragFloat2("Bar Position", &rerollBarPos_.x, 1.0f);
+	ImGui::DragFloat2("Bar Size", &rerollBarSize_.x, 1.0f);
+	ImGui::Separator();
+	ImGui::Text("Reroll Text Settings");
+	ImGui::DragFloat2("Text Position", &rerollTextTransform_.position.x, 1.0f);
+	ImGui::DragFloat("Text Size", &rerollTextSize_, 0.1f);
+	ImGui::ColorEdit4("Text Color", &rerollTextColor_.x);
+	ImGui::Separator();
+	ImGui::Text("Reroll Timer: %.2f / %.2f", shopRerollTimer_, shopRerollTime_);
+	ImGui::ProgressBar(progress, ImVec2(0.0f, 0.0f));
+	ImGui::End();
+#endif
+}
+
+void ShopScene::DrawRerollBar(CmdObj* cmdObj) {
+	// 背景から前面の順に描画
+	rerollBarBG_.render->Draw(cmdObj);
+	rerollBarFill_.render->Draw(cmdObj);
+
+	// テキスト描画
+	rerollText_->Draw(cmdObj);
 }

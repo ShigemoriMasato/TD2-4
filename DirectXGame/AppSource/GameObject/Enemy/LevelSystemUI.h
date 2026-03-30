@@ -46,4 +46,8 @@ private:
     std::vector<std::vector<EnemyType>> currentWaveTypes_;
     int pendingWaveCount_ = 0; // Number of wave shifts pending
     std::vector<std::vector<EnemyType>> targetWaveTypes_; // For expanding the new wave safely
+
+    // Pulsing animation for leftmost UI
+    float pulseTimer_ = 0.0f;
+    float pulseDuration_ = 1.0f; // 1 second cycle
 };

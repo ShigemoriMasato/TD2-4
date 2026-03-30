@@ -5,6 +5,7 @@
 #include "EnemyHP.h"
 
 class EnemyManager;
+class Map;
 
 class IEnemy : public Collider {
 public:
@@ -13,7 +14,7 @@ public:
 	static SHEngine::ModelManager* GetModelManager() { return modelManager_; }
 	static void SetDrawDataManager(SHEngine::DrawDataManager* drawDataManager) { drawDataManager_ = drawDataManager; }
 
-	virtual void Initialize(Vector3* playerPos, EnemyManager* manager, int id);
+	virtual void Initialize(Vector3* playerPos, EnemyManager* manager, int id, Map* map);
 	void SetPosition(const Vector3& pos) { 
 		drawInfo_.position = pos; 
 		position_ = pos;
@@ -37,6 +38,7 @@ public:
 protected:
 
 	void SetModel(std::string path) { drawInfo_.modelIndex = modelManager_->LoadModel("Enemy/" + path); }
+	void ClampPositionToMap();
 
 	static inline SHEngine::DrawDataManager* drawDataManager_ = nullptr;
 
@@ -51,6 +53,8 @@ protected:
 
 	Matrix4x4 vpMatrix_;
 	Matrix4x4 orthoVpMatrix_;
+
+	Map* map_ = nullptr;
 
 private:
 

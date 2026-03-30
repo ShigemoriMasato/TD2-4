@@ -1,8 +1,13 @@
 #include "TackleEnemy.h"
 #include <cstdlib>
 #include <ctime>
-void TackleEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id) {
-    IEnemy::Initialize(playerPos, manager, id);
+
+#ifdef USE_IMGUI
+#include <imgui/imgui.h>
+#endif
+
+void TackleEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id, Map* map) {
+    IEnemy::Initialize(playerPos, manager, id, map);
     speed_ = float(rand() % 100) / 50.0f + baseApproachSpeed_;
     drawInfo_.scale = { 1.f, 1.f, 1.f };
     SetModel("Tackle");
@@ -20,9 +25,9 @@ void TackleEnemy::Update(float deltaTime) {
     switch (state_) {
     case State::Approach:
         position_ += direction * speed_ * deltaTime;
-        if (distance < 4.0f) {
+        if (distance < approachDistance_) {
             state_ = State::StepBack;
-            stateTimer_ = 0.5f; // Step back for 0.5 seconds
+            stateTimer_ = stepBackDuration_;
         }
         break;
     case State::StepBack:
@@ -30,7 +35,7 @@ void TackleEnemy::Update(float deltaTime) {
         stateTimer_ -= deltaTime;
         if (stateTimer_ <= 0.0f) {
             state_ = State::Charge;
-            stateTimer_ = 0.8f; // Charge for 0.8 seconds
+            stateTimer_ = chargeDuration_;
             chargeDirection_ = direction; // Lock the charge direction
         }
         break;
@@ -43,4 +48,28 @@ void TackleEnemy::Update(float deltaTime) {
         }
         break;
     }
+
+    ClampPositionToMap();
+}
+
+void TackleEnemy::DrawImGui() {
+#ifdef USE_IMGUI
+    ImGui::Begin("TackleEnemy ステータス");
+
+    if (ImGui::TreeNode("速度設定")) {
+        ImGui::DragFloat("接近速度", &baseApproachSpeed_, 0.1f, 0.1f, 10.0f);
+        ImGui::DragFloat("後退速度", &baseStepBackSpeed_, 0.1f, 0.1f, 10.0f);
+        ImGui::DragFloat("突撃速度", &baseChargeSpeed_, 0.1f, 0.1f, 20.0f);
+        ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("行動時間設定")) {
+        ImGui::DragFloat("接近距離", &approachDistance_, 0.1f, 1.0f, 20.0f);
+        ImGui::DragFloat("後退時間", &stepBackDuration_, 0.05f, 0.1f, 5.0f);
+        ImGui::DragFloat("突撃時間", &chargeDuration_, 0.05f, 0.1f, 5.0f);
+        ImGui::TreePop();
+    }
+
+    ImGui::End();
+#endif
 }

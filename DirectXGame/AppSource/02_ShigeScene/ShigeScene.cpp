@@ -36,14 +36,14 @@ void ShigeScene::Initialize() {
 	player_->Initialize(modelManager_, drawDataManager_, CharacterID::Warrior, shopScene_->GetItemManager());
 	player_->UpdateParameter(commonData_->pieces);
 
-	enemyManager_ = std::make_unique<EnemyManager>();
-	enemyManager_->Initialize(player_->GetPositionPtr());
-	IEnemy::SetModelManager(modelManager_);
-	IEnemy::SetDrawDataManager(drawDataManager_);
-
 	map_ = std::make_unique<Map>();
 	map_->Initialize(drawDataManager_, modelManager_);
 	player_->SetMapInfo(map_->GetMapInfo());
+
+	enemyManager_ = std::make_unique<EnemyManager>();
+	enemyManager_->Initialize(player_->GetPositionPtr(), map_.get());
+	IEnemy::SetModelManager(modelManager_);
+	IEnemy::SetDrawDataManager(drawDataManager_);
 
 	objectRender_ = std::make_unique<ObjectRender>();
 	objectRender_->Initialize(drawDataManager_, modelManager_);
@@ -151,6 +151,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 	shopScene_->SetDeltaTime(deltaTime);
+	shopScene_->SetCurrentWave(waveSystem_->GetCurrentWave());
 	shopScene_->Update();
 
 	gameFrameBG_->Update();
@@ -350,6 +351,8 @@ void ShigeScene::Draw() {
 	display->DrawImGui();
 	
 	waveSystemUI_->DrawImGui();
+
+	TackleEnemy::DrawImGui();
 
 	ImGui::Begin("Game Timer");
 	ImGui::Text("Game Time : %.2f s", gameTimer_->GetTimer());
