@@ -72,7 +72,7 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 		case WeaponType::Pistol: {
 			forwardDuration = 0.05f;
 			float recoilAngle = 0.5f;
-			rotEnd = {-std::sinf(direction_) * recoilAngle, 0.0f, std::cosf(direction_) * recoilAngle};
+			rotEnd = {0.0f, recoilAngle, 0.0f};
 			break;
 		}
 		case WeaponType::ShotGun: {
