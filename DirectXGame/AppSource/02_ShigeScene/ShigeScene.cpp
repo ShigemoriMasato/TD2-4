@@ -104,7 +104,7 @@ void ShigeScene::Initialize() {
 
 	gameFrame_ = std::make_unique<GameFrame>();
 	SHEngine::DrawData planeDrawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
-	gameFrame_->Initialize(planeDrawData, textureManager_->LoadTexture("Frame.png"));
+	gameFrame_->Initialize(planeDrawData, textureManager_->LoadTexture("Frame1.png"));
 
 	gameFrameBG_ = std::make_unique<GameFrame>();
 	gameFrameBG_->Initialize(planeDrawData, textureManager_->LoadTexture("FrameBG.png"));
