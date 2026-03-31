@@ -25,6 +25,11 @@ void TitleScene::Initialize() {
 	if (handle != 0) {
 		AudioManager::GetInstance().Play(handle, 0.1f, true);
 	}
+
+	postEffect_ = std::make_unique<PostEffect>();
+	postEffect_->Initialize(textureManager_, drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex));
+	postEffectConfig_.cmdObj = commonData_->cmdObject.get();
+	postEffectConfig_.origin = commonData_->display->GetDisplay();
 }
 
 std::unique_ptr<IScene> TitleScene::Update() {
@@ -82,8 +87,13 @@ void TitleScene::Draw() {
 	// ディスプレイへの描画終了
 	display->PostDraw(cmdObj);
 
+#ifdef SH_RELEASE
+	postEffectConfig_.output = commonData_->mainWindow.second->GetCurrentDisplay();
+	postEffect_->Draw(postEffectConfig_);
+#endif
+
 	// ウィンドウへの描画（displayの内容を転送）
-	window->PreDraw(cmdObj);
+	window->PreDraw(cmdObj, false);
 
 	//ここ以外で記述する場合、ifdefを忘れないようにすること
 #ifdef USE_IMGUI

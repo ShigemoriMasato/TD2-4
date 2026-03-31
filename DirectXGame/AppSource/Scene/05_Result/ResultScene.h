@@ -1,6 +1,7 @@
 #pragma once
 #include <Scene/IScene.h>
 #include <Render/Font/Text.h>
+#include <Render/PostEffect.h>
 
 class ResultScene : public IScene {
 public:
@@ -23,4 +24,8 @@ private:
 	Transform correctTextTransform_{};
 
 	bool isWin_ = false;
+
+	std::unique_ptr<PostEffect> postEffect_;
+	PostEffectConfig postEffectConfig_;
+
 };

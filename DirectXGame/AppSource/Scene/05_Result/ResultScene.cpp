@@ -35,6 +35,11 @@ void ResultScene::Initialize() {
 	orthoCamera_->SetProjectionMatrix(OrthographicDesc{});
 
 	isWin_ = commonData_->isWin;
+
+	postEffect_ = std::make_unique<PostEffect>();
+	postEffect_->Initialize(textureManager_, drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex));
+	postEffectConfig_.cmdObj = commonData_->cmdObject.get();
+	postEffectConfig_.origin = commonData_->display->GetDisplay();
 }
 
 std::unique_ptr<IScene> ResultScene::Update() {
@@ -76,7 +81,12 @@ void ResultScene::Draw() {
 
 	display->PostDraw(cmdObj);
 
-	window->PreDraw(cmdObj);
+#ifdef SH_RELEASE
+	postEffectConfig_.output = commonData_->mainWindow.second->GetCurrentDisplay();
+	postEffect_->Draw(postEffectConfig_);
+#endif
+
+	window->PreDraw(cmdObj, false);
 
 	// ここ以外で記述する場合、ifdefを忘れないようにすること
 #ifdef USE_IMGUI
