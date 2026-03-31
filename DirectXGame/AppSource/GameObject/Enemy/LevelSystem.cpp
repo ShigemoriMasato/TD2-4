@@ -25,12 +25,8 @@ void LevelSystem::Update(float deltaTime) {
 
 	timer_ += deltaTime;
 
-	float intensity = waveVertices_[currentWaveIndex_].intensity;
-	//このintensityに基づいて敵を生成する
+	float dist = GetTFromDistance(timer_);
 
-	if (waveVertices_[currentWaveIndex_ + 1].time <= timer_) {
-		currentWaveIndex_++;
-	}
 
 	if (currentWaveIndex_ >= waveVertices_.size() - 1) {
 		//全てのWaveを超過した
@@ -58,6 +54,10 @@ void LevelSystem::DrawImGui() {
 	ImGui::SameLine();
 	if (ImGui::Button("+")) {
 		editWaveIndex_++;
+	}
+
+	if (ImGui::Button("Add")) {
+		waveVertices_.push_back({ 0.0f, 10.0f });
 	}
 
 	if (waveVertices_.empty()) {
@@ -91,4 +91,59 @@ void LevelSystem::Sort() {
 		[](const WaveVertex& a, const WaveVertex& b) {
 			return a.time < b.time;
 		});
+}
+
+void LevelSystem::Sampling() {
+	constexpr int SAMPLE = 1000;
+	lengthTable_.resize(SAMPLE + 1);
+
+	std::vector<Vector2> points;
+	for(const auto& vertex : waveVertices_) {
+		points.emplace_back(vertex.time, vertex.intensity);
+	}
+
+	float totalLength = 0.0f;
+	Vector2 prev = MyMath::GetSplinePoint(points, 0.0f);
+
+	lengthTable_[0] = 0.0f;
+
+	for (int i = 1; i <= SAMPLE; i++) {
+		float t = (float)i / SAMPLE;
+
+		Vector2 cur = MyMath::GetSplinePoint(points, t);
+		float dist = (cur - prev).Length();
+
+		totalLength += dist;
+		lengthTable_[i] = totalLength;
+
+		prev = cur;
+	}
+}
+
+float LevelSystem::GetTFromDistance(float distance) {
+	float target = distance;
+	auto& table = lengthTable_;
+
+	int left = 0;
+	int right = (int)lengthTable_.size() - 1;
+
+	// 二分探索
+	while (left < right) {
+		int mid = (left + right) / 2;
+		if (table[mid] < target) left = mid + 1;
+		else right = mid;
+	}
+
+	int idx = left;
+
+	// 補間
+	float l0 = table[idx - 1];
+	float l1 = table[idx];
+
+	float t0 = (float)(idx - 1) / (table.size() - 1);
+	float t1 = (float)(idx) / (table.size() - 1);
+
+	float ratio = (target - l0) / (l1 - l0);
+
+	return t0 + (t1 - t0) * ratio;
 }

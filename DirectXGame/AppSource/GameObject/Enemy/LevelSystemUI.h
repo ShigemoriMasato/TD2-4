@@ -10,7 +10,7 @@
 class LevelSystemUI {
 public:
     void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager);
-    
+	void Update(const LevelSystem& levelSystem);
     void Draw(CmdObj* cmdObj);
     void DrawImGui();
 

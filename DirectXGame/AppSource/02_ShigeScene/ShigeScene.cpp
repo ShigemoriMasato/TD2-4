@@ -79,6 +79,7 @@ void ShigeScene::Initialize() {
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 
 	waveSystem_ = std::make_unique<LevelSystem>();
+	waveSystem_->Initialize(enemyManager_.get(), player_->GetPositionPtr(), map_->GetMapInfo());
 	
 	waveSystemUI_ = std::make_unique<LevelSystemUI>();
 	waveSystemUI_->Initialize(modelManager_, drawDataManager_, textureManager_);

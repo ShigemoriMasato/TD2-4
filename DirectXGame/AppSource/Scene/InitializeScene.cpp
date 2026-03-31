@@ -52,7 +52,7 @@ void InitializeScene::Initialize() {
 
 
 	auto fpsObs = engine_->GetFPSObserver();
-	fpsObs->SetIsFix(false);
+	fpsObs->SetIsFix(true);
 	fpsObs->SetTargetFPS(60.0);
 
 	//KeyManager

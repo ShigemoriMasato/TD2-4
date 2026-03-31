@@ -6,6 +6,9 @@ void LevelSystemUI::Initialize(SHEngine::ModelManager* modelManager, SHEngine::D
     
 }
 
+void LevelSystemUI::Update(const LevelSystem& levelSystem, float timer, float currentIntensity) {
+}
+
 void LevelSystemUI::Draw(CmdObj* cmdObj) {
     
 }

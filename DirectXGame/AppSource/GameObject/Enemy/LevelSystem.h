@@ -30,12 +30,15 @@ private:
 	void Save();
 
 	void Sort();
+	void Sampling();
+	float GetTFromDistance(float distance);
 
 	std::mt19937 rng_{ std::random_device{}() };
 
 	MapInfo mapInfo_;
 	Vector3* playerPosPtr_ = nullptr;
 
+	std::vector<float> lengthTable_;
 	std::vector<WaveVertex> waveVertices_;
 	int currentWaveIndex_ = 0;
 	EnemyManager* enemyManager_ = nullptr;
