@@ -1,6 +1,7 @@
 #include "Piece.h"
 #include "PieceManager.h"
 #include "Utility/Easing.h"
+#include <../Engine/Assets/Audio/AudioManager.h>
 
 void Piece::Initialize(const Item& item, int rank) {
 	itemData_ = item;
@@ -155,6 +156,14 @@ bool Piece::IsHovered(const Vector3& cursorPos, BackPack* backPack) {
 		Vector3 slotWorldPos = backPack->GetWorldPos(slotPos);
 		if (std::abs((cursorPos.x + hoverOffsetX) - slotWorldPos.x) < hoverSizeX &&
 			std::abs((cursorPos.z + hoverOffsetZ) - slotWorldPos.z) < hoverSizeZ) {
+
+			if(!isHovered_){
+				uint32_t handle = AudioManager::GetInstance().GetHandleByName("ItemSelect.mp3");
+				if (handle != 0) {
+					AudioManager::GetInstance().Play(handle, 0.2f, false);
+				}
+			}
+
 			isHovered_ = true;
 			return true;
 		}

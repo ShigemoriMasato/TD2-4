@@ -4,6 +4,8 @@
 
 #include <02_ShigeScene/ShigeScene.h>
 
+#include <../Engine/Assets/Audio/AudioManager.h>
+
 TitleScene::TitleScene() {
 }
 
@@ -32,6 +34,11 @@ std::unique_ptr<IScene> TitleScene::Update() {
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z) || 
 		input_->GetKeyState(DIK_SPACE) && !input_->GetPreKeyState(DIK_SPACE)) {
 		Title::Select currentSelect = titleUI_->GetCurrentSelect();
+
+		uint32_t handle = AudioManager::GetInstance().GetHandleByName("Decide.mp3");
+		if (handle != 0) {
+			AudioManager::GetInstance().Play(handle, 0.1f, false);
+		}
 		
 		// Startが選択されている場合はシーン遷移
 		if (currentSelect == Title::Select::Start) {
