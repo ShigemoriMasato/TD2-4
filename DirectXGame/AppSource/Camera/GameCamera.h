@@ -16,7 +16,7 @@ public:
 
 private:
 
-	Vector3 offset_ = { -6.5f, 30.0f, -45.0f };
+	Vector3 offset_ = { 0.0f, 30.0f, -45.0f };
 	bool isViewType2 = false;
 	
 	SHEngine::Input* input_ = nullptr;
