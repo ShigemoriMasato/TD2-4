@@ -8,6 +8,7 @@
 #include <03_YokoScene/PrticleEditorScene.h>
 
 #include <Scene/01_Title/TitleScene.h>
+#include <Scene/05_Result/ResultScene.h>
 
 #include <../Engine/Assets/Audio/AudioManager.h>
 

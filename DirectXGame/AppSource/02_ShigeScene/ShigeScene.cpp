@@ -322,7 +322,12 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		std::string debugMsg = std::format("Player Survived Time: {:.2f} s\n", gameTimer_->GetTimer());
 		OutputDebugStringA(debugMsg.c_str());
 		AudioManager::GetInstance().StopAll();
-		return std::make_unique<TitleScene>();
+		commonData_->isWin = false;
+		return std::make_unique<ResultScene>();
+	} else if (waveSystem_->End()) {
+		AudioManager::GetInstance().StopAll();
+		commonData_->isWin = true;
+		return std::make_unique<ResultScene>();
 	}
 
 	return nullptr;

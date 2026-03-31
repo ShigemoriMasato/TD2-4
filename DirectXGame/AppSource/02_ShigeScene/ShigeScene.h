@@ -22,6 +22,7 @@
 #include <GameObject/Weapon/IWeaponRender.h>
 #include <02_ShigeScene/ShopScene.h>
 #include <Scene/01_Title/TitleScene.h>
+#include <Scene/05_Result/ResultScene.h>
 #include <GameObject/Player/PlayerHP.h>
 #include <GameObject/Player/Parameter/ParameterRender.h>
 #include <UI/Game/GameFrame.h>

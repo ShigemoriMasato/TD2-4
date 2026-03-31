@@ -29,7 +29,12 @@ void LevelSystem::Update(float deltaTime) {
 	timer_ += deltaTime;
 	castTime_ += deltaTime;
 
-	currentPoint_ = GetPointFromTime(timer_ / 2.0f);
+	float currentTime = timer_ / 2.0f;
+	currentPoint_ = GetPointFromTime(currentTime);
+
+	while (currentWaveIndex_ < static_cast<int>(waveVertices_.size()) - 1 && currentTime >= waveVertices_[currentWaveIndex_ + 1].time) {
+		currentWaveIndex_++;
+	}
 
 	float intensity = currentPoint_.y;
 	//intensityに応じて敵を出す

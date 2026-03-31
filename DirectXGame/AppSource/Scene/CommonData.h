@@ -23,4 +23,6 @@ struct CommonData {
 	bool shouldQuit = false; // アプリケーション終了フラグ
 
 	int stageNum = 0;	//現在のステージの番号
+
+	bool isWin = false; // 勝利フラグ
 };
