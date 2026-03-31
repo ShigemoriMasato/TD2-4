@@ -12,6 +12,8 @@ public:
 	void PostDraw();
 	void Draw();
 
+	SHEngine::Screen::IDisplay* GetDisplay() const { return disp_.get(); }
+
 private:
 
 	CmdObj* cmdObj_;

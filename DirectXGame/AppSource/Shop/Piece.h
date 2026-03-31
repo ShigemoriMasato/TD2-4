@@ -60,9 +60,6 @@ public:
 	void SetHeld(bool held) { isHeld_ = held; }
 	bool IsHeld() const { return isHeld_; }
 	
-	// Wave数を設定
-	void SetCurrentWave(int wave) { currentWave_ = wave; }
-	
 public:
 	static inline float hoverSizeX = 0.5f;
 	static inline float hoverSizeZ = 0.5f;
@@ -101,10 +98,4 @@ private:
 	float useTimer_ = 0.0f;
 
 	float deleteTime_ = 5.0f; // 使用してから消えるまでの時間
-	float deleteTimeMax_ = 15.0f;
-	float deleteTimeMin_ = 5.0f;
-	float deleteSubWave_ = 1.0f; // Waveごとに消える時間が短くなる量
-	int deleteAddWave_ = 2;      // ゲームが開始してから〇Wave経過するごとに消える時間が短くなるカウント
-	
-	int currentWave_ = 1;        // 現在のWave数
 };

@@ -29,9 +29,6 @@ public:
 	ItemManager* GetItemManager() { return itemManager_.get(); }
 	DebugCamera* GetCamera() { return debugCamera_.get(); }
 	
-	// 現在のWave数を設定
-	void SetCurrentWave(int wave) { if (pieceManager_) pieceManager_->SetCurrentWave(wave); }
-
 private:
 
 	// リロールバーの構造体

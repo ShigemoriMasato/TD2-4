@@ -79,7 +79,6 @@ void ShigeScene::Initialize() {
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 
 	waveSystem_ = std::make_unique<LevelSystem>();
-	waveSystem_->Initialize(enemyManager_.get(), commonData_->stageNum++, player_->GetPositionPtr(), map_->GetMapInfo());
 	
 	waveSystemUI_ = std::make_unique<LevelSystemUI>();
 	waveSystemUI_->Initialize(modelManager_, drawDataManager_, textureManager_);
@@ -113,7 +112,13 @@ void ShigeScene::Initialize() {
 	gameDisplay_->Initialize(commonData_->cmdObject.get(), planeDrawData, textureManager_);
 	gameDisplay_->SetTransform({ 450.0f, 256.0f }, { 784.0f, 416.0f });
 
-	timerText_ = std::make_unique<SHEngine::Text>(64);
+	postEffect_ = std::make_unique<PostEffect>();
+	auto pedd = drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex);
+	postEffect_->Initialize(textureManager_, pedd);
+	postEffectConfig_.cmdObj = commonData_->cmdObject.get();
+	postEffectConfig_.origin = commonData_->display->GetDisplay();
+
+	timerText_ = std::make_unique<SHEngine::Text>(64); 
 	timerText_->Initialize(planeDrawData, "YDWbananaslipplus.otf", 64);
 	timerText_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
@@ -148,7 +153,6 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 	shopScene_->SetDeltaTime(deltaTime);
-	shopScene_->SetCurrentWave(waveSystem_->GetCurrentWave());
 	shopScene_->Update();
 
 	gameFrameBG_->Update();
@@ -192,7 +196,6 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	gameTimer_->Update(deltaTime);
 	waveSystem_->Update(deltaTime);
-	waveSystemUI_->Update(deltaTime, waveSystem_->GetCurrentWave(), waveSystem_->GetNext5WaveTypes(), orthoCamera_->GetVPMatrix());
 
 	float time = gameTimer_->GetTimer();
 	int minutes = static_cast<int>(time) / 60;
@@ -352,7 +355,10 @@ void ShigeScene::Draw() {
 
 	display->PostDraw(cmdObj);
 
-	window->PreDraw(cmdObj);
+	postEffectConfig_.output = commonData_->mainWindow.second->GetCurrentDisplay();
+	postEffect_->Draw(postEffectConfig_);
+
+	window->PreDraw(cmdObj, false);
 
 	// ここ以外で記述する場合、ifdefを忘れないようにすること
 #ifdef USE_IMGUI
@@ -385,11 +391,6 @@ void ShigeScene::Draw() {
 
 #endif // USE_IMGUI
 	engine_->DrawImGui();
-
-#ifdef SH_RELEASE
-	postEffectConfig_.output = commonData_->mainWindow.second->GetCurrentDisplay();
-	postEffect_->Draw(postEffectConfig_);
-#endif
 
 	window->PostDraw(cmdObj);
 }

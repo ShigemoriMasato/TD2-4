@@ -15,8 +15,6 @@ void Piece::Initialize(const Item& item, int rank) {
 	}
 	middleLocalPos_ = Vector3(maxPos.x * 0.5f, 0.0f, maxPos.z * 0.5f);
 	ignores_.reserve(chips_.size());
-
-	deleteTime_ = deleteTimeMax_;
 }
 
 bool Piece::Update(BackPack* backPack, float deltaTime) {
@@ -40,12 +38,6 @@ bool Piece::Update(BackPack* backPack, float deltaTime) {
 	}
 
 	useTimer_ += deltaTime;
-
-	// Wave数に応じて消える時間を調整
-	// deleteAddWave_経過ごとにdeleteSubWave_秒減らす
-	int waveGroups = (currentWave_ - 1) / deleteAddWave_;
-	float adjustedDeleteTime = deleteTimeMax_ - (waveGroups * deleteSubWave_);
-	deleteTime_ = std::clamp(adjustedDeleteTime, deleteTimeMin_, deleteTimeMax_);
 
 	// 使用時間が一定時間を超えたら使用終了
 	if (useTimer_ >= deleteTime_) {
