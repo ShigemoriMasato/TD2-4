@@ -9,13 +9,31 @@
 
 class LevelSystemUI {
 public:
+	~LevelSystemUI();
+
     void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager);
-	void Update(const LevelSystem& levelSystem);
+	void Update(const LevelSystem& levelSystem, Matrix4x4 vpMatrix);
     void Draw(CmdObj* cmdObj);
     void DrawImGui();
 
 private:
-    
-    std::vector<Vector2> levelIndicators_;
 
+    void Load();
+	void Save();
+    
+    const int kSegment_ = 1000;
+    std::vector<Vector2> vertices_;
+
+	std::unique_ptr<SHEngine::RenderObject> render_;
+    std::unique_ptr<SHEngine::RenderObject> currentPoint_;
+
+	Transform transform_;
+	Matrix4x4 wvpMatrix_;
+
+	Transform cpTransform_;
+	Matrix4x4 cpwvpMatrix_;
+	int cpTextureIndex_ = 0;
+
+	BinaryManager binaryManager_;
+	std::string saveFilePath_ = "LevelSystemUI.bin";
 };

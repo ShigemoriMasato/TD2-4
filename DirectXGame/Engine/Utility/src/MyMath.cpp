@@ -57,17 +57,51 @@ std::vector<Vector3> MyMath::GetSplinePoints(const std::vector<Vector3>& control
 std::vector<Vector2> MyMath::GetSplinePoints(const std::vector<Vector2>& points, int segment) {
 	std::vector<Vector2> result;
 
-	// ---- ① 最低条件チェック（ケアレスミス対策）----
-	if (points.size() < 4 || segment <= 0) {
+	// ---- ① ケアレスミス対策 ----
+	if (points.size() < 2 || segment <= 0) {
 		return result;
 	}
 
+	// ---- ② 制御点拡張（端点複製）----
+	std::vector<Vector2> cp;
+	cp.reserve(points.size() + 2);
+
+	cp.push_back(points.front()); // 追加
+	cp.insert(cp.end(), points.begin(), points.end());
+	cp.push_back(points.back());  // 追加
+
+	int segmentNum = (int)cp.size() - 3;
+
 	result.reserve(segment + 1);
 
-	// ---- ② 等間隔サンプリング ----
+	// ---- ③ サンプリング ----
 	for (int i = 0; i <= segment; i++) {
 		float t = (float)i / segment;
-		result.push_back(GetSplinePoint(points, t));
+
+		float scaledT = t * segmentNum;
+		int seg = (int)scaledT;
+		float localT = scaledT - seg;
+
+		if (seg >= segmentNum) {
+			seg = segmentNum - 1;
+			localT = 1.0f;
+		}
+
+		const Vector2& p0 = cp[seg];
+		const Vector2& p1 = cp[seg + 1];
+		const Vector2& p2 = cp[seg + 2];
+		const Vector2& p3 = cp[seg + 3];
+
+		float t2 = localT * localT;
+		float t3 = t2 * localT;
+
+		Vector2 v =
+			p1 * 2.0f +
+			(p2 - p0) * localT +
+			(p0 * 2.0f - p1 * 5.0f + p2 * 4.0f - p3) * t2 +
+			(-p0 + p1 * 3.0f - p2 * 3.0f + p3) * t3;
+
+		result.push_back(v * 0.5f);
 	}
 
 	return result;

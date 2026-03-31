@@ -306,6 +306,9 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		}
 	}
 
+	waveSystem_->Update(deltaTime);
+	waveSystemUI_->Update(*waveSystem_, orthoCamera_->GetVPMatrix());
+
 	if (key[Key::Debug1] || gameTimer_->IsEnd()) {
 	}
 

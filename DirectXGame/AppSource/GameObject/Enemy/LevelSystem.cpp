@@ -13,6 +13,8 @@ void LevelSystem::Initialize(EnemyManager* enemyManager, Vector3* playerPosPtr, 
 
 	waveVertices_ = {
 		{0.0f, 0.0f},
+		{0.0f, 100.0f},
+		{0.0f, 200.0f},
 		{0.0f, 300.0f}
 	};
 
@@ -25,9 +27,24 @@ void LevelSystem::Update(float deltaTime) {
 	if (waveVertices_.empty()) return;
 
 	timer_ += deltaTime;
+	castTime_ += deltaTime;
 
-	float dist = GetTFromDistance(timer_);
+	currentPoint_ = GetPointFromTime(timer_ / 2.0f);
 
+	float intensity = currentPoint_.y;
+	//intensityに応じて敵を出す
+	int enemyNum = static_cast<int>(intensity / 10.0f) + 1;
+	float coolTime = 10.0f / intensity;
+	coolTime = std::clamp(coolTime, 0.5f, 5.0f);
+
+	if (castTime_ >= coolTime) {
+		castTime_ = 0.0f;
+		for (int i = 0; i < enemyNum; i++) {
+			float x = std::uniform_real_distribution<float>(mapInfo_.minX, mapInfo_.maxX)(rng_);
+			float z = std::uniform_real_distribution<float>(mapInfo_.minZ, mapInfo_.maxZ)(rng_);
+			enemyManager_->PopEnemy({ x, 0.0f, z });
+		}
+	}
 
 	if (currentWaveIndex_ >= waveVertices_.size() - 1) {
 		//全てのWaveを超過した
@@ -44,10 +61,11 @@ void LevelSystem::DrawImGui() {
 		//停止状態を解除したらソートする
 		if (!stop_) {
 			Sort();
+			Sampling();
 		}
 	}
 
-	ImGui::Text("Editing : %d", editWaveIndex_);
+	ImGui::Text("Editing : %d/%d", editWaveIndex_ + 1, int(waveVertices_.size()));
 	ImGui::SameLine();
 	if (ImGui::Button("-")) {
 		editWaveIndex_--;
@@ -59,6 +77,12 @@ void LevelSystem::DrawImGui() {
 
 	if (ImGui::Button("Add")) {
 		waveVertices_.push_back({ 0.0f, 10.0f });
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Erase")) {
+		if (waveVertices_.size() > 4) {
+			waveVertices_.erase(waveVertices_.begin() + editWaveIndex_);
+		}
 	}
 
 	if (waveVertices_.empty()) {
@@ -82,9 +106,27 @@ void LevelSystem::DrawImGui() {
 }
 
 void LevelSystem::Load() {
+	binaryManager_.Boot(saveFilePath_);
+	if (binaryManager_.IsEmpty()) {
+		return;
+	}
+	int size = binaryManager_.Reverse<int>();
+	waveVertices_.resize(size);
+	for (int i = 0; i < size; i++) {
+		waveVertices_[i].intensity = binaryManager_.Reverse<float>();
+		waveVertices_[i].time = binaryManager_.Reverse<float>();
+	}
 }
 
 void LevelSystem::Save() {
+	binaryManager_.Boot(saveFilePath_);
+	int size = (int)waveVertices_.size();
+	binaryManager_.Register(&size);
+	for (auto& vertex : waveVertices_) {
+		binaryManager_.Register(&vertex.intensity);
+		binaryManager_.Register(&vertex.time);
+	}
+	binaryManager_.Write(saveFilePath_);
 }
 
 void LevelSystem::Sort() {
@@ -99,11 +141,10 @@ void LevelSystem::Sampling() {
 	lengthTable_.resize(SAMPLE + 1);
 
 	std::vector<Vector2> points;
-	for(const auto& vertex : waveVertices_) {
+	for (const auto& vertex : waveVertices_) {
 		points.emplace_back(vertex.time, vertex.intensity);
 	}
 
-	float totalLength = 0.0f;
 	Vector2 prev = MyMath::GetSplinePoint(points, 0.0f);
 
 	lengthTable_[0] = 0.0f;
@@ -114,37 +155,108 @@ void LevelSystem::Sampling() {
 		Vector2 cur = MyMath::GetSplinePoint(points, t);
 		float dist = (cur - prev).Length();
 
-		totalLength += dist;
-		lengthTable_[i] = totalLength;
+		totalLength_ += dist;
+		lengthTable_[i] = totalLength_;
 
 		prev = cur;
 	}
 }
 
-float LevelSystem::GetTFromDistance(float distance) {
-	float target = distance;
-	auto& table = lengthTable_;
+Vector2 LevelSystem::GetTFromDistance(float t) {
+	std::vector<Vector2> points;
+	points.reserve(waveVertices_.size());
+	points.push_back({ waveVertices_.front().time, waveVertices_.front().intensity }); // 追加
+	for(const auto& vertex : waveVertices_) {
+		points.emplace_back(vertex.time, vertex.intensity);
+	}
+	points.push_back({ waveVertices_.back().time, waveVertices_.back().intensity }); // 追加
 
+	// ---- ① ケアレスミス対策 ----
+	if (points.size() < 4) {
+		return { 0.0f, 0.0f };
+	}
+
+	t /= totalLength_; //距離 → 割合
+
+	if (t <= 0.0f) return MyMath::GetSplinePoint(points, 0.0f);
+	if (t >= 1.0f) return MyMath::GetSplinePoint(points, 1.0f);
+
+	// ---- ② 割合 → 距離 ----
+	float targetDistance = t * totalLength_;
+
+	// ---- ③ 二分探索 ----
 	int left = 0;
 	int right = (int)lengthTable_.size() - 1;
 
-	// 二分探索
 	while (left < right) {
 		int mid = (left + right) / 2;
-		if (table[mid] < target) left = mid + 1;
-		else right = mid;
+		if (lengthTable_[mid] < targetDistance) {
+			left = mid + 1;
+		} else {
+			right = mid;
+		}
 	}
 
 	int idx = left;
 
-	// 補間
-	float l0 = table[idx - 1];
-	float l1 = table[idx];
+	// ---- ④ 補間 ----
+	if (idx == 0) return MyMath::GetSplinePoint(points, 0.0f);
 
-	float t0 = (float)(idx - 1) / (table.size() - 1);
-	float t1 = (float)(idx) / (table.size() - 1);
+	float l0 = lengthTable_[idx - 1];
+	float l1 = lengthTable_[idx];
 
-	float ratio = (target - l0) / (l1 - l0);
+	float t0 = (float)(idx - 1) / (lengthTable_.size() - 1);
+	float t1 = (float)(idx) / (lengthTable_.size() - 1);
 
-	return t0 + (t1 - t0) * ratio;
+	float ratio = (targetDistance - l0) / (l1 - l0);
+
+	float internalT = t0 + (t1 - t0) * ratio;
+
+	// ---- ⑤ 座標取得 ----
+	return MyMath::GetSplinePoint(points, internalT);
+}
+
+
+Vector2 LevelSystem::GetPointFromTime(float time) {
+	// ---- ① ケアレスミス ----
+	if (waveVertices_.size() < 4 || totalLength_ <= 0.0f) {
+		return { 0.0f, 0.0f };
+	}
+
+	const int SAMPLE = (int)lengthTable_.size() - 1;
+
+	float prevDist = 0.0f;
+	Vector2 prev = GetTFromDistance(0.0f);
+
+	for (int i = 1; i <= SAMPLE; i++) {
+
+		float dist = totalLength_ * ((float)i / SAMPLE);
+		Vector2 cur = GetTFromDistance(dist);
+
+		// ---- ② 区間に入ったか ----
+		if ((prev.x <= time && time <= cur.x) ||
+			(cur.x <= time && time <= prev.x)) {
+
+			float dx = cur.x - prev.x;
+
+			// ---- ③ xがほぼ同じ（縦）----
+			if (fabs(dx) < 1e-5f) {
+				return cur;
+			}
+
+			float ratio = (time - prev.x) / dx;
+
+			Vector2 result;
+			result.x = time;
+			result.y = prev.y + (cur.y - prev.y) * ratio;
+
+			return result;
+		}
+
+		prev = cur;
+		prevDist = dist;
+	}
+
+	// ---- ④ 解なし（または複数の可能性）----
+	return { 0.0f, 0.0f };
 }
