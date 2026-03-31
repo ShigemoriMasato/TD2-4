@@ -41,7 +41,9 @@ void LevelSystemUI::Initialize(SHEngine::ModelManager* modelManager, SHEngine::D
 	currentPoint_->SetDrawData(drawDataManager->GetDrawData(modelManager->GetNodeModelData(1).drawDataIndex));
 	currentPoint_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Transparent;
 
-	cpTextureIndex_ = textureManager->LoadTexture("en.png");
+	cpTextureIndex_ = textureManager->LoadTexture("PlayerIcon.png");
+
+	cpTransform_.rotate.z = std::numbers::pi_v<float> / 2.0f;
 
 	Load();
 }
@@ -106,6 +108,8 @@ void LevelSystemUI::Load() {
 	transform_.scale = binaryManager_.Reverse<Vector3>();
 	transform_.rotate = binaryManager_.Reverse<Vector3>();
 	transform_.position = binaryManager_.Reverse<Vector3>();
+
+	cpTransform_.scale = binaryManager_.Reverse<Vector3>();
 }
 
 void LevelSystemUI::Save() {
@@ -113,5 +117,6 @@ void LevelSystemUI::Save() {
 	binaryManager_.Register(&transform_.scale);
 	binaryManager_.Register(&transform_.rotate);
 	binaryManager_.Register(&transform_.position);
+	binaryManager_.Register(&cpTransform_.scale);
 	binaryManager_.Write(saveFilePath_);
 }

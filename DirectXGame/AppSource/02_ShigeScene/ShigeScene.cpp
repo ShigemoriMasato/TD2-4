@@ -41,8 +41,9 @@ void ShigeScene::Initialize() {
 	map_->Initialize(drawDataManager_, modelManager_);
 	player_->SetMapInfo(map_->GetMapInfo());
 
+	SHEngine::DrawData planeDrawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
 	enemyManager_ = std::make_unique<EnemyManager>();
-	enemyManager_->Initialize(player_->GetPositionPtr(), map_.get());
+	enemyManager_->Initialize(player_->GetPositionPtr(), map_.get(), planeDrawData, modelManager_);
 	IEnemy::SetModelManager(modelManager_);
 	IEnemy::SetDrawDataManager(drawDataManager_);
 
@@ -104,7 +105,6 @@ void ShigeScene::Initialize() {
 	parameterRender_->Initialize(modelManager_, drawDataManager_, engine_);
 
 	gameFrame_ = std::make_unique<GameFrame>();
-	SHEngine::DrawData planeDrawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
 	gameFrame_->Initialize(planeDrawData, textureManager_->LoadTexture("Frame2.png"));
 
 	gameFrameBG_ = std::make_unique<GameFrame>();
@@ -354,6 +354,8 @@ void ShigeScene::Draw() {
 	for (const auto& render : weaponRenders_) {
 		render->Draw(cmdObj);
 	}
+
+	enemyManager_->Draw(cmdObj);
 
 	controllers_[0]->DrawImGui();
 

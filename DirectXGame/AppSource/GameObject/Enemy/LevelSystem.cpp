@@ -34,6 +34,7 @@ void LevelSystem::Update(float deltaTime) {
 	float intensity = currentPoint_.y;
 	//intensityに応じて敵を出す
 	int enemyNum = static_cast<int>(intensity / 10.0f) + 1;
+	int enemyHP = static_cast<int>(timer_ / 40.0f) + 1;		//HPだけ時間経過で増やす
 	float coolTime = 10.0f / intensity;
 	coolTime = std::clamp(coolTime, 0.5f, 5.0f);
 
@@ -42,7 +43,7 @@ void LevelSystem::Update(float deltaTime) {
 		for (int i = 0; i < enemyNum; i++) {
 			float x = std::uniform_real_distribution<float>(mapInfo_.minX, mapInfo_.maxX)(rng_);
 			float z = std::uniform_real_distribution<float>(mapInfo_.minZ, mapInfo_.maxZ)(rng_);
-			enemyManager_->PopEnemy({ x, 0.0f, z });
+			enemyManager_->PopEnemy({ x, 0.0f, z }, enemyHP);
 		}
 	}
 

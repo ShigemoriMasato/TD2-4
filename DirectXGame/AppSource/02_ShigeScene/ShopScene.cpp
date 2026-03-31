@@ -57,6 +57,7 @@ void ShopScene::Initialize() {
 	//parameterRender_->Initialize(modelManager_, drawDataManager_, engine_);
 
 	orthoCamera_ = std::make_unique<Camera>();
+	orthoCamera_->SetProjectionMatrix(OrthographicDesc{});
 
 	shopDisplay_ = std::make_unique<ShopDisplay>();
 	//PlaneのDrawDataを取得
@@ -147,6 +148,7 @@ std::unique_ptr<IScene> ShopScene::Update() {
 		std::vector<DrawInfo> drawInfos = backPack_->GetSlotDrawInfos();
 
 		auto pieces = pieceManager_->GetAllPieces();
+		drawInfos.reserve(drawInfos.size() + pieces.size());
 		for (const auto& piece : pieces) {
 			auto pieceDrawInfos = piece->GetDrawInfos();
 			drawInfos.insert(drawInfos.end(), pieceDrawInfos.begin(), pieceDrawInfos.end());
@@ -155,9 +157,6 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	}
 
 	{
-		OrthographicDesc orthDesc;
-		orthDesc.SetValue();
-		orthoCamera_->SetProjectionMatrix(orthDesc);
 		orthoCamera_->SetScale({ 1,-1,1 });
 		orthoCamera_->SetPosition({ 0, 0, 0 });
 		orthoCamera_->MakeMatrix();

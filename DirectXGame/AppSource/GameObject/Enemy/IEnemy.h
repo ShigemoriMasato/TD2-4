@@ -2,6 +2,7 @@
 #include <Collision/Collider.h>
 #include <GameObject/DrawInfo.h>
 #include <Assets/Model/ModelManager.h>
+#include <Render/Font/Text.h>
 #include "EnemyHP.h"
 
 class EnemyManager;
@@ -11,7 +12,6 @@ class IEnemy : public Collider {
 public:
 
 	static void SetModelManager(SHEngine::ModelManager* modelManager) { modelManager_ = modelManager; }
-	static SHEngine::ModelManager* GetModelManager() { return modelManager_; }
 	static void SetDrawDataManager(SHEngine::DrawDataManager* drawDataManager) { drawDataManager_ = drawDataManager; }
 
 	virtual void Initialize(Vector3* playerPos, EnemyManager* manager, int id, Map* map);
@@ -23,6 +23,7 @@ public:
 	void UpdateCollider();
 
 	Vector3 GetPosition() const { return position_; }
+	std::vector<int> GetDamageQueue();
 	std::vector<DrawInfo> GetDrawInfos() const;
 	void OnCollision(Collider* other) override;
 
@@ -55,6 +56,8 @@ protected:
 	Matrix4x4 orthoVpMatrix_;
 
 	Map* map_ = nullptr;
+
+	std::vector<int> damageQueue_;
 
 private:
 

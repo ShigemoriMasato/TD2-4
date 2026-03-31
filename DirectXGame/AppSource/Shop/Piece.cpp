@@ -167,6 +167,9 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 	std::vector<DrawInfo> drawInfos;
 	int totalChips = static_cast<int>(chips_.size());
 	int currentIdx = 0;
+
+	float deleteT = 1.0f - (useTimer_ / deleteTime_ * 0.7f) + 0.3f;
+
 	for (const auto& chip : chips_) {
 		if(IsIgnored(chip)) {
 			currentIdx++;
@@ -177,6 +180,13 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		info.position = { (float)slotPos.first + 0.5f, 0.0f, (float)slotPos.second + 0.5f };
 		info.scale = Vector3(0.5f, 0.1f, 0.5f);
 		info.modelIndex = pieceModelID;
+
+		if(currentIdx == ignores_.size()) {
+			// 使用中のチップは徐々に小さくする
+			info.scale *= deleteT;
+			//Yだけは常に0.1fにして、地面にめり込まないようにする
+			info.scale.y = 0.1f;
+		}
 
 		float t = 0.0f;
 		if (totalChips > 1) {

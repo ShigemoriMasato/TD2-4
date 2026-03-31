@@ -62,6 +62,7 @@ void IEnemy::OnCollision(Collider* other) {
 	damageIDs_[id] = 1;
 	auto attack = static_cast<IAttackObject*>(other);
 	hp_ -= static_cast<int>(attack->GetDamage());
+	damageQueue_.push_back(static_cast<int>(attack->GetDamage()));
 
 	if (hp_ <= 0) {
 		KillMe();
@@ -72,6 +73,12 @@ void IEnemy::KillMe() {
 	if (hp_ <= 0.0f) {
 		isActive_ = false;
 	}
+}
+
+std::vector<int> IEnemy::GetDamageQueue() {
+	std::vector<int> queue = damageQueue_;
+	damageQueue_.clear();
+	return queue;
 }
 
 std::vector<DrawInfo> IEnemy::GetDrawInfos() const {

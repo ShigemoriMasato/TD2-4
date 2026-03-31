@@ -114,6 +114,6 @@ private:
 	
 	int pieceModelID_ = -1;
 
-	int rerollCount_ = 0; // リロール可能な回数
+	int rerollCount_ = 3; // リロール可能な回数
 	bool pendingReroll_ = false; // リロール待機フラグ
 };

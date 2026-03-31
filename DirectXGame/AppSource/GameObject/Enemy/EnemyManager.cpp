@@ -4,12 +4,28 @@
 #include "TackleEnemy.h"
 #include "IEnemy.h"
 #include <GameObject/Map/Map.h>
+#include <Utility/ConvertString.h>
 
-void EnemyManager::Initialize(Vector3* playerPos, Map* map) {
+void EnemyManager::Initialize(Vector3* playerPos, Map* map, SHEngine::DrawData& plane, SHEngine::ModelManager* modelManager) {
 	playerPos_ = playerPos;
 	map_ = map;
 	enemies_.clear();
 	pendingEnemies_.clear();
+
+	damageText_.reserve(maxDamageTextNum_);
+	isUsedText_.resize(maxDamageTextNum_, 0);
+	damageTextPositions_.resize(maxDamageTextNum_);
+	damageTextVelocities_.resize(maxDamageTextNum_);
+	damageTextTimers_.resize(maxDamageTextNum_, 0.0f);
+	for (int i = 0; i < maxDamageTextNum_; ++i) {
+		auto text = std::make_unique<SHEngine::Text>();
+		text->Initialize(plane, "YDWbananaslipplus.otf");
+		text->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+		text->SetSize(0.05f);
+		damageText_.push_back(std::move(text));
+	}
+
+	modelManager_ = modelManager;
 }
 
 void EnemyManager::Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVpMatrix) {
@@ -20,11 +36,11 @@ void EnemyManager::Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVp
 			toSpawn.push_back(static_cast<int>(i));
 		}
 	}
-	
+
 	for (auto it = toSpawn.rbegin(); it != toSpawn.rend(); ++it) {
 		int index = *it;
 		auto& p = pendingEnemies_[index];
-		
+
 		int id = nextEnemyId_++;
 		auto& enemy = enemies_[id];
 		if (p.type == EnemyType::Fast) {
@@ -38,7 +54,7 @@ void EnemyManager::Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVp
 		enemy->SetPosition(p.pos);
 		enemy->SetHP(p.hp);
 		enemy->SetAttack(p.attack);
-		
+
 		pendingEnemies_.erase(pendingEnemies_.begin() + index);
 	}
 
@@ -47,11 +63,19 @@ void EnemyManager::Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVp
 	}
 
 	std::vector<int> toRemove;
+	std::vector<std::pair<Vector3, std::vector<int>>> damageQueue;
 	for (auto& [id, enemy] : enemies_) {
 		enemy->SetVPMatrix(vpMatrix);
 		enemy->SetOrthoVPMatrix(orthoVpMatrix);
 		enemy->Update(deltaTime);
 		enemy->UpdateCollider();
+		auto damages = enemy->GetDamageQueue();
+
+		if (!damages.empty()) {
+			auto pos = enemy->GetPosition();
+			damageQueue.push_back({ pos, damages });
+		}
+
 		if (!enemy->IsActive()) {
 			toRemove.push_back(id);
 		}
@@ -60,12 +84,43 @@ void EnemyManager::Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVp
 	for (int id : toRemove) {
 		Kill(id);
 	}
+
+
+	CreateDamageText(damageQueue);
+
+	for (int i = 0; i < int(damageText_.size()); ++i) {
+		if (isUsedText_[i] == 0) {
+			continue;
+		}
+
+		auto& text = damageText_[i];
+		Vector3& pos = damageTextPositions_[i];
+		Vector3& vel = damageTextVelocities_[i];
+		float& timer = damageTextTimers_[i];
+		timer += deltaTime;
+		vel.y -= 19.6f * deltaTime; // accelerate upwards
+		pos += vel * deltaTime;
+		if (timer >= damageLifeTime_) {
+			isUsedText_[i] = 0;
+			continue;
+		}
+		text->SetTransform({ {1.0f, 1.0f, 1.0f}, {0.0f,0.0f ,0.0f}, pos });
+		text->Update(vpMatrix);
+	}
+}
+
+void EnemyManager::Draw(CmdObj* cmdObj) {
+	for (size_t i = 0; i < damageText_.size(); ++i) {
+		if (isUsedText_[i]) {
+			damageText_[i]->Draw(cmdObj);
+		}
+	}
 }
 
 void EnemyManager::DrawImGui() {
 #ifdef USE_IMGUI
 
-	
+
 
 #endif
 }
@@ -87,10 +142,10 @@ std::vector<DrawInfo> EnemyManager::GetEnemyDrawInfos() const {
 	for (const auto& p : pendingEnemies_) {
 		DrawInfo info{};
 		info.position = p.pos;
-		info.rotation = {0, 0, 0};
+		info.rotation = { 0, 0, 0 };
 		float scale = p.timer; // scale 1.0 to 0.0
-		info.scale = {scale, scale, scale};
-		
+		info.scale = { scale, scale, scale };
+
 		if (p.type == EnemyType::Normal) {
 			info.color = 0xff0000ff; // Red for Normal
 		} else if (p.type == EnemyType::Fast) {
@@ -101,11 +156,10 @@ std::vector<DrawInfo> EnemyManager::GetEnemyDrawInfos() const {
 			info.color = 0xffffffff; // Default
 		}
 
-		auto modelManager = IEnemy::GetModelManager();
-		if (modelManager) {
-			info.modelIndex = modelManager->LoadModel("Cross"); 
+		if (modelManager_) {
+			info.modelIndex = modelManager_->LoadModel("Cross");
 		}
-		
+
 		drawInfos.push_back(info);
 	}
 
@@ -126,6 +180,28 @@ std::vector<IEnemy*> EnemyManager::GetEnemies() const {
 
 void EnemyManager::Kill(int id) {
 	enemies_.erase(id);
+}
+
+void EnemyManager::CreateDamageText(std::vector<std::pair<Vector3, std::vector<int>>> damageQueue) {
+	size_t i;
+	for (const auto& [pos, damages] : damageQueue) {
+		for (int damage : damages) {
+			for (i = 0; i < isUsedText_.size(); ++i) {
+				if (isUsedText_[i] == 0) {
+					isUsedText_[i] = 1;
+					damageText_[i]->SetText(ConvertString(std::to_string(damage)));
+					damageTextPositions_[i] = pos;
+					damageTextPositions_[i].y += 3.0f;
+					Vector3 tmpVel = { 0.0f, 5.0f, 0.0f };
+					tmpVel.x = rand() % 400 / 50.0f - 2.0f; // -2.0 to 2.0
+					tmpVel.z = rand() % 400 / 50.0f - 2.0f; // -2.0 to 2.0
+					damageTextVelocities_[i] = tmpVel.Normalize() * 8.0f;
+					damageTextTimers_[i] = 0.0f;
+					break;
+				}
+			}
+		}
+	}
 }
 
 void EnemyManager::Clear() {
