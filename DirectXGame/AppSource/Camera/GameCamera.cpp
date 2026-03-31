@@ -16,7 +16,7 @@ void GameCamera::Update(float deltaTime, Vector3 position) {
 		float mouseWheel = input_->GetMouseWheel();
 		if (mouseWheel != 0.0f) {
 			// ホイール回転量に応じて距離スケールを調整
-			distanceScale_ += mouseWheel * wheelSensitivity_;
+			distanceScale_ -= mouseWheel * wheelSensitivity_;
 			distanceScale_ = std::clamp(distanceScale_, minDistanceScale_, maxDistanceScale_);
 		}
 	}

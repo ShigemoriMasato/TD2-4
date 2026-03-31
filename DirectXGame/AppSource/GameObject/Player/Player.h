@@ -131,10 +131,10 @@ namespace Player {
 		float upperLimitHP_ = 999.0f; // HPの上限（バグ防止用）
 		float lowerLimitHP_ = 1.0f;   // HPの下限（バグ防止用）
 
-		// 無敵フラグ
-		bool isInvincible_ = false;
-		float invincibleTimer_ = 0.0f;
-		float invincibleDuration_ = 1.0f;
+	// 無敵フラグ
+	bool isInvincible_ = false;
+	float invincibleTimer_ = 0.0f;
+	float invincibleDuration_ = 0.1f;
 
 		// アニメーション用変数
 		AnimationBundle<Vector3> rotateAnimationRightArm_; // 右腕

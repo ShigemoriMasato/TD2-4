@@ -4,6 +4,8 @@
 
 #include <02_ShigeScene/ShigeScene.h>
 
+#include <../Engine/Assets/Audio/AudioManager.h>
+
 TitleScene::TitleScene() {
 }
 
@@ -18,6 +20,11 @@ void TitleScene::Initialize() {
 	camera_->SetPosition({ 0.0f, 0.0f, 0.0f });
 	camera_->SetRotation({ 0.0f, 0.0f, 0.0f });
 	camera_->SetScale({ 1.0f, 1.0f, 1.0f });
+
+	uint32_t handle = AudioManager::GetInstance().GetHandleByName("TitleScene.mp3");
+	if (handle != 0) {
+		AudioManager::GetInstance().Play(handle, 0.1f, true);
+	}
 }
 
 std::unique_ptr<IScene> TitleScene::Update() {
@@ -32,14 +39,21 @@ std::unique_ptr<IScene> TitleScene::Update() {
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z) || 
 		input_->GetKeyState(DIK_SPACE) && !input_->GetPreKeyState(DIK_SPACE)) {
 		Title::Select currentSelect = titleUI_->GetCurrentSelect();
+
+		uint32_t handle = AudioManager::GetInstance().GetHandleByName("Decide.mp3");
+		if (handle != 0) {
+			AudioManager::GetInstance().Play(handle, 0.1f, false);
+		}
 		
 		// Startが選択されている場合はシーン遷移
 		if (currentSelect == Title::Select::Start) {
+			AudioManager::GetInstance().StopAll();
 			return std::make_unique<ShigeScene>();
 		}
 
 		// Quitが選択されている場合はアプリケーションを終了
 		else if (currentSelect == Title::Select::Quit) {
+			AudioManager::GetInstance().StopAll();
 			commonData_->shouldQuit = true;
 		}
 	}
