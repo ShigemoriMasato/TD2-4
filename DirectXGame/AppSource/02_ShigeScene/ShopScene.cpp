@@ -73,6 +73,11 @@ void ShopScene::Initialize() {
 
 	// リロールバーの初期化
 	InitializeRerollBar();
+
+	displayRange_.top = 180.0f;
+	displayRange_.bottom = 810.0f;
+	displayRange_.right = 570.0f;
+	displayRange_.left = 210.0f;
 }
 
 std::unique_ptr<IScene> ShopScene::Update() {

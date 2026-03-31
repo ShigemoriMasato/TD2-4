@@ -15,6 +15,7 @@
 #include <GameObject/Player/Parameter/ParameterRender.h>
 #include <Shop/ShopDisplay.h>
 #include <Render/Font/Text.h>
+#include <02_ShigeScene/GameDisplayRange.h>
 
 class ShopScene : public IScene {
 public:
@@ -116,4 +117,6 @@ private:
 
 	int rerollCount_ = 0; // リロール可能な回数
 	bool pendingReroll_ = false; // リロール待機フラグ
+
+	GameDisplayRange displayRange_;
 };
