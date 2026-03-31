@@ -1,7 +1,7 @@
 #include "ResultScene.h"
+#include <Scene/01_Title/TitleScene.h>
 #include <Utility/Color.h>
 #include <imgui/imgui.h>
-#include <Scene/01_Title/TitleScene.h>
 
 using namespace SHEngine;
 
@@ -18,14 +18,14 @@ void ResultScene::Initialize() {
 	clearText_->SetText(L"ゲームクリア");
 	clearText_->SetColor({1.0f, 1.0f, 0.0f, 1.0f});
 	clearText_->SetSize(2.0f);
-	clearTextTransform_.position = {486.0f, -250.0f, 0.0f};
+	clearTextTransform_.position = {486.0f, 100.0f, 0.0f};
 
 	gameOverText_ = std::make_unique<Text>();
 	gameOverText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
 	gameOverText_->SetText(L"ゲームオーバー");
 	gameOverText_->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
 	gameOverText_->SetSize(2.0f);
-	gameOverTextTransform_.position = {455.0f, -250.0f, 0.0f};
+	gameOverTextTransform_.position = {455.0f, 100.0f, 0.0f};
 
 	CorrectText_ = std::make_unique<Text>();
 	CorrectText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
@@ -43,6 +43,8 @@ void ResultScene::Initialize() {
 	postEffect_->Initialize(textureManager_, drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex));
 	postEffectConfig_.cmdObj = commonData_->cmdObject.get();
 	postEffectConfig_.origin = commonData_->display->GetDisplay();
+
+	posAnime_.anim.Start(100.0f, -250.0f, 1.0f, EaseType::EaseOutBounce);
 }
 
 std::unique_ptr<IScene> ResultScene::Update() {
@@ -52,15 +54,38 @@ std::unique_ptr<IScene> ResultScene::Update() {
 		orthoCamera_->MakeMatrix();
 	}
 
+	bool playing = posAnime_.anim.Update(engine_->GetDeltaTime(), posAnime_.temp);
+	clearTextTransform_.position.y = posAnime_.temp;
+	gameOverTextTransform_.position.y = posAnime_.temp;
+
+	if (!playing) {
+		pendingTime_ += engine_->GetDeltaTime();
+
+		if (pendingTime_ >= 0.5f) {
+			posYTime_ += engine_->GetDeltaTime();
+			float t = (std::sinf(posYTime_) * 0.5f);
+			float value = t * 0.5f;
+
+			clearTextTransform_.position.y -= value * 100.0f;
+			gameOverTextTransform_.position.y -= value * 100.0f;
+		}
+	}
+
 	clearText_->SetTransform(clearTextTransform_);
 	clearText_->Update(orthoCamera_->GetVPMatrix());
+
 	gameOverText_->SetTransform(gameOverTextTransform_);
 	gameOverText_->Update(orthoCamera_->GetVPMatrix());
+
 	CorrectText_->SetTransform(correctTextTransform_);
+	alphaTime_ += engine_->GetDeltaTime();
+	float t = (std::sinf(alphaTime_) * 0.5f) + 0.5f;
+	float value = 0.1f + t * 0.5f;
+	CorrectText_->SetColor({1.0f, 1.0f, 1.0f, value});
 	CorrectText_->Update(orthoCamera_->GetVPMatrix());
 
 	auto key = commonData_->keyManager->GetKeyStates();
-	if(key[Key::Correct]){
+	if (key[Key::Correct]) {
 		return std::make_unique<TitleScene>();
 	}
 

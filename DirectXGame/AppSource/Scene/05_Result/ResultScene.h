@@ -2,6 +2,7 @@
 #include <Scene/IScene.h>
 #include <Render/Font/Text.h>
 #include <Render/PostEffect.h>
+#include <GameObject/EasingAnimation/AnimationBundle.h>
 
 class ResultScene : public IScene {
 public:
@@ -28,4 +29,8 @@ private:
 	std::unique_ptr<PostEffect> postEffect_;
 	PostEffectConfig postEffectConfig_;
 
+	AnimationBundle<float> posAnime_;
+	float alphaTime_ = 0.0f;
+	float posYTime_ = 0.0f;
+	float pendingTime_ = 0.0f;
 };
