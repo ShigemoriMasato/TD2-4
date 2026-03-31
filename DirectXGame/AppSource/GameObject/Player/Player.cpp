@@ -222,6 +222,12 @@ void Player::Base::Damage(float amount) {
 	currentHP_ = std::max(currentHP_ - amount, 0.0f);
 	isInvincible_ = true;
 	invincibleTimer_ = invincibleDuration_; // タイマーをセット
+
+	// SE再生
+	uint32_t handle = AudioManager::GetInstance().GetHandleByName("PlayerDamage.mp3");
+	if(handle != 0){
+		AudioManager::GetInstance().Play(handle, 0.1f, false);
+	}
 }
 
 void Player::Base::Heal(float amount) {
