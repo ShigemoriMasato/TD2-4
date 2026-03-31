@@ -17,19 +17,22 @@ void ResultScene::Initialize() {
 	clearText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
 	clearText_->SetText(L"ゲームクリア");
 	clearText_->SetColor({1.0f, 1.0f, 0.0f, 1.0f});
-	clearTextTransform_.position = {570.0f, -250.0f, 0.0f};
+	clearText_->SetSize(2.0f);
+	clearTextTransform_.position = {486.0f, -250.0f, 0.0f};
 
 	gameOverText_ = std::make_unique<Text>();
 	gameOverText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
 	gameOverText_->SetText(L"ゲームオーバー");
 	gameOverText_->SetColor({1.0f, 0.0f, 0.0f, 1.0f});
-	gameOverTextTransform_.position = {560.0f, -250.0f, 0.0f};
+	gameOverText_->SetSize(2.0f);
+	gameOverTextTransform_.position = {455.0f, -250.0f, 0.0f};
 
 	CorrectText_ = std::make_unique<Text>();
 	CorrectText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
 	CorrectText_->SetText(L"--- Zキー　か　スペースキーで　タイトルへ ---");
 	CorrectText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
-	correctTextTransform_.position = {366.0f, -500.0f, 0.0f};
+	CorrectText_->SetSize(2.0f);
+	correctTextTransform_.position = {45.0f, -500.0f, 0.0f};
 
 	orthoCamera_ = std::make_unique<Camera>();
 	orthoCamera_->SetProjectionMatrix(OrthographicDesc{});
