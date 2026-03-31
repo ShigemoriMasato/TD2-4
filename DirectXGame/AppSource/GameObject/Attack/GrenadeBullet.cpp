@@ -1,5 +1,6 @@
 #include "GrenadeBullet.h"
 #include <random>
+#include <../Engine/Assets/Audio/AudioManager.h>
 
 void GrenadeBullet::Initialize(const Config& config) {
 	config_ = config;
@@ -40,6 +41,10 @@ void GrenadeBullet::Update(float deltaTime) {
 		timer_ += deltaTime;
 		if (timer_ >= explosionTime_) {
 			isActive_ = false;
+			uint32_t handle = AudioManager::GetInstance().GetHandleByName("GureponExplosion.mp3");
+			if(handle != 0){
+				AudioManager::GetInstance().Play(handle, 0.1f, false);
+			}
 		}
 	}
 }
