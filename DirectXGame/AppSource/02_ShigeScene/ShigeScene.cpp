@@ -122,8 +122,8 @@ void ShigeScene::Initialize() {
 	timerText_->Initialize(planeDrawData, "YDWbananaslipplus.otf", 64);
 	timerText_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
-	timerTextTransform_.position = { 775.0f, -295.0f, 0.0f }; // Top center or so // default
-	timerTextTransform_.scale = { 1.f, 1.f, 1.0f };
+	timerTextTransform_.position = { 550.0f, -85.0f, 0.0f }; // Top center or so // default
+	timerTextTransform_.scale = { 2.0f, 2.0f, 1.0f };
 
 	// 1280x720の画面内座標系での正しい範囲に修正
 	displayRange_.top = 280.0f;
@@ -207,13 +207,25 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		// マウスクリックによる敵のターゲット選択
 		if (key[Key::Target]) {
 
-			// マウスのカーソル座標を取得してワールド座標に変換
+			// マウスのカーソル座標を取得
 			Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
-			Vector3 clickWorldPos = GetWorldCursor(camera_, cursorPos);
 
 			// GameDisplayの内側でのみPlayerを移動させる
 			if (cursorPos.x >= displayRange_.left && cursorPos.x <= displayRange_.right &&
 				cursorPos.y >= displayRange_.top && cursorPos.y <= displayRange_.bottom) {
+				
+				// displayRange内の相対座標を計算 (0.0～1.0の範囲)
+				float relativeX = (cursorPos.x - displayRange_.left) / (displayRange_.right - displayRange_.left);
+				float relativeY = (cursorPos.y - displayRange_.top) / (displayRange_.bottom - displayRange_.top);
+				
+				// 元の1280x720の座標系に逆変換
+				Vector2 originalScreenPos;
+				originalScreenPos.x = relativeX * 1280.0f;
+				originalScreenPos.y = relativeY * 720.0f;
+				
+				// ワールド座標に変換
+				Vector3 clickWorldPos = GetWorldCursor(camera_, originalScreenPos);
+				
 				// マップ境界内に制限した座標を取得
 				Vector3 clampedPos = map_->ClampToBounds(clickWorldPos);
 				// Playerを指定のワールド座標へ移動させる（InputController使用時用）
