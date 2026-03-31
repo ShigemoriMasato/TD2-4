@@ -9,6 +9,8 @@
 
 #include <Scene/01_Title/TitleScene.h>
 
+#include <../Engine/Assets/Audio/AudioManager.h>
+
 #ifdef USE_IMGUI
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif
@@ -131,6 +133,9 @@ void InitializeScene::Initialize() {
 
 	keyManager->SetMouse(Key::Target, 0, KeyState::Trigger);
 #pragma endregion
+
+	AudioManager::GetInstance().Initialize();
+	AudioManager::GetInstance().LoadAllAudio();
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
