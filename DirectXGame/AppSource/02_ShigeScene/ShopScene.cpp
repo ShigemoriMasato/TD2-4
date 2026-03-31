@@ -244,6 +244,42 @@ void ShopScene::InitializeRerollBar() {
 	rerollText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
 	rerollText_->SetText(L"リロール");
 	rerollText_->SetSize(rerollTextSize_);
+
+	// 操作説明テキストの初期化
+	controlText_ = std::make_unique<SHEngine::Text>();
+	controlText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
+	controlText_->SetText(L"持つ 離す");
+
+	// ラクラク配置テキストの初期化
+	easyPlaceText_ = std::make_unique<SHEngine::Text>();
+	easyPlaceText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
+	easyPlaceText_->SetText(L"自動配置");
+
+	// マウスボタンスプライトの初期化
+	mouseLeftTextureIndex_ = textureManager_->LoadTexture("Assets/Texture/UI/mouse_left.png");
+	mouseRightTextureIndex_ = textureManager_->LoadTexture("Assets/Texture/UI/mouse_right.png");
+	mouseLeftActiveTextureIndex_ = textureManager_->LoadTexture("Assets/Texture/UI/mouse_left_active.png");
+	mouseRightActiveTextureIndex_ = textureManager_->LoadTexture("Assets/Texture/UI/mouse_right_active.png");
+
+	mouseLeftSprite_ = std::make_unique<SHEngine::RenderObject>("MouseLeftSprite");
+	mouseLeftSprite_->Initialize();
+	mouseLeftSprite_->SetDrawData(drawData);
+	mouseLeftSprite_->psoConfig_.vs = "Simple.VS.hlsl";
+	mouseLeftSprite_->psoConfig_.ps = "PostEffect/Simple.PS.hlsl";
+	mouseLeftSprite_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+	mouseLeftSprite_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	mouseLeftSprite_->SetUseTexture(true);
+	mouseLeftSprite_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Transparent;
+
+	mouseRightSprite_ = std::make_unique<SHEngine::RenderObject>("MouseRightSprite");
+	mouseRightSprite_->Initialize();
+	mouseRightSprite_->SetDrawData(drawData);
+	mouseRightSprite_->psoConfig_.vs = "Simple.VS.hlsl";
+	mouseRightSprite_->psoConfig_.ps = "PostEffect/Simple.PS.hlsl";
+	mouseRightSprite_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+	mouseRightSprite_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	mouseRightSprite_->SetUseTexture(true);
+	mouseRightSprite_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Transparent;
 }
 
 void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
@@ -292,16 +328,59 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 	rerollText_->SetTransform(rerollTextTransform_);
 	rerollText_->Update(vpMatrix);
 
+	// 操作説明テキストの更新
+	controlText_->SetColor(controlTextColor_);
+	controlText_->SetTransform(controlTextTransform_);
+	controlText_->Update(vpMatrix);
+
+	// ラクラク配置テキストの更新
+	// アイテムを掴んでいるかどうかで表示を変更
+	if (shopCursor_->HasHeldPiece()) {
+		easyPlaceText_->SetText(L"回転");
+	} else {
+		easyPlaceText_->SetText(L"自動配置");
+	}
+	easyPlaceText_->SetColor(easyPlaceTextColor_);
+	easyPlaceText_->SetTransform(easyPlaceTextTransform_);
+	easyPlaceText_->Update(vpMatrix);
+
+	// マウスボタンスプライトの更新
+	// マウスの状態を取得
+	auto mouseButtons = input_->GetMouseButtonState();
+	bool isRightPressed = mouseButtons && (mouseButtons[0] & 0x80);
+	bool isLeftPressed = mouseButtons && (mouseButtons[1] & 0x80);
+
+	// 左ボタンスプライトの更新
+	Matrix4x4 mouseLeftWVP = Matrix::MakeAffineMatrix(mouseLeftTransform_.scale, mouseLeftTransform_.rotate, mouseLeftTransform_.position);
+	mouseLeftWVP *= vpMatrix;
+	mouseLeftSprite_->CopyBufferData(0, &mouseLeftWVP, sizeof(Matrix4x4));
+	int leftTexIndex = isLeftPressed ? mouseLeftActiveTextureIndex_ : mouseLeftTextureIndex_;
+	mouseLeftSprite_->CopyBufferData(1, &leftTexIndex, sizeof(int));
+
+	// 右ボタンスプライトの更新
+	Matrix4x4 mouseRightWVP = Matrix::MakeAffineMatrix(mouseRightTransform_.scale, mouseRightTransform_.rotate, mouseRightTransform_.position);
+	mouseRightWVP *= vpMatrix;
+	mouseRightSprite_->CopyBufferData(0, &mouseRightWVP, sizeof(Matrix4x4));
+	int rightTexIndex = isRightPressed ? mouseRightActiveTextureIndex_ : mouseRightTextureIndex_;
+	mouseRightSprite_->CopyBufferData(1, &rightTexIndex, sizeof(int));
+
 #ifdef USE_IMGUI
 	ImGui::Begin("Shop Reroll Bar");
-	ImGui::Text("Reroll Bar Settings");
-	ImGui::DragFloat2("Bar Position", &rerollBarPos_.x, 1.0f);
-	ImGui::DragFloat2("Bar Size", &rerollBarSize_.x, 1.0f);
+	ImGui::Text("Control Text Settings");
+	ImGui::DragFloat2("Control Text Position", &controlTextTransform_.position.x, 1.0f);
+	ImGui::DragFloat3("Control Text Size", &controlTextTransform_.scale.x, 0.1f);
+	ImGui::ColorEdit4("Control Text Color", &controlTextColor_.x);
 	ImGui::Separator();
-	ImGui::Text("Reroll Text Settings");
-	ImGui::DragFloat2("Text Position", &rerollTextTransform_.position.x, 1.0f);
-	ImGui::DragFloat("Text Size", &rerollTextSize_, 0.1f);
-	ImGui::ColorEdit4("Text Color", &rerollTextColor_.x);
+	ImGui::Text("Easy Place Text Settings");
+	ImGui::DragFloat2("Easy Place Text Position", &easyPlaceTextTransform_.position.x, 1.0f);
+	ImGui::DragFloat3("Easy Place Text Size", &easyPlaceTextTransform_.scale.x, 0.1f);
+	ImGui::ColorEdit4("Easy Place Text Color", &easyPlaceTextColor_.x);
+	ImGui::Separator();
+	ImGui::Text("Mouse Sprite Settings");
+	ImGui::DragFloat3("Mouse Left Position", &mouseLeftTransform_.position.x, 1.0f);
+	ImGui::DragFloat3("Mouse Left Scale", &mouseLeftTransform_.scale.x, 1.0f);
+	ImGui::DragFloat3("Mouse Right Position", &mouseRightTransform_.position.x, 1.0f);
+	ImGui::DragFloat3("Mouse Right Scale", &mouseRightTransform_.scale.x, 1.0f);
 	ImGui::Separator();
 	ImGui::Text("Reroll Timer: %.2f / %.2f", shopRerollTimer_, shopRerollTime_);
 	ImGui::Text("Reroll Count: %d", rerollCount_);
@@ -317,4 +396,10 @@ void ShopScene::DrawRerollBar(CmdObj* cmdObj) {
 
 	// テキスト描画
 	rerollText_->Draw(cmdObj);
+	controlText_->Draw(cmdObj);
+	easyPlaceText_->Draw(cmdObj);
+
+	// マウススプライト描画
+	mouseLeftSprite_->Draw(cmdObj);
+	mouseRightSprite_->Draw(cmdObj);
 }

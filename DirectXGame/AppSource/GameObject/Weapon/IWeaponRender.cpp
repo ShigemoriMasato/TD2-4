@@ -1,4 +1,5 @@
 #include "IWeaponRender.h"
+#include <../Engine/Assets/Audio/AudioManager.h>
 #include <numbers>
 
 using namespace SHEngine;
@@ -137,6 +138,54 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 			isPickaxeThrust_ = !isPickaxeThrust_; // 次回のアニメーション用に反転させる
 			break;
 		}
+		}
+
+		// SE再生
+		{
+			std::string seName;
+			switch (wData->type) {
+			case WeaponType::Pistol:
+				seName = "Pistol.mp3";
+				break;
+			case WeaponType::ShotGun:
+				seName = "ShotGun.mp3";
+				break;
+			case WeaponType::Sword:
+				seName = "Sword.mp3";
+				break;
+			case WeaponType::Spear:
+				seName = "Spear.mp3";
+				break;
+			case WeaponType::Axe:
+				seName = "Axe.mp3";
+				break;
+			case WeaponType::Fist:
+				seName = "Fist.mp3";
+				break;
+			case WeaponType::Bow:
+				seName = "Bow.mp3";
+				break;
+			case WeaponType::Gurepon:
+				seName = "GureponShot.mp3";
+				break;
+			case WeaponType::Pickaxe:
+				if (currentAnimIsThrust_) {
+					seName = "Spear.mp3";
+				} else {
+					seName = "Sword.mp3";
+				}
+				break;
+			default:
+				seName.clear();
+				break;
+			}
+
+			if (!seName.empty()) {
+				uint32_t handle = AudioManager::GetInstance().GetHandleByName(seName);
+				if (handle != 0) {
+					AudioManager::GetInstance().Play(handle, 0.1f, false);
+				}
+			}
 		}
 
 		// 座標と回転のアニメーション開始

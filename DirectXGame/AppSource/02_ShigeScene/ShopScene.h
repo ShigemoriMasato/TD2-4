@@ -86,6 +86,28 @@ private:
 	float rerollTextSize_ = 2.0f;
 	Vector4 rerollTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 
+	// 操作説明テキスト用変数
+	std::unique_ptr<SHEngine::Text> controlText_ = nullptr;
+	Transform controlTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {405.0f, -315.0f, 0.0f} };
+	float controlTextSize_ = 2.0f;
+	Vector4 controlTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	// ラクラク配置テキスト用変数
+	std::unique_ptr<SHEngine::Text> easyPlaceText_ = nullptr;
+	Transform easyPlaceTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {765.0f, -315.0f, 0.0f} };
+	float easyPlaceTextSize_ = 2.0f;
+	Vector4 easyPlaceTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	// マウスボタンスプライト用変数
+	std::unique_ptr<SHEngine::RenderObject> mouseLeftSprite_ = nullptr;
+	std::unique_ptr<SHEngine::RenderObject> mouseRightSprite_ = nullptr;
+	Transform mouseLeftTransform_ = { {150.0f, 50.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {700.0f, -300.0f, 0.0f} };
+	Transform mouseRightTransform_ = { {150.0f, 50.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {350.0f, -300.0f, 0.0f} };
+	int mouseLeftTextureIndex_ = -1;
+	int mouseRightTextureIndex_ = -1;
+	int mouseLeftActiveTextureIndex_ = -1;
+	int mouseRightActiveTextureIndex_ = -1;
+
 	Vector3 cameraCenter_ = { -5.0f, -32.0f, -6.5f };
 	Vector3 cameraSpherical_ = { 20.0f, 0.0f, -1.570f };
 	Vector2 cameraPerspectiveSize_ = { 352.0f, 624.0f };
