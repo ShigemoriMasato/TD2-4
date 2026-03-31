@@ -8,6 +8,7 @@
 #include <imgui/imgui.h>
 #include <numbers>
 #include <windows.h>
+#include <../Engine/Assets/Audio/AudioManager.h>
 
 void ShigeScene::Initialize() {
 	debugCamera_ = std::make_unique<DebugCamera>();
@@ -142,6 +143,11 @@ void ShigeScene::Initialize() {
 //
 //#endif // DEBUG
 
+	// BGM
+	uint32_t handle = AudioManager::GetInstance().GetHandleByName("GameScene.mp3");
+	if (handle != 0) {
+		AudioManager::GetInstance().Play(handle, 0.1f, true);
+	}
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -312,6 +318,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	if (player_->GetCurrentHP() <= 0) {
 		std::string debugMsg = std::format("Player Survived Time: {:.2f} s\n", gameTimer_->GetTimer());
 		OutputDebugStringA(debugMsg.c_str());
+		AudioManager::GetInstance().StopAll();
 		return std::make_unique<TitleScene>();
 	}
 
