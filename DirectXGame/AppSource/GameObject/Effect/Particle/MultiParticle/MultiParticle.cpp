@@ -6,15 +6,18 @@
 void MultiParticle::Initialize(
 	SHEngine::DrawDataManager* drawDataManager,
 	SHEngine::TextureManager* textureManager,
+	SHEngine::ModelManager* modelManager,
 	ParticlePresetDataBank* presetData)
 {
 	drawDataManager_ = drawDataManager;
 	textureManager_ = textureManager;
+	modelManager_ = modelManager;
 	presetData_ = presetData;
 
 	fountainCache_.clear();
 	enabled_ = true;
 }
+
 
 void MultiParticle::Add(const std::string& presetName)
 {
@@ -28,7 +31,7 @@ void MultiParticle::Add(const std::string& presetName)
 	{
 		const auto& preset = std::get<FountainConfig>(presetVar);
 		auto particle = std::make_unique<FountainParticle>();
-		particle->Initialize(drawDataManager_, textureManager_, nullptr, preset);
+		particle->Initialize(drawDataManager_, textureManager_, modelManager_, preset);
 		fountainCache_[presetName] = std::move(particle);
 		return;
 	}
@@ -46,6 +49,11 @@ void MultiParticle::Trigger(const std::string& presetName, const Vector3& positi
 void MultiParticle::Stop(const std::string& presetName)
 {
 	fountainCache_.at(presetName)->Stop();
+}
+
+std::vector<Matrix4x4> MultiParticle::GetParticleWorlds(const std::string& presetName)
+{
+	return fountainCache_.at(presetName)->GetParticle().GetParticleWorlds();
 }
 
 void MultiParticle::Clear()

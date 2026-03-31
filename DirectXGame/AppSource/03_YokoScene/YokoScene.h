@@ -28,5 +28,10 @@ private:
 	std::unique_ptr<SHEngine::RenderObject> render_;
 	Transform transform_;
 
+
+	MultiParticle particle;
+	//std::vector<MultiTrail> particleTrails_;
+
+
 	bool start;
 };

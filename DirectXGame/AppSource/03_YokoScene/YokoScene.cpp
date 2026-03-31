@@ -50,12 +50,19 @@ void YokoScene::Initialize()
 	transform_.scale = { 1.0f, 1.0f, 1.0f };
 
 	trail.Initialize(drawDataManager_, textureManager_, &trailDataBank_);
-	//trail.Add("testTrail1_1");
-	//trail.Add("testTrail1_2");
-	//trail.Add("testTrail1_3");
-	//trail.Add("testTrail1_4");
 	trail.Add("testTrail2");
 	trail.Add("testTrail2_1");
+
+	particle.Initialize(drawDataManager_, textureManager_, modelManager_, &particleDataBank_);
+	particle.Add("Fountain_01");
+	particle.Trigger("Fountain_01", Vector3{});
+
+	//particleTrails_.resize(10);
+	//for (size_t i = 0; i < particleTrails_.size(); i++)
+	//{
+	//	particleTrails_[i].Initialize(drawDataManager_, textureManager_, &trailDataBank_);
+	//	particleTrails_[i].Add("testTrail2");
+	//}
 }
 
 std::unique_ptr<IScene> YokoScene::Update()
@@ -108,6 +115,8 @@ std::unique_ptr<IScene> YokoScene::Update()
 		}
 	}
 
+	// パーティクル更新
+	particle.Update(dt, vp);
 
 	// トレイル更新
 	trail.SetModelWorld(world);
@@ -130,7 +139,10 @@ void YokoScene::Draw()
 
 	display->PreDraw(cmdObj, true);
 
-	//render_->Draw(cmdObj);
+	// パーティクル描画
+	particle.Draw(cmdObj);
+
+	// トレイル描画
 	trail.Draw(cmdObj);
 
 	display->PostDraw(cmdObj);

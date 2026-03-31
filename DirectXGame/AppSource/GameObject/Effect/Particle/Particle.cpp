@@ -89,6 +89,11 @@ void Particle::Stop()
 	emitting_ = false;
 }
 
+std::vector<Matrix4x4> Particle::GetParticleWorlds() const
+{
+	return gpuInstances_;
+}
+
 // config_.emitNum個分パーティクルを生成
 void Particle::Emit(const Vector3& pos)
 {
