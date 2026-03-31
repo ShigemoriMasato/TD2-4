@@ -77,6 +77,9 @@ public:
 	void Trigger(const Vector3& pos);
 	void Stop();
 
+	std::vector<Matrix4x4> GetParticleWorlds() const;
+	size_t GetAliveCount() const { return aliveCount_; }
+
 	void SetConfig(const Config& config);
 	const Config& GetConfig() const { return config_; }
 

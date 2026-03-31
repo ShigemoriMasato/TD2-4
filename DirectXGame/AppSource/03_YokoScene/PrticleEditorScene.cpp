@@ -1,4 +1,5 @@
 #include "PrticleEditorScene.h"
+#include "03_YokoScene/YokoScene.h"
 
 void PrticleEditorScene::Initialize()
 {
@@ -409,6 +410,13 @@ std::unique_ptr<IScene> PrticleEditorScene::Update()
 	}
 
 	particle_.Update(dt, vp);
+
+
+	// Zキーで決定
+	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z))
+	{
+		return std::make_unique<YokoScene>();
+	}
 
 	return nullptr;
 }
