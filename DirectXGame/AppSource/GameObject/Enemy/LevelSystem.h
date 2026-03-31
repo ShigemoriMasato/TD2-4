@@ -52,7 +52,7 @@ private:	//Edit用
 
 	BinaryManager binaryManager_;
 
-	bool stop_ = false;
+	bool stop_ = true;
 	int editWaveIndex_ = 0;
 
 };

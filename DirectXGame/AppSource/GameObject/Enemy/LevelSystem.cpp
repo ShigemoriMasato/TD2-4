@@ -17,6 +17,7 @@ void LevelSystem::Initialize(EnemyManager* enemyManager, Vector3* playerPosPtr, 
 	};
 
 	Load();
+	Sampling();
 }
 
 void LevelSystem::Update(float deltaTime) {
