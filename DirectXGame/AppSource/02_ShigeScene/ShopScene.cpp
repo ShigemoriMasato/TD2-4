@@ -106,24 +106,34 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	debugCamera_->Update(false);
 	grid_->Update(debugCamera_->GetCenter(), debugCamera_->GetVPMatrix());
 
-	// 時間経過で自動でショップの内容を更新する
+	// 時間経過でリロールカウントを増やす
 	if (useAutoReroll_) {
 		shopRerollTimer_ += deltaTime_;
 		if (shopRerollTimer_ >= shopRerollTime_) {
-			if (!shopCursor_->HasHeldPiece()) {
-				pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
-				shopRerollTimer_ = 0.0f;
-			}
+			rerollCount_++;
+			shopRerollTimer_ -= shopRerollTime_; // 超過分を維持してタイマーリセット
 		}
 	} else {
 		shopRerollTimer_ = 0.0f;
 	}
 
-	//何かしらのトリガーでショップのピースを更新する
+	// ショップのアイテムがバックパックに配置されたことを検知
+	if (pieceManager_->GetShopPieceCount() < 3) {
+		pendingReroll_ = true;
+	}
+
+	// リロール待機状態で、カウントが1以上でかつピースを持っていなければ更新実行
+	if (pendingReroll_ && rerollCount_ > 0 && !shopCursor_->HasHeldPiece()) {
+		pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
+		rerollCount_--;
+		pendingReroll_ = false;
+	}
+
+	// 何かしらのトリガーでショップのピースを更新する
 	if (key[Key::Debug2]) {
 		if (!shopCursor_->HasHeldPiece()) {
 			pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
-			shopRerollTimer_ = 0.0f;
+			pendingReroll_ = false; // 強制更新されたので待機状態を解除
 		}
 	}
 
@@ -275,7 +285,9 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 
 	// テキストの更新
 	rerollTextTransform_.scale = { rerollTextSize_, rerollTextSize_, 1.0f };
-	rerollText_->SetText(L"リロール");
+	std::wstring text = L"リロール ( " + std::to_wstring(rerollCount_) + L" )";
+	rerollText_->SetText(text.c_str());
+
 	rerollText_->SetColor(rerollTextColor_);
 	rerollText_->SetTransform(rerollTextTransform_);
 	rerollText_->Update(vpMatrix);
@@ -292,6 +304,7 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 	ImGui::ColorEdit4("Text Color", &rerollTextColor_.x);
 	ImGui::Separator();
 	ImGui::Text("Reroll Timer: %.2f / %.2f", shopRerollTimer_, shopRerollTime_);
+	ImGui::Text("Reroll Count: %d", rerollCount_);
 	ImGui::ProgressBar(progress, ImVec2(0.0f, 0.0f));
 	ImGui::End();
 #endif

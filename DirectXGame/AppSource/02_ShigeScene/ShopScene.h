@@ -91,4 +91,7 @@ private:
 	Vector2 cameraPerspectiveSize_ = { 352.0f, 624.0f };
 	
 	int pieceModelID_ = -1;
+
+	int rerollCount_ = 0; // リロール可能な回数
+	bool pendingReroll_ = false; // リロール待機フラグ
 };
