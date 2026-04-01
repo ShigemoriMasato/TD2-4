@@ -15,7 +15,6 @@ void MultiParticle::Initialize(
 	presetData_ = presetData;
 
 	fountainCache_.clear();
-	enabled_ = true;
 }
 
 
@@ -44,6 +43,7 @@ void MultiParticle::Add(const std::string& presetName)
 void MultiParticle::Trigger(const std::string& presetName, const Vector3& position)
 {
 	fountainCache_.at(presetName)->Trigger(position);
+	enabled_ = true;
 }
 
 void MultiParticle::Stop(const std::string& presetName)
@@ -54,6 +54,11 @@ void MultiParticle::Stop(const std::string& presetName)
 std::vector<Matrix4x4> MultiParticle::GetParticleWorlds(const std::string& presetName)
 {
 	return fountainCache_.at(presetName)->GetParticle().GetParticleWorlds();
+}
+
+size_t MultiParticle::GetAliveCount(const std::string& presetName) const
+{
+	return fountainCache_.at(presetName)->GetParticle().GetAliveCount();
 }
 
 void MultiParticle::Clear()

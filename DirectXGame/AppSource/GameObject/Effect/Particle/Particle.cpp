@@ -78,10 +78,10 @@ void Particle::Clear()
 
 void Particle::Trigger(const Vector3& pos)
 {
-	emitting_ = true;
 	emitPos_ = pos;
-
 	Emit(pos);
+
+	emitting_ = false;
 }
 
 void Particle::Stop()

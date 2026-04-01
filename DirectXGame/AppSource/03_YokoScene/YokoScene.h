@@ -8,6 +8,7 @@
 #include <GameObject/Effect/Trail/MultiTrail/MultiTrail.h>
 #include <GameObject/Effect/Particle/DataBank/ParticlePresetDataBank.h>
 #include <GameObject/Effect/Particle/MultiParticle/MultiParticle.h>
+#include <GameObject/Effect/sparkEffect.h>
 
 class YokoScene : public IScene
 {
@@ -22,16 +23,13 @@ private:
 	TrailPresetDataBank trailDataBank_;
 	ParticlePresetDataBank particleDataBank_;
 
-	/// Axeトレイル
+	/// トレイル
 	MultiTrail trail;
 	int textureIndex_ = 0;
 	std::unique_ptr<SHEngine::RenderObject> render_;
 	Transform transform_;
 
-
-	MultiParticle particle;
-	static constexpr size_t kMaxParticleTrails_ = 20;
-	std::vector<std::unique_ptr<MultiTrail>> particleTrails_;
+	SparkEffect sparkEffect;
 
 
 	bool start;

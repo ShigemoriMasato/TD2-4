@@ -53,21 +53,7 @@ void YokoScene::Initialize()
 	trail.Add("testTrail2");
 	trail.Add("testTrail2_1");
 
-	particle.Initialize(drawDataManager_, textureManager_, modelManager_, &particleDataBank_);
-	particle.Add("sparrrrk2");
-	particle.Trigger("sparrrrk2", Vector3{});
-
-	// 粒ごとのトレイル（最大数分を先に確保・生成）
-	particleTrails_.clear();
-	particleTrails_.reserve(kMaxParticleTrails_);
-	for (size_t i = 0; i < kMaxParticleTrails_; ++i)
-	{
-		auto t = std::make_unique<MultiTrail>();
-		t->Initialize(drawDataManager_, textureManager_, &trailDataBank_);
-		t->Add("sparrrk");
-		t->SetEnabled(true);
-		particleTrails_.push_back(std::move(t));
-	}
+	sparkEffect.Initialize(drawDataManager_, textureManager_, modelManager_, &trailDataBank_, &particleDataBank_);
 }
 
 std::unique_ptr<IScene> YokoScene::Update()
@@ -94,7 +80,7 @@ std::unique_ptr<IScene> YokoScene::Update()
 		transform_.position = { 0.0f, -2.0f, 0.0f };
 		transform_.rotate = { 0.0f, 0.0f, 0.0f };
 
-		particle.Trigger("sparrrrk2", Vector3{});
+		sparkEffect.Trigger(transform_.position);
 		start = true;
 	}
 	if (start)
@@ -121,26 +107,8 @@ std::unique_ptr<IScene> YokoScene::Update()
 		}
 	}
 
-	// パーティクル更新
-	particle.Update(dt, vp);
-
-	// 粒ワールド行列取得
-	const auto worlds = particle.GetParticleWorlds("sparrrrk2");
-	const size_t alive = std::min(worlds.size(), particleTrails_.size());
-
-	// 粒が存在する分だけ、トレイルを粒に追従させる
-	for (size_t i = 0; i < alive; ++i)
-	{
-		particleTrails_[i]->SetModelWorld(worlds[i]);
-		particleTrails_[i]->SetEnabled(true);
-		particleTrails_[i]->Update(dt, vp);
-	}
-
-	// 余ったトレイルは無効化（表示・更新停止）
-	for (size_t i = alive; i < particleTrails_.size(); ++i)
-	{
-		particleTrails_[i]->SetEnabled(false);
-	}
+	// sparkEffect更新
+	sparkEffect.Update(dt, vp);
 
 	// トレイル更新
 	trail.SetModelWorld(world);
@@ -169,10 +137,8 @@ void YokoScene::Draw()
 	// トレイル描画
 	trail.Draw(cmdObj);
 
-	for (auto& t : particleTrails_)
-	{
-		t->Draw(cmdObj);
-	}
+	// sparkEffect描画
+	sparkEffect.Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 

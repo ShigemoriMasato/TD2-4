@@ -20,6 +20,8 @@ public:
 	void Draw(CmdObj* cmdObj);
 
 private:
+	bool isActive_ = false;
+
 	MultiParticle particle;
 	static constexpr size_t kMaxParticleTrails_ = 20;
 	std::vector<std::unique_ptr<MultiTrail>> particleTrails_;

@@ -92,6 +92,7 @@ private:
 		VectorDynamics rotate;
 		VectorDynamics translate;
 		float age = 0.0f;
+		uint32_t id = 0; // インスタンスID。無限に増えていく
 	};
 
 	void EnsureRender();

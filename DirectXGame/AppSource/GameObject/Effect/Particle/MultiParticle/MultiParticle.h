@@ -23,6 +23,7 @@ public:
 	void Stop(const std::string& presetName);
 
 	std::vector<Matrix4x4> GetParticleWorlds(const std::string& presetName);
+	size_t GetAliveCount(const std::string& presetName) const;
 
 	void SetEnabled(bool enabled) { enabled_ = enabled; }
 
@@ -37,7 +38,7 @@ private:
 	SHEngine::ModelManager* modelManager_ = nullptr;
 	ParticlePresetDataBank* presetData_ = nullptr;
 
-	bool enabled_ = true;
+	bool enabled_ = false;
 
 	std::unordered_map<std::string, std::unique_ptr<FountainParticle>> fountainCache_;
 };
