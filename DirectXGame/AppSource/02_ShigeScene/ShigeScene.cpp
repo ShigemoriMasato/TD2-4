@@ -127,6 +127,10 @@ void ShigeScene::Initialize() {
 	timerTextTransform_.position = { 550.0f, -85.0f, 0.0f }; // Top center or so // default
 	timerTextTransform_.scale = { 2.0f, 2.0f, 1.0f };
 
+	enemySpawnGraphText_ = std::make_unique<SHEngine::Text>(64); 
+	enemySpawnGraphText_->Initialize(planeDrawData, "YDWbananaslipplus.otf", 64);
+	enemySpawnGraphText_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+
 	// 1280x720の画面内座標系での正しい範囲に修正
 	displayRange_.top = 280.0f;
 	displayRange_.bottom = 685.0f;
@@ -278,6 +282,10 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	timerText_->Update(orthoCamera_->GetVPMatrix());
 	timerText_->SetTransform(timerTextTransform_);
 
+	enemySpawnGraphText_->Update(orthoCamera_->GetVPMatrix());
+	enemySpawnGraphText_->SetTransform(enemySpawnGraphTextTransform_);
+	enemySpawnGraphText_->SetText(L"5分間生き残れ！");
+
 	parameterRender_->Update(orthoCamera_->GetVPMatrix(), player_->GetParameters(), deltaTime, key);
 	map_->Update(camera_->GetVPMatrix());
 	enemyManager_->Update(deltaTime, camera_->GetVPMatrix(), orthoCamera_->GetVPMatrix());
@@ -361,6 +369,8 @@ void ShigeScene::Draw() {
 
 	timerText_->Draw(cmdObj);
 
+	enemySpawnGraphText_->Draw(cmdObj);
+
 	parameterRender_->Draw(cmdObj);
 
 	gameDisplay_->PostDraw();
@@ -399,6 +409,16 @@ void ShigeScene::Draw() {
 	ImGui::DragFloat3("Pos", &timerTextTransform_.position.x, 1.0f);
 	ImGui::DragFloat3("Scale", &timerTextTransform_.scale.x, 0.01f);
 	ImGui::End();
+
+	/*ImGui::Begin("敵出現量グラフ");
+	ImGui::DragFloat3("Text Pos", &enemySpawnGraphTextTransform_.position.x, 1.0f);
+	ImGui::DragFloat3("Text Scale", &enemySpawnGraphTextTransform_.scale.x, 0.01f);
+	
+	Vector4 textColor = { 1.0f, 0.5f, 0.2f, 1.0f };
+	if (ImGui::ColorEdit4("Text Color", &textColor.x)) {
+		enemySpawnGraphText_->SetColor(textColor);
+	}
+	ImGui::End();*/
 
 	ImGui::Begin("FPS");
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
