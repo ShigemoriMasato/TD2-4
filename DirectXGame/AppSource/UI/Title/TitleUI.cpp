@@ -38,6 +38,8 @@ void TitleUI::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::M
 		renders_[i]->instanceNum_ = 1;
 	}
 
+	positions_[0] = {1.8f, 0.7f, 10.0f};
+
 	currentSelect_ = Title::Select::Start;
 }
 
