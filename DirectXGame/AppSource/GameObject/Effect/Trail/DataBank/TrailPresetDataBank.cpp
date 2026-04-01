@@ -2,24 +2,29 @@
 #include <stdexcept>
 #include <algorithm>
 
+// static故最強
 std::unordered_map<std::string, TrailPresetVariant> TrailPresetDataBank::cache_{};
 
+// cache_から取得。存在しない場合はLoad_してから保存する
 const TrailPresetVariant& TrailPresetDataBank::Get(const std::string& name)
 {
 	auto [it, inserted] = cache_.try_emplace(name, Load(name));
 	return it->second;
 }
 
+// キャッシュ更新(多分エディタでしか使わない)
 void TrailPresetDataBank::Invalidate(const std::string& name)
 {
 	cache_.erase(name);
 }
 
+// 全キャッシュ削除(多分エディタでも使わない)
 void TrailPresetDataBank::Clear()
 {
 	cache_.clear();
 }
 
+// Getした場合の型を返す
 TrailType TrailPresetDataBank::GetTypeOf(const std::string& name)
 {
 	const auto& v = Get(name);
@@ -28,6 +33,76 @@ TrailType TrailPresetDataBank::GetTypeOf(const std::string& name)
 	return {};
 }
 
+// Save
+void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg, RibbonTrailConfig& ribbonPreset)
+{
+	json_.Boot("Trail/" + name);
+
+	// type
+	{
+		std::string type = "RibbonTrail";
+		json_.Add("type", type);
+	}
+
+	// cfg
+	{
+		json_.Add("cfg.maxSegments", cfg.maxSegments);
+		json_.Add("cfg.lifeTime", cfg.lifeTime);
+		json_.Add("cfg.minDistance", cfg.minDistance);
+		json_.Add("cfg.colorNormal", cfg.colorNormal);
+		json_.Add("cfg.colorAdd", cfg.colorAdd);
+		json_.Add("cfg.drawNormal", cfg.drawNormal);
+		json_.Add("cfg.drawAdd", cfg.drawAdd);
+		json_.Add("cfg.texturePath", cfg.texturePath);
+	}
+
+	// type固有
+	{
+		Vector3 o = ribbonPreset.originLocal;
+		Vector3 t = ribbonPreset.tipLocal;
+		json_.Add("ribbon.originLocal", o);
+		json_.Add("ribbon.tipLocal", t);
+	}
+
+	json_.Save();
+}
+void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg, ShockwaveRingConfig& shockPreset)
+{
+	json_.Boot("Trail/" + name);
+
+	// type
+	{
+		std::string type = "ShockwaveRing";
+		json_.Add("type", type);
+	}
+
+	// cfg
+	{
+		json_.Add("cfg.maxSegments", cfg.maxSegments);
+		json_.Add("cfg.lifeTime", cfg.lifeTime);
+		json_.Add("cfg.minDistance", cfg.minDistance);
+		json_.Add("cfg.colorNormal", cfg.colorNormal);
+		json_.Add("cfg.colorAdd", cfg.colorAdd);
+		json_.Add("cfg.drawNormal", cfg.drawNormal);
+		json_.Add("cfg.drawAdd", cfg.drawAdd);
+		json_.Add("cfg.texturePath", cfg.texturePath);
+	}
+
+	// type固有
+	{
+		json_.Add("shock.segments", shockPreset.segments);
+		json_.Add("shock.duration", shockPreset.duration);
+		json_.Add("shock.radiusStart", shockPreset.radiusStart);
+		json_.Add("shock.radiusEnd", shockPreset.radiusEnd);
+		json_.Add("shock.thickness", shockPreset.thickness);
+		json_.Add("shock.noiseAmp", shockPreset.noiseAmp);
+		json_.Add("shock.noiseFreq", shockPreset.noiseFreq);
+	}
+
+	json_.Save();
+}
+
+// Load
 Trail::Config TrailPresetDataBank::LoadConfig(JsonManager& json)
 {
 	Trail::Config cfg{};
@@ -54,10 +129,9 @@ Trail::Config TrailPresetDataBank::LoadConfig(JsonManager& json)
 
 	return cfg;
 }
-
 TrailPresetVariant TrailPresetDataBank::Load(const std::string& name)
 {
-	json_.Boot(name);
+	json_.Boot("Trail/" + name);
 
 	std::string typeStr;
 	try { typeStr = json_.Get<std::string>("type"); }
@@ -74,8 +148,6 @@ TrailPresetVariant TrailPresetDataBank::Load(const std::string& name)
 		RibbonTrailConfig p{};
 		p.cfg = LoadConfig(json_);
 
-		try { p.modelName = json_.Get<std::string>("ribbon.modelName"); }
-		catch (...) {}
 		try { p.originLocal = json_.Get<Vector3>("ribbon.originLocal"); }
 		catch (...) {}
 		try { p.tipLocal = json_.Get<Vector3>("ribbon.tipLocal"); }

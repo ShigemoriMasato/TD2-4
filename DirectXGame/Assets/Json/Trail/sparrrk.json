@@ -1,0 +1,31 @@
+{
+    "cfg.colorAdd": [
+        0.800000011920929,
+        0.01568627543747425,
+        0.01568627543747425,
+        1.0
+    ],
+    "cfg.colorNormal": [
+        1.0,
+        0.0,
+        0.0,
+        1.0
+    ],
+    "cfg.drawAdd": false,
+    "cfg.drawNormal": true,
+    "cfg.lifeTime": 0.20000000298023224,
+    "cfg.maxSegments": 3,
+    "cfg.minDistance": 0.10000000149011612,
+    "cfg.texturePath": "Assets/.EngineResource/Texture/white1x1.png",
+    "ribbon.originLocal": [
+        -1.0,
+        0.30000001192092896,
+        0.0
+    ],
+    "ribbon.tipLocal": [
+        -1.0,
+        0.0,
+        0.0
+    ],
+    "type": "RibbonTrail"
+}

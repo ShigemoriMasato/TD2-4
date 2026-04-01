@@ -89,7 +89,7 @@ void TrailEditorScene::Initialize()
 	SelectModel(0);
 
 	RebuildTrail();
-	LoadTrailData();
+	//LoadTrailData();
 }
 
 // 編集データ初期化
@@ -209,113 +209,36 @@ void TrailEditorScene::SaveTrailData()
 {
 	if (presetNameBuf_[0] == '\0') return;
 
-	const std::string fileBaseName = presetNameBuf_;
-	json_.Boot(fileBaseName);
-
-	// 共通：type
-	{
-		std::string type = ToString(currentType_);
-		json_.Add("type", type);
-	}
-
-	// 共通：cfg
-	{
-		int maxSeg = trailConfig_.maxSegments;
-		float life = trailConfig_.lifeTime;
-		float minDist = trailConfig_.minDistance;
-
-		Vector4 cN = trailConfig_.colorNormal;
-		Vector4 cA = trailConfig_.colorAdd;
-
-		bool dn = trailConfig_.drawNormal;
-		bool da = trailConfig_.drawAdd;
-
-		std::string tex = trailConfig_.texturePath;
-
-		json_.Add("cfg.maxSegments", maxSeg);
-		json_.Add("cfg.lifeTime", life);
-		json_.Add("cfg.minDistance", minDist);
-
-		json_.Add("cfg.colorNormal", cN);
-		json_.Add("cfg.colorAdd", cA);
-
-		json_.Add("cfg.drawNormal", dn);
-		json_.Add("cfg.drawAdd", da);
-
-		json_.Add("cfg.texturePath", tex);
-	}
-
-	// type固有
 	if (currentType_ == TrailType::RibbonTrail)
 	{
-		std::string modelName = modelRenders_[selectedModelIndex_]->name;
-		json_.Add("ribbon.modelName", modelName);
-
-		Vector3 o = ribbonPreset_.originLocal;
-		Vector3 t = ribbonPreset_.tipLocal;
-		json_.Add("ribbon.originLocal", o);
-		json_.Add("ribbon.tipLocal", t);
+		presetDataBank_.Save(presetNameBuf_, trailConfig_, ribbonPreset_);
 	}
 	else if (currentType_ == TrailType::ShockwaveRing)
 	{
-		int seg = shockPreset_.segments;
-		float dur = shockPreset_.duration;
-		float rs = shockPreset_.radiusStart;
-		float re = shockPreset_.radiusEnd;
-		float th = shockPreset_.thickness;
-		float na = shockPreset_.noiseAmp;
-		float nf = shockPreset_.noiseFreq;
-
-		json_.Add("shock.segments", seg);
-		json_.Add("shock.duration", dur);
-		json_.Add("shock.radiusStart", rs);
-		json_.Add("shock.radiusEnd", re);
-		json_.Add("shock.thickness", th);
-		json_.Add("shock.noiseAmp", na);
-		json_.Add("shock.noiseFreq", nf);
+		presetDataBank_.Save(presetNameBuf_, trailConfig_, shockPreset_);
 	}
-
-	json_.Save();
 }
 // データ読み込み
 void TrailEditorScene::LoadTrailData()
 {
 	if (presetNameBuf_[0] == '\0') return;
 
-	const std::string fileBaseName = presetNameBuf_;
+	TrailPresetVariant var{};
 
-	TrailPresetVariant v{};
-	try
+	var = presetDataBank_.Get(presetNameBuf_);
+
+	if (std::holds_alternative<RibbonTrailConfig>(var))
 	{
-		v = presetDataBank_.Get(fileBaseName);
+		currentType_ = TrailType::RibbonTrail;
+		ribbonPreset_ = std::get<RibbonTrailConfig>(var);
+		trailConfig_ = ribbonPreset_.cfg;
 	}
-	catch (...)
+	else if (std::holds_alternative<ShockwaveRingConfig>(var))
 	{
-		// エディタ用途：ファイルが無い/壊れてる等は黙って何もしない（現状の挙動に合わせる）
-		return;
+		currentType_ = TrailType::ShockwaveRing;
+		shockPreset_ = std::get<ShockwaveRingConfig>(var);
+		trailConfig_ = shockPreset_.cfg;
 	}
-
-	std::visit([&](const auto& preset)
-		{
-			using T = std::decay_t<decltype(preset)>;
-
-			trailConfig_ = preset.cfg;
-
-			// ImGui用バッファ同期
-			std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
-			strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.texturePath.c_str(), _TRUNCATE);
-
-			if constexpr (std::is_same_v<T, RibbonTrailConfig>)
-			{
-				currentType_ = TrailType::RibbonTrail;
-				ribbonPreset_ = preset;
-			}
-			else if constexpr (std::is_same_v<T, ShockwaveRingConfig>)
-			{
-				currentType_ = TrailType::ShockwaveRing;
-				shockPreset_ = preset;
-			}
-		}, v);
 
 	requestRebuildTrail_ = true;
 }
@@ -433,7 +356,7 @@ void TrailEditorScene::DrawImGui()
 		LoadTrailData();
 	}
 
-	ImGui::Text("File: Assets/Json/%s.json", presetNameBuf_);
+	ImGui::Text("File: Assets/Json/Trail/%s.json", presetNameBuf_);
 
 	ImGui::End();
 

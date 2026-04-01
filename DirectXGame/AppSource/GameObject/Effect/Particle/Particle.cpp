@@ -196,6 +196,12 @@ void Particle::Update(float deltaTime, const Matrix4x4& vpMatrix)
 		ins.translate.value += ins.translate.velocity * deltaTime * config_.speed;
 		ins.rotate.value += ins.rotate.velocity * deltaTime * config_.speed;
 		ins.scale.value += ins.scale.velocity * deltaTime * config_.speed;
+
+		// 一旦すべてのParticleはscale0になったら消滅
+		if (ins.scale.value.x <= 0.0f || ins.scale.value.y <= 0.0f || ins.scale.value.z <= 0.0f)
+		{
+			ins.age = config_.lifeTime;
+		}
 	}
 
 	// 寿命で削除

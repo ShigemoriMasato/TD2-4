@@ -50,7 +50,6 @@ private:
 	void Reset(TrailType type);
 
 private:
-	std::unique_ptr<DebugCamera> camera_;
 
 	int selectedModelIndex_ = -1;
 
@@ -61,8 +60,11 @@ private:
 	// マーカー描画データ
 	DrawDataUnit marker[2];
 
+	// マーカー最終座標
+	Vector3 markerPos[2];
 
-	TrailType currentType_ = TrailType::RibbonTrail;
+private:
+	std::unique_ptr<DebugCamera> camera_;
 
 	// 共通Config
 	Trail::Config trailConfig_{};
@@ -71,20 +73,17 @@ private:
 	// Shock 固有
 	ShockwaveRingConfig shockPreset_{};
 
-	// マーカー最終座標
-	Vector3 markerPos[2];
+	TrailType currentType_ = TrailType::RibbonTrail;
 
 	// Trail
 	Trail trail_;
 	bool emitTrail_ = true;
 	bool requestRebuildTrail_ = false;
 
-	// Json
-	JsonManager json_;
 	// DataBank
 	TrailPresetDataBank presetDataBank_{};
 
 	// ImGuiがstringを許容しないばかりに生まれてしまった産廃
-	char presetNameBuf_[256]{ "Sword_Ribbon" };
+	char presetNameBuf_[256]{ "trail_01" };
 	char texturePathBuf_[256]{};
 };

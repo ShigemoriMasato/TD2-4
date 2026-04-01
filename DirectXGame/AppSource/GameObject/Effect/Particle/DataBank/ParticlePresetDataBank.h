@@ -2,7 +2,6 @@
 #include <unordered_map>
 #include <variant>
 #include <string>
-
 #include <Tool/Json/JsonManager.h>
 #include <GameObject/Effect/Particle/Preset/ParticlePreset.h>
 
@@ -12,21 +11,20 @@ class ParticlePresetDataBank
 {
 public:
 	/// <summary>
-	/// Assets/Json/<name>.json の内容を取得する
+	/// Assets/Json/Particle/<name>.json の内容を取得する
 	/// </summary>
-	/// <param name="name">例："Fountain_01" → Assets/Json/Fountain_01.json</param>
+	/// <param name="name">例："Fountain_01" → Assets/Json/Particle/Fountain_01.json</param>
 	/// <returns>variant型に入っている</returns>
 	const ParticlePresetVariant& Get(const std::string& name);
 
 	/// <summary>
-	/// キャッシュから削除して次回Getしたときに再読込させる
-	/// <param name="name">例："Fountain_01" → Assets/Json/Fountain_01.json</param>
+	/// キャッシュから削除。エディタ用。
 	/// </summary>
+	/// <param name="name">例："Fountain_01" → Assets/Json/Fountain_01.json</param>
 	void Invalidate(const std::string& name);
 
 	/// <summary>
-	/// 全キャッシュ削除。Getしたときに再読込させる
-	/// <param name="name">例："Fountain_01" → Assets/Json/Fountain_01.json</param>
+	/// 全キャッシュ削除。エディタ用。
 	/// </summary>
 	void Clear();
 
@@ -34,13 +32,27 @@ public:
 	/// Getした場合の型を返す
 	/// <param name="name">例："Fountain_01" → Assets/Json/Fountain_01.json</param>
 	/// </summary>
+	/// <returns> Getしたときの型 </returns>
 	ParticleType GetTypeOf(const std::string& name);
 
-private:
-	ParticlePresetVariant Load_(const std::string& name);
-	Particle::Config LoadConfig_(JsonManager& json);
+	/// <summary>
+	/// 生成済みのConfigを Assets/Json/Particle/<name>.json として保存する
+	/// </summary>
+	void Save(const std::string& name, ParticleType type, const Particle::Config& cfg);
+	void SaveParticleSRT(JsonManager& json, const std::string& keyPrefix, const Particle::ParticleSRT& srt);
+
+	/// <summary>
+	/// Assets/Json/Particle/<name>.json からプリセットを読み込む
+	/// </summary>
+	/// <param name="name">例："Fountain_01" → Assets/Json/Particle/Fountain_01.json</param>
+	/// <returns></returns>
+	ParticlePresetVariant Load(const std::string& name);
+	Particle::Config LoadConfig(JsonManager& json);
+	Particle::ParticleSRT LoadParticleSRT(JsonManager& json, const std::string& keyPrefix);
 
 private:
+	// 読み込みにのみ使用
 	JsonManager json_;
+	// データの保存にのみ使用。
 	static std::unordered_map<std::string, ParticlePresetVariant> cache_;
 };
