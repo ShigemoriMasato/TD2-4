@@ -14,14 +14,22 @@ void SparkEffect::Initialize(
 	{
 		auto trail = std::make_unique<MultiTrail>();
 		trail->Initialize(drawDataManager, textureManager, trailPresetDataBank);
-		trail->Add("testTrail2");
+		trail->Add("sparrrk");
 		particleTrails_.push_back(std::move(trail));
 	}
 }
 
 void SparkEffect::Trigger(const Vector3& position)
 {
+	for (auto& t : particleTrails_)
+	{
+		t->Clear();          // 既存軌跡を消す
+		t->Add("sparrrk");
+		t->SetEnabled(true); // ついでに有効化
+	}
+
 	particle.Trigger("sparrrrk2", position);
+	isActive_ = true;
 }
 
 void SparkEffect::Update(float dt, const Matrix4x4& vpMatrix)
@@ -30,6 +38,7 @@ void SparkEffect::Update(float dt, const Matrix4x4& vpMatrix)
 
 	// 粒ワールド行列
 	const auto worlds = particle.GetParticleWorlds("sparrrrk2");
+	//const size_t alive = std::min(particle.GetAliveCount("sparrrrk2"), particleTrails_.size());
 	const size_t alive = std::min(worlds.size(), particleTrails_.size());
 
 	// 粒が存在する分だけ、トレイルを粒に追従させる
@@ -44,11 +53,18 @@ void SparkEffect::Update(float dt, const Matrix4x4& vpMatrix)
 	{
 		particleTrails_[i]->SetEnabled(false);
 	}
+
+	if (alive == 0)
+	{
+		particle.Stop("sparrrrk2");
+		isActive_ = false;
+	}
 }
 
 void SparkEffect::Draw(CmdObj* cmdObj)
 {
-	particle.Draw(cmdObj);
+	if (!isActive_) return;
+
 	for (auto& trail : particleTrails_)
 	{
 		trail->Draw(cmdObj);
