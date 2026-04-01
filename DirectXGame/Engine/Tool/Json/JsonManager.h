@@ -11,6 +11,9 @@ public:
 	//データを追加。keyが重複している場合は上書き。対応しない型は例外が発生する。
 	template<typename T>
 	void Add(const std::string& key, T& data);
+	template<typename T>
+	void Add(const std::string& key, const T& data);
+
 
 	//データを取得。keyが存在しない場合は例外が発生。対応しない型は例外が発生。
 	template<typename T>
@@ -30,7 +33,8 @@ private:
 
 template<typename T>
 void JsonManager::Add(const std::string& key, T& data) {
-	constexpr TypeID id = TypeIDResolver<T>::id;
+	using U = std::remove_cv_t<std::remove_reference_t<T>>;
+	constexpr TypeID id = TypeIDResolver<U>::id;
 	if constexpr (id == TypeID::kUnknown) {
 		throw std::runtime_error("Unsupported type for JsonManager::Add");
 	}
@@ -56,6 +60,49 @@ void JsonManager::Add(const std::string& key, T& data) {
 		jsonData_[key] = { data.x, data.y, data.z, data.w };
 	}
 	else {
+		jsonData_[key] = data;
+	}
+}
+
+template<typename T>
+void JsonManager::Add(const std::string& key, const T& data)
+{
+	using U = std::remove_cv_t<std::remove_reference_t<T>>;
+	constexpr TypeID id = TypeIDResolver<U>::id;
+	if constexpr (id == TypeID::kUnknown)
+	{
+		throw std::runtime_error("Unsupported type for JsonManager::Add");
+	}
+	else if constexpr (id == TypeID::Vector2)
+	{
+		jsonData_[key] = { data.x, data.y };
+	}
+	else if constexpr (id == TypeID::Vector3)
+	{
+		jsonData_[key] = { data.x, data.y, data.z };
+	}
+	else if constexpr (id == TypeID::Vector4)
+	{
+		jsonData_[key] = { data.x, data.y, data.z, data.w };
+	}
+	else if constexpr (id == TypeID::Matrix2x2)
+	{
+		jsonData_[key] = { { data.m[0][0], data.m[0][1] }, { data.m[1][0], data.m[1][1] } };
+	}
+	else if constexpr (id == TypeID::Matrix3x3)
+	{
+		jsonData_[key] = { { data.m[0][0], data.m[0][1], data.m[0][2] }, { data.m[1][0], data.m[1][1], data.m[1][2] }, { data.m[2][0], data.m[2][1], data.m[2][2] } };
+	}
+	else if constexpr (id == TypeID::Matrix4x4)
+	{
+		jsonData_[key] = { { data.m[0][0], data.m[0][1], data.m[0][2], data.m[0][3] }, { data.m[1][0], data.m[1][1], data.m[1][2], data.m[1][3] }, { data.m[2][0], data.m[2][1], data.m[2][2], data.m[2][3] }, { data.m[3][0], data.m[3][1], data.m[3][2], data.m[3][3] } };
+	}
+	else if constexpr (id == TypeID::Quaternion)
+	{
+		jsonData_[key] = { data.x, data.y, data.z, data.w };
+	}
+	else
+	{
 		jsonData_[key] = data;
 	}
 }

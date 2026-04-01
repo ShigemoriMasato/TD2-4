@@ -30,7 +30,8 @@ private:
 
 
 	MultiParticle particle;
-	//std::vector<MultiTrail> particleTrails_;
+	static constexpr size_t kMaxParticleTrails_ = 20;
+	std::vector<std::unique_ptr<MultiTrail>> particleTrails_;
 
 
 	bool start;
