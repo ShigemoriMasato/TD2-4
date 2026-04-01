@@ -83,21 +83,23 @@ private:
 	
 	// リロールテキスト用変数
 	std::unique_ptr<SHEngine::Text> rerollText_ = nullptr;
-	Transform rerollTextTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {175.0f, -230.0f, 0.0f} };
-	float rerollTextSize_ = 2.0f;
+	Transform rerollTextTransform_ = { {3.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {200.0f, -225.0f, 0.0f} };
 	Vector4 rerollTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// 操作説明テキスト用変数
 	std::unique_ptr<SHEngine::Text> controlText_ = nullptr;
 	Transform controlTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {405.0f, -315.0f, 0.0f} };
-	float controlTextSize_ = 2.0f;
 	Vector4 controlTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// ラクラク配置テキスト用変数
 	std::unique_ptr<SHEngine::Text> easyPlaceText_ = nullptr;
 	Transform easyPlaceTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {765.0f, -315.0f, 0.0f} };
-	float easyPlaceTextSize_ = 2.0f;
 	Vector4 easyPlaceTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	// 武器安置所テキスト用変数
+	std::unique_ptr<SHEngine::Text> weaponStorageText_ = nullptr;
+	Transform weaponStorageTextTransform_ = { {3.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {185.0f, -605.0f, 0.0f} };
+	Vector4 weaponStorageTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// マウスボタンスプライト用変数
 	std::unique_ptr<SHEngine::RenderObject> mouseLeftSprite_ = nullptr;

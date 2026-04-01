@@ -114,5 +114,8 @@ private:// UI系
 	std::unique_ptr<SHEngine::Text> timerText_;
 	Transform timerTextTransform_ = { {2.0f, 2.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {550.0f, -85.0f, 0.0f} };
 
+	std::unique_ptr<SHEngine::Text> enemySpawnGraphText_;
+	Transform enemySpawnGraphTextTransform_ = { {1.5f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {930.0f, -80.0f, 0.0f} };
+
 	GameDisplayRange displayRange_ = {};
 };

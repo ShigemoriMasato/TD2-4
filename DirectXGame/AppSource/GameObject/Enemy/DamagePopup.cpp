@@ -13,7 +13,7 @@ void DamagePopup::Initialize(SHEngine::ModelManager* modelManager, SHEngine::Dra
     text_ = std::make_unique<SHEngine::Text>();
     text_->Initialize(data, "YDWbananaslipplus.otf", 64);
     text_->SetSize(0.5f);
-    text_->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+    text_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
     planeDrawInfo_.modelIndex = planeModelHandle;
     planeDrawInfo_.color = 0xffffffff;
@@ -47,7 +47,7 @@ void DamagePopup::Update(float deltaTime, Matrix4x4 vpMatrix) {
     position_.y += deltaTime * 1.5f;
 
     float alpha = 1.0f - (lifetime_ / maxLifetime_);
-    text_->SetColor({ 1.0f, 0.0f, 0.0f, alpha });
+    text_->SetColor({ 1.0f, 1.0f, 1.0f, alpha });
 
     Transform transform;
     transform.position = position_;

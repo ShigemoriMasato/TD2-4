@@ -247,7 +247,6 @@ void ShopScene::InitializeRerollBar() {
 	rerollText_ = std::make_unique<SHEngine::Text>();
 	rerollText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
 	rerollText_->SetText(L"リロール");
-	rerollText_->SetSize(rerollTextSize_);
 
 	// 操作説明テキストの初期化
 	controlText_ = std::make_unique<SHEngine::Text>();
@@ -258,6 +257,11 @@ void ShopScene::InitializeRerollBar() {
 	easyPlaceText_ = std::make_unique<SHEngine::Text>();
 	easyPlaceText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
 	easyPlaceText_->SetText(L"自動配置");
+
+	// 武器安置所テキストの初期化
+	weaponStorageText_ = std::make_unique<SHEngine::Text>();
+	weaponStorageText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
+	weaponStorageText_->SetText(L"武器安置所");
 
 	// マウスボタンスプライトの初期化
 	mouseLeftTextureIndex_ = textureManager_->LoadTexture("Assets/Texture/UI/mouse_left.png");
@@ -324,7 +328,6 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 	rerollBarBG_.render->CopyBufferData(1, &bgColor, sizeof(Vector4));
 
 	// テキストの更新
-	rerollTextTransform_.scale = { rerollTextSize_, rerollTextSize_, 1.0f };
 	std::wstring text = L"リロール ( " + std::to_wstring(rerollCount_) + L" )";
 	rerollText_->SetText(text.c_str());
 
@@ -348,6 +351,11 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 	easyPlaceText_->SetTransform(easyPlaceTextTransform_);
 	easyPlaceText_->Update(vpMatrix);
 
+	// 武器安置所テキストの更新
+	weaponStorageText_->SetColor(weaponStorageTextColor_);
+	weaponStorageText_->SetTransform(weaponStorageTextTransform_);
+	weaponStorageText_->Update(vpMatrix);
+
 	// マウスボタンスプライトの更新
 	// マウスの状態を取得
 	auto mouseButtons = input_->GetMouseButtonState();
@@ -370,6 +378,11 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 
 #ifdef USE_IMGUI
 	ImGui::Begin("Shop Reroll Bar");
+	ImGui::Text("Reroll Text Settings");
+	ImGui::DragFloat2("Reroll Text Position", &rerollTextTransform_.position.x, 1.0f);
+	ImGui::DragFloat2("Reroll Text Size", &rerollTextTransform_.scale.x, 0.1f, 0.1f, 10.0f);
+	ImGui::ColorEdit4("Reroll Text Color", &rerollTextColor_.x);
+	ImGui::Separator();
 	ImGui::Text("Control Text Settings");
 	ImGui::DragFloat2("Control Text Position", &controlTextTransform_.position.x, 1.0f);
 	ImGui::DragFloat3("Control Text Size", &controlTextTransform_.scale.x, 0.1f);
@@ -379,6 +392,11 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 	ImGui::DragFloat2("Easy Place Text Position", &easyPlaceTextTransform_.position.x, 1.0f);
 	ImGui::DragFloat3("Easy Place Text Size", &easyPlaceTextTransform_.scale.x, 0.1f);
 	ImGui::ColorEdit4("Easy Place Text Color", &easyPlaceTextColor_.x);
+	ImGui::Separator();
+	ImGui::Text("Weapon Storage Text Settings");
+	ImGui::DragFloat2("Weapon Storage Text Position", &weaponStorageTextTransform_.position.x, 1.0f);
+	ImGui::DragFloat3("Weapon Storage Text Size", &weaponStorageTextTransform_.scale.x, 0.1f);
+	ImGui::ColorEdit4("Weapon Storage Text Color", &weaponStorageTextColor_.x);
 	ImGui::Separator();
 	ImGui::Text("Mouse Sprite Settings");
 	ImGui::DragFloat3("Mouse Left Position", &mouseLeftTransform_.position.x, 1.0f);
@@ -402,6 +420,7 @@ void ShopScene::DrawRerollBar(CmdObj* cmdObj) {
 	rerollText_->Draw(cmdObj);
 	controlText_->Draw(cmdObj);
 	easyPlaceText_->Draw(cmdObj);
+	weaponStorageText_->Draw(cmdObj);
 
 	// マウススプライト描画
 	mouseLeftSprite_->Draw(cmdObj);
