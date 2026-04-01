@@ -319,6 +319,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Pickaxe.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Shuriken.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\ShurikenBullet.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\sparkEffect.cpp" />
     <ClInclude Include="AppSource\02_ShigeScene\GameDisplayRange.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\DamagePopup.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\FastEnemy.h" />
@@ -478,6 +479,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\Data\Gurepon.h" />
     <ClInclude Include="AppSource\UI\Game\GameFrame.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\FountainParticle\FountainParticle.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\sparkEffect.h" />
     <ClInclude Include="Engine\Core\Command\Data\SHCmdQueue.h" />
     <ClInclude Include="Engine\Render\Renderer.h" />
     <ClInclude Include="Engine\Render\SHResource.h" />
