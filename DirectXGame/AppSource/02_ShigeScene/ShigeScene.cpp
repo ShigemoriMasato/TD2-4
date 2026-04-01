@@ -108,7 +108,7 @@ void ShigeScene::Initialize() {
 	gameFrame_->Initialize(planeDrawData, textureManager_->LoadTexture("Frame2.png"));
 
 	gameFrameBG_ = std::make_unique<GameFrame>();
-	gameFrameBG_->Initialize(planeDrawData, textureManager_->LoadTexture("FrameBG.png"));
+	gameFrameBG_->Initialize(planeDrawData, textureManager_->LoadTexture("FrameBG2.png"));
 
 	gameDisplay_ = std::make_unique<ShopDisplay>();
 	gameDisplay_->Initialize(commonData_->cmdObject.get(), planeDrawData, textureManager_);
