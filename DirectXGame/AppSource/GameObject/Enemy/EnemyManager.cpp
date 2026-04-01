@@ -20,7 +20,7 @@ void EnemyManager::Initialize(Vector3* playerPos, Map* map, SHEngine::DrawData& 
 	for (int i = 0; i < maxDamageTextNum_; ++i) {
 		auto text = std::make_unique<SHEngine::Text>();
 		text->Initialize(plane, "YDWbananaslipplus.otf");
-		text->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+		text->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 		text->SetSize(0.05f);
 		damageText_.push_back(std::move(text));
 	}
