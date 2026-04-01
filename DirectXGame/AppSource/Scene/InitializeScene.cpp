@@ -22,7 +22,7 @@ void InitializeScene::Initialize() {
 	SHEngine::Screen::WindowsAPI::WindowDesc desc;
 	desc.width = 1280;
 	desc.height = 720;
-	desc.windowName = L"SHEngine";
+	desc.windowName = L"3101_GaricL";
 	desc.wndProc = [&](HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) -> LRESULT {
 
 #ifdef USE_IMGUI
@@ -143,8 +143,8 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	//更新処理
 	commonData_->cmdObject->ResetCommandList();
 
-	return std::make_unique<ResultScene>();
 	return std::make_unique<TitleScene>();
+	return std::make_unique<ResultScene>();
 	return std::make_unique<ShigeScene>();
 	return std::make_unique<PrticleEditorScene>();
 	return std::make_unique<TrailEditorScene>();
