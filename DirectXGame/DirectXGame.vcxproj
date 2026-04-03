@@ -314,15 +314,12 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="Engine\Render\Font\Text.cpp" />
     <ClCompile Include="AppSource\02_ShigeScene\TechnicalTestScene.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\sparkEffect.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Particle\Drawer\ParticleDrawer.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Trail\Drawer\TrailDrawer.cpp" />
     <ClCompile Include="Engine\Core\Command\Data\SHCmdQueue.cpp" />
     <ClCompile Include="Engine\Render\Renderer.cpp" />
     <ClCompile Include="Engine\Render\SHResource.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Pickaxe.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Shuriken.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\ShurikenBullet.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\sparkEffect.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Particle\Drawer\ParticleDrawer.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Drawer\TrailDrawer.cpp" />
     <ClInclude Include="AppSource\02_ShigeScene\GameDisplayRange.h" />
@@ -492,9 +489,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\Data\Pickaxe.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Data\Shuriken.h" />
     <ClInclude Include="AppSource\GameObject\Attack\ShurikenBullet.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Particle\Drawer\ParticleDrawer.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Trail\Drawer\TrailDrawer.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\sparkEffect.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Particle\Drawer\ParticleDrawer.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\Drawer\TrailDrawer.h" />
   </ItemGroup>

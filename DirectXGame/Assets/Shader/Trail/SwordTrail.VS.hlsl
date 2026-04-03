@@ -35,7 +35,7 @@ VSOutput main(VSInput input, uint vertexID : SV_VertexID)
     TrailVertex ver = gVertices[vertexID];
 
     o.position = mul(ver.position, vp);
-    o.texcoord = v.uv;
+    o.texcoord = ver.uv;
     o.color = ver.color;
 
     return o;
