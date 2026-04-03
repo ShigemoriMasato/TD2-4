@@ -97,5 +97,5 @@ private:
 
 	float useTimer_ = 0.0f;
 
-	float deleteTime_ = 5.0f; // 使用してから消えるまでの時間
+	float deleteTime_ = 15.0f; // 使用してから消えるまでの時間
 };
