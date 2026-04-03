@@ -76,7 +76,7 @@ std::unique_ptr<IScene> YokoScene::Update()
 
 	if (isSpaceTrigger)
 	{
-		transform_.scale = { 0.0f, 0.0f, 0.0f };
+		transform_.scale = { 1.0f, 1.0f, 1.0f };
 		transform_.position = { 0.0f, -2.0f, 0.0f };
 		transform_.rotate = { 0.0f, 0.0f, 0.0f };
 

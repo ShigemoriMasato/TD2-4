@@ -1,9 +1,24 @@
 #include "FountainParticle.h"
 
-void FountainParticle::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, SHEngine::ModelManager* modelManager, const FountainConfig& preset)
+void FountainParticle::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, SHEngine::ModelManager* modelManager)
 {
-	preset_ = preset;
-	particle_.Initialize(drawDataManager, textureManager, modelManager, preset_.cfg);
+	particle_.Initialize(drawDataManager, textureManager, modelManager);
+}
+
+void FountainParticle::SetConfig(const FountainConfig& config)
+{
+	config_ = config;
+	particle_.SetConfig(config_.cfg);
+}
+
+void FountainParticle::SetEmitPos(const Vector3& pos)
+{
+	particle_.SetEmitPos(pos);
+}
+
+void FountainParticle::SetEmittingFlag(bool flag)
+{
+	particle_.SetEmittingFlag(flag);
 }
 
 void FountainParticle::Update(float dt, const Matrix4x4& vpMatrix)
@@ -14,16 +29,6 @@ void FountainParticle::Update(float dt, const Matrix4x4& vpMatrix)
 void FountainParticle::Draw(CmdObj* cmdObj)
 {
 	particle_.Draw(cmdObj);
-}
-
-void FountainParticle::Trigger(const Vector3& position)
-{
-	particle_.Trigger(position);
-}
-
-void FountainParticle::Stop()
-{
-	particle_.Stop();
 }
 
 void FountainParticle::Clear()

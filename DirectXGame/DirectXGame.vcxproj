@@ -320,6 +320,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Shuriken.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\ShurikenBullet.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\sparkEffect.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Particle\Drawer\ParticleDrawer.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail\Drawer\TrailDrawer.cpp" />
     <ClInclude Include="AppSource\02_ShigeScene\GameDisplayRange.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\DamagePopup.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\FastEnemy.h" />
@@ -487,6 +489,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\Data\Pickaxe.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Data\Shuriken.h" />
     <ClInclude Include="AppSource\GameObject\Attack\ShurikenBullet.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Particle\Drawer\ParticleDrawer.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\Drawer\TrailDrawer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

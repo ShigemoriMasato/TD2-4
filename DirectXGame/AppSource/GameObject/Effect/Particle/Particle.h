@@ -70,17 +70,20 @@ public:
 	void Initialize(
 		SHEngine::DrawDataManager* drawDataManager,
 		SHEngine::TextureManager* textureManager,
-		SHEngine::ModelManager* modelManager,
-		const Config& config = {});
+		SHEngine::ModelManager* modelManager);
+	// configセット&モデルとテクスチャの読み込み
+	void SetConfig(const Config& config);
 	void Update(float deltaTime, const Matrix4x4& vpMatrix);
 	void Draw(CmdObj* cmdObj);
-	void Trigger(const Vector3& pos);
-	void Stop();
+
+	// 発生位置をセット
+	void SetEmitPos(const Vector3& pos) { emitPos_ = pos; }
+	// 発生フラグをセット
+	void SetEmittingFlag(bool flag) { emitting_ = flag; }
 
 	std::vector<Matrix4x4> GetParticleWorlds() const;
 	size_t GetAliveCount() const { return aliveCount_; }
 
-	void SetConfig(const Config& config);
 	const Config& GetConfig() const { return config_; }
 
 	void Clear();
@@ -118,6 +121,7 @@ private:
 	// 生存しているパーティクルの数
 	size_t aliveCount_ = 0;
 
+	// インスタンスデータのリスト
 	std::vector<ParticleInstance> instances_;
 
 	// 描画

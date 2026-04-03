@@ -14,13 +14,17 @@ void MultiParticle::Initialize(
 	modelManager_ = modelManager;
 	presetData_ = presetData;
 
+	nextId_ = -1;
+
 	fountainCache_.clear();
 }
 
 
-void MultiParticle::Add(const std::string& presetName)
+int32_t MultiParticle::Add(const std::string& presetName)
 {
-	if (!presetData_) return;
+	if (!presetData_) return -1;
+
+	nextId_++;
 
 	// presetName.Jsonのプリセットデータを取得
 	const auto& presetVar = presetData_->Get(presetName);
@@ -30,35 +34,64 @@ void MultiParticle::Add(const std::string& presetName)
 	{
 		const auto& preset = std::get<FountainConfig>(presetVar);
 		auto particle = std::make_unique<FountainParticle>();
-		particle->Initialize(drawDataManager_, textureManager_, modelManager_, preset);
-		fountainCache_[presetName] = std::move(particle);
-		return;
+		particle->Initialize(drawDataManager_, textureManager_, modelManager_);
+		particle->SetConfig(preset);
+		fountainCache_[nextId_] = std::move(particle);
 	}
 	else if (std::holds_alternative<OnTrailConfig>(presetVar))
 	{
-		return;
+		const auto& preset = std::get<OnTrailConfig>(presetVar);
+
+	}
+
+	return nextId_;
+}
+
+void MultiParticle::SetEmitPos(const int32_t id, const Vector3& pos)
+{
+	if (fountainCache_.count(id))
+	{
+		fountainCache_.at(id)->GetParticle().SetEmitPos(pos);
+	}
+	else
+	{
 	}
 }
 
-void MultiParticle::Trigger(const std::string& presetName, const Vector3& position)
+void MultiParticle::SetEmittingFlag(const int32_t id, bool flag)
 {
-	fountainCache_.at(presetName)->Trigger(position);
-	enabled_ = true;
+	if (fountainCache_.count(id))
+	{
+		fountainCache_.at(id)->GetParticle().SetEmittingFlag(flag);
+	}
+	else
+	{
+		
+	}
 }
 
-void MultiParticle::Stop(const std::string& presetName)
+std::vector<Matrix4x4> MultiParticle::GetParticleWorlds(const int32_t id)
 {
-	fountainCache_.at(presetName)->Stop();
+	if (fountainCache_.count(id))
+	{
+		return fountainCache_.at(id)->GetParticle().GetParticleWorlds();
+	}
+	else
+	{
+		return {};
+	}
 }
 
-std::vector<Matrix4x4> MultiParticle::GetParticleWorlds(const std::string& presetName)
+size_t MultiParticle::GetAliveCount(const int32_t id) const
 {
-	return fountainCache_.at(presetName)->GetParticle().GetParticleWorlds();
-}
-
-size_t MultiParticle::GetAliveCount(const std::string& presetName) const
-{
-	return fountainCache_.at(presetName)->GetParticle().GetAliveCount();
+	if (fountainCache_.count(id))
+	{
+		return fountainCache_.at(id)->GetParticle().GetAliveCount();
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 void MultiParticle::Clear()
@@ -68,8 +101,6 @@ void MultiParticle::Clear()
 
 void MultiParticle::Update(float dt, const Matrix4x4& vpMatrix)
 {
-	if (!enabled_) return;
-
 	for (auto& [name, p] : fountainCache_)
 	{
 		p->Update(dt, vpMatrix);
@@ -78,8 +109,6 @@ void MultiParticle::Update(float dt, const Matrix4x4& vpMatrix)
 
 void MultiParticle::Draw(CmdObj* cmdObj)
 {
-	if (!enabled_) return;
-
 	for (auto& [name, p] : fountainCache_)
 	{
 		p->Draw(cmdObj);

@@ -17,8 +17,7 @@ namespace
 void Particle::Initialize(
 	SHEngine::DrawDataManager* drawDataManager,
 	SHEngine::TextureManager* textureManager,
-	SHEngine::ModelManager* modelManager,
-	const Config& config)
+	SHEngine::ModelManager* modelManager)
 {
 	drawDataManager_ = drawDataManager;
 	textureManager_ = textureManager;
@@ -28,8 +27,6 @@ void Particle::Initialize(
 
 	// renderObjectのインスタンス作成
 	EnsureRender();
-	// configセット&モデルとテクスチャの読み込み
-	SetConfig(config);
 	// パーティクルインスタンス配列をクリア
 	Clear();
 }
@@ -74,19 +71,6 @@ void Particle::Clear()
 	emitTimer_ = 0.0f;
 	// 発生位置リセット
 	emitPos_ = {};
-}
-
-void Particle::Trigger(const Vector3& pos)
-{
-	emitPos_ = pos;
-	Emit(pos);
-
-	emitting_ = false;
-}
-
-void Particle::Stop()
-{
-	emitting_ = false;
 }
 
 std::vector<Matrix4x4> Particle::GetParticleWorlds() const
@@ -196,18 +180,20 @@ void Particle::Update(float deltaTime, const Matrix4x4& vpMatrix)
 		ins.translate.value += ins.translate.velocity * deltaTime * config_.speed;
 		ins.rotate.value += ins.rotate.velocity * deltaTime * config_.speed;
 		ins.scale.value += ins.scale.velocity * deltaTime * config_.speed;
-
-		// 一旦すべてのParticleはscale0になったら消滅
-		if (ins.scale.value.x <= 0.0f || ins.scale.value.y <= 0.0f || ins.scale.value.z <= 0.0f)
-		{
-			ins.age = config_.lifeTime;
-		}
 	}
 
 	// 寿命で削除
 	instances_.erase(
 		std::remove_if(instances_.begin(), instances_.end(),
-			[this](const ParticleInstance& p) { return p.age >= config_.lifeTime; }),
+			[this](const ParticleInstance& p) 
+			{ return p.age >= config_.lifeTime; }),
+		instances_.end());
+
+	// scaleで削除
+	instances_.erase(
+		std::remove_if(instances_.begin(), instances_.end(),
+			[](const ParticleInstance& p) 
+			{ return p.scale.value.x <= 0.0f || p.scale.value.y <= 0.0f || p.scale.value.z <= 0.0f; }),
 		instances_.end());
 
 	// 発生

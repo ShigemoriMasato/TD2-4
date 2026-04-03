@@ -38,11 +38,13 @@ void PrticleEditorScene::Reset(ParticleType type)
 
 void PrticleEditorScene::BuildParticle()
 {
-	particle_.Initialize(drawDataManager_, textureManager_, modelManager_, particleConfig_);
+	particle_.Initialize(drawDataManager_, textureManager_, modelManager_);
+	particle_.SetConfig(particleConfig_);
 
 	particle_.Clear();
 
-	particle_.Trigger(emitPos_);
+	particle_.SetEmitPos(emitPos_);
+	particle_.SetEmittingFlag(true);
 }
 
 // データ保存

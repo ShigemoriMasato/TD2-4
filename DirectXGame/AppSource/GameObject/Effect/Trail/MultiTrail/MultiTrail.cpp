@@ -10,18 +10,22 @@ void MultiTrail::Initialize(
 	textureManager_ = textureManager;
 	presetData_ = presetData;
 
+	nextId_ = -1;
+
 	ribbonTrailCache_.clear();
 	shockwaveRingTrailCache_.clear();
 	enabled_ = true;
 	modelWorld_ = Matrix4x4::Identity();
 }
 
-void MultiTrail::Add(const std::string& presetName)
+int32_t MultiTrail::Add(const std::string& presetName)
 {
-	if (!presetData_) return;
+	if (!presetData_) return -1;
 
 	// presetName.Jsonのプリセットデータを取得
 	const auto& presetVar = presetData_->Get(presetName);
+
+	nextId_++;
 
 	// トレイルタイプごとに生成
 	if (std::holds_alternative<RibbonTrailConfig>(presetVar))
@@ -30,7 +34,7 @@ void MultiTrail::Add(const std::string& presetName)
 		auto trail = std::make_unique<RibbonTrail>();
 		trail->Initialize(drawDataManager_, textureManager_, preset);
 		trail->SetModelWorld(modelWorld_);
-		ribbonTrailCache_[presetName] = std::move(trail);
+		ribbonTrailCache_[nextId_] = std::move(trail);
 	}
 	else if (std::holds_alternative<ShockwaveRingConfig>(presetVar))
 	{
@@ -38,13 +42,22 @@ void MultiTrail::Add(const std::string& presetName)
 		auto trail = std::make_unique<ShockwaveRingTrail>();
 		trail->Initialize(drawDataManager_, textureManager_, preset);
 		trail->SetModelWorld(modelWorld_);
-		shockwaveRingTrailCache_[presetName] = std::move(trail);
+		shockwaveRingTrailCache_[nextId_] = std::move(trail);
 	}
+
+	return nextId_;
 }
 
-void MultiTrail::Trigger(const std::string& presetName, const Vector3& position)
+void MultiTrail::SetEmittingFlag(const int32_t id, bool flag)
 {
-	shockwaveRingTrailCache_.at(presetName)->Trigger(position);
+	if (ribbonTrailCache_.count(id))
+	{
+		ribbonTrailCache_.at(id)->SetEnabled(flag);
+	}
+	else if (shockwaveRingTrailCache_.count(id))
+	{
+
+	}
 }
 
 void MultiTrail::Clear()
