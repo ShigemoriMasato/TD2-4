@@ -10,7 +10,8 @@
 class IWeaponRender {
 public:
 	// 初期化関数
-	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, IWeapon* weapon, Item itemData);
+	void Initialize(
+	    SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, IWeapon* weapon, Item itemData, const std::string& trailname);
 
 	// 更新関数
 	void Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTime);
@@ -72,8 +73,5 @@ protected:
 
 	// トレイル
 	TrailPresetDataBank trailDataBank_;
-	MultiTrail trailSpear_;
-	MultiTrail trailSword_;
-	MultiTrail trailAxe_;
-	MultiTrail trailFist_;
+	MultiTrail trail_;
 };
