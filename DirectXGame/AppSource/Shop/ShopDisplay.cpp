@@ -5,7 +5,7 @@
 void ShopDisplay::Initialize(CmdObj* cmdObj, SHEngine::DrawData& drawData, SHEngine::TextureManager* textureManager) {
 	cmdObj_ = cmdObj;
 	disp_ = std::make_unique<SHEngine::Screen::MultiDisplay>();
-	disp_->Initialize(624, 352, 0xff0000ff, textureManager);
+	disp_->Initialize(624, 352, 0x000000ff, textureManager);
 	
 	render_ = std::make_unique<SHEngine::RenderObject>("ShopDisplay");
 	render_->Initialize();
@@ -18,10 +18,18 @@ void ShopDisplay::Initialize(CmdObj* cmdObj, SHEngine::DrawData& drawData, SHEng
 
 	render_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Transparent;
 
-	transform_.scale = { 624.0f / 360.0f, 352.0f / 640.0f, 0.0f };
+	SetTransform({ 48.0f, 48.0f }, { 352.0f, 624.0f });
+}
+
+void ShopDisplay::SetTransform(const Vector2& leftTop, const Vector2& size) {
+	transform_.scale = { size.y / 360.0f, size.x / 640.0f, 0.0f };
 	transform_.rotate.z = std::numbers::pi_v<float> / 2.0f;
+
+	Vector2 center = leftTop + size * 0.5f;
+
 	transform_.position.z = 0.5f;
-	transform_.position.x = 224.0f / 640.0f - 1.0f;
+	transform_.position.x = center.x / 640.0f - 1.0f;
+	transform_.position.y = center.y / -360.0f + 1.0f;
 }
 
 void ShopDisplay::Update() {
@@ -44,14 +52,6 @@ void ShopDisplay::Draw() {
 	render_->Draw(cmdObj_);
 
 #ifdef USE_IMGUI
-
-	ImGui::Begin("ShopDisplay");
-
-	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.01f);
-	ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.01f);
-	ImGui::DragFloat3("Position", &transform_.position.x, 0.01f);
-
-	ImGui::End();
 
 #endif
 }

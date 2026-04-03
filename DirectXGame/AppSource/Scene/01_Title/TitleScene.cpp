@@ -4,6 +4,8 @@
 
 #include <02_ShigeScene/ShigeScene.h>
 
+#include <../Engine/Assets/Audio/AudioManager.h>
+
 TitleScene::TitleScene() {
 }
 
@@ -18,6 +20,16 @@ void TitleScene::Initialize() {
 	camera_->SetPosition({ 0.0f, 0.0f, 0.0f });
 	camera_->SetRotation({ 0.0f, 0.0f, 0.0f });
 	camera_->SetScale({ 1.0f, 1.0f, 1.0f });
+
+	uint32_t handle = AudioManager::GetInstance().GetHandleByName("TitleScene.mp3");
+	if (handle != 0) {
+		AudioManager::GetInstance().Play(handle, 0.1f, true);
+	}
+
+	postEffect_ = std::make_unique<PostEffect>();
+	postEffect_->Initialize(textureManager_, drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex));
+	postEffectConfig_.cmdObj = commonData_->cmdObject.get();
+	postEffectConfig_.origin = commonData_->display->GetDisplay();
 }
 
 std::unique_ptr<IScene> TitleScene::Update() {
@@ -32,14 +44,21 @@ std::unique_ptr<IScene> TitleScene::Update() {
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z) || 
 		input_->GetKeyState(DIK_SPACE) && !input_->GetPreKeyState(DIK_SPACE)) {
 		Title::Select currentSelect = titleUI_->GetCurrentSelect();
+
+		uint32_t handle = AudioManager::GetInstance().GetHandleByName("Decide.mp3");
+		if (handle != 0) {
+			AudioManager::GetInstance().Play(handle, 0.1f, false);
+		}
 		
 		// Startが選択されている場合はシーン遷移
 		if (currentSelect == Title::Select::Start) {
+			AudioManager::GetInstance().StopAll();
 			return std::make_unique<ShigeScene>();
 		}
 
 		// Quitが選択されている場合はアプリケーションを終了
 		else if (currentSelect == Title::Select::Quit) {
+			AudioManager::GetInstance().StopAll();
 			commonData_->shouldQuit = true;
 		}
 	}
@@ -68,8 +87,13 @@ void TitleScene::Draw() {
 	// ディスプレイへの描画終了
 	display->PostDraw(cmdObj);
 
+#ifdef SH_RELEASE
+	postEffectConfig_.output = commonData_->mainWindow.second->GetCurrentDisplay();
+	postEffect_->Draw(postEffectConfig_);
+#endif
+
 	// ウィンドウへの描画（displayの内容を転送）
-	window->PreDraw(cmdObj);
+	window->PreDraw(cmdObj, false);
 
 	//ここ以外で記述する場合、ifdefを忘れないようにすること
 #ifdef USE_IMGUI

@@ -1,6 +1,7 @@
 #include "Piece.h"
 #include "PieceManager.h"
 #include "Utility/Easing.h"
+#include <../Engine/Assets/Audio/AudioManager.h>
 
 void Piece::Initialize(const Item& item, int rank) {
 	itemData_ = item;
@@ -18,6 +19,21 @@ void Piece::Initialize(const Item& item, int rank) {
 }
 
 bool Piece::Update(BackPack* backPack, float deltaTime) {
+	// 保留エリアに置かれている場合はUpdateしない
+	if (isReserved_) {
+		return false;
+	}
+
+	// 左クリックで持たれている場合はUpdateしない
+	if (isHeld_) {
+		return false;
+	}
+
+	// 武器は自動で使用状態にする
+	if (itemData_.category == Category::Weapon && !isUsing_) {
+		Use();
+	}
+
 	if (!isUsing_) {
 		return false;
 	}
@@ -71,6 +87,20 @@ bool Piece::Put(BackPack* backPack) {
 	}
 
 	pieceManager_->MoveShopToHold(this);
+
+	// 保留エリアに置かれたかをチェック
+	bool inReserveArea = true;
+	for (const auto& chip : chips_) {
+		if (IsIgnored(chip)) {
+			continue;
+		}
+		auto slot = GetChipPos(chip);
+		if (!backPack->IsInReserveArea(slot)) {
+			inReserveArea = false;
+			break;
+		}
+	}
+	isReserved_ = inReserveArea;
 
 	isPlaced_ = false;
 
@@ -126,6 +156,14 @@ bool Piece::IsHovered(const Vector3& cursorPos, BackPack* backPack) {
 		Vector3 slotWorldPos = backPack->GetWorldPos(slotPos);
 		if (std::abs((cursorPos.x + hoverOffsetX) - slotWorldPos.x) < hoverSizeX &&
 			std::abs((cursorPos.z + hoverOffsetZ) - slotWorldPos.z) < hoverSizeZ) {
+
+			if(!isHovered_){
+				uint32_t handle = AudioManager::GetInstance().GetHandleByName("ItemSelect.mp3");
+				if (handle != 0) {
+					AudioManager::GetInstance().Play(handle, 0.2f, false);
+				}
+			}
+
 			isHovered_ = true;
 			return true;
 		}
@@ -138,6 +176,9 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 	std::vector<DrawInfo> drawInfos;
 	int totalChips = static_cast<int>(chips_.size());
 	int currentIdx = 0;
+
+	float deleteT = 1.0f - (useTimer_ / deleteTime_ * 0.7f) + 0.3f;
+
 	for (const auto& chip : chips_) {
 		if(IsIgnored(chip)) {
 			currentIdx++;
@@ -146,8 +187,15 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		DrawInfo info;
 		auto slotPos = GetChipPos(chip);
 		info.position = { (float)slotPos.first + 0.5f, 0.0f, (float)slotPos.second + 0.5f };
-		info.scale = Vector3(1.0f, 0.2f, 1.0f);
-		info.modelIndex = 0;
+		info.scale = Vector3(0.5f, 0.1f, 0.5f);
+		info.modelIndex = pieceModelID;
+
+		if(currentIdx == ignores_.size()) {
+			// 使用中のチップは徐々に小さくする
+			info.scale *= deleteT;
+			//Yだけは常に0.1fにして、地面にめり込まないようにする
+			info.scale.y = 0.1f;
+		}
 
 		float t = 0.0f;
 		if (totalChips > 1) {
@@ -160,18 +208,27 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		
 		info.color = (r << 24) | (g << 16) | (b << 8) | a;
 
-		if (isHovered_) {
-			info.color = 0xffff00ff; // 黄色
-		}
-		if (isPlaced_) {
-			info.color = 0x00ffffff; // シアン
-		}
 		if (isUsing_) {
 			uint32_t rU = 255; 
 			uint32_t gU = static_cast<uint32_t>(165.0f + t * (0.0f - 165.0f));
 			uint32_t bU = 0;
 			uint32_t aU = 255;
 			info.color = (rU << 24) | (gU << 16) | (bU << 8) | aU;
+		}
+		if (isReserved_) {
+			// 保留エリアに置かれている場合は灰色で表示
+			uint32_t rR = static_cast<uint32_t>(128.0f);
+			uint32_t gR = static_cast<uint32_t>(128.0f);
+			uint32_t bR = static_cast<uint32_t>(128.0f);
+			uint32_t aR = 255;
+			info.color = (rR << 24) | (gR << 16) | (bR << 8) | aR;
+		}
+		if (isPlaced_) {
+			info.color = 0x00ffffff; // シアン
+		}
+		// isHovered_を最後に判定して、ホバー時は必ず黄色にする
+		if (isHovered_) {
+			info.color = 0xffff00ff; // 黄色
 		}
 
 		drawInfos.push_back(info);
@@ -245,5 +302,158 @@ std::pair<int, int> Piece::GetChipPos(const std::pair<int, int>& chip) const {
 	world.first += static_cast<int>(position_.x);
 	world.second += static_cast<int>(position_.z);
 	return world;
+}
+
+bool Piece::AutoPlace(BackPack* backPack) {
+	// 通常エリアに配置を試みる
+	int normalStartX = backPack->GetNormalAreaStartX();
+	int normalStartY = backPack->GetNormalAreaStartY();
+	int normalWidth = backPack->GetNormalAreaWidth();
+	int normalHeight = backPack->GetNormalAreaHeight();
+	Vector3 originPos = backPack->GetOriginPos();
+
+	// 通常エリア内の全ての位置を試す（回転も含む）
+	for (int rotation = 0; rotation < 4; ++rotation) {
+		for (int y = normalStartY; y < normalStartY + normalHeight; ++y) {
+			for (int x = normalStartX; x < normalStartX + normalWidth; ++x) {
+				// ワールド座標に変換
+				Vector3 worldPos = originPos + Vector3(static_cast<float>(x), 0.0f, static_cast<float>(y));
+				SetPosition(worldPos - GetCenterOffset());
+				
+				if (CanPut(backPack)) {
+					return Put(backPack);
+				}
+			}
+		}
+		// 次の回転を試す
+		RotateRight();
+	}
+
+	// 通常エリアに配置できなかった場合、保留エリアに配置を試みる
+	int reserveStartX = backPack->GetReserveAreaStartX();
+	int reserveStartY = backPack->GetReserveAreaStartY();
+	int reserveWidth = backPack->GetReserveAreaWidth();
+	int reserveHeight = backPack->GetReserveAreaHeight();
+
+	for (int rotation = 0; rotation < 4; ++rotation) {
+		for (int y = reserveStartY; y < reserveStartY + reserveHeight; ++y) {
+			for (int x = reserveStartX; x < reserveStartX + reserveWidth; ++x) {
+				// ワールド座標に変換
+				Vector3 worldPos = originPos + Vector3(static_cast<float>(x), 0.0f, static_cast<float>(y));
+				SetPosition(worldPos - GetCenterOffset());
+				
+				if (CanPut(backPack)) {
+					return Put(backPack);
+				}
+			}
+		}
+		// 次の回転を試す
+		RotateRight();
+	}
+
+	// どこにも配置できなかった
+	return false;
+}
+
+bool Piece::MoveToReserve(BackPack* backPack) {
+	// すでに保留エリアにある場合は何もしない
+	if (isReserved_) {
+		return false;
+	}
+
+	// 元の位置と回転を保存
+	Vector3 originalPos = position_;
+	Direction originalDir = direction_;
+
+	// 現在の位置から削除
+	Remove(backPack);
+
+	// 保留エリアに配置を試みる
+	int reserveStartX = backPack->GetReserveAreaStartX();
+	int reserveStartY = backPack->GetReserveAreaStartY();
+	int reserveWidth = backPack->GetReserveAreaWidth();
+	int reserveHeight = backPack->GetReserveAreaHeight();
+	Vector3 originPos = backPack->GetOriginPos();
+
+	for (int rotation = 0; rotation < 4; ++rotation) {
+		for (int y = reserveStartY; y < reserveStartY + reserveHeight; ++y) {
+			for (int x = reserveStartX; x < reserveStartX + reserveWidth; ++x) {
+				// ワールド座標に変換
+				Vector3 worldPos = originPos + Vector3(static_cast<float>(x), 0.0f, static_cast<float>(y));
+				SetPosition(worldPos - GetCenterOffset());
+				
+				if (CanPut(backPack)) {
+					return Put(backPack);
+				}
+			}
+		}
+		// 次の回転を試す
+		RotateRight();
+	}
+
+	// 保留エリアに配置できなかった場合、元の位置に戻す
+	// 回転を元に戻す
+	while (direction_ != originalDir) {
+		RotateRight();
+	}
+	SetPosition(originalPos);
+	
+	// 元の位置に戻す
+	if (CanPut(backPack)) {
+		Put(backPack);
+	}
+
+	return false;
+}
+
+bool Piece::MoveToNormal(BackPack* backPack) {
+	// 保留エリアにない場合は何もしない
+	if (!isReserved_) {
+		return false;
+	}
+
+	// 元の位置と回転を保存
+	Vector3 originalPos = position_;
+	Direction originalDir = direction_;
+
+	// 現在の位置から削除
+	Remove(backPack);
+
+	// 通常エリアに配置を試みる
+	int normalStartX = backPack->GetNormalAreaStartX();
+	int normalStartY = backPack->GetNormalAreaStartY();
+	int normalWidth = backPack->GetNormalAreaWidth();
+	int normalHeight = backPack->GetNormalAreaHeight();
+	Vector3 originPos = backPack->GetOriginPos();
+
+	for (int rotation = 0; rotation < 4; ++rotation) {
+		for (int y = normalStartY; y < normalStartY + normalHeight; ++y) {
+			for (int x = normalStartX; x < normalStartX + normalWidth; ++x) {
+				// ワールド座標に変換
+				Vector3 worldPos = originPos + Vector3(static_cast<float>(x), 0.0f, static_cast<float>(y));
+				SetPosition(worldPos - GetCenterOffset());
+				
+				if (CanPut(backPack)) {
+					return Put(backPack);
+				}
+			}
+		}
+		// 次の回転を試す
+		RotateRight();
+	}
+
+	// 通常エリアに配置できなかった場合、元の位置に戻す
+	// 回転を元に戻す
+	while (direction_ != originalDir) {
+		RotateRight();
+	}
+	SetPosition(originalPos);
+	
+	// 元の位置に戻す
+	if (CanPut(backPack)) {
+		Put(backPack);
+	}
+
+	return false;
 }
 

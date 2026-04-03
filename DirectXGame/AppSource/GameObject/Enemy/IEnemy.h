@@ -2,18 +2,19 @@
 #include <Collision/Collider.h>
 #include <GameObject/DrawInfo.h>
 #include <Assets/Model/ModelManager.h>
+#include <Render/Font/Text.h>
 #include "EnemyHP.h"
 
 class EnemyManager;
+class Map;
 
 class IEnemy : public Collider {
 public:
 
 	static void SetModelManager(SHEngine::ModelManager* modelManager) { modelManager_ = modelManager; }
-	static SHEngine::ModelManager* GetModelManager() { return modelManager_; }
 	static void SetDrawDataManager(SHEngine::DrawDataManager* drawDataManager) { drawDataManager_ = drawDataManager; }
 
-	virtual void Initialize(Vector3* playerPos, EnemyManager* manager, int id);
+	virtual void Initialize(Vector3* playerPos, EnemyManager* manager, int id, Map* map);
 	void SetPosition(const Vector3& pos) { 
 		drawInfo_.position = pos; 
 		position_ = pos;
@@ -22,6 +23,7 @@ public:
 	void UpdateCollider();
 
 	Vector3 GetPosition() const { return position_; }
+	std::vector<int> GetDamageQueue();
 	std::vector<DrawInfo> GetDrawInfos() const;
 	void OnCollision(Collider* other) override;
 
@@ -29,12 +31,15 @@ public:
 	bool IsActive() const { return isActive_; }
 
 	void SetHP(int hp) { hp_ = hp; maxHp_ = hp; }
+	void SetAttack(float attack) { attack_ = attack; }
+	float GetAttack() const { return attack_; }
 	void SetVPMatrix(Matrix4x4 vpMatrix) { vpMatrix_ = vpMatrix; }
 	void SetOrthoVPMatrix(Matrix4x4 vpMatrix) { orthoVpMatrix_ = vpMatrix; }
 
 protected:
 
 	void SetModel(std::string path) { drawInfo_.modelIndex = modelManager_->LoadModel("Enemy/" + path); }
+	void ClampPositionToMap();
 
 	static inline SHEngine::DrawDataManager* drawDataManager_ = nullptr;
 
@@ -50,6 +55,10 @@ protected:
 	Matrix4x4 vpMatrix_;
 	Matrix4x4 orthoVpMatrix_;
 
+	Map* map_ = nullptr;
+
+	std::vector<int> damageQueue_;
+
 private:
 
 	Vector2 WorldToScreenPos(const Vector3& worldPos, const Matrix4x4& viewProjectionMatrix, float screenWidth, float screenHeight);
@@ -61,6 +70,7 @@ private:
 	bool isActive_ = true;
 	int hp_ = 1;
 	int maxHp_ = 1;
+	float attack_ = 1.0f;
 
 	std::map<int, int> damageIDs_;
 };

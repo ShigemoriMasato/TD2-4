@@ -15,7 +15,9 @@ enum class WeaponType : int {
 	Axe = 4,     // 斧
 	Fist = 5,    // 拳
 	Bow = 6,     // 弓
-	Gurepon = 7,     // グレポン
+	Gurepon = 7, // グレポン
+	Pickaxe = 8, // ツルハシ
+	Shuriken = 9, // 手裏剣
 };
 
 struct WeaponData {

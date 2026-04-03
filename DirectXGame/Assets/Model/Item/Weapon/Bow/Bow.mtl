@@ -1,7 +1,7 @@
-# Blender 5.0.1 MTL File: 'None'
+# Blender 5.1.0 MTL File: 'Bow.blend'
 # www.blender.org
 
-newmtl palette.044
+newmtl palette
 Ns 0.000000
 Ka 1.000000 1.000000 1.000000
 Ks 0.000000 0.000000 0.000000

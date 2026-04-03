@@ -1,17 +1,19 @@
 #include "IEnemy.h"
 #include "EnemyManager.h"
 #include <GameObject/Attack/IAttackObject.h>
+#include <GameObject/Map/Map.h>
 
-void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id) {
+void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id, Map* map) {
 	drawInfo_.color = 0xff0000ff;
 	playerPos_ = playerPos;
 	manager_ = manager;
 	id_ = id;
+	map_ = map;
 	collCircle_ = std::make_unique<Circle>();
 	collCircle_->radius = 0.5f;
 	CollConfig config;
 	config.ownTag = CollTag::Enemy;
-	config.targetTag = uint32_t(CollTag::Attack);
+	config.targetTag = uint32_t(CollTag::Attack) | uint32_t(CollTag::Enemy);
 	config.colliderInfo = collCircle_.get();
 	config.isActive = true;
 	Collider::Initialize();
@@ -27,31 +29,40 @@ void IEnemy::Update(float deltaTime){
 void IEnemy::UpdateCollider() {
 	drawInfo_.position = position_;
 	collCircle_->center = { position_.x, position_.z };
-	velocity_ = {}; // 毎フレームリセット
+	velocity_ = {};
+}
+
+void IEnemy::ClampPositionToMap() {
+	if (map_) {
+		position_ = map_->ClampToBounds(position_);
+	}
 }
 
 void IEnemy::OnCollision(Collider* other) {
 	if (other->GetOwnTag() & CollTag::Enemy) {
 		auto enemy = static_cast<IEnemy*>(other);
 		Vector3 otherPos = enemy->GetPosition();
-		Vector3 dir = (otherPos - drawInfo_.position).Normalize();
-		float dist = (otherPos - drawInfo_.position).Length();
-		//大体のdeltaTimeで押す
-		position_ -= dir * dist * 0.016f * 8.0f;
-
-		collCircle_->center = { position_.x, position_.z };
+		Vector3 diff = position_ - otherPos;
+		float dist = diff.Length();
+		
+		if (dist > 0.0f && dist < collCircle_->radius * 2.0f) {
+			Vector3 dir = diff.Normalize();
+			float overlap = (collCircle_->radius * 2.0f) - dist;
+			position_ += dir * overlap * 0.5f;
+			ClampPositionToMap();
+		}
 		return;
 	}
 
 	int id = other->GetID();
 	auto it = damageIDs_.find(id);
 	if (it != damageIDs_.end()) {
-		// 既にダメージを受けている場合は無視
 		return;
 	}
 	damageIDs_[id] = 1;
 	auto attack = static_cast<IAttackObject*>(other);
 	hp_ -= static_cast<int>(attack->GetDamage());
+	damageQueue_.push_back(static_cast<int>(attack->GetDamage()));
 
 	if (hp_ <= 0) {
 		KillMe();
@@ -62,6 +73,12 @@ void IEnemy::KillMe() {
 	if (hp_ <= 0.0f) {
 		isActive_ = false;
 	}
+}
+
+std::vector<int> IEnemy::GetDamageQueue() {
+	std::vector<int> queue = damageQueue_;
+	damageQueue_.clear();
+	return queue;
 }
 
 std::vector<DrawInfo> IEnemy::GetDrawInfos() const {

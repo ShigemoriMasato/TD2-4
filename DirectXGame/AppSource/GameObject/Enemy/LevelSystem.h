@@ -5,55 +5,62 @@
 #include <random>
 #include <GameObject/Map/MapInfo.h>
 
+struct WaveVertex {
+	float intensity;
+	float time;
+};
+
 class LevelSystem {
 public:
 
 	~LevelSystem();
 
-	void Initialize(EnemyManager* enemyManager, int stageNum, Vector3* playerPosPtr, const MapInfo& mapInfo);
-
+	void Initialize(EnemyManager* enemyManager, Vector3* playerPosPtr, const MapInfo& mapInfo);
 	void Update(float deltaTime);
-	void Stop() { isActive_ = false; }
-
 	void DrawImGui();
 
-private:
+	std::vector<WaveVertex> GetWaveVertices() const { return waveVertices_; }
+	Vector2 GetCurrentPoint() const { return currentPoint_; }
 
-	void AdjustDifficult();
+	//設定されたWave時間を超過したかどうか
+	bool End() { return end_; }
+
+private:
 
 	void Load();
 	void Save();
 
-	struct BaseSystem {
-		float spawnInterval = 3.0f; // 敵をスポーンする間隔
-		float enemyCount = 2; // スポーンする敵の数
-		float enemyHp = 5.0f; // スポーンする敵のHP
-		std::vector<EnemyType> spawnTypes = { EnemyType::Normal }; // スポーンする敵の種類
-	};
-
-	BaseSystem config_;
-
-	EnemyManager* enemyManager_ = nullptr;
-
-	int stageNum_ = 0;
-	float timer_ = 0.0f;
-	float allTimer_ = 0.0f;
+	void Sort();
+	void Sampling();
+	Vector2 GetTFromDistance(float distance);
+	Vector2 GetPointFromTime(float time);
 
 	std::mt19937 rng_{ std::random_device{}() };
 
 	MapInfo mapInfo_;
+	Vector3* playerPosPtr_ = nullptr;
 
-	bool isActive_ = false;
+	float totalLength_ = 0.0f;
+	std::vector<float> lengthTable_;
+	std::vector<WaveVertex> waveVertices_;
+	int currentWaveIndex_ = 0;
+
+	EnemyManager* enemyManager_ = nullptr;
+
+	Vector2 currentPoint_;
+
+	float timer_ = 0.0f;
+	float castTime_ = 0.0f;
+
+
+	bool end_ = false;
 
 private:	//Edit用
 
-	bool isSave_ = true;
-
-	float increaseIntercal_ = 0.1f; // スポーン間隔の増加量
-	float increaseEnemyCount_ = 0.5f; // スポーンする敵の数の増加量
-	float increaseHp_ = 5.0f; // 敵のHPの増加量
-
 	BinaryManager binaryManager_;
+	std::string saveFilePath_ = "LevelSystem.bin";
 
-	Vector3* playerPosPtr_ = nullptr;
+	bool stop_ = false;
+	int editWaveIndex_ = 0;
+
 };

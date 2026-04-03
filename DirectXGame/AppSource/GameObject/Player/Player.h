@@ -1,171 +1,159 @@
 #pragma once
+#include "../Map/MapInfo.h"
 #include "../Player/Parameter/ParameterData.h"
 #include "../Player/Parameter/ParameterList.h"
 #include "Controller/IController.h"
+#include "GameObject/EasingAnimation/AnimationBundle.h"
 #include "State/IPlayerState.h"
 #include "State/PlayerStateDash.h"
 #include "State/PlayerStateNormal.h"
 #include <Collision/Collider.h>
+#include <Common/KeyConfig/KeyManager.h>
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
-#include "../Map/MapInfo.h"
-#include <Common/KeyConfig/KeyManager.h>
 
 /// <summary>
 /// プレイヤー
 /// </summary>
 namespace Player {
-struct AfterImage {
-	Transform transform;
-	float timer;
-};
+	enum class PartIndex { RightArm = 0, LeftArm = 1, RightLeg = 2, LeftLeg = 3, Body = 4, Count = 5 };
 
-class Base : public Collider {
-public:
-	// 初期化（デフォルトキャラクターID: 0）
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, CharacterID characterID, ItemManager* itemManager);
+	class Base : public Collider {
+	public:
+		// 初期化（デフォルトキャラクターID: 0）
+		void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, CharacterID characterID, ItemManager* itemManager);
 
-	// 更新
-	void Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, bool>& key);
-	// パラメータの更新
-	void UpdateParameter(const std::vector<Piece*>& items);
+		// 更新
+		void Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, bool>& key);
+		// パラメータの更新
+		void UpdateParameter(const std::vector<Piece*>& items);
 
-	// 描画
-	void Draw(CmdObj* cmdObj);
+		// 描画
+		void Draw(CmdObj* cmdObj);
 
-	// 状態管理関数
-	void ChangeState(std::unique_ptr<IPlayerState> newState);
+		// 状態管理関数
+		void ChangeState(std::unique_ptr<IPlayerState> newState);
 
-	// 残像を追加する関数
-	void SpawnAfterImage();
+		// StateからアクセスするためのGetter等
+		SHEngine::Input* GetInput() const { return input_; }
+		Transform& GetTransform() { return transform_; }
+		Vector3* GetPositionPtr() { return &transform_.position; }
+		void SetTransform(Transform t) { transform_ = t; }
+		float GetVelocity() const {
+			// マーカーに移動している場合はmarkerSpeed_、AI移動の場合はaiSpeed_を返す
+			if (controller_ && controller_->HasTarget()) {
+				return markerSpeed_;
+			}
+			return aiSpeed_;
+		}
+		MapInfo GetMapInfo() const { return mapInfo_; }
 
-	// StateからアクセスするためのGetter等
-	SHEngine::Input* GetInput() const { return input_; }
-	Transform& GetTransform() { return transform_; }
-	Vector3* GetPositionPtr() { return &transform_.position; }
-	void SetTransform(Transform t) { transform_ = t; }
-	float GetVelocity() const { return speed_; }
+		void SetPosition(Vector3 position) { transform_.position = position; }
+		void SetRotate(Vector3 rotate) { transform_.rotate = rotate; }
 
-	bool CanDash() const { return dashCooldownTimer_ <= 0.0f; }
-	void StartDashCooldown() { dashCooldownTimer_ = dashCooldown_; }
-	void UpdateDashCooldown(float deltaTime);
+		float GetRotationSpeed() const { return rotationSpeed_; }
 
-	void SetDashDir(Vector2 dir) { dashDir_ = dir; }
-	Vector2 GetDashDir() const { return dashDir_; }
-	float GetDashSpeed() const { return dashSpeed_; }
-	float GetDashDuration() const { return dashDuration_; }
+		void SetMapInfo(const MapInfo& mapInfo) { mapInfo_ = mapInfo; }
 
-	void SetPosition(Vector3 position) { transform_.position = position; }
-	void SetRotate(Vector3 rotate) { transform_.rotate = rotate; }
+		// パラメータ取得関数。スペルミスを防ぐため、こちらを推奨
+		float GetParameter(const std::string& paramName) const;
+		// 全てのパラメータを取得する関数
+		std::unordered_map<std::string, float> GetParameters() const { return parameterList_->GetAllParameters(); }
 
-	float GetRotationSpeed() const { return rotationSpeed_; }
+		// コントローラーの取得
+		IController* GetController() const { return controller_; }
 
-	void SetMapInfo(const MapInfo& mapInfo) {
-		mapInfo_ = mapInfo;
-	}
+		// コントローラーの設定
+		void SetController(IController* controller) { controller_ = controller; }
 
-	// パラメータ取得関数。スペルミスを防ぐため、こちらを推奨
-	float GetParameter(const std::string& paramName) const;
-	// 全てのパラメータを取得する関数
-	std::unordered_map<std::string, float> GetParameters() const { return parameterList_->GetAllParameters(); }
+		// HPのアクセッサ
+		float GetCurrentHP() const { return currentHP_; }
+		float GetMaxHP() const { return maxHP_; }
 
-	// コントローラーの取得
-	IController* GetController() const { return controller_; }
+		// ダメージ
+		void Damage(float amount);
 
-	// コントローラーの設定
-	void SetController(IController* controller) { controller_ = controller; }
+		// 回復
+		void Heal(float amount);
 
-	// HPのアクセッサ
-	float GetCurrentHP() const { return currentHP_; }
-	float GetMaxHP() const { return maxHP_; }
+		// Stateから呼び出す用のアニメーション更新関数
+		void UpdateWalkAnimation(float deltaTime, bool isMoving);
 
-	// ダメージ
-	void Damage(float amount);
+	private:
+		// プレイヤーの移動制限
+		void ClampPosition();
 
-	// 回復
-	void Heal(float amount);
+		// 接触時処理
+		void OnCollision(Collider* other) override;
 
-private:
-	// 残像の更新処理
-	void UpdateAfterImages(float deltaTime);
+	private:
+		// 描画用変数
+		std::array<std::unique_ptr<SHEngine::RenderObject>, static_cast<int>(PartIndex::Count)> render_;
 
-	// プレイヤーの移動制限
-	void ClampPosition();
+		// WVP行列
+		Matrix4x4 wvp_;
 
-	// 接触時処理
-	void OnCollision(Collider* other) override;
+		// 入力
+		SHEngine::Input* input_ = nullptr;
 
-private:
-	// 描画用変数
-	std::unique_ptr<SHEngine::RenderObject> render_ = nullptr;
+		// Transform
+		Transform transform_{};
 
-	// 残像描画用変数
-	std::unique_ptr<SHEngine::RenderObject> afterImageRender_ = nullptr;
+		// 速度
+		float aiSpeed_ = 5.0f;
+		float markerSpeed_ = 6.5f;
 
-	// WVP行列
-	Matrix4x4 wvp_;
+		// 現在の状態
+		std::unique_ptr<IPlayerState> currentState_ = nullptr;
 
-	// 入力
-	SHEngine::Input* input_ = nullptr;
+		// VP行列
+		Matrix4x4 vpMatrix_;
 
-	// Transform
-	Transform transform_{};
+		// テクスチャのインデックス
+		int textureIndex_;
 
-	// 速度
-	float speed_ = 5.0f;
+		// 回転の滑らかさ
+		float rotationSpeed_ = 10.0f;
 
-	// 現在の状態
-	std::unique_ptr<IPlayerState> currentState_ = nullptr;
+		// マップの移動制限
+		MapInfo mapInfo_;
 
-	// ダッシュ用のパラメータ
-	float dashSpeed_ = 30.0f;        // ダッシュスピード
-	float dashDuration_ = 0.15f;     // ダッシュ時間
-	float dashCooldown_ = 0.5f;      // ダッシュのクールダウン
-	float dashCooldownTimer_ = 0.0f; // クールダウン用のタイマー
-	Vector2 dashDir_ = {0.0f, 0.0f}; // ダッシュする方向
+		// パラメータ
+		std::unique_ptr<ParameterList> parameterList_ = nullptr;
 
-	// 残像関連の変数
-	std::vector<AfterImage> afterImages_; // 残像のステータス
-	float afterImageLifeTime_ = 0.3f;     // 残像が画面に残る時間
+		// コントローラー
+		IController* controller_ = nullptr;
 
-	// VP行列
-	Matrix4x4 vpMatrix_;
-
-	// テクスチャのインデックス
-	int textureIndex_;
-
-	// 回転の滑らかさ
-	float rotationSpeed_ = 10.0f;
-
-	// 残像・インスタンスの最大値
-	static const int kMaxInstanceAfterImage = 8;
-
-	// マップの移動制限
-	MapInfo mapInfo_;
-
-	// パラメータ
-	std::unique_ptr<ParameterList> parameterList_ = nullptr;
-
-	// コントローラー
-	IController* controller_ = nullptr;
-
-	// HP
-	float maxHP_ = 0.0f;
-	float currentHP_ = 0.0f;
-	float upperLimitHP_ = 999.0f; // HPの上限（バグ防止用）
-	float lowerLimitHP_ = 1.0f;   // HPの下限（バグ防止用）
+		// HP
+		float maxHP_ = 0.0f;
+		float currentHP_ = 0.0f;
+		float upperLimitHP_ = 999.0f; // HPの上限（バグ防止用）
+		float lowerLimitHP_ = 1.0f;   // HPの下限（バグ防止用）
 
 	// 無敵フラグ
 	bool isInvincible_ = false;
 	float invincibleTimer_ = 0.0f;
-	float invincibleDuration_ = 1.0f;
+	float invincibleDuration_ = 0.1f;
 
-public: // 以下シゲモリ製
-	std::unique_ptr<Circle> collCircle_ = nullptr;
-	Logger logger_;
+		// アニメーション用変数
+		AnimationBundle<Vector3> rotateAnimationRightArm_; // 右腕
+		AnimationBundle<Vector3> rotateAnimationLeftArm_;  // 左腕
+		AnimationBundle<Vector3> rotateAnimationRightLeg_; // 右脚
+		AnimationBundle<Vector3> rotateAnimationLeftLeg_;  // 左脚
+
+		// 各パーツのローカルTransform
+		Transform partTransforms_[static_cast<int>(PartIndex::Count)];
+
+		// 前回移動していたかどうかのフラグ
+		bool wasMoving_ = false;
+
+		std::unique_ptr<Circle> collCircle_ = nullptr;
+		Logger logger_;
+
 #ifdef _DEBUG
-	bool isDebugInvincible_ = false;
+		bool isDebugInvincible_ = false;
 #endif
-};
+
+	};
 } // namespace Player

@@ -4,7 +4,7 @@
 class FastEnemy : public IEnemy {
 public:
 
-    void Initialize(Vector3* playerPos, EnemyManager* manager, int id) override;
+    void Initialize(Vector3* playerPos, EnemyManager* manager, int id, Map* map) override;
     void Update(float deltaTime) override;
 
 private:

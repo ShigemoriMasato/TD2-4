@@ -32,7 +32,7 @@ DrawInfo AxeSwing::GetDrawInfo() {
 	info.position = {collDirCircle_->center.x, 0.0f, collDirCircle_->center.y};
 	info.rotation = {0.0f, -direction_, 0.0f};
 	info.scale = {radius_, 1.0f, radius_};
-	info.modelIndex = modelManager_->LoadModel(modelPath_);
+	info.modelIndex = 2;
 	info.color = 0xff804000;
 	return info;
 }

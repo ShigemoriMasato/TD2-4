@@ -8,6 +8,9 @@
 #include <03_YokoScene/PrticleEditorScene.h>
 
 #include <Scene/01_Title/TitleScene.h>
+#include <Scene/05_Result/ResultScene.h>
+
+#include <../Engine/Assets/Audio/AudioManager.h>
 
 #ifdef USE_IMGUI
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -19,7 +22,7 @@ void InitializeScene::Initialize() {
 	SHEngine::Screen::WindowsAPI::WindowDesc desc;
 	desc.width = 1280;
 	desc.height = 720;
-	desc.windowName = L"SHEngine";
+	desc.windowName = L"3101_GaricL";
 	desc.wndProc = [&](HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) -> LRESULT {
 
 #ifdef USE_IMGUI
@@ -52,7 +55,7 @@ void InitializeScene::Initialize() {
 
 
 	auto fpsObs = engine_->GetFPSObserver();
-	fpsObs->SetIsFix(false);
+	fpsObs->SetIsFix(true);
 	fpsObs->SetTargetFPS(60.0);
 
 	//KeyManager
@@ -92,6 +95,8 @@ void InitializeScene::Initialize() {
 	keyManager->SetKey(Key::Use, DIK_SPACE, KeyState::Trigger);
 	keyManager->SetMouse(Key::Use, 1, KeyState::Trigger);
 
+	keyManager->SetMouse(Key::AutoPlace, 1, KeyState::Trigger);
+
 	//================================================================================
 
 	keyManager->SetKey(Key::Correct, DIK_RETURN, KeyState::Trigger);
@@ -129,12 +134,17 @@ void InitializeScene::Initialize() {
 
 	keyManager->SetMouse(Key::Target, 0, KeyState::Trigger);
 #pragma endregion
+
+	AudioManager::GetInstance().Initialize();
+	AudioManager::GetInstance().LoadAllAudio();
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
 	//更新処理
 	commonData_->cmdObject->ResetCommandList();
 
+	return std::make_unique<TitleScene>();
+	return std::make_unique<ResultScene>();
 	return std::make_unique<ShigeScene>();
 	return std::make_unique<PrticleEditorScene>();
 	return std::make_unique<TrailEditorScene>();

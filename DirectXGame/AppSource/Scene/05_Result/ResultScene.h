@@ -1,5 +1,8 @@
 #pragma once
 #include <Scene/IScene.h>
+#include <Render/Font/Text.h>
+#include <Render/PostEffect.h>
+#include <GameObject/EasingAnimation/AnimationBundle.h>
 
 class ResultScene : public IScene {
 public:
@@ -11,5 +14,23 @@ public:
 	void Draw() override;
 
 private:
+	std::unique_ptr<SHEngine::Text> clearText_;
+	std::unique_ptr<SHEngine::Text> gameOverText_;
+	std::unique_ptr<SHEngine::Text> CorrectText_;
 
+	std::unique_ptr<Camera> orthoCamera_;
+
+	Transform clearTextTransform_{};
+	Transform gameOverTextTransform_{};
+	Transform correctTextTransform_{};
+
+	bool isWin_ = false;
+
+	std::unique_ptr<PostEffect> postEffect_;
+	PostEffectConfig postEffectConfig_;
+
+	AnimationBundle<float> posAnime_;
+	float alphaTime_ = 0.0f;
+	float posYTime_ = 0.0f;
+	float pendingTime_ = 0.0f;
 };

@@ -40,7 +40,7 @@ void ParameterRender::Initialize(SHEngine::ModelManager* modelManager, SHEngine:
 	backgroundRender_->SetDrawData(drawData);
 
 	// Transform
-	backgroundTransform_.position = {1100.0f, 10.0f, 0.0f};
+	backgroundTransform_.position = {bgPosX_, 10.0f, 0.0f};
 	backgroundTransform_.scale = {400.0f, 2000.0f, 0.0f};
 
 	for (int i = 0; i < kParameterCount; ++i) {
@@ -94,6 +94,8 @@ void ParameterRender::Update(Matrix4x4 vpMatrix, const std::unordered_map<std::s
 		valueTexts_[i]->SetTransform(valueTransforms_[i]);
 	}
 
+	backgroundTransform_.position.x = bgPosX_ + offsetAnimation_.temp;
+
 	// 背景のWVP行列を更新
 	backgroundWVP_ = Matrix::MakeAffineMatrix(backgroundTransform_.scale, backgroundTransform_.rotate, backgroundTransform_.position);
 	backgroundWVP_ *= vpMatrix;
@@ -117,28 +119,20 @@ void ParameterRender::Draw(CmdObj* cmdObj) {
 	ImGui::DragFloat("PosX", &posX_, 0.01f);
 	ImGui::DragFloat("MarginY", &marginY_, 0.01f);
 	ImGui::DragFloat("ValueOffsetX", &valueOffsetX_, 0.01f);
-	for (int i = 0; i < kParameterCount; ++i) {
-		std::string scaleLabel = "Scale" + std::to_string(i);
-		std::string rotateLabel = "Rotate" + std::to_string(i);
-		std::string positionLabel = "Position" + std::to_string(i);
-		ImGui::DragFloat3(scaleLabel.c_str(), &transforms_[i].scale.x, 0.01f);
-		ImGui::DragFloat3(rotateLabel.c_str(), &transforms_[i].rotate.x, 0.01f);
-		ImGui::DragFloat3(positionLabel.c_str(), &transforms_[i].position.x, 0.01f);
-	}
 	ImGui::End();
 #endif
 }
 
 void ParameterRender::AnimationStart() {
 	if (!offsetAnimation_.anim.GetIsActive()) {
-		offsetAnimation_.anim.Start(0.0f, endPos_, 0.5f, EaseType::EaseOutCubic);
+		offsetAnimation_.anim.Start(0.0f, endPosX_, 0.5f, EaseType::EaseOutCubic);
 		isAnimation_ = true;
 	}
 }
 
 void ParameterRender::ReturnAnimationStart() {
 	if (!offsetAnimation_.anim.GetIsActive()) {
-		offsetAnimation_.anim.Start(endPos_, 0.0f, 0.5f, EaseType::EaseOutCubic);
+		offsetAnimation_.anim.Start(endPosX_, 0.0f, 0.5f, EaseType::EaseOutCubic);
 		isAnimation_ = false;
 	}
 }

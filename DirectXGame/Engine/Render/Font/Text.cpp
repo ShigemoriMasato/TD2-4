@@ -36,7 +36,7 @@ void SHEngine::Text::SetSize(float size) {
 }
 
 void SHEngine::Text::SetTransform(const Transform& transform) {
-	worldMat_ = MakeScaleMatrix(transform.scale) * MakeRotationMatrix(transform.rotate) * MakeTranslationMatrix(transform.position);
+	worldMat_ = charSizeMat_ * MakeScaleMatrix(transform.scale)* MakeRotationMatrix(transform.rotate)* MakeTranslationMatrix(transform.position);
 }
 
 void SHEngine::Text::Update(Matrix4x4 vpMat) {

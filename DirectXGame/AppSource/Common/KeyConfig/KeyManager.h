@@ -16,6 +16,7 @@ enum class Key {
 	Erase,//Chip消す
 	Rotate,//Chip回転
 	Use,//Piece使用
+	AutoPlace,//自動配置（右クリック）
 	
 	Correct,//確定キー
 	Reverse,//取消キー

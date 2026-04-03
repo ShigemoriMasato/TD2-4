@@ -14,6 +14,8 @@
 #include <Shop/Shop.h>
 #include <GameObject/Player/Parameter/ParameterRender.h>
 #include <Shop/ShopDisplay.h>
+#include <Render/Font/Text.h>
+#include <02_ShigeScene/GameDisplayRange.h>
 
 class ShopScene : public IScene {
 public:
@@ -27,8 +29,22 @@ public:
 	void SetDeltaTime(float& deltaTime) { deltaTime_ = deltaTime; }
 	ItemManager* GetItemManager() { return itemManager_.get(); }
 	DebugCamera* GetCamera() { return debugCamera_.get(); }
-
+	
 private:
+
+	// リロールバーの構造体
+	struct RerollBar {
+		std::unique_ptr<SHEngine::RenderObject> render = nullptr;
+		Matrix4x4 wvp;
+		Transform transform;
+	};
+
+	// リロールバーの初期化
+	void InitializeRerollBar();
+	// リロールバーの更新
+	void UpdateRerollBar(Matrix4x4 vpMatrix);
+	// リロールバーの描画
+	void DrawRerollBar(CmdObj* cmdObj);
 
 	std::unique_ptr<ColliderManager> colliderManager_;
 	std::unique_ptr<DebugCamera> debugCamera_;
@@ -58,4 +74,51 @@ private:
 	bool useAutoReroll_ = true;
 	float shopRerollTime_ = 15.0f;
 	float shopRerollTimer_ = 0.0f;
+
+	// リロールバー用変数
+	RerollBar rerollBarFill_;  // 前面（進行状況）
+	RerollBar rerollBarBG_;    // 背景
+	Vector2 rerollBarSize_ = { 950.0f, 50.0f };
+	Vector2 rerollBarPos_ = { 640.0f, -210.0f };
+	
+	// リロールテキスト用変数
+	std::unique_ptr<SHEngine::Text> rerollText_ = nullptr;
+	Transform rerollTextTransform_ = { {3.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {200.0f, -225.0f, 0.0f} };
+	Vector4 rerollTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	// 操作説明テキスト用変数
+	std::unique_ptr<SHEngine::Text> controlText_ = nullptr;
+	Transform controlTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {405.0f, -315.0f, 0.0f} };
+	Vector4 controlTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	// ラクラク配置テキスト用変数
+	std::unique_ptr<SHEngine::Text> easyPlaceText_ = nullptr;
+	Transform easyPlaceTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {765.0f, -315.0f, 0.0f} };
+	Vector4 easyPlaceTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	// 武器安置所テキスト用変数
+	std::unique_ptr<SHEngine::Text> weaponStorageText_ = nullptr;
+	Transform weaponStorageTextTransform_ = { {3.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {185.0f, -605.0f, 0.0f} };
+	Vector4 weaponStorageTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	// マウスボタンスプライト用変数
+	std::unique_ptr<SHEngine::RenderObject> mouseLeftSprite_ = nullptr;
+	std::unique_ptr<SHEngine::RenderObject> mouseRightSprite_ = nullptr;
+	Transform mouseLeftTransform_ = { {150.0f, 50.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {700.0f, -300.0f, 0.0f} };
+	Transform mouseRightTransform_ = { {150.0f, 50.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {350.0f, -300.0f, 0.0f} };
+	int mouseLeftTextureIndex_ = -1;
+	int mouseRightTextureIndex_ = -1;
+	int mouseLeftActiveTextureIndex_ = -1;
+	int mouseRightActiveTextureIndex_ = -1;
+
+	Vector3 cameraCenter_ = { -5.0f, -32.0f, -6.5f };
+	Vector3 cameraSpherical_ = { 20.0f, 0.0f, -1.570f };
+	Vector2 cameraPerspectiveSize_ = { 352.0f, 624.0f };
+	
+	int pieceModelID_ = -1;
+
+	int rerollCount_ = 3; // リロール可能な回数
+	bool pendingReroll_ = false; // リロール待機フラグ
+
+	GameDisplayRange displayRange_;
 };

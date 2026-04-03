@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Development|x64">
@@ -93,13 +93,11 @@
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
-
 if exist "$(WindowsSdkDir)bin$(TargetPlatformVersion)\arm64\dxil.dll" ( 
 copy "$(WindowsSdkDir)bin$(TargetPlatformVersion)\arm64\dxil.dll" "(TargetDir)dxil.dll"
 ) else if exist "$(WindowsSdkDir)bin$(TargetPlatformVersion)\x64\dxil.dll" ( 
 copy "$(WindowsSdkDir)bin$(TargetPlatformVersion)\x64\dxil.dll" "(TargetDir)dxil.dll"
 )
-
 xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -128,13 +126,11 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
-
 if exist "$(WindowsSdkDir)bin$(TargetPlatformVersion)\arm64\dxil.dll" ( 
 copy "$(WindowsSdkDir)bin$(TargetPlatformVersion)\arm64\dxil.dll" "(TargetDir)dxil.dll"
 ) else if exist "$(WindowsSdkDir)bin$(TargetPlatformVersion)\x64\dxil.dll" ( 
 copy "$(WindowsSdkDir)bin$(TargetPlatformVersion)\x64\dxil.dll" "(TargetDir)dxil.dll"
 )
-
 xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -164,18 +160,18 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
-
 if exist "$(WindowsSdkDir)bin$(TargetPlatformVersion)\arm64\dxil.dll" ( 
 copy "$(WindowsSdkDir)bin$(TargetPlatformVersion)\arm64\dxil.dll" "(TargetDir)dxil.dll"
 ) else if exist "$(WindowsSdkDir)bin$(TargetPlatformVersion)\x64\dxil.dll" ( 
 copy "$(WindowsSdkDir)bin$(TargetPlatformVersion)\x64\dxil.dll" "(TargetDir)dxil.dll"
 )
-
 xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AppSource\GameObject\Enemy\DamagePopup.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\FastEnemy.cpp" />
+    <ClCompile Include="AppSource\GameObject\Enemy\LevelSystemUI.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\TackleEnemy.cpp" />
     <ClCompile Include="AppSource\GameObject\Player\Controller\AIController.cpp" />
     <ClCompile Include="AppSource\Common\KeyConfig\KeyManager.cpp" />
@@ -211,6 +207,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Ax.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Bow.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\EnemyHP.cpp" />
+    <ClCompile Include="AppSource\GameObject\Attack\Arrow.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSPSOManager.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSRootSignature.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSShaderShelf.cpp" />
@@ -319,9 +316,21 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Effect\sparkEffect.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Particle\Drawer\ParticleDrawer.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Drawer\TrailDrawer.cpp" />
+    <ClCompile Include="Engine\Core\Command\Data\SHCmdQueue.cpp" />
+    <ClCompile Include="Engine\Render\Renderer.cpp" />
+    <ClCompile Include="Engine\Render\SHResource.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\Data\Pickaxe.cpp" />
+    <ClCompile Include="AppSource\GameObject\Weapon\Data\Shuriken.cpp" />
+    <ClCompile Include="AppSource\GameObject\Attack\ShurikenBullet.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\sparkEffect.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Particle\Drawer\ParticleDrawer.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail\Drawer\TrailDrawer.cpp" />
     <ClInclude Include="AppSource\02_ShigeScene\GameDisplayRange.h" />
+    <ClInclude Include="AppSource\GameObject\Enemy\DamagePopup.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\FastEnemy.h" />
+    <ClInclude Include="AppSource\GameObject\Enemy\LevelSystemUI.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\TackleEnemy.h" />
+    <ClCompile Include="AppSource\GameObject\Player\PlayerRender.cpp" />
     <ClInclude Include="AppSource\GameObject\Map\MapInfo.h" />
     <ClInclude Include="AppSource\GameObject\Player\Controller\AIController.h" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Spear.cpp" />
@@ -373,6 +382,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\Data\Ax.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Data\Bow.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\EnemyHP.h" />
+    <ClInclude Include="AppSource\GameObject\Attack\Arrow.h" />
     <ClInclude Include="Engine\Compute\PSO\CSPSOManager.h" />
     <ClInclude Include="Engine\Compute\PSO\CSRootSignature.h" />
     <ClInclude Include="Engine\Compute\PSO\CSShaderShelf.h" />
@@ -474,6 +484,16 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\Data\Gurepon.h" />
     <ClInclude Include="AppSource\UI\Game\GameFrame.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\FountainParticle\FountainParticle.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\sparkEffect.h" />
+    <ClInclude Include="Engine\Core\Command\Data\SHCmdQueue.h" />
+    <ClInclude Include="Engine\Render\Renderer.h" />
+    <ClInclude Include="Engine\Render\SHResource.h" />
+    <ClInclude Include="AppSource\GameObject\Player\PlayerRender.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\Data\Pickaxe.h" />
+    <ClInclude Include="AppSource\GameObject\Weapon\Data\Shuriken.h" />
+    <ClInclude Include="AppSource\GameObject\Attack\ShurikenBullet.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Particle\Drawer\ParticleDrawer.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\Drawer\TrailDrawer.h" />
     <ClInclude Include="AppSource\GameObject\Effect\sparkEffect.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Particle\Drawer\ParticleDrawer.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\Drawer\TrailDrawer.h" />

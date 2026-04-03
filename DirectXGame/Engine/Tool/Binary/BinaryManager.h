@@ -16,6 +16,8 @@ public:
 	template<typename T>
 	T Reverse();
 
+	bool IsEmpty() const { return inputBuffer_.empty(); }
+
 private:
 
 	std::string inputBuffer_;

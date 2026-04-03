@@ -24,7 +24,7 @@ void BinaryManager::Write(const std::string& fileName) {
 bool BinaryManager::Boot(const std::string& fileName) {
 	const std::string path = basePath + fileName;
 	std::ifstream file(path, std::ios::binary);
-	if (!file) {
+	if (!file.is_open()) {
 		return false;
 	}
 

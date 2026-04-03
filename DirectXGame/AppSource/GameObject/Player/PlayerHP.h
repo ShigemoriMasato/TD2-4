@@ -44,14 +44,14 @@ private:
 	// 説明用のUI
 	std::unique_ptr<SHEngine::RenderObject> uiRender_ = nullptr;
 
-	// HPバーのサイズ
-	Vector2 hpBarSize_ = { 100.0f, 30.0f };
-
 	// モデルマネージャ
 	SHEngine::ModelManager* modelManager_ = nullptr;
 
 	// HPバー初期座標
-	Vector2 hpBarPos_ = { 535.0f, -285.0f };
+	Vector2 hpBarPos_ = { 145.0f, -55.0f };
+
+	// HPバーのサイズ
+	Vector2 hpBarSize_ = { 200.0f, 50.0f };
 
 	// HPバー　減った分のアニメーション用変数
 	AnimationBundle<float> scaleAnimationHPBarAfter_;
@@ -61,8 +61,8 @@ private:
 
 	// HPテキスト描画用変数
 	std::unique_ptr<SHEngine::Text> hpText_ = nullptr;
-	Transform hpTextTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {500.0f, -290.0f, 0.0f} };
-	float hpTextSize_ = 0.5f;
+	Transform hpTextTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {70.0f, -65.0f, 0.0f} };
+	float hpTextSize_ = 1.0f;
 	Vector4 hpTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 };
 } // namespace Player

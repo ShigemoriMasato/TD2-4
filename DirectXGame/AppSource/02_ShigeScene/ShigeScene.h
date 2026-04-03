@@ -22,12 +22,15 @@
 #include <GameObject/Weapon/IWeaponRender.h>
 #include <02_ShigeScene/ShopScene.h>
 #include <Scene/01_Title/TitleScene.h>
+#include <Scene/05_Result/ResultScene.h>
 #include <GameObject/Player/PlayerHP.h>
 #include <GameObject/Player/Parameter/ParameterRender.h>
 #include <UI/Game/GameFrame.h>
 #include <Render/PostEffect.h>
 #include <Render/Font/Text.h>
 #include <02_ShigeScene/GameDisplayRange.h>
+#include <GameObject/Enemy/LevelSystemUI.h>
+#include <GameObject/Enemy/TackleEnemy.h>
 
 class ShigeScene : public IScene {
 public:
@@ -53,6 +56,12 @@ private:// System系
 	std::unique_ptr<AIController> aiController_;
 	std::unique_ptr<InputController> inputController_;
 
+	std::unique_ptr<SHEngine::RenderObject> targetMarkerRender_;
+	Transform targetMarkerTransform_;
+	int targetMarkerTexIndex_ = 0;
+	bool isTargetMarkerVisible_ = false;
+	float targetMarkerAnimTimer_ = 0.0f;
+
 	std::vector<std::unique_ptr<IWeapon>> weapons_;
 	std::vector<std::unique_ptr<IWeaponRender>> weaponRenders_;
 	std::vector<std::pair<int, std::unique_ptr<IWeaponRender>>> wrDeleting_;
@@ -64,6 +73,7 @@ private:// System系
 	std::unique_ptr<WeaponDatabase> weaponDatabase_;
 	std::unique_ptr<AttackManager> attackManager_;
 	std::unique_ptr<LevelSystem> waveSystem_;
+	std::unique_ptr<LevelSystemUI> waveSystemUI_;
 	std::unique_ptr<GameTimer> gameTimer_;
 	std::vector<IController*> controllers_;
 
@@ -94,13 +104,18 @@ private:// Shop
 
 private:// UI系
 
-	std::unique_ptr<GameFrame> gameFrame_;
-	std::unique_ptr<GameFrame> gameFrameBG_;
 	std::unique_ptr<PostEffect> postEffect_;
 	PostEffectConfig postEffectConfig_;
 
+	std::unique_ptr<ShopDisplay> gameDisplay_;
+	std::unique_ptr<GameFrame> gameFrame_;
+	std::unique_ptr<GameFrame> gameFrameBG_;
+
 	std::unique_ptr<SHEngine::Text> timerText_;
-	Transform timerTextTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {640.0f, 600.0f, 0.0f} };
+	Transform timerTextTransform_ = { {2.0f, 2.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {550.0f, -85.0f, 0.0f} };
+
+	std::unique_ptr<SHEngine::Text> enemySpawnGraphText_;
+	Transform enemySpawnGraphTextTransform_ = { {1.5f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {930.0f, -80.0f, 0.0f} };
 
 	GameDisplayRange displayRange_ = {};
 };
