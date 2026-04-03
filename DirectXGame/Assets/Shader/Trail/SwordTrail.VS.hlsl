@@ -32,11 +32,11 @@ VSOutput main(VSInput input, uint vertexID : SV_VertexID)
     VSOutput o;
 
     // 入力VBはダミー。実データはSRVから読む
-    TrailVertex v = gVertices[vertexID];
+    TrailVertex ver = gVertices[vertexID];
 
-    o.position = mul(v.position, vp);
+    o.position = mul(ver.position, vp);
     o.texcoord = v.uv;
-    o.color = v.color;
+    o.color = ver.color;
 
     return o;
 }

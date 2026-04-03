@@ -15,22 +15,20 @@ public:
 		SHEngine::DrawDataManager* drawDataManager,
 		SHEngine::TextureManager* textureManager,
 		TrailPresetDataBank* presetData);
-
-	// プリセット名で追加（例: "Axe_Ribbon"）
-	void Add(const std::string& presetName);
-
-	// モデルに追従するタイプ用。モデルに追従してなくても使ってOK
-	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
-
-	// 衝撃波等、任意発動型トリガー
-	void Trigger(const std::string& presetName, const Vector3& position);
-
-	void SetEnabled(bool enabled) { enabled_ = enabled; }
-
 	void Update(float dt, const Matrix4x4& vpMatrix);
 	void Draw(CmdObj* cmdObj);
-
 	void Clear();
+
+	// プリセット名で追加（例: "Axe_Ribbon"）
+	int32_t Add(const std::string& presetName);
+	// モデルに追従するタイプ用。モデルに追従してなくても使ってOK
+	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
+	// 発生フラグをセット
+	void SetEmittingFlag(const int32_t id, bool flag);
+	void SetEmittingFlag(bool flag) { enabled_ = flag; }
+
+
+
 
 private:
 	SHEngine::DrawDataManager* drawDataManager_ = nullptr;
@@ -38,9 +36,10 @@ private:
 	TrailPresetDataBank* presetData_ = nullptr;
 
 	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
-	bool enabled_ = true;
+	bool enabled_ = false;
 
-	std::unordered_map<std::string, std::unique_ptr<RibbonTrail>> ribbonTrailCache_;
-	std::unordered_map<std::string, std::unique_ptr<ShockwaveRingTrail>> shockwaveRingTrailCache_;
+	int32_t nextId_ = -1;
+	std::unordered_map<int32_t, std::unique_ptr<RibbonTrail>> ribbonTrailCache_;
+	std::unordered_map<int32_t, std::unique_ptr<ShockwaveRingTrail>> shockwaveRingTrailCache_;
 
 };

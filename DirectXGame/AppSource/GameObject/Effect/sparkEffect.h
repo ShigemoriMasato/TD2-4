@@ -15,14 +15,14 @@ public:
 		SHEngine::ModelManager* modelManager,
 		TrailPresetDataBank* trailPresetDataBank,
 		ParticlePresetDataBank* particlePresetDataBank);
-	void Trigger(const Vector3& position);
 	void Update(float dt, const Matrix4x4& vpMatrix);
 	void Draw(CmdObj* cmdObj);
+	void Trigger(const Vector3& position);
 
 private:
-	bool isActive_ = false;
-
 	MultiParticle particle;
+	int32_t particleIndex = 0;
+
 	static constexpr size_t kMaxParticleTrails_ = 20;
 	std::vector<std::unique_ptr<MultiTrail>> particleTrails_;
 };

@@ -4,6 +4,7 @@
 #include <Render/DrawDataManager.h>
 #include <Assets/Texture/TextureManager.h>
 #include <Assets/Model/ModelManager.h>
+
 #include <GameObject/Effect/Particle/DataBank/ParticlePresetDataBank.h>
 #include <GameObject/Effect/Particle/Type/FountainParticle/FountainParticle.h>
 
@@ -15,22 +16,21 @@ public:
 		SHEngine::TextureManager* textureManager,
 		SHEngine::ModelManager* modelManager,
 		ParticlePresetDataBank* presetData);
-
-	// プリセット名で追加（例:"testParticle"）
-	void Add(const std::string& presetName);
-
-	void Trigger(const std::string& presetName, const Vector3& position);
-	void Stop(const std::string& presetName);
-
-	std::vector<Matrix4x4> GetParticleWorlds(const std::string& presetName);
-	size_t GetAliveCount(const std::string& presetName) const;
-
-	void SetEnabled(bool enabled) { enabled_ = enabled; }
-
 	void Update(float dt, const Matrix4x4& vpMatrix);
 	void Draw(CmdObj* cmdObj);
-
 	void Clear();
+
+	// プリセット名で追加（例:"testParticle"）
+	int32_t Add(const std::string& presetName);
+	// 発生位置をセット
+	void SetEmitPos(const int32_t id, const Vector3& pos);
+	// 発生フラグをセット
+	void SetEmittingFlag(const int32_t id, bool flag);
+
+	std::vector<Matrix4x4> GetParticleWorlds(const int32_t id);
+	size_t GetAliveCount(const int32_t id) const;
+
+
 
 private:
 	SHEngine::DrawDataManager* drawDataManager_ = nullptr;
@@ -38,7 +38,6 @@ private:
 	SHEngine::ModelManager* modelManager_ = nullptr;
 	ParticlePresetDataBank* presetData_ = nullptr;
 
-	bool enabled_ = false;
-
-	std::unordered_map<std::string, std::unique_ptr<FountainParticle>> fountainCache_;
+	int32_t nextId_ = -1;
+	std::unordered_map<int32_t, std::unique_ptr<FountainParticle>> fountainCache_;
 };

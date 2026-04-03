@@ -22,5 +22,7 @@ void RibbonTrail::Update(float dt, const Matrix4x4& vpMatrix)
 
 void RibbonTrail::Draw(CmdObj* cmdObj)
 {
+	if (!enabled_) return;
+
 	trail_.Draw(cmdObj);
 }
