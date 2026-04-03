@@ -468,6 +468,7 @@ void ShigeScene::MakeWeapon() {
 			WeaponData* data = weaponDatabase_->GetWeapon(weaponID);
 			std::unique_ptr<IWeapon> weapon;
 			std::unique_ptr<IWeaponRender> weaponRender = std::make_unique<IWeaponRender>();
+			std::string name = "";
 
 			switch (data->type) {
 			case WeaponType::Pistol: {
@@ -476,6 +477,7 @@ void ShigeScene::MakeWeapon() {
 			}
 			case WeaponType::Sword: {
 				weapon = std::make_unique<Sword>();
+				name = "Sword_Ribbon";
 				break;
 			}
 			case WeaponType::ShotGun: {
@@ -484,14 +486,17 @@ void ShigeScene::MakeWeapon() {
 			}
 			case WeaponType::Spear: {
 				weapon = std::make_unique<Spear>();
+				name = "Spear_Ribbon";
 				break;
 			}
 			case WeaponType::Axe: {
 				weapon = std::make_unique<Ax>();
+				name = "Axe_Ribbon3";
 				break;
 			}
 			case WeaponType::Fist: {
 				weapon = std::make_unique<Fist>();
+				name = "Fist_Ribbon";
 				break;
 			}
 			case WeaponType::Bow: {
@@ -512,7 +517,7 @@ void ShigeScene::MakeWeapon() {
 			}
 			}
 
-			weaponRender->Initialize(drawDataManager_, modelManager_, textureManager_, weapon.get(), piece->GetItem());
+			weaponRender->Initialize(drawDataManager_, modelManager_, textureManager_, weapon.get(), piece->GetItem(), name);
 			weaponRenders_.push_back(std::move(weaponRender));
 
 			weapon->Initialize(weaponID, player_.get());
