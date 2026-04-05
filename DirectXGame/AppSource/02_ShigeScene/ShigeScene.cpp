@@ -1,5 +1,6 @@
 #include "ShigeScene.h"
 #include "ShopScene.h"
+#include <../Engine/Assets/Audio/AudioManager.h>
 #include <Common/KeyConfig/WorldCursor.h>
 #include <Utility/Color.h>
 #include <Utility/Matrix.h>
@@ -8,7 +9,6 @@
 #include <imgui/imgui.h>
 #include <numbers>
 #include <windows.h>
-#include <../Engine/Assets/Audio/AudioManager.h>
 
 void ShigeScene::Initialize() {
 	debugCamera_ = std::make_unique<DebugCamera>();
@@ -72,17 +72,17 @@ void ShigeScene::Initialize() {
 	targetMarkerRender_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
 
 	targetMarkerTexIndex_ = maruModelData.materials[maruModelData.materialIndex.front()].textureIndex;
-	Vector4 markerColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Vector4 markerColor = {1.0f, 1.0f, 1.0f, 1.0f};
 	targetMarkerRender_->CopyBufferData(1, &markerColor, sizeof(markerColor));
 	targetMarkerRender_->CopyBufferData(2, &targetMarkerTexIndex_, sizeof(targetMarkerTexIndex_));
 
-	targetMarkerTransform_.scale = { 1.0f, 1.0f, 1.0f };
+	targetMarkerTransform_.scale = {1.0f, 1.0f, 1.0f};
 
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 
 	waveSystem_ = std::make_unique<LevelSystem>();
 	waveSystem_->Initialize(enemyManager_.get(), player_->GetPositionPtr(), map_->GetMapInfo());
-	
+
 	waveSystemUI_ = std::make_unique<LevelSystemUI>();
 	waveSystemUI_->Initialize(modelManager_, drawDataManager_, textureManager_);
 
@@ -112,7 +112,7 @@ void ShigeScene::Initialize() {
 
 	gameDisplay_ = std::make_unique<ShopDisplay>();
 	gameDisplay_->Initialize(commonData_->cmdObject.get(), planeDrawData, textureManager_);
-	gameDisplay_->SetTransform({ 450.0f, 256.0f }, { 784.0f, 416.0f });
+	gameDisplay_->SetTransform({450.0f, 256.0f}, {784.0f, 416.0f});
 
 	postEffect_ = std::make_unique<PostEffect>();
 	auto pedd = drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex);
@@ -120,16 +120,16 @@ void ShigeScene::Initialize() {
 	postEffectConfig_.cmdObj = commonData_->cmdObject.get();
 	postEffectConfig_.origin = commonData_->display->GetDisplay();
 
-	timerText_ = std::make_unique<SHEngine::Text>(64); 
+	timerText_ = std::make_unique<SHEngine::Text>(64);
 	timerText_->Initialize(planeDrawData, "YDWbananaslipplus.otf", 64);
-	timerText_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+	timerText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 
-	timerTextTransform_.position = { 550.0f, -85.0f, 0.0f }; // Top center or so // default
-	timerTextTransform_.scale = { 2.0f, 2.0f, 1.0f };
+	timerTextTransform_.position = {550.0f, -85.0f, 0.0f}; // Top center or so // default
+	timerTextTransform_.scale = {2.0f, 2.0f, 1.0f};
 
-	enemySpawnGraphText_ = std::make_unique<SHEngine::Text>(64); 
+	enemySpawnGraphText_ = std::make_unique<SHEngine::Text>(64);
 	enemySpawnGraphText_->Initialize(planeDrawData, "YDWbananaslipplus.otf", 64);
-	enemySpawnGraphText_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+	enemySpawnGraphText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 
 	// 1280x720の画面内座標系での正しい範囲に修正
 	displayRange_.top = 280.0f;
@@ -137,21 +137,24 @@ void ShigeScene::Initialize() {
 	displayRange_.left = 450.0f;
 	displayRange_.right = 1230.0f;
 
-//#ifdef USE_IMGUI
-//
-//	displayRange_.top = 165.0f;
-//	displayRange_.bottom = 375.0f;
-//	displayRange_.left = 240.0f;
-//	displayRange_.right = 630.0f;
-//
-//
-//#endif // DEBUG
+	// #ifdef USE_IMGUI
+	//
+	//	displayRange_.top = 165.0f;
+	//	displayRange_.bottom = 375.0f;
+	//	displayRange_.left = 240.0f;
+	//	displayRange_.right = 630.0f;
+	//
+	//
+	// #endif // DEBUG
 
 	// BGM
 	uint32_t handle = AudioManager::GetInstance().GetHandleByName("GameScene.mp3");
 	if (handle != 0) {
 		AudioManager::GetInstance().Play(handle, 0.1f, true);
 	}
+
+	telop_ = std::make_unique<SituationTelop>();
+	telop_->Initialize(modelManager_, drawDataManager_, 0);
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -173,8 +176,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
 	bool inDisplayRange = false;
-	if (cursorPos.x >= displayRange_.left && cursorPos.x <= displayRange_.right &&
-	    cursorPos.y >= displayRange_.top && cursorPos.y <= displayRange_.bottom) {
+	if (cursorPos.x >= displayRange_.left && cursorPos.x <= displayRange_.right && cursorPos.y >= displayRange_.top && cursorPos.y <= displayRange_.bottom) {
 		inDisplayRange = true;
 	}
 
@@ -222,21 +224,20 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 			Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
 
 			// GameDisplayの内側でのみPlayerを移動させる
-			if (cursorPos.x >= displayRange_.left && cursorPos.x <= displayRange_.right &&
-				cursorPos.y >= displayRange_.top && cursorPos.y <= displayRange_.bottom) {
-				
+			if (cursorPos.x >= displayRange_.left && cursorPos.x <= displayRange_.right && cursorPos.y >= displayRange_.top && cursorPos.y <= displayRange_.bottom) {
+
 				// displayRange内の相対座標を計算 (0.0～1.0の範囲)
 				float relativeX = (cursorPos.x - displayRange_.left) / (displayRange_.right - displayRange_.left);
 				float relativeY = (cursorPos.y - displayRange_.top) / (displayRange_.bottom - displayRange_.top);
-				
+
 				// 元の1280x720の座標系に逆変換
 				Vector2 originalScreenPos;
 				originalScreenPos.x = relativeX * 1280.0f;
 				originalScreenPos.y = relativeY * 720.0f;
-				
+
 				// ワールド座標に変換
 				Vector3 clickWorldPos = GetWorldCursor(camera_, originalScreenPos);
-				
+
 				// マップ境界内に制限した座標を取得
 				Vector3 clampedPos = map_->ClampToBounds(clickWorldPos);
 				// Playerを指定のワールド座標へ移動させる（InputController使用時用）
@@ -253,17 +254,15 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		targetMarkerTransform_.position = player_->GetController()->GetTargetPosition();
 		// Zファイティング（地面とのチラつき）を防ぐために少しY座標を浮かせる
 		targetMarkerTransform_.position.y += 0.02f;
-		
+
 		targetMarkerAnimTimer_ += deltaTime;
 		// XZに拡縮 (点滅のように見えないよう、速度を少し緩やかに調整)
 		float scale = 1.0f + 0.2f * std::sin(targetMarkerAnimTimer_ * 5.0f);
 		targetMarkerTransform_.scale = {scale, 1.0f, scale}; // Y軸方向は拡縮させない
-		
-		Matrix4x4 wvp = Matrix::MakeScaleMatrix(targetMarkerTransform_.scale) * 
-						Matrix::MakeRotationMatrix(targetMarkerTransform_.rotate) * 
-						Matrix::MakeTranslationMatrix(targetMarkerTransform_.position) * 
-						camera_->GetVPMatrix();
-		
+
+		Matrix4x4 wvp = Matrix::MakeScaleMatrix(targetMarkerTransform_.scale) * Matrix::MakeRotationMatrix(targetMarkerTransform_.rotate) *
+		                Matrix::MakeTranslationMatrix(targetMarkerTransform_.position) * camera_->GetVPMatrix();
+
 		targetMarkerRender_->CopyBufferData(0, &wvp, sizeof(wvp));
 	} else {
 		isTargetMarkerVisible_ = false;
@@ -323,6 +322,13 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	waveSystem_->Update(deltaTime);
 	waveSystemUI_->Update(*waveSystem_, orthoCamera_->GetVPMatrix());
 
+	if (key[Key::Debug1]) {
+		telop_->StartAnimation(L"ピンチ");
+	}else if(key[Key::Debug2]){
+		telop_->StartAnimation(L"アドバンテージ");
+	}
+	telop_->Update(orthoCamera_->GetVPMatrix(), key, deltaTime);
+
 	if (key[Key::Debug1] || gameTimer_->IsEnd()) {
 	}
 
@@ -348,7 +354,7 @@ void ShigeScene::Draw() {
 
 	shopScene_->DrawReady();
 
-	//GameSceneの描画
+	// GameSceneの描画
 	gameDisplay_->PreDraw();
 
 	// grid_->Draw(cmdObj);
@@ -378,9 +384,11 @@ void ShigeScene::Draw() {
 
 	parameterRender_->Draw(cmdObj);
 
+	telop_->Draw(cmdObj);
+
 	gameDisplay_->PostDraw();
 
-	//画面全体の描画
+	// 画面全体の描画
 	display->PreDraw(cmdObj, true);
 
 	gameFrameBG_->Draw(cmdObj);
@@ -404,7 +412,7 @@ void ShigeScene::Draw() {
 #ifdef USE_IMGUI
 
 	display->DrawImGui();
-	
+
 	waveSystemUI_->DrawImGui();
 
 	TackleEnemy::DrawImGui();
@@ -418,10 +426,10 @@ void ShigeScene::Draw() {
 	/*ImGui::Begin("敵出現量グラフ");
 	ImGui::DragFloat3("Text Pos", &enemySpawnGraphTextTransform_.position.x, 1.0f);
 	ImGui::DragFloat3("Text Scale", &enemySpawnGraphTextTransform_.scale.x, 0.01f);
-	
+
 	Vector4 textColor = { 1.0f, 0.5f, 0.2f, 1.0f };
 	if (ImGui::ColorEdit4("Text Color", &textColor.x)) {
-		enemySpawnGraphText_->SetColor(textColor);
+	    enemySpawnGraphText_->SetColor(textColor);
 	}
 	ImGui::End();*/
 

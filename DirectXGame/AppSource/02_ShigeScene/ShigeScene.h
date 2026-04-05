@@ -31,6 +31,7 @@
 #include <02_ShigeScene/GameDisplayRange.h>
 #include <GameObject/Enemy/LevelSystemUI.h>
 #include <GameObject/Enemy/TackleEnemy.h>
+#include <UI/Game/SituationTelop.h>
 
 class ShigeScene : public IScene {
 public:
@@ -118,4 +119,7 @@ private:// UI系
 	Transform enemySpawnGraphTextTransform_ = { {1.5f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {930.0f, -80.0f, 0.0f} };
 
 	GameDisplayRange displayRange_ = {};
+
+	std::unique_ptr<SituationTelop> telop_;
+
 };
