@@ -19,15 +19,19 @@ public:
 		float minDistance = 0.1f; // minDistance以上動いてないときは追加しない
 
 		// 見た目
-		Vector4 colorNormal = { 1.0f, 1.0f, 1.0f, 0.65f };
-		Vector4 colorAdd = { 0.6f, 0.9f, 1.0f, 0.75f };
-
-		// 描画パス
-		bool drawNormal = true;
-		bool drawAdd = true;
+		Vector4 color = { 0.6f, 0.9f, 1.0f, 0.75f };
 
 		// テクスチャ
 		std::string texturePath = "Assets/.EngineResource/Texture/white1x1.png";
+	};
+
+	struct GpuVertex
+	{
+		Vector4 position;
+		Vector2 uv;
+		Vector3 normal;
+		Vector4 color;
+		uint32_t textureIndex = 0;
 	};
 
 public:
@@ -36,7 +40,6 @@ public:
 
 	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const Config& config = {});
 	void Update(float deltaTime, const Matrix4x4& vpMatrix);
-	void Draw(CmdObj* cmdObj);
 
 	// ワールド座標で2点を追加
 	void PushSegment(const Vector3& baseWS, const Vector3& tipWS);
@@ -53,6 +56,13 @@ public:
 	Config& GetConfig() { return config_; }
 	const Config& GetConfig() const { return config_; }
 
+	// 今フレーム作られた頂点を返す（最大固定長vectorの先頭から activeVertexCount_ までが有効）
+	const std::vector<GpuVertex>& GetGpuVertices() const { return gpuVertices_; }
+	int GetActiveVertexCount() const { return activeVertexCount_; }
+
+	// テクスチャ
+	int GetTextureHandle() const { return textureHandle_; }
+
 private:
 	struct Sample
 	{
@@ -60,14 +70,6 @@ private:
 		Vector3 tip;
 		float age = 0.0f; // 秒
 		float u = 0.0f;   // 0..1（長さ方向）
-	};
-
-	struct GpuVertex
-	{
-		Vector4 position;
-		Vector2 uv;
-		Vector3 normal;
-		Vector4 color;
 	};
 
 private:
@@ -86,25 +88,14 @@ private:
 	std::deque<Sample> samples_;
 	Vector3 lastBase_{};
 	Vector3 lastTip_{};
-	bool hasLast_ = false;
+	bool hasLast_ = false;	// 一点でも追加されたらtrue
 
-	// GPU転送用（最大固定サイズ）
+	// GPU転送用
 	std::vector<GpuVertex> gpuVertices_; // 最大: (maxSegments+1)*2
 	int maxVertexCount_ = 0;
+	int activeVertexCount_ = 0;
 
-	// 描画用
-	std::unique_ptr<SHEngine::RenderObject> renderNormal_;
-	std::unique_ptr<SHEngine::RenderObject> renderAdd_;
-
-	// ダミーのDrawData
-	int dummyDrawDataIndex_ = -1;
-
-	// SRV/CBVのindex（RenderObject側のバッファインデックス）
-	int srvVertexIndex_ = -1;
-
-	int cbvVpIndex_ = -1;
-	int cbvColorIndex_ = -1;
-	int cbvTextureIndex_ = -1;
+	Matrix4x4 vpMatrix_{ Matrix4x4::Identity() };
 
 	int textureHandle_ = -1;
 };

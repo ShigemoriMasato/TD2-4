@@ -35,106 +35,23 @@ void Trail::Initialize(DrawDataManager* drawDataManager, TextureManager* texture
 	// 初期化
 	std::fill(gpuVertices_.begin(), gpuVertices_.end(), GpuVertex{});
 
-	// InputLayoutに合わせたダミーのDrawDataを作成
-	if (dummyDrawDataIndex_ == -1)
-	{
-		// 初期化
-		std::vector<VertexData> dummyVertices(maxVertexCount_);
-		for (auto& v : dummyVertices)
-		{
-			v.position = Vector4(0, 0, 0, 1);
-			v.texcoord = Vector2(0, 0);
-			v.normal = Vector3(0, 1, 0);
-		}
-
-		// インデックスは「2点×(N-1)区間」→ quad×2tri → 6*(N-1)
-		const int maxSamples = config_.maxSegments + 1;
-		const int maxQuads = maxSamples - 1;
-		std::vector<uint32_t> indices;
-		indices.reserve(maxQuads * 6);
-
-		for (int i = 0; i < maxQuads; ++i)
-		{
-			const uint32_t i0 = uint32_t(i * 2 + 0);
-			const uint32_t i1 = uint32_t(i * 2 + 1);
-			const uint32_t i2 = uint32_t((i + 1) * 2 + 0);
-			const uint32_t i3 = uint32_t((i + 1) * 2 + 1);
-
-			// (i0, i1, i2) (i2, i1, i3)
-			indices.push_back(i0);
-			indices.push_back(i1);
-			indices.push_back(i2);
-
-			indices.push_back(i2);
-			indices.push_back(i1);
-			indices.push_back(i3);
-		}
-
-		drawDataManager_->AddVertexBuffer(dummyVertices);
-		drawDataManager_->AddIndexBuffer(indices);
-		dummyDrawDataIndex_ = drawDataManager_->CreateDrawData();
-	}
-
-	auto drawData = drawDataManager_->GetDrawData(dummyDrawDataIndex_);
-
-	// テクスチャ
+	// テクスチャ設定
 	SetTexture(config_.texturePath);
-
-	// RenderObject（Normal）
-	renderNormal_ = std::make_unique<RenderObject>("Trail_Normal");
-	renderNormal_->Initialize();
-	renderNormal_->SetDrawData(drawData);
-	renderNormal_->psoConfig_.vs = "Trail/SwordTrail.VS.hlsl";
-	renderNormal_->psoConfig_.ps = "Trail/SwordTrail.PS.hlsl";
-	renderNormal_->psoConfig_.blendID = PSO::BlendStateID::Normal;
-	renderNormal_->psoConfig_.depthStencilID = PSO::DepthStencilID::Default;
-	renderNormal_->psoConfig_.rasterizerID = PSO::RasterizerID::CullNone;
-	renderNormal_->SetUseTexture(true);
-
-	// RenderObject（Add）
-	renderAdd_ = std::make_unique<RenderObject>("Trail_Add");
-	renderAdd_->Initialize();
-	renderAdd_->SetDrawData(drawData);
-	renderAdd_->psoConfig_.vs = "Trail/SwordTrail.VS.hlsl";
-	renderAdd_->psoConfig_.ps = "Trail/SwordTrail.PS.hlsl";
-	renderAdd_->psoConfig_.blendID = PSO::BlendStateID::Add;
-	renderAdd_->psoConfig_.depthStencilID = PSO::DepthStencilID::Default;
-	renderAdd_->psoConfig_.rasterizerID = PSO::RasterizerID::CullNone;
-	renderAdd_->SetUseTexture(true);
-
-	// === バッファ構成 ===
-	// VS: t0 = vertices
-	// VS: b0 = vp
-	// PS: b0 = color
-	// PS: b1 = textureIndex
-	srvVertexIndex_ = renderNormal_->CreateSRV(sizeof(GpuVertex), uint32_t(maxVertexCount_), ShaderType::VERTEX_SHADER, "TrailVertices");
-	renderAdd_->CreateSRV(sizeof(GpuVertex), uint32_t(maxVertexCount_), ShaderType::VERTEX_SHADER, "TrailVertices");
-	cbvVpIndex_ = renderNormal_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "VP");
-	renderAdd_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "VP");
-	cbvColorIndex_ = renderNormal_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
-	renderAdd_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
-	cbvTextureIndex_ = renderNormal_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
-	renderAdd_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
 
 	Clear();
 }
 
 void Trail::Clear()
 {
+	// 履歴クリア
 	samples_.clear();
 	hasLast_ = false;
 
+	// GPUに送るようの頂点情報を初期化
 	std::fill(gpuVertices_.begin(), gpuVertices_.end(), GpuVertex{});
-	if (renderNormal_)
-	{
-		renderNormal_->CopyBufferData(srvVertexIndex_, gpuVertices_.data(), sizeof(GpuVertex) * gpuVertices_.size());
-		renderNormal_->instanceNum_ = 0;
-	}
-	if (renderAdd_)
-	{
-		renderAdd_->CopyBufferData(srvVertexIndex_, gpuVertices_.data(), sizeof(GpuVertex) * gpuVertices_.size());
-		renderAdd_->instanceNum_ = 0;
-	}
+
+	// アクティブ頂点数リセット
+	activeVertexCount_ = 0;
 }
 
 void Trail::SetTexture(const std::string& texturePath)
@@ -158,10 +75,14 @@ void Trail::PushSegment(const Vector3& baseWS, const Vector3& tipWS)
 		}
 	}
 
+	// Base点記録
 	lastBase_ = baseWS;
+	// Tip点記録
 	lastTip_ = tipWS;
+	// 面以上になったフラグを立てる
 	hasLast_ = true;
 
+	// 新しいサンプルを追加
 	Sample s;
 	s.base = baseWS;
 	s.tip = tipWS;
@@ -172,12 +93,14 @@ void Trail::PushSegment(const Vector3& baseWS, const Vector3& tipWS)
 	const int maxSamples = config_.maxSegments + 1;
 	while (int(samples_.size()) > maxSamples)
 	{
+		// オーバーしてたら古いものから削除
 		samples_.pop_front();
 	}
 }
 
 void Trail::Update(float deltaTime, const Matrix4x4& vpMatrix)
 {
+	// 無効なら何もしない
 	if (!enabled_) return;
 
 	// age更新 + 寿命を超えたものを削除
@@ -189,20 +112,21 @@ void Trail::Update(float deltaTime, const Matrix4x4& vpMatrix)
 	{
 		samples_.pop_front();
 	}
+
+	// 頂点再構築
 	RebuildVertices(vpMatrix);
 }
 
 void Trail::RebuildVertices(const Matrix4x4& vpMatrix)
 {
-	// サンプルが2未満なら描画しない
+	// サンプルが2未満(面未満)なら何もしない
 	if (samples_.size() < 2)
 	{
-		renderNormal_->instanceNum_ = 0;
-		renderAdd_->instanceNum_ = 0;
+		activeVertexCount_ = 0;
 		return;
 	}
 
-	// Uを0..1で割り当て（簡易：インデックス基準）
+	// Uを0..1で割り当て
 	const int n = int(samples_.size());
 	for (int i = 0; i < n; ++i)
 	{
@@ -212,10 +136,10 @@ void Trail::RebuildVertices(const Matrix4x4& vpMatrix)
 
 	// 頂点組み立て（base/tipの2頂点×サンプル数）
 	const int vertexCount = std::min(n * 2, maxVertexCount_);
+	activeVertexCount_ = vertexCount;
 	for (int i = 0; i < vertexCount / 2; ++i)
 	{
 		const auto& s = samples_[i];
-
 		// フェード（古いほど透明）
 		const float t = std::clamp(1.0f - (s.age / config_.lifeTime), 0.0f, 1.0f);
 
@@ -224,7 +148,7 @@ void Trail::RebuildVertices(const Matrix4x4& vpMatrix)
 				GpuVertex out{};
 				out.position = Vector4(p, 1.0f);
 				out.uv = Vector2(s.u, v);
-				out.normal = Vector3(0.0f, 1.0f, 0.0f); // ライト計算しない前提でダミー
+				out.normal = Vector3(0.0f, 1.0f, 0.0f); // ライトなし
 				out.color = Vector4(1, 1, 1, t);
 				return out;
 			};
@@ -237,38 +161,5 @@ void Trail::RebuildVertices(const Matrix4x4& vpMatrix)
 	for (int i = vertexCount; i < maxVertexCount_; ++i)
 	{
 		gpuVertices_[i] = GpuVertex{};
-	}
-
-	// GPUへ転送
-	renderNormal_->CopyBufferData(srvVertexIndex_, gpuVertices_.data(), sizeof(GpuVertex) * gpuVertices_.size());
-	renderAdd_->CopyBufferData(srvVertexIndex_, gpuVertices_.data(), sizeof(GpuVertex) * gpuVertices_.size());
-
-	// VP、色、テクスチャ
-	renderNormal_->CopyBufferData(cbvVpIndex_, &vpMatrix, sizeof(Matrix4x4));
-	renderAdd_->CopyBufferData(cbvVpIndex_, &vpMatrix, sizeof(Matrix4x4));
-
-	renderNormal_->CopyBufferData(cbvColorIndex_, &config_.colorNormal, sizeof(Vector4));
-	renderAdd_->CopyBufferData(cbvColorIndex_, &config_.colorAdd, sizeof(Vector4));
-
-	renderNormal_->CopyBufferData(cbvTextureIndex_, &textureHandle_, sizeof(int));
-	renderAdd_->CopyBufferData(cbvTextureIndex_, &textureHandle_, sizeof(int));
-
-	renderNormal_->instanceNum_ = 1;
-	renderAdd_->instanceNum_ = 1;
-}
-
-void Trail::Draw(CmdObj* cmdObj)
-{
-	if (!enabled_) return;
-	if (!renderNormal_ || !renderAdd_) return;
-
-
-	if (config_.drawNormal && renderNormal_->instanceNum_ > 0)
-	{
-		renderNormal_->Draw(cmdObj);
-	}
-	if (config_.drawAdd && renderAdd_->instanceNum_ > 0)
-	{
-		renderAdd_->Draw(cmdObj);
 	}
 }
