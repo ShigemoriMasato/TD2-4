@@ -10,6 +10,12 @@ void PrticleEditorScene::Initialize()
 	grid_ = std::make_unique<Grid>();
 	grid_->Initialize(drawDataManager_);
 
+	// Drawer初期化（TrailEditorSceneのtrailDrawerと同じ）
+	{
+		ParticleDrawer::Config cfg{};
+		commonData_->particleDrawer.Initialize(drawDataManager_, modelManager_, cfg);
+	}
+
 	Reset(ParticleType::Fountain);
 
 	BuildParticle();
@@ -25,13 +31,12 @@ void PrticleEditorScene::Reset(ParticleType type)
 	fountainPreset_ = FountainConfig{};
 	fountainPreset_.cfg = particleConfig_;
 
-
 	std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
 	strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), particleConfig_.texturePath.c_str(), _TRUNCATE);
 
 	std::memset(modelPathBuf_, 0, sizeof(modelPathBuf_));
 	strncpy_s(modelPathBuf_, sizeof(modelPathBuf_), particleConfig_.modelPath.c_str(), _TRUNCATE);
-	
+
 	emitPos_ = { 0.0f, 0.0f, 0.0f };
 	requestRebuildParticle_ = true;
 }
@@ -54,6 +59,7 @@ void PrticleEditorScene::SaveData()
 
 	presetDataBank_.Save(presetNameBuf_, currentType_, particleConfig_);
 }
+
 // データ読み込み
 void PrticleEditorScene::LoadData()
 {
@@ -228,12 +234,11 @@ void PrticleEditorScene::DrawImGui()
 #endif
 }
 
-
 std::unique_ptr<IScene> PrticleEditorScene::Update()
 {
 	const float dt = engine_->GetFPSObserver()->GetDeltatime();
 
-	grid_->Update(Vector3(0.0f,0.0f,0.0f), camera_->GetVPMatrix());
+	grid_->Update(Vector3(0.0f, 0.0f, 0.0f), camera_->GetVPMatrix());
 	camera_->Update();
 	const Matrix4x4 vp = camera_->GetVPMatrix();
 
@@ -245,8 +250,6 @@ std::unique_ptr<IScene> PrticleEditorScene::Update()
 
 	particle_.Update(dt, vp);
 
-
-	// Zキーで決定
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z))
 	{
 		return std::make_unique<YokoScene>();
@@ -265,7 +268,10 @@ void PrticleEditorScene::Draw()
 
 	grid_->Draw(cmdObj);
 
-	particle_.Draw(cmdObj);
+	// Drawer経由で描画（TrailEditorSceneのtrailDrawerと同じ運用）
+	commonData_->particleDrawer.Clear();
+	commonData_->particleDrawer.Register(&particle_);
+	commonData_->particleDrawer.Draw(cmdObj, camera_->GetVPMatrix());
 
 	display->PostDraw(cmdObj);
 

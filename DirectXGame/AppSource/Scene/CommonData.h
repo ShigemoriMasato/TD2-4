@@ -7,6 +7,8 @@
 #include <GameObject/Player/Parameter/ParameterData.h>
 #include <GameObject/Effect/Trail/DataBank/TrailPresetDataBank.h>
 #include <GameObject/Effect/Trail/Drawer/TrailDrawer.h>
+#include <GameObject/Effect/Particle/DataBank/ParticlePresetDataBank.h>
+#include <GameObject/Effect/Particle/Drawer/ParticleDrawer.h>
 
 using WindowSet = std::pair<std::unique_ptr<SHEngine::Screen::WindowsAPI>, std::unique_ptr<SHEngine::Screen::SwapChain>>;
 
@@ -31,4 +33,8 @@ struct CommonData {
 	// トレイル
 	TrailPresetDataBank trailPresetDataBank;
 	TrailDrawer trailDrawer;
+
+	// パーティクル
+	ParticlePresetDataBank particlePresetDataBank;
+	ParticleDrawer particleDrawer;
 };
