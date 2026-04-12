@@ -3,9 +3,8 @@
 #include <Camera/DebugCamera.h>
 #include <Render/RenderObject.h>
 #include <Tool/Json/JsonManager.h>
-#include <GameObject/Effect/Trail/Trail.h>
+#include <GameObject/Effect/Trail/MultiTrail/MultiTrail.h>
 #include <GameObject/Effect/Trail/Preset/TrailPreset.h>
-#include <GameObject/Effect/Trail/DataBank/TrailPresetDataBank.h>
 #include <memory>
 #include <string>
 #include <vector>
@@ -21,19 +20,17 @@ private:
 	struct DrawDataUnit
 	{
 		std::string name;
-		std::unique_ptr<SHEngine::RenderObject> render;
 		std::string modelPath;
-		int modelHandle = 0;
+		NodeModelData modelData;
 		int textureIndex = 0;
 	};
 
 private:
 	void BuildModelList();
-	void SelectModel(int index);
-	void SetDefaultName();
+	void BuildJsonList();
 
-	void CreateModelRender();
-	void CreateMarkerRenders();
+	void SelectModel(int index);
+
 	void RebuildTrail();
 
 	void SaveTrailData();
@@ -51,20 +48,22 @@ private:
 
 private:
 
+	std::unique_ptr<DebugCamera> camera_;
+
 	int selectedModelIndex_ = -1;
 
 	// モデル描画データ
-	std::vector<std::unique_ptr<DrawDataUnit>> modelRenders_;
+	std::vector<std::unique_ptr<DrawDataUnit>> modelDataList_;
+	std::unique_ptr<SHEngine::RenderObject> modelRender_;
 	Transform modelTransform_{};
+	Matrix4x4 modelWorld_;
+	bool isModelDraw_ = true;
 
 	// マーカー描画データ
-	DrawDataUnit marker[2];
-
-	// マーカー最終座標
+	std::unique_ptr<SHEngine::RenderObject> marker[2];
 	Vector3 markerPos[2];
+	bool isMarkerDraw_ = true;
 
-private:
-	std::unique_ptr<DebugCamera> camera_;
 
 	// 共通Config
 	Trail::Config trailConfig_{};
@@ -72,18 +71,19 @@ private:
 	RibbonTrailConfig ribbonPreset_{};
 	// Shock 固有
 	ShockwaveRingConfig shockPreset_{};
+	// 上記Configを利用し描画するTrailが必要（編集中のトレイルを描画するため）
+	Trail editingTrail_;
+
 
 	TrailType currentType_ = TrailType::RibbonTrail;
 
 	// Trail
-	Trail trail_;
-	bool emitTrail_ = true;
+	MultiTrail trail_;
+	std::vector<std::string> activeTrailNameList_;
 	bool requestRebuildTrail_ = false;
-
-	// DataBank
-	TrailPresetDataBank presetDataBank_{};
 
 	// ImGuiがstringを許容しないばかりに生まれてしまった産廃
 	char presetNameBuf_[256]{ "trail_01" };
 	char texturePathBuf_[256]{};
+	std::vector<std::string> JsonList_;
 };

@@ -16,7 +16,7 @@ public:
 	void Initialize(
 		SHEngine::TextureManager* textureManager,
 		TrailPresetDataBank* presetData);
-	void Update(float dt, const Matrix4x4& vpMatrix);
+	void Update(float dt);
 	void Clear();
 
 	// プリセット名で追加（例: "Axe_Ribbon"）

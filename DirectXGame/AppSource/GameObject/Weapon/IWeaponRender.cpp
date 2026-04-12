@@ -305,13 +305,13 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 
 	wvp_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 	trailSpear_.SetModelWorld(wvp_);
-	trailSpear_.Update(deltaTime, vpMatrix);
+	trailSpear_.Update(deltaTime);
 	trailSword_.SetModelWorld(wvp_);
-	trailSword_.Update(deltaTime, vpMatrix);
+	trailSword_.Update(deltaTime);
 	trailAxe_.SetModelWorld(wvp_);
-	trailAxe_.Update(deltaTime, vpMatrix);
+	trailAxe_.Update(deltaTime);
 	trailFist_.SetModelWorld(wvp_);
-	trailFist_.Update(deltaTime, vpMatrix);
+	trailFist_.Update(deltaTime);
 	wvp_ *= vpMatrix;
 	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
 	render_->CopyBufferData(0, &wvp_, sizeof(Matrix4x4));

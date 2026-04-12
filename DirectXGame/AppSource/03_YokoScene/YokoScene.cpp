@@ -50,14 +50,14 @@ void YokoScene::Initialize()
 	transform_.scale = { 1.0f, 1.0f, 1.0f };
 
 	TrailDrawer::Config cfg{};
-	trailDrawer_.Initialize(drawDataManager_, cfg);
+	commonData_->trailDrawer.Initialize(drawDataManager_, cfg);
 
-	trail.Initialize(textureManager_, &trailDataBank_);
+	trail.Initialize(textureManager_, &commonData_->trailPresetDataBank);
 	trail.Add("testTrail2");
 	trail.Add("testTrail2_1");
-	trail.RegisterToDrawer(&trailDrawer_);
+	trail.RegisterToDrawer(&commonData_->trailDrawer);
 
-	sparkEffect.Initialize(drawDataManager_, textureManager_, modelManager_, &trailDataBank_, &particleDataBank_);
+	sparkEffect.Initialize(drawDataManager_, textureManager_, modelManager_, &commonData_->trailPresetDataBank, &particleDataBank_);
 }
 
 std::unique_ptr<IScene> YokoScene::Update()
@@ -118,7 +118,7 @@ std::unique_ptr<IScene> YokoScene::Update()
 
 	// トレイル更新
 	trail.SetModelWorld(world);
-	trail.Update(dt, vp);
+	trail.Update(dt);
 
 	// Zキーでエディタ切り替え
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z))
@@ -141,7 +141,7 @@ void YokoScene::Draw()
 	//particle.Draw(cmdObj);
 
 	// トレイル描画
-	trailDrawer_.Draw(cmdObj, camera_->GetVPMatrix());
+	commonData_->trailDrawer.Draw(cmdObj, camera_->GetVPMatrix());
 
 	// sparkEffect描画
 	sparkEffect.Draw(cmdObj);

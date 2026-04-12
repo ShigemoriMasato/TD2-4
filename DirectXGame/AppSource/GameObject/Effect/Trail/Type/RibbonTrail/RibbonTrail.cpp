@@ -8,7 +8,7 @@ void RibbonTrail::Initialize(SHEngine::TextureManager* textureManager, const Rib
 	trail_.Clear();
 }
 
-void RibbonTrail::Update(float dt, const Matrix4x4& vpMatrix)
+void RibbonTrail::Update(float dt)
 {
 	if (isActive_)
 	{
@@ -17,5 +17,5 @@ void RibbonTrail::Update(float dt, const Matrix4x4& vpMatrix)
 		trail_.PushSegment(originWS, tipWS);
 	}
 
-	trail_.Update(dt, vpMatrix);
+	trail_.Update(dt);
 }

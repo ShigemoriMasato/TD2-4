@@ -2,9 +2,6 @@
 #include <stdexcept>
 #include <algorithm>
 
-// static故最強
-std::unordered_map<std::string, TrailPresetVariant> TrailPresetDataBank::cache_{};
-
 // cache_から取得。存在しない場合はLoad_してから保存する
 const TrailPresetVariant& TrailPresetDataBank::Get(const std::string& name)
 {
@@ -36,7 +33,14 @@ TrailType TrailPresetDataBank::GetTypeOf(const std::string& name)
 // Save
 void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg, RibbonTrailConfig& ribbonPreset)
 {
-	json_.Boot("Trail/" + name);
+	// nameに.jsonがついていたら外す
+	std::string baseName = name;
+	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
+	{
+		baseName = baseName.substr(0, baseName.size() - 5);
+	}
+
+	json_.Boot("Trail/" + baseName);
 
 	// type
 	{
@@ -65,7 +69,14 @@ void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg
 }
 void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg, ShockwaveRingConfig& shockPreset)
 {
-	json_.Boot("Trail/" + name);
+	// nameに.jsonがついていたら外す
+	std::string baseName = name;
+	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
+	{
+		baseName = baseName.substr(0, baseName.size() - 5);
+	}
+
+	json_.Boot("Trail/" + baseName);
 
 	// type
 	{
@@ -116,7 +127,14 @@ Trail::Config TrailPresetDataBank::LoadConfig(JsonManager& json)
 }
 TrailPresetVariant TrailPresetDataBank::Load(const std::string& name)
 {
-	json_.Boot("Trail/" + name);
+	// nameに.jsonがついていたら外す
+	std::string baseName = name;
+	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
+	{
+		baseName = baseName.substr(0, baseName.size() - 5);
+	}
+
+	json_.Boot("Trail/" + baseName);
 
 	std::string typeStr;
 	try { typeStr = json_.Get<std::string>("type"); }

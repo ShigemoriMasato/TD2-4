@@ -6,7 +6,7 @@ class ShockwaveRingTrail
 {
 public:
 	void Initialize(SHEngine::TextureManager* textureManager, const ShockwaveRingConfig& preset);
-	void Update(float dt, const Matrix4x4& vpMatrix);
+	void Update(float dt);
 
 	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
 	void Trigger(const Vector3& center);

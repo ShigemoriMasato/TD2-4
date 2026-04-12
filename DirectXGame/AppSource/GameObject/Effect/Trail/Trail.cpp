@@ -97,7 +97,7 @@ void Trail::PushSegment(const Vector3& baseWS, const Vector3& tipWS)
 	}
 }
 
-void Trail::Update(float deltaTime, const Matrix4x4& vpMatrix)
+void Trail::Update(float deltaTime)
 {
 	// 無効なら何もしない
 	if (!enabled_) return;
@@ -113,10 +113,10 @@ void Trail::Update(float deltaTime, const Matrix4x4& vpMatrix)
 	}
 
 	// 頂点再構築
-	RebuildVertices(vpMatrix);
+	RebuildVertices();
 }
 
-void Trail::RebuildVertices(const Matrix4x4& vpMatrix)
+void Trail::RebuildVertices()
 {
 	// サンプルが2未満(面未満)なら何もしない
 	if (samples_.size() < 2)

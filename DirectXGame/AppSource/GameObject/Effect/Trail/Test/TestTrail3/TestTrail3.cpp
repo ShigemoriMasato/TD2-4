@@ -69,7 +69,7 @@ void TestTrail3::Update(float deltaTime, const Matrix4x4& vpMatrix)
 		trail_.PushSegment(baseWS, tipWS);
 	}
 
-	trail_.Update(deltaTime, vpMatrix);
+	trail_.Update(deltaTime);
 
 	if (time_ >= 0.5f)
 	{

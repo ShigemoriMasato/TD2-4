@@ -5,6 +5,8 @@
 #include <Common/KeyConfig/KeyManager.h>
 #include <Shop/Piece.h>
 #include <GameObject/Player/Parameter/ParameterData.h>
+#include <GameObject/Effect/Trail/DataBank/TrailPresetDataBank.h>
+#include <GameObject/Effect/Trail/Drawer/TrailDrawer.h>
 
 using WindowSet = std::pair<std::unique_ptr<SHEngine::Screen::WindowsAPI>, std::unique_ptr<SHEngine::Screen::SwapChain>>;
 
@@ -25,4 +27,8 @@ struct CommonData {
 	int stageNum = 0;	//現在のステージの番号
 
 	bool isWin = false; // 勝利フラグ
+
+	// トレイル
+	TrailPresetDataBank trailPresetDataBank;
+	TrailDrawer trailDrawer;
 };

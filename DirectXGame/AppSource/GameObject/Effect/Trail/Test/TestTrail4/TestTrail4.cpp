@@ -100,7 +100,7 @@ void TestTrail4::Update(float deltaTime, const Matrix4x4& vpMatrix)
 
 	trail_.PushSegment(Origin_, tip_);
 	
-	trail_.Update(deltaTime, vpMatrix);
+	trail_.Update(deltaTime);
 }
 
 void TestTrail4::Draw(CmdObj* cmdObj)

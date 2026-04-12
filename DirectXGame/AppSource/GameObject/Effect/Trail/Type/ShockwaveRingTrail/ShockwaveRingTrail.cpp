@@ -46,7 +46,7 @@ float ShockwaveRingTrail::Hash01(int i)
 	return x - std::floor(x);
 }
 
-void ShockwaveRingTrail::Update(float dt, const Matrix4x4& vpMatrix)
+void ShockwaveRingTrail::Update(float dt)
 {
 	if (!active_) return;
 
@@ -84,7 +84,7 @@ void ShockwaveRingTrail::Update(float dt, const Matrix4x4& vpMatrix)
 		trail_.PushSegment(baseWS, tipWS);
 	}
 
-	trail_.Update(dt, vpMatrix);
+	trail_.Update(dt);
 
 	if (time_ >= preset_.duration)
 	{

@@ -4,9 +4,7 @@
 #include <Camera/DebugCamera.h>
 #include <Render/RenderObject.h>
 
-#include <GameObject/Effect/Trail/DataBank/TrailPresetDataBank.h>
 #include <GameObject/Effect/Trail/MultiTrail/MultiTrail.h>
-#include <GameObject/Effect/Trail/Drawer/TrailDrawer.h>
 
 #include <GameObject/Effect/Particle/DataBank/ParticlePresetDataBank.h>
 #include <GameObject/Effect/Particle/MultiParticle/MultiParticle.h>
@@ -23,11 +21,7 @@ public:
 private:
 	std::unique_ptr<DebugCamera> camera_;
 
-	TrailPresetDataBank trailDataBank_;
 	ParticlePresetDataBank particleDataBank_;
-
-	// 描画
-	TrailDrawer trailDrawer_;
 
 
 	// トレイル

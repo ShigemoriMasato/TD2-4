@@ -81,7 +81,7 @@ void TestTrail2::Update(float deltaTime, const Matrix4x4& vpMatrix)
 	const Vector3 tipWS = ringPos + widthDir * (auraWidth_ * 0.5f);
 
 	trail_.PushSegment(baseWS, tipWS);
-	trail_.Update(deltaTime, vpMatrix);
+	trail_.Update(deltaTime);
 }
 
 void TestTrail2::Draw(CmdObj* cmdObj)

@@ -6,7 +6,7 @@ class RibbonTrail
 {
 public:
 	void Initialize(SHEngine::TextureManager* textureManager, const RibbonTrailConfig& preset);
-	void Update(float dt, const Matrix4x4& vpMatrix);
+	void Update(float dt);
 
 	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
 	void SetEnabled(bool isActive) { isActive_ = isActive; }

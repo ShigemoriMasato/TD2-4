@@ -26,5 +26,5 @@ void TestTrail1::Update(float deltaTime, const Matrix4x4& vpMatrix)
 
 	trail_.PushSegment(baseWS, tipWS);
 
-	trail_.Update(deltaTime, vpMatrix);
+	trail_.Update(deltaTime);
 }

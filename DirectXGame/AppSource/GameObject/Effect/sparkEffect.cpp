@@ -43,7 +43,7 @@ void SparkEffect::Update(float dt, const Matrix4x4& vpMatrix)
 	for (size_t i = 0; i < alive; ++i)
 	{
 		particleTrails_[i]->SetModelWorld(worlds[i]);
-		particleTrails_[i]->Update(dt, vpMatrix);
+		particleTrails_[i]->Update(dt);
 	}
 }
 

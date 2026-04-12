@@ -72,20 +72,20 @@ void MultiTrail::Clear()
 	}
 }
 
-void MultiTrail::Update(float dt, const Matrix4x4& vpMatrix)
+void MultiTrail::Update(float dt)
 {
 	if (!enabled_) return;
 
 	for (auto& [name, trail] : ribbonTrailCache_)
 	{
 		trail->SetModelWorld(modelWorld_);
-		trail->Update(dt, vpMatrix);
+		trail->Update(dt);
 	}
 
 	for (auto& [name, trail] : shockwaveRingTrailCache_)
 	{
 		trail->SetModelWorld(modelWorld_);
-		trail->Update(dt, vpMatrix);
+		trail->Update(dt);
 	}
 }
 
