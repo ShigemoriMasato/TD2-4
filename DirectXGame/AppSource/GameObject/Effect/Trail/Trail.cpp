@@ -148,7 +148,7 @@ void Trail::RebuildVertices(const Matrix4x4& vpMatrix)
 				out.position = Vector4(p, 1.0f);
 				out.uv = Vector2(s.u, v);
 				out.normal = Vector3(0.0f, 1.0f, 0.0f); // ライトなし
-				out.color = Vector4(1, 1, 1, t);
+				out.color = Vector4(config_.color.x, config_.color.y, config_.color.z, config_.color.w * t);
 				return out;
 			};
 

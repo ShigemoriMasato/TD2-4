@@ -1,19 +1,11 @@
 {
-    "cfg.colorAdd": [
+    "cfg.color": [
         0.6000000238418579,
         0.8999999761581421,
         1.0,
         0.75
     ],
-    "cfg.colorNormal": [
-        1.0,
-        1.0,
-        1.0,
-        0.6499999761581421
-    ],
     "cfg.texturePath": "Assets/.EngineResource/Texture/white1x1.png",
-    "cfg.drawAdd": true,
-    "cfg.drawNormal": true,
     "cfg.lifeTime": 0.20000000298023224,
     "cfg.maxSegments": 32,
     "cfg.minDistance": 0.10000000149011612,

@@ -1,18 +1,10 @@
 {
-    "cfg.colorAdd": [
-        0.7983871102333069,
-        0.01609649881720543,
-        0.01609649881720543,
-        0.75
-    ],
-    "cfg.colorNormal": [
+    "cfg.color": [
         0.062745101749897,
         0.0941176488995552,
         0.125490203499794,
         1.0
     ],
-    "cfg.drawAdd": false,
-    "cfg.drawNormal": true,
     "cfg.lifeTime": 0.20000000298023224,
     "cfg.maxSegments": 32,
     "cfg.minDistance": 0.10000000149011612,

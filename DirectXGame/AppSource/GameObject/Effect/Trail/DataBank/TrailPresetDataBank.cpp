@@ -50,6 +50,7 @@ void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg
 		json_.Add("cfg.lifeTime", cfg.lifeTime);
 		json_.Add("cfg.minDistance", cfg.minDistance);
 		json_.Add("cfg.texturePath", cfg.texturePath);
+		json_.Add("cfg.color", cfg.color);
 	}
 
 	// type固有
@@ -78,6 +79,7 @@ void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg
 		json_.Add("cfg.lifeTime", cfg.lifeTime);
 		json_.Add("cfg.minDistance", cfg.minDistance);
 		json_.Add("cfg.texturePath", cfg.texturePath);
+		json_.Add("cfg.color", cfg.color);
 	}
 
 	// type固有
@@ -105,8 +107,9 @@ Trail::Config TrailPresetDataBank::LoadConfig(JsonManager& json)
 	catch (...) {}
 	try { cfg.minDistance = json.Get<float>("cfg.minDistance"); }
 	catch (...) {}
-
 	try { cfg.texturePath = json.Get<std::string>("cfg.texturePath"); }
+	catch (...) {}
+	try { cfg.color = json.Get<Vector4>("cfg.color"); }
 	catch (...) {}
 
 	return cfg;
