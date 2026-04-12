@@ -5,18 +5,18 @@
 class RibbonTrail
 {
 public:
-	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const RibbonTrailConfig& preset);
+	void Initialize(SHEngine::TextureManager* textureManager, const RibbonTrailConfig& preset);
 	void Update(float dt, const Matrix4x4& vpMatrix);
-	void Draw(CmdObj* cmdObj);
 
 	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
+	void SetEnabled(bool isActive) { isActive_ = isActive; }
 
-	void SetEnabled(bool enabled) { enabled_ = enabled; }
-
+	Trail& GetTrail() { return trail_; }
+	const Trail& GetTrail() const { return trail_; }
 
 private:
 	Trail trail_;
 	RibbonTrailConfig preset_{};
 	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
-	bool enabled_ = true;
+	bool isActive_ = false;
 };

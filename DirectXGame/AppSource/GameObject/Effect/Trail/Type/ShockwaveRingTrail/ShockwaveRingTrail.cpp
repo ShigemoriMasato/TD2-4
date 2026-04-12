@@ -3,10 +3,10 @@
 #include <algorithm>
 #include <numbers>
 
-void ShockwaveRingTrail::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const ShockwaveRingConfig& preset)
+void ShockwaveRingTrail::Initialize(SHEngine::TextureManager* textureManager, const ShockwaveRingConfig& preset)
 {
 	preset_ = preset;
-	trail_.Initialize(drawDataManager, textureManager, preset_.cfg);
+	trail_.Initialize(textureManager, preset_.cfg);
 	trail_.SetTexture(preset_.cfg.texturePath);
 	trail_.Clear();
 
@@ -31,14 +31,7 @@ void ShockwaveRingTrail::Stop()
 	trail_.Clear();
 }
 
-Vector3 ShockwaveRingTrail::NormalizeSafe_(const Vector3& v)
-{
-	const float len = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-	if (len <= 1e-6f) return { 0.0f, 1.0f, 0.0f };
-	return { v.x / len, v.y / len, v.z / len };
-}
-
-Vector3 ShockwaveRingTrail::Cross_(const Vector3& a, const Vector3& b)
+Vector3 ShockwaveRingTrail::Cross(const Vector3& a, const Vector3& b)
 {
 	return Vector3(
 		a.y * b.z - a.z * b.y,
@@ -47,7 +40,7 @@ Vector3 ShockwaveRingTrail::Cross_(const Vector3& a, const Vector3& b)
 	);
 }
 
-float ShockwaveRingTrail::Hash01_(int i)
+float ShockwaveRingTrail::Hash01(int i)
 {
 	float x = std::sin((float)i * 12.9898f) * 43758.5453f;
 	return x - std::floor(x);
@@ -63,7 +56,6 @@ void ShockwaveRingTrail::Update(float dt, const Matrix4x4& vpMatrix)
 	trail_.Clear();
 
 	const float t = std::clamp(time_ / preset_.duration, 0.0f, 1.0f);
-	// Smoothstep
 	const float tt = t * t * (3.0f - 2.0f * t);
 	const float radius = preset_.radiusStart + (preset_.radiusEnd - preset_.radiusStart) * tt;
 
@@ -76,12 +68,11 @@ void ShockwaveRingTrail::Update(float dt, const Matrix4x4& vpMatrix)
 		const float s = std::sin(a);
 		const float c = std::cos(a);
 
-		const float noise = (preset_.noiseAmp <= 0.0f) ? 0.0f : (Hash01_(i) * 2.0f - 1.0f) * preset_.noiseAmp;
+		const float noise = (preset_.noiseAmp <= 0.0f) ? 0.0f : (Hash01(i) * 2.0f - 1.0f) * preset_.noiseAmp;
 		const float r = std::max(0.0f, radius + noise);
 
 		const Vector3 pos = position_ + Vector3(c * r, 0.0f, s * r);
 
-		// 法線は常に上向き(0,1,0)で、そこから幅方向のベクトルを求める
 		Vector3 widthDir = Vector3(-s, c, 0.0f).Normalize() * (preset_.thickness * 0.5f);
 
 		Vector3 baseWS = pos - widthDir * (preset_.thickness * 0.5f);
@@ -99,9 +90,4 @@ void ShockwaveRingTrail::Update(float dt, const Matrix4x4& vpMatrix)
 	{
 		Stop();
 	}
-}
-
-void ShockwaveRingTrail::Draw(CmdObj* cmdObj)
-{
-	trail_.Draw(cmdObj);
 }

@@ -1,12 +1,11 @@
 #include "MultiTrail.h"
+#include <GameObject/Effect/Trail/Drawer/TrailDrawer.h>
 #include <stdexcept>
 
 void MultiTrail::Initialize(
-	SHEngine::DrawDataManager* drawDataManager,
 	SHEngine::TextureManager* textureManager,
 	TrailPresetDataBank* presetData)
 {
-	drawDataManager_ = drawDataManager;
 	textureManager_ = textureManager;
 	presetData_ = presetData;
 
@@ -32,7 +31,7 @@ int32_t MultiTrail::Add(const std::string& presetName)
 	{
 		const auto& preset = std::get<RibbonTrailConfig>(presetVar);
 		auto trail = std::make_unique<RibbonTrail>();
-		trail->Initialize(drawDataManager_, textureManager_, preset);
+		trail->Initialize(textureManager_, preset);
 		trail->SetModelWorld(modelWorld_);
 		ribbonTrailCache_[nextId_] = std::move(trail);
 	}
@@ -40,7 +39,7 @@ int32_t MultiTrail::Add(const std::string& presetName)
 	{
 		const auto& preset = std::get<ShockwaveRingConfig>(presetVar);
 		auto trail = std::make_unique<ShockwaveRingTrail>();
-		trail->Initialize(drawDataManager_, textureManager_, preset);
+		trail->Initialize(textureManager_, preset);
 		trail->SetModelWorld(modelWorld_);
 		shockwaveRingTrailCache_[nextId_] = std::move(trail);
 	}
@@ -83,16 +82,16 @@ void MultiTrail::Update(float dt, const Matrix4x4& vpMatrix)
 	}
 }
 
-void MultiTrail::Draw(CmdObj* cmdObj)
+void MultiTrail::RegisterToDrawer(TrailDrawer* drawer)
 {
-	if (!enabled_) return;
+	if (!drawer) return;
 
-	for (auto& [name, trail] : ribbonTrailCache_)
+	for (auto& [id, t] : ribbonTrailCache_)
 	{
-		trail->Draw(cmdObj);
+		drawer->Register(&t->GetTrail());
 	}
-	for (auto& [name, trail] : shockwaveRingTrailCache_)
+	for (auto& [id, t] : shockwaveRingTrailCache_)
 	{
-		trail->Draw(cmdObj);
+		drawer->Register(&t->GetTrail());
 	}
 }

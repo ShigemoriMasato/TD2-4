@@ -5,22 +5,22 @@
 class ShockwaveRingTrail
 {
 public:
-	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const ShockwaveRingConfig& preset);
+	void Initialize(SHEngine::TextureManager* textureManager, const ShockwaveRingConfig& preset);
 	void Update(float dt, const Matrix4x4& vpMatrix);
-	void Draw(CmdObj* cmdObj);
 
 	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
-	void Trigger(const Vector3& centerWS);
-
+	void Trigger(const Vector3& center);
 	void Stop();
-
 
 	bool IsActive() const { return active_; }
 
+	Trail& GetTrail() { return trail_; }
+	const Trail& GetTrail() const { return trail_; }
+
 private:
-	static Vector3 NormalizeSafe_(const Vector3& v);
-	static Vector3 Cross_(const Vector3& a, const Vector3& b);
-	static float Hash01_(int i);
+	static Vector3 NormalizeSafe(const Vector3& v);
+	static Vector3 Cross(const Vector3& a, const Vector3& b);
+	static float Hash01(int i);
 
 private:
 	Trail trail_;
@@ -29,6 +29,5 @@ private:
 
 	bool active_ = false;
 	float time_ = 0.0f;
-
 	Vector3 position_{};
 };

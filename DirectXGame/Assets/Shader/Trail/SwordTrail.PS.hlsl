@@ -27,9 +27,10 @@ PSOutput main(PSInput input)
 {
     PSOutput o;
 
+    // テクスチャ色
     float4 tex = textures[textureIndex].Sample(gSampler, input.texcoord);
 
-    // 帯の基本：テクスチャ * 色 * 頂点色（頂点色でフェード）
+	// テクスチャ色 * トレイル全体の色 * 頂点固有の色
     float4 c = tex * color * input.color;
 
     // alphaが極小なら捨てる

@@ -38,7 +38,7 @@ public:
 	Trail() = default;
 	~Trail() = default;
 
-	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, const Config& config = {});
+	void Initialize(SHEngine::TextureManager* textureManager, const Config& config = {});
 	void Update(float deltaTime, const Matrix4x4& vpMatrix);
 
 	// ワールド座標で2点を追加
@@ -77,7 +77,6 @@ private:
 
 private:
 	// 外部
-	SHEngine::DrawDataManager* drawDataManager_ = nullptr;
 	SHEngine::TextureManager* textureManager_ = nullptr;
 
 	// 設定

@@ -15,9 +15,8 @@ namespace
 	}
 }
 
-void Trail::Initialize(DrawDataManager* drawDataManager, TextureManager* textureManager, const Config& config)
+void Trail::Initialize(TextureManager* textureManager, const Config& config)
 {
-	drawDataManager_ = drawDataManager;
 	textureManager_ = textureManager;
 	config_ = config;
 
