@@ -61,8 +61,15 @@ void MultiTrail::SetEmittingFlag(const int32_t id, bool flag)
 
 void MultiTrail::Clear()
 {
-	ribbonTrailCache_.clear();
-	shockwaveRingTrailCache_.clear();
+	for (auto& [name, trail] : ribbonTrailCache_)
+	{
+		trail->Clear();
+	}
+
+	for (auto& [name, trail] : shockwaveRingTrailCache_)
+	{
+		trail->Clear();
+	}
 }
 
 void MultiTrail::Update(float dt, const Matrix4x4& vpMatrix)

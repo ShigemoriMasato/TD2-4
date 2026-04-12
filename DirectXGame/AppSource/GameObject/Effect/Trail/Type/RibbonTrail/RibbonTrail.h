@@ -11,6 +11,8 @@ public:
 	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
 	void SetEnabled(bool isActive) { isActive_ = isActive; }
 
+	void Clear() { trail_.Clear(); }
+
 	Trail& GetTrail() { return trail_; }
 	const Trail& GetTrail() const { return trail_; }
 

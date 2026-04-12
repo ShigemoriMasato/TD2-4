@@ -12,6 +12,8 @@ public:
 	void Trigger(const Vector3& center);
 	void Stop();
 
+	void Clear() { trail_.Clear(); }
+
 	bool IsActive() const { return active_; }
 
 	Trail& GetTrail() { return trail_; }
