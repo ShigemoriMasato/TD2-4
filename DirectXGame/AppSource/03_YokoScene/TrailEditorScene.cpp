@@ -226,12 +226,17 @@ void TrailEditorScene::LoadTrailData()
 		currentType_ = TrailType::RibbonTrail;
 		ribbonPreset_ = std::get<RibbonTrailConfig>(var);
 		trailConfig_ = ribbonPreset_.cfg;
+		std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
+		strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.texturePath.c_str(), _TRUNCATE);
+
 	}
 	else if (std::holds_alternative<ShockwaveRingConfig>(var))
 	{
 		currentType_ = TrailType::ShockwaveRing;
 		shockPreset_ = std::get<ShockwaveRingConfig>(var);
 		trailConfig_ = shockPreset_.cfg;
+		std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
+		strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.texturePath.c_str(), _TRUNCATE);
 	}
 
 	requestRebuildTrail_ = true;
@@ -298,9 +303,32 @@ void TrailEditorScene::DrawImGui()
 	// 現在表示している(編集は出来ない)プリセット名
 	if (ImGui::TreeNode("表示中トレイル名"))
 	{
-		for (const auto& name : activeTrailNameList_)
+		//for (const auto& name : activeTrailNameList_)
+		//{
+		//	ImGui::Text("%s", name.c_str());
+		//}
+
+		/// ⇩BeginListBoxに変更し、smallButtonもつけ、[削除]を追加描画リストから外せるようにする
+		if (ImGui::BeginListBox("##sihpo;dj", ImVec2(-FLT_MIN - 100, 100)))
 		{
-			ImGui::Text("%s", name.c_str());
+			for (int i = 0; i < (int)activeTrailNameList_.size(); ++i)
+			{
+				ImGui::PushID(i); // 行ごとにIDを分ける
+				// 行全体を横並びにする
+				ImGui::BeginGroup();
+				// 左側：Selectable
+				bool selected = ImGui::Selectable(activeTrailNameList_[i].c_str(), false, 0, ImVec2(200, 0));
+				// 右側：ボタン
+				ImGui::SameLine();
+				if (ImGui::SmallButton("削除"))
+				{
+					activeTrailNameList_.erase(activeTrailNameList_.begin() + i);
+					requestRebuildTrail_ = true;
+				}
+				ImGui::EndGroup();
+				ImGui::PopID();
+			}
+			ImGui::EndListBox();
 		}
 
 		ImGui::TreePop();

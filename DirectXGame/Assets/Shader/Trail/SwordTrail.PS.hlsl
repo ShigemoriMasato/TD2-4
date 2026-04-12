@@ -3,6 +3,7 @@ struct PSInput
     float4 position : SV_POSITION;
     float2 texcoord : TEXCOORD0;
     float4 color : COLOR0;
+    nointerpolation uint textureIndex : TEXCOORD1;
 };
 
 struct PSOutput
@@ -28,7 +29,7 @@ PSOutput main(PSInput input)
     PSOutput o;
 
     // テクスチャ色
-    float4 tex = textures[textureIndex].Sample(gSampler, input.texcoord);
+    float4 tex = textures[input.textureIndex].Sample(gSampler, input.texcoord);
 
 	// テクスチャ色 * トレイル全体の色 * 頂点固有の色
     float4 c = tex * color * input.color;

@@ -149,6 +149,7 @@ void Trail::RebuildVertices()
 				out.uv = Vector2(s.u, v);
 				out.normal = Vector3(0.0f, 1.0f, 0.0f); // ライトなし
 				out.color = Vector4(config_.color.x, config_.color.y, config_.color.z, config_.color.w * t);
+				out.textureIndex = static_cast<uint32_t>(textureHandle_);
 				return out;
 			};
 

@@ -10,6 +10,7 @@ struct VSOutput
     float4 position : SV_POSITION;
     float2 texcoord : TEXCOORD0;
     float4 color : COLOR0;
+    nointerpolation uint textureIndex : TEXCOORD1;
 };
 
 cbuffer VPBuffer : register(b0)
@@ -39,6 +40,7 @@ VSOutput main(VSInput input, uint vertexID : SV_VertexID)
     o.position = mul(ver.position, vp);
     o.texcoord = ver.uv;
     o.color = ver.color;
+    o.textureIndex = ver.textureIndex;
 
     return o;
 }
