@@ -1,6 +1,7 @@
 #include "TrailDrawer.h"
 #include <GameObject/Effect/Trail/Trail.h>
 #include <algorithm>
+#include "ParticleDrawer.h"
 
 void TrailDrawer::Initialize(SHEngine::DrawDataManager* drawDataManager, const Config& cfg)
 {
