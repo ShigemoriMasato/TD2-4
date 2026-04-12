@@ -18,5 +18,5 @@ private:
 	Trail trail_;
 	RibbonTrailConfig preset_{};
 	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
-	bool isActive_ = false;
+	bool isActive_ = true;
 };

@@ -15,7 +15,7 @@ cbuffer ColorBuffer : register(b0)
     float4 color;
 };
 
- TextureIndex : register(b1)
+cbuffer TextureIndex : register(b1)
 {
     int textureIndex;
 };

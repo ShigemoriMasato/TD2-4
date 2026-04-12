@@ -6,9 +6,12 @@
 
 #include <GameObject/Effect/Trail/DataBank/TrailPresetDataBank.h>
 #include <GameObject/Effect/Trail/MultiTrail/MultiTrail.h>
+#include <GameObject/Effect/Trail/Drawer/TrailDrawer.h>
+
 #include <GameObject/Effect/Particle/DataBank/ParticlePresetDataBank.h>
 #include <GameObject/Effect/Particle/MultiParticle/MultiParticle.h>
 #include <GameObject/Effect/sparkEffect.h>
+#include <GameObject/Effect/Particle/Drawer/ParticleDrawer.h>
 
 class YokoScene : public IScene
 {
@@ -23,12 +26,19 @@ private:
 	TrailPresetDataBank trailDataBank_;
 	ParticlePresetDataBank particleDataBank_;
 
-	/// トレイル
+	// 描画
+	TrailDrawer trailDrawer_;
+
+
+	// トレイル
 	MultiTrail trail;
 	int textureIndex_ = 0;
+
+	// モデル
 	std::unique_ptr<SHEngine::RenderObject> render_;
 	Transform transform_;
 
+	// パーティクル
 	SparkEffect sparkEffect;
 
 

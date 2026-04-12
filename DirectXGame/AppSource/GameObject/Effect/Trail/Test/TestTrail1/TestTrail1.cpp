@@ -7,10 +7,8 @@ void TestTrail1::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine
 	cfg.maxSegments = 32;
 	cfg.lifeTime = 0.25f;
 	cfg.minDistance = 0.0f;
-	cfg.drawNormal = true;
-	cfg.drawAdd = false;
 	cfg.texturePath = "Assets/.EngineResource/Texture/uvChecker.png";
-	trail_.Initialize(drawDataManager, textureManager, cfg);
+	trail_.Initialize(textureManager, cfg);
 }
 
 void TestTrail1::Update(float deltaTime, const Matrix4x4& vpMatrix)
@@ -29,9 +27,4 @@ void TestTrail1::Update(float deltaTime, const Matrix4x4& vpMatrix)
 	trail_.PushSegment(baseWS, tipWS);
 
 	trail_.Update(deltaTime, vpMatrix);
-}
-
-void TestTrail1::Draw(CmdObj* cmdObj)
-{
-	trail_.Draw(cmdObj);
 }

@@ -192,13 +192,13 @@ void TrailEditorScene::RebuildTrail()
 	// プレビュー用Trailは共通で1つ。typeに応じた設定を適用する
 	if (currentType_ == TrailType::RibbonTrail)
 	{
-		trail_.Initialize(drawDataManager_, textureManager_, trailConfig_);
+		trail_.Initialize(textureManager_, trailConfig_);
 		trail_.SetTexture(trailConfig_.texturePath);
 		trail_.Clear();
 	}
 	else if (currentType_ == TrailType::ShockwaveRing)
 	{
-		trail_.Initialize(drawDataManager_, textureManager_, trailConfig_);
+		trail_.Initialize(textureManager_, trailConfig_);
 		trail_.SetTexture(trailConfig_.texturePath);
 		trail_.Clear();
 	}
@@ -251,12 +251,6 @@ void TrailEditorScene::DrawConfigUI_()
 	requestRebuildTrail_ |= ImGui::DragInt("cfg.maxSegments", &trailConfig_.maxSegments, 1.0f, 1, 512);
 	requestRebuildTrail_ |= ImGui::DragFloat("cfg.lifeTime", &trailConfig_.lifeTime, 0.01f, 0.001f, 10.0f);
 	requestRebuildTrail_ |= ImGui::DragFloat("cfg.minDistance", &trailConfig_.minDistance, 0.001f, 0.0f, 10.0f);
-
-	requestRebuildTrail_ |= ImGui::ColorEdit4("cfg.colorNormal", &trailConfig_.colorNormal.x);
-	requestRebuildTrail_ |= ImGui::ColorEdit4("cfg.colorAdd", &trailConfig_.colorAdd.x);
-
-	requestRebuildTrail_ |= ImGui::Checkbox("cfg.drawNormal", &trailConfig_.drawNormal);
-	requestRebuildTrail_ |= ImGui::Checkbox("cfg.drawAdd", &trailConfig_.drawAdd);
 
 	if (ImGui::InputText("cfg.texturePath", texturePathBuf_, sizeof(texturePathBuf_)))
 	{
@@ -508,8 +502,6 @@ void TrailEditorScene::Draw()
 			marker[i].render->Draw(cmdObj);
 		}
 	}
-
-	trail_.Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 

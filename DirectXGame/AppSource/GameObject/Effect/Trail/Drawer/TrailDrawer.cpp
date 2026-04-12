@@ -47,9 +47,11 @@ void TrailDrawer::Initialize(SHEngine::DrawDataManager* drawDataManager, const C
 	// VS: t0 頂点配列
 	// VS: b0 viewProjection行列
 	// PS: b0 色
-	srvVertexIndex_ = render_->CreateSRV(sizeof(BatchVertex), uint32_t(maxVertexCountTotal_), ShaderType::VERTEX_SHADER, "TrailBatchVertices");
-	cbvVpIndex_ = render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "VP");
-	cbvColorIndex_ = render_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+	// PS: b1 テクスチャインデック
+	render_->CreateSRV(sizeof(BatchVertex), uint32_t(maxVertexCountTotal_), ShaderType::VERTEX_SHADER, "TrailBatchVertices");
+	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "VP");
+	render_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+	render_->CreateCBV(sizeof(uint32_t), ShaderType::PIXEL_SHADER, "TextureIndex");
 }
 
 void TrailDrawer::SetConfig(const Config& cfg)
@@ -151,12 +153,16 @@ void TrailDrawer::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
 
 	BuildVertices();
 
-	render_->CopyBufferData(srvVertexIndex_, batchVertices_.data(), sizeof(BatchVertex) * batchVertices_.size());
-	render_->CopyBufferData(cbvVpIndex_, &vpMatrix, sizeof(Matrix4x4));
+	render_->CopyBufferData(0, batchVertices_.data(), sizeof(BatchVertex) * batchVertices_.size());
+	render_->CopyBufferData(1, &vpMatrix, sizeof(Matrix4x4));
 
 	// PSのcolorは頂点色で制御するので白固定
 	const Vector4 white = { 1,1,1,1 };
-	render_->CopyBufferData(cbvColorIndex_, &white, sizeof(Vector4));
+	render_->CopyBufferData(2, &white, sizeof(Vector4));
+
+	const uint32_t textureIndex = 0; // 今はテクスチャ1個固定の前提
+	render_->CopyBufferData(3, &textureIndex, sizeof(uint32_t));
+
 
 	render_->instanceNum_ = 1;
 	render_->Draw(cmdObj);

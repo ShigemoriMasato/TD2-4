@@ -49,10 +49,6 @@ void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg
 		json_.Add("cfg.maxSegments", cfg.maxSegments);
 		json_.Add("cfg.lifeTime", cfg.lifeTime);
 		json_.Add("cfg.minDistance", cfg.minDistance);
-		json_.Add("cfg.colorNormal", cfg.colorNormal);
-		json_.Add("cfg.colorAdd", cfg.colorAdd);
-		json_.Add("cfg.drawNormal", cfg.drawNormal);
-		json_.Add("cfg.drawAdd", cfg.drawAdd);
 		json_.Add("cfg.texturePath", cfg.texturePath);
 	}
 
@@ -81,10 +77,6 @@ void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg
 		json_.Add("cfg.maxSegments", cfg.maxSegments);
 		json_.Add("cfg.lifeTime", cfg.lifeTime);
 		json_.Add("cfg.minDistance", cfg.minDistance);
-		json_.Add("cfg.colorNormal", cfg.colorNormal);
-		json_.Add("cfg.colorAdd", cfg.colorAdd);
-		json_.Add("cfg.drawNormal", cfg.drawNormal);
-		json_.Add("cfg.drawAdd", cfg.drawAdd);
 		json_.Add("cfg.texturePath", cfg.texturePath);
 	}
 
@@ -112,16 +104,6 @@ Trail::Config TrailPresetDataBank::LoadConfig(JsonManager& json)
 	try { cfg.lifeTime = json.Get<float>("cfg.lifeTime"); }
 	catch (...) {}
 	try { cfg.minDistance = json.Get<float>("cfg.minDistance"); }
-	catch (...) {}
-
-	try { cfg.colorNormal = json.Get<Vector4>("cfg.colorNormal"); }
-	catch (...) {}
-	try { cfg.colorAdd = json.Get<Vector4>("cfg.colorAdd"); }
-	catch (...) {}
-
-	try { cfg.drawNormal = json.Get<bool>("cfg.drawNormal"); }
-	catch (...) {}
-	try { cfg.drawAdd = json.Get<bool>("cfg.drawAdd"); }
 	catch (...) {}
 
 	try { cfg.texturePath = json.Get<std::string>("cfg.texturePath"); }

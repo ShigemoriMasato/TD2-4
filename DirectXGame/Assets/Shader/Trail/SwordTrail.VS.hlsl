@@ -23,6 +23,7 @@ struct TrailVertex
     float2 uv;
     float3 normal;
     float4 color;
+    uint textureIndex;
 };
 
 // (i0, i1, i2).(i2, i1, i3) の順で入れなければ殺す

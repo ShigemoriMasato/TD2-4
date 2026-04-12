@@ -42,10 +42,10 @@ void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEng
 
 	// トレイル
 	WeaponData* wData = weapon_->GetWeaponData();
-	trailSword_.Initialize(drawDataManager, textureManager, &trailDataBank_);
-	trailSpear_.Initialize(drawDataManager, textureManager, &trailDataBank_);
-	trailAxe_.Initialize(drawDataManager, textureManager, &trailDataBank_);
-	trailFist_.Initialize(drawDataManager, textureManager, &trailDataBank_);
+	trailSword_.Initialize(textureManager, &trailDataBank_);
+	trailSpear_.Initialize(textureManager, &trailDataBank_);
+	trailAxe_.Initialize(textureManager, &trailDataBank_);
+	trailFist_.Initialize(textureManager, &trailDataBank_);
 	trailSword_.Add("Sword_Ribbon");
 	trailSpear_.Add("Spear_Ribbon");
 	trailAxe_.Add("Axe_Ribbon3");
@@ -326,22 +326,22 @@ void IWeaponRender::Draw(CmdObj* cmdObj) {
 		WeaponData* wData = weapon_->GetWeaponData();
 		switch (wData->type) {
 		case WeaponType::Sword:
-			trailSword_.Draw(cmdObj);
+			//trailSword_.Draw(cmdObj);
 			break;
 		case WeaponType::Spear:
-			trailSpear_.Draw(cmdObj);
+			//trailSpear_.Draw(cmdObj);
 			break;
 		case WeaponType::Axe:
-			trailAxe_.Draw(cmdObj);
+			//trailAxe_.Draw(cmdObj);
 			break;
 		case WeaponType::Fist:
-			trailFist_.Draw(cmdObj);
+			//trailFist_.Draw(cmdObj);
 			break;
 		case WeaponType::Pickaxe:
 			if (currentAnimIsThrust_) {
-				trailSpear_.Draw(cmdObj);
+				//trailSpear_.Draw(cmdObj);
 			} else {
-				trailAxe_.Draw(cmdObj);
+				//trailAxe_.Draw(cmdObj);
 			}
 			break;
 		default:

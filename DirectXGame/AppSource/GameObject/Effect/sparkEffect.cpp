@@ -12,7 +12,7 @@ void SparkEffect::Initialize(
 	for (size_t i = 0; i < kMaxParticleTrails_; i++)
 	{
 		auto trail = std::make_unique<MultiTrail>();
-		trail->Initialize(drawDataManager, textureManager, trailPresetDataBank);
+		trail->Initialize(textureManager, trailPresetDataBank);
 		trail->Add("sparrrk");
 		trail->SetEmittingFlag(false);
 		particleTrails_.push_back(std::move(trail));
@@ -49,8 +49,8 @@ void SparkEffect::Update(float dt, const Matrix4x4& vpMatrix)
 
 void SparkEffect::Draw(CmdObj* cmdObj)
 {
-	for (auto& trail : particleTrails_)
-	{
-		trail->Draw(cmdObj);
-	}
+	//for (auto& trail : particleTrails_)
+	//{
+	//	trail->Draw(cmdObj);
+	//}
 }

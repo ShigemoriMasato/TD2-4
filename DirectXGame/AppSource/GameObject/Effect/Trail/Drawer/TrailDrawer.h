@@ -63,9 +63,4 @@ private:
 
 	// 描画オブジェクト
 	std::unique_ptr<SHEngine::RenderObject> render_;
-
-	// いつもの
-	int srvVertexIndex_ = -1; // VS t0
-	int cbvVpIndex_ = -1;     // VS b0
-	int cbvColorIndex_ = -1;  // PS b0
 };

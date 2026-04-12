@@ -49,9 +49,13 @@ void YokoScene::Initialize()
 	transform_.rotate = { 0.0f, 0.0f, 0.0f };
 	transform_.scale = { 1.0f, 1.0f, 1.0f };
 
-	trail.Initialize(drawDataManager_, textureManager_, &trailDataBank_);
+	TrailDrawer::Config cfg{};
+	trailDrawer_.Initialize(drawDataManager_, cfg);
+
+	trail.Initialize(textureManager_, &trailDataBank_);
 	trail.Add("testTrail2");
 	trail.Add("testTrail2_1");
+	trail.RegisterToDrawer(&trailDrawer_);
 
 	sparkEffect.Initialize(drawDataManager_, textureManager_, modelManager_, &trailDataBank_, &particleDataBank_);
 }
@@ -80,7 +84,7 @@ std::unique_ptr<IScene> YokoScene::Update()
 		transform_.position = { 0.0f, -2.0f, 0.0f };
 		transform_.rotate = { 0.0f, 0.0f, 0.0f };
 
-		sparkEffect.Trigger(transform_.position);
+		//sparkEffect.Trigger(transform_.position);
 		start = true;
 	}
 	if (start)
@@ -108,7 +112,7 @@ std::unique_ptr<IScene> YokoScene::Update()
 	}
 
 	// sparkEffect更新
-	sparkEffect.Update(dt, vp);
+	//sparkEffect.Update(dt, vp);
 
 	// トレイル更新
 	trail.SetModelWorld(world);
@@ -135,7 +139,7 @@ void YokoScene::Draw()
 	//particle.Draw(cmdObj);
 
 	// トレイル描画
-	trail.Draw(cmdObj);
+	trailDrawer_.Draw(cmdObj, camera_->GetVPMatrix());
 
 	// sparkEffect描画
 	sparkEffect.Draw(cmdObj);
