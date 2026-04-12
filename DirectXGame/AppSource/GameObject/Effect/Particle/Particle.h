@@ -4,7 +4,6 @@
 #include <Render/DrawDataManager.h>
 #include <Assets/Texture/TextureManager.h>
 #include <Assets/Model/ModelManager.h>
-#include <Render/RenderObject.h>
 #include <GameObject/Random/Random.h>
 
 class Particle
@@ -68,13 +67,12 @@ public:
 	~Particle() = default;
 
 	void Initialize(
-		SHEngine::DrawDataManager* drawDataManager,
 		SHEngine::TextureManager* textureManager,
 		SHEngine::ModelManager* modelManager);
 
 	void SetConfig(const Config& config);
-	void Update(float deltaTime, const Matrix4x4& vpMatrix);
-	void Draw(CmdObj* cmdObj);
+
+	void Update(float deltaTime);
 
 	void SetEmitPos(const Vector3& pos) { emitPos_ = pos; }
 	void SetEmittingFlag(bool flag) { emitting_ = flag; }
@@ -102,11 +100,9 @@ private:
 		uint32_t id = 0;
 	};
 
-	void EnsureRender();
 	void Emit(const Vector3& pos);
 
 private:
-	SHEngine::DrawDataManager* drawDataManager_ = nullptr;
 	SHEngine::TextureManager* textureManager_ = nullptr;
 	SHEngine::ModelManager* modelManager_ = nullptr;
 
@@ -123,7 +119,6 @@ private:
 
 	std::vector<ParticleInstance> instances_;
 
-	std::unique_ptr<SHEngine::RenderObject> render_;
 	int modelHandle_ = -1;
 	int textureHandle_ = -1;
 

@@ -6,14 +6,21 @@ void ParticleDrawer::Initialize(
 	SHEngine::ModelManager* modelManager,
 	const Config& cfg)
 {
+	// ポインタ取得
 	drawDataManager_ = drawDataManager;
 	modelManager_ = modelManager;
 
+	// config設定
+	SetConfig(cfg);
+
+	Clear();
+}
+
+void ParticleDrawer::SetConfig(const Config& cfg)
+{
 	config_ = cfg;
 	config_.maxModels = std::max(1u, config_.maxModels);
 	config_.maxInstancesPerModel = std::max(1u, config_.maxInstancesPerModel);
-
-	Clear();
 }
 
 void ParticleDrawer::Clear()

@@ -37,6 +37,25 @@ namespace
 		return ro;
 	}
 
+	std::unique_ptr<RenderObject> CreateDataRO()
+	{
+		auto ro = std::make_unique<RenderObject>();
+		ro->Initialize();
+
+		ro->psoConfig_.vs = "Game/Field.VS.hlsl";
+		ro->psoConfig_.ps = "Game/Field.PS.hlsl";
+		ro->SetUseTexture(true);
+
+		ro->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
+		ro->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+		ro->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+
+		const Vector4 color = { 1,1,1,1 };
+		ro->CopyBufferData(1, &color, sizeof(Vector4));
+
+		return ro;
+	}
+
 	std::unique_ptr<RenderObject> CreateColorMarkerRO(
 		DrawDataManager* drawDataManager,
 		const NodeModelData& modelData,
@@ -72,6 +91,10 @@ void TrailEditorScene::Initialize()
 	camera_->SetPosition({ 0.0f, 3.0f, -10.0f });
 	camera_->Initialize(input_);
 
+	// ワールドグリッド初期化
+	grid_ = std::make_unique<Grid>();
+	grid_->Initialize(drawDataManager_);
+
 	// TrailDrawer初期化
 	TrailDrawer::Config cfg{};
 	commonData_->trailDrawer.Initialize(drawDataManager_, cfg);
@@ -85,7 +108,7 @@ void TrailEditorScene::Initialize()
 	BuildJsonList();
 
 	// RenderObject作成
-	modelRender_ = CreateTexturedModelRO(drawDataManager_, modelDataList_[0]->modelData, modelDataList_[0]->textureIndex);
+	modelRender_ = CreateDataRO();
 	int modelHandle = modelManager_->LoadModel("Assets/.EngineResource/Model/Cube");
 	auto modelData = modelManager_->GetNodeModelData(modelHandle);
 	marker[0] = CreateTexturedModelRO(drawDataManager_, modelData, 0);
@@ -107,9 +130,10 @@ void TrailEditorScene::Reset(TrailType type)
 {
 	currentType_ = type;
 
-	trailConfig_ = Trail::Config{};
 	std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
 	strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.texturePath.c_str(), _TRUNCATE);
+
+	trailConfig_ = Trail::Config{};
 
 	// ribbon
 	ribbonPreset_ = RibbonTrailConfig{};
@@ -148,9 +172,7 @@ void TrailEditorScene::BuildModelList()
 		auto data = std::make_unique<DrawDataUnit>();
 		data->modelPath = entry.path().generic_string();
 		data->name = entry.path().filename().generic_string();
-		int modelHandle = modelManager_->LoadModel(data->modelPath);
-		data->modelData = modelManager_->GetNodeModelData(modelHandle);
-		data->textureIndex = data->modelData.materials[data->modelData.materialIndex.front()].textureIndex;
+		data->modelIndex = modelManager_->LoadModel(data->modelPath);
 		modelDataList_.push_back(std::move(data));
 	}
 }
@@ -179,7 +201,10 @@ void TrailEditorScene::SelectModel(int index)
 {
 	if (index < 0 || index >= int(modelDataList_.size())) return;
 	selectedModelIndex_ = index;
-	modelRender_->SetDrawData(drawDataManager_->GetDrawData(modelDataList_[index]->modelData.drawDataIndex));
+	auto modelData = modelManager_->GetNodeModelData(modelDataList_[index]->modelIndex);
+	const auto drawData = drawDataManager_->GetDrawData(modelData.drawDataIndex);
+	modelRender_->SetDrawData(drawData);
+	modelDataList_[index]->textureIndex = modelData.materials[modelData.materialIndex.front()].textureIndex;
 }
 
 // Trailの再構築
@@ -478,6 +503,9 @@ std::unique_ptr<IScene> TrailEditorScene::Update()
 	camera_->Update();
 	const Matrix4x4 vp = camera_->GetVPMatrix();
 
+	// ワールドグリッド更新
+	grid_->Update(Vector3(0.0f, 0.0f, 0.0f), vp);
+
 	// トレイル再生成
 	if (requestRebuildTrail_)
 	{
@@ -489,7 +517,7 @@ std::unique_ptr<IScene> TrailEditorScene::Update()
 	UpdateRenders(vp);
 
 	// Trail更新
-	trail_.SetModelWorld(MakeWorld(modelTransform_));
+	trail_.SetModelWorld(modelWorld_);
 	trail_.Update(dt);
 	editingTrail_.PushSegment(markerPos[0], markerPos[1]);
 	editingTrail_.Update(dt);
@@ -512,6 +540,8 @@ void TrailEditorScene::Draw()
 	auto cmdObj = commonData_->cmdObject.get();
 
 	display->PreDraw(cmdObj, true);
+
+	grid_->Draw(cmdObj);
 
 	if (isModelDraw_)modelRender_->Draw(cmdObj);
 

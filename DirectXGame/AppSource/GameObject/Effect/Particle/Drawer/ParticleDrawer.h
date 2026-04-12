@@ -22,9 +22,12 @@ public:
 		SHEngine::DrawDataManager* drawDataManager,
 		SHEngine::ModelManager* modelManager,
 		const Config& cfg = {});
+	void SetConfig(const Config& cfg);
 
 	void Clear();
 	void Register(Particle* particle);
+
+	// シーン内パーティクルをすべて描画。
 	void Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix);
 
 private:

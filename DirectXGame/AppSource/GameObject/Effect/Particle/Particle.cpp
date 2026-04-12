@@ -1,6 +1,8 @@
 #include "Particle.h"
 #include <algorithm>
 #include <random>
+#include <Utility/MatrixFactory.h>
+
 
 namespace
 {
@@ -15,32 +17,14 @@ namespace
 }
 
 void Particle::Initialize(
-	SHEngine::DrawDataManager* drawDataManager,
 	SHEngine::TextureManager* textureManager,
 	SHEngine::ModelManager* modelManager)
 {
-	drawDataManager_ = drawDataManager;
 	textureManager_ = textureManager;
 	modelManager_ = modelManager;
 
 	gpuInstances_.resize(kMaxParticles_);
-
-	EnsureRender();
 	Clear();
-}
-
-void Particle::EnsureRender()
-{
-	render_ = std::make_unique<SHEngine::RenderObject>("Particle");
-	render_->Initialize();
-
-	render_->psoConfig_.vs = "Particle/Particle.VS.hlsl";
-	render_->psoConfig_.ps = "Particle/Particle.PS.hlsl";
-	render_->SetUseTexture(true);
-
-	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "VPMatrix");
-	render_->CreateSRV(sizeof(InstanceGpu), kMaxParticles_, ShaderType::VERTEX_SHADER, "ParticleInstances");
-	render_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "ParticleColor");
 }
 
 void Particle::SetConfig(const Config& config)
@@ -48,10 +32,6 @@ void Particle::SetConfig(const Config& config)
 	config_ = config;
 
 	modelHandle_ = modelManager_->LoadModel(config_.modelPath);
-	auto modelData = modelManager_->GetNodeModelData(modelHandle_);
-	auto drawData = drawDataManager_->GetDrawData(modelData.drawDataIndex);
-	render_->SetDrawData(drawData);
-
 	textureHandle_ = textureManager_->LoadTexture(config_.texturePath);
 }
 
@@ -115,7 +95,7 @@ void Particle::Emit(const Vector3& pos)
 	}
 }
 
-void Particle::Update(float deltaTime, const Matrix4x4& vpMatrix)
+void Particle::Update(float deltaTime)
 {
 	for (auto& ins : instances_)
 	{
@@ -166,19 +146,4 @@ void Particle::Update(float deltaTime, const Matrix4x4& vpMatrix)
 		gpuInstances_[i].textureIndex = static_cast<uint32_t>(textureHandle_);
 		gpuInstances_[i].color = Vector4(1, 1, 1, 1);
 	}
-
-	const Vector4 white = { 1,1,1,1 };
-
-	render_->CopyBufferData(0, &vpMatrix, sizeof(Matrix4x4));
-	render_->CopyBufferData(1, gpuInstances_.data(), sizeof(InstanceGpu) * aliveCount_);
-	render_->CopyBufferData(2, &white, sizeof(Vector4));
-}
-
-void Particle::Draw(CmdObj* cmdObj)
-{
-	if (!render_) return;
-	if (aliveCount_ == 0) return;
-
-	render_->instanceNum_ = uint32_t(aliveCount_);
-	render_->Draw(cmdObj);
 }

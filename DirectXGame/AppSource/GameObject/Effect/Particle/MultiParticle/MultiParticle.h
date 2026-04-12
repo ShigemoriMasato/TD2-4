@@ -8,35 +8,39 @@
 #include <GameObject/Effect/Particle/DataBank/ParticlePresetDataBank.h>
 #include <GameObject/Effect/Particle/Type/FountainParticle/FountainParticle.h>
 
+class ParticleDrawer;
+
 class MultiParticle final
 {
 public:
 	void Initialize(
-		SHEngine::DrawDataManager* drawDataManager,
 		SHEngine::TextureManager* textureManager,
 		SHEngine::ModelManager* modelManager,
 		ParticlePresetDataBank* presetData);
-	void Update(float dt, const Matrix4x4& vpMatrix);
-	void Draw(CmdObj* cmdObj);
+	void Update(float dt);
 	void Clear();
 
-	// プリセット名で追加（例:"testParticle"）
+	// プリセット名で追加（例: "Axe_Ribbon"）
 	int32_t Add(const std::string& presetName);
-	// 発生位置をセット
-	void SetEmitPos(const int32_t id, const Vector3& pos);
+	// モデルに追従するタイプ用。モデルに追従してなくても使ってOK
+	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
 	// 発生フラグをセット
 	void SetEmittingFlag(const int32_t id, bool flag);
+	void SetEmittingFlag(bool flag) { enabled_ = flag; }
+
+	// ParticleDrawerに登録
+	void RegisterToDrawer(ParticleDrawer* drawer);
 
 	std::vector<Matrix4x4> GetParticleWorlds(const int32_t id);
 	size_t GetAliveCount(const int32_t id) const;
 
-
-
 private:
-	SHEngine::DrawDataManager* drawDataManager_ = nullptr;
 	SHEngine::TextureManager* textureManager_ = nullptr;
 	SHEngine::ModelManager* modelManager_ = nullptr;
 	ParticlePresetDataBank* presetData_ = nullptr;
+
+	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
+	bool enabled_ = false;
 
 	int32_t nextId_ = -1;
 	std::unordered_map<int32_t, std::unique_ptr<FountainParticle>> fountainCache_;

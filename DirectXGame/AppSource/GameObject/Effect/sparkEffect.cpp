@@ -7,7 +7,7 @@ void SparkEffect::Initialize(
 	TrailPresetDataBank* trailPresetDataBank,
 	ParticlePresetDataBank* particlePresetDataBank)
 {
-	particle.Initialize(drawDataManager, textureManager, modelManager, particlePresetDataBank);
+	particle.Initialize(textureManager, modelManager, particlePresetDataBank);
 	particle.Add("sparrrrk2");
 	for (size_t i = 0; i < kMaxParticleTrails_; i++)
 	{
@@ -33,7 +33,7 @@ void SparkEffect::Trigger(const Vector3& position)
 
 void SparkEffect::Update(float dt, const Matrix4x4& vpMatrix)
 {
-	particle.Update(dt, vpMatrix);
+	particle.Update(dt);
 
 	// 粒ワールド行列
 	const auto worlds = particle.GetParticleWorlds(particleIndex);

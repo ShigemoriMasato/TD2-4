@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <Tool/Grid/Grid.h>
 
 class TrailEditorScene final : public IScene
 {
@@ -21,7 +22,7 @@ private:
 	{
 		std::string name;
 		std::string modelPath;
-		NodeModelData modelData;
+		int modelIndex = -1;
 		int textureIndex = 0;
 	};
 
@@ -37,18 +38,20 @@ private:
 	void LoadTrailData();
 
 	void DrawImGui();
-	void UpdateRenders(const Matrix4x4& vpMatrix);
-
-	// UIサポート
 	void DrawConfigUI_();
 	void DrawRibbonUI_();
 	void DrawShockwaveUI_();
 
+	void UpdateRenders(const Matrix4x4& vpMatrix);
+
 	void Reset(TrailType type);
 
 private:
-
+	// カメラ
 	std::unique_ptr<DebugCamera> camera_;
+	// ワールドgrid
+	std::unique_ptr<Grid> grid_;
+
 
 	int selectedModelIndex_ = -1;
 
