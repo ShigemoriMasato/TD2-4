@@ -90,10 +90,16 @@ void TitleScene::Draw() {
 #ifdef SH_RELEASE
 	postEffectConfig_.output = commonData_->mainWindow.second->GetCurrentDisplay();
 	postEffect_->Draw(postEffectConfig_);
-#endif
 
 	// ウィンドウへの描画（displayの内容を転送）
 	window->PreDraw(cmdObj, false);
+
+#else
+
+	// ウィンドウへの描画（displayの内容を転送）
+	window->PreDraw(cmdObj, true);
+
+#endif
 
 	//ここ以外で記述する場合、ifdefを忘れないようにすること
 #ifdef USE_IMGUI
