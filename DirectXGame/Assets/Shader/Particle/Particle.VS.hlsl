@@ -6,8 +6,9 @@ cbuffer VP : register(b0)
 struct ParticleInstanceData
 {
     float4x4 world;
-    uint textureIndex;
     float4 color;
+    uint textureIndex;
+    uint modelIndex;
 };
 StructuredBuffer<ParticleInstanceData> gInstances : register(t0);
 

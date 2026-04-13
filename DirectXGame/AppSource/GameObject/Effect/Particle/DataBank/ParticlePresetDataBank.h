@@ -5,7 +5,7 @@
 #include <Tool/Json/JsonManager.h>
 #include <GameObject/Effect/Particle/Preset/ParticlePreset.h>
 
-using ParticlePresetVariant = std::variant<FountainConfig, OnTrailConfig>;
+using ParticlePresetVariant = std::variant<FountainConfig, OnTrailConfig, GoToTargetConfig>;
 
 class ParticlePresetDataBank
 {
@@ -38,8 +38,11 @@ public:
 	/// <summary>
 	/// 生成済みのConfigを Assets/Json/Particle/<name>.json として保存する
 	/// </summary>
-	void Save(const std::string& name, ParticleType type, const Particle::Config& cfg);
-	void SaveParticleSRT(JsonManager& json, const std::string& keyPrefix, const Particle::ParticleSRT& srt);
+	void Save(const std::string& name, FountainConfig& uniqueConfig);
+	void Save(const std::string& name, GoToTargetConfig& uniqueConfig);
+	void Save(const std::string& name, OnTrailConfig& uniqueConfig);
+	void SaveParticleSRT(JsonManager& json, const std::string& keyPrefix, const ParticleSRT& srt);
+
 
 	/// <summary>
 	/// Assets/Json/Particle/<name>.json からプリセットを読み込む
@@ -48,7 +51,7 @@ public:
 	/// <returns></returns>
 	ParticlePresetVariant Load(const std::string& name);
 	Particle::Config LoadConfig(JsonManager& json);
-	Particle::ParticleSRT LoadParticleSRT(JsonManager& json, const std::string& keyPrefix);
+	ParticleSRT LoadParticleSRT(JsonManager& json, const std::string& keyPrefix);
 
 private:
 	// 読み込みにのみ使用

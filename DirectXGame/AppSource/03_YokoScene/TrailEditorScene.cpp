@@ -219,7 +219,8 @@ void TrailEditorScene::RebuildTrail()
 	trail_.RegisterToDrawer(&commonData_->trailDrawer);
 
 	editingTrail_.Clear();
-	editingTrail_.Initialize(textureManager_, trailConfig_);
+	editingTrail_.Initialize(textureManager_);
+	editingTrail_.SetConfig(trailConfig_);
 	commonData_->trailDrawer.Register(&editingTrail_);
 }
 
@@ -328,12 +329,7 @@ void TrailEditorScene::DrawImGui()
 	// 現在表示している(編集は出来ない)プリセット名
 	if (ImGui::TreeNode("表示中トレイル名"))
 	{
-		//for (const auto& name : activeTrailNameList_)
-		//{
-		//	ImGui::Text("%s", name.c_str());
-		//}
-
-		/// ⇩BeginListBoxに変更し、smallButtonもつけ、[削除]を追加描画リストから外せるようにする
+		// ⇩BeginListBoxに変更し、smallButtonもつけ、[削除]を追加描画リストから外せるようにする
 		if (ImGui::BeginListBox("##sihpo;dj", ImVec2(-FLT_MIN - 100, 100)))
 		{
 			for (int i = 0; i < (int)activeTrailNameList_.size(); ++i)

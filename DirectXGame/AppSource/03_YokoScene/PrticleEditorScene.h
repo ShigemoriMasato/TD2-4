@@ -1,15 +1,14 @@
 #pragma once
 #include <Scene/IScene.h>
+#include <Tool/Grid/Grid.h>
 #include <Camera/DebugCamera.h>
 #include <Render/RenderObject.h>
 #include <Tool/Json/JsonManager.h>
-#include <GameObject/Effect/Particle/Particle.h>
+#include <GameObject/Effect/Particle/MultiParticle/MultiParticle.h>
 #include <GameObject/Effect/Particle/Preset/ParticlePreset.h>
-#include <GameObject/Effect/Particle/DataBank/ParticlePresetDataBank.h>
 #include <memory>
 #include <string>
 #include <vector>
-#include <Tool/Grid/Grid.h>
 
 class PrticleEditorScene final : public IScene
 {
@@ -39,6 +38,9 @@ private:
 	void LoadData();
 
 	void DrawImGui();
+	void DrawImGui_Fountain();
+	void DrawImGui_GoToTarget();
+	void DrawImGui_OnTrail();
 
 	void UpdateRenders(const Matrix4x4& vpMatrix);
 
@@ -68,6 +70,8 @@ private:
 	Particle::Config particleConfig_{};
 	// Fountain 固有
 	FountainConfig fountainPreset_{};
+	// GoToTarget 固有
+	GoToTargetConfig goToTargetPreset_{};
 	// OnTrailConfig 固有
 	OnTrailConfig onTrailPreset_{};
 	// 上記Configを利用し描画するParticleが必要（編集中のParticleを描画するため）

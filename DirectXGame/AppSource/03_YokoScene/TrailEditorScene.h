@@ -1,5 +1,6 @@
 #pragma once
 #include <Scene/IScene.h>
+#include <Tool/Grid/Grid.h>
 #include <Camera/DebugCamera.h>
 #include <Render/RenderObject.h>
 #include <Tool/Json/JsonManager.h>
@@ -8,7 +9,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <Tool/Grid/Grid.h>
 
 class TrailEditorScene final : public IScene
 {

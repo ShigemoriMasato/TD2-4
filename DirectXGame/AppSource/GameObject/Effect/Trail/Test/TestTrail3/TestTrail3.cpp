@@ -30,7 +30,8 @@ void TestTrail3::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine
 	cfg.lifeTime = 0.20f;
 	cfg.minDistance = 0.0f;
 	cfg.texturePath = "Assets/.EngineResource/Texture/uvChecker.png";
-	trail_.Initialize(textureManager, cfg);
+	trail_.Initialize(textureManager);
+	trail_.SetConfig(cfg);
 
 	active_ = false;
 	time_ = 0.0f;

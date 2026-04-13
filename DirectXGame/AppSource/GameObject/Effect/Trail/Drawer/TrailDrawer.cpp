@@ -116,7 +116,7 @@ void TrailDrawer::BuildVertices()
 	for (Trail* t : trails_)
 	{
 		// 無効化されているトレイルはcontinue
-		if (!t || !t->IsEnabled()) continue;
+		if (!t || !t->IsEmitting()) continue;
 		// config_.maxTrailsを超えた時はBreak
 		if (slot >= maxTrails) break;
 

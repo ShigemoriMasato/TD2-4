@@ -11,29 +11,6 @@ class Particle
 public:
 	static constexpr uint32_t kMaxParticles_ = 4096;
 
-	struct VectorDynamics
-	{
-		Vector3 value = { 1.0f,1.0f,1.0f };
-		Vector3 velocity;
-		Vector3 acceleration;
-	};
-
-	struct ParticleSRT
-	{
-		VectorDynamics initial;
-
-		bool isRandom_value = false;
-		Vector3 randomRange_value_min;
-		Vector3 randomRange_value_max;
-
-		bool isRandom_velocity = false;
-		Vector3 randomRange_velocity_min;
-		Vector3 randomRange_velocity_max;
-
-		bool isRandom_acceleration = false;
-		Vector3 randomRange_acceleration_min;
-		Vector3 randomRange_acceleration_max;
-	};
 
 	struct Config
 	{
@@ -43,14 +20,6 @@ public:
 		int emitNum = 10;
 		float emitInterval = 0.1f;
 
-		ParticleSRT scale;
-		ParticleSRT rotate;
-		ParticleSRT translate;
-
-		bool isMoveToTarget = false;
-		Vector3 TargetPos = { 0.0f, 0.0f, 0.0f };
-		float moveSpeed = 1.0f;
-
 		std::string texturePath = "Assets/.EngineResource/Texture/white1x1.png";
 		std::string modelPath = "Assets/.EngineResource/Model/Cube";
 	};
@@ -58,70 +27,47 @@ public:
 	struct InstanceGpu
 	{
 		Matrix4x4 world{ Matrix4x4::Identity() };
-		uint32_t textureIndex = 0;
 		Vector4 color{ 1,1,1,1 };
+		uint32_t textureIndex = 0;
+		uint32_t modelIndex = 0;
 	};
 
 public:
 	Particle() = default;
 	~Particle() = default;
 
-	void Initialize(
-		SHEngine::TextureManager* textureManager,
-		SHEngine::ModelManager* modelManager);
+	void Initialize(SHEngine::TextureManager* textureManager, SHEngine::ModelManager* modelManager);
 
-	void SetConfig(const Config& config);
-
-	void Update(float deltaTime);
-
-	void SetEmitPos(const Vector3& pos) { emitPos_ = pos; }
-	void SetEmittingFlag(bool flag) { emitting_ = flag; }
-
-	std::vector<Matrix4x4> GetParticleWorlds() const;
-	size_t GetAliveCount() const { return aliveCount_; }
-
-	const Config& GetConfig() const { return config_; }
-
+	// 制御
 	void Clear();
 
-	// Drawer用（コピー無し）
+	// テクスチャ差し替え
+	void SetTexture(const std::string& texturePath);
+	// モデル差し替え
+	void SetModel(const std::string& modelPath);
+
+	// Drawer用
 	int GetModelHandle() const { return modelHandle_; }
 	int GetTextureHandle() const { return textureHandle_; }
 	const InstanceGpu* GetGpuInstanceData() const { return gpuInstances_.data(); }
 	uint32_t GetGpuInstanceCount() const { return static_cast<uint32_t>(aliveCount_); }
 
-private:
-	struct ParticleInstance
-	{
-		VectorDynamics scale;
-		VectorDynamics rotate;
-		VectorDynamics translate;
-		float age = 0.0f;
-		uint32_t id = 0;
-	};
+	std::vector<Matrix4x4> GetParticleWorlds() const;
+	size_t GetAliveCount() const { return aliveCount_; }
 
-	void Emit(const Vector3& pos);
+	void pushInstance(const Matrix4x4& world, const Vector4& color = { 1,1,1,1 });
 
 private:
+	// 外部
 	SHEngine::TextureManager* textureManager_ = nullptr;
 	SHEngine::ModelManager* modelManager_ = nullptr;
 
-	Config config_{};
-
-	VectorDynamics scale;
-	VectorDynamics rotate;
-	VectorDynamics translate;
-
-	bool emitting_ = false;
-	float emitTimer_ = 0.0f;
-	Vector3 emitPos_{};
+	// 履歴
 	size_t aliveCount_ = 0;
 
-	std::vector<ParticleInstance> instances_;
+	// GPU転送用
+	std::vector<InstanceGpu> gpuInstances_;
 
 	int modelHandle_ = -1;
 	int textureHandle_ = -1;
-
-	// GPUに送る用のインスタンスデータ（固定長）
-	std::vector<InstanceGpu> gpuInstances_;
 };

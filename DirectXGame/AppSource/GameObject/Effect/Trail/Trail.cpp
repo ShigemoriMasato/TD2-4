@@ -15,29 +15,30 @@ namespace
 	}
 }
 
-void Trail::Initialize(TextureManager* textureManager, const Config& config)
+void Trail::Initialize(TextureManager* textureManager)
 {
 	textureManager_ = textureManager;
-	config_ = config;
 
+	Clear();
+}
+
+void Trail::SetConfig(const Config& config)
+{
+	config_ = config;
 	// 分割数を1以上に
 	config_.maxSegments = std::max(1, config_.maxSegments);
 	// 寿命を0.001秒以上に
 	config_.lifeTime = std::max(0.001f, config_.lifeTime);
 	// 最小距離を0以上に
 	config_.minDistance = std::max(0.0f, config_.minDistance);
-
 	// (分割数 + 1) * 2点分の頂点を用意
 	maxVertexCount_ = (config_.maxSegments + 1) * 2;
 	// リサイズ
 	gpuVertices_.resize(maxVertexCount_);
 	// 初期化
 	std::fill(gpuVertices_.begin(), gpuVertices_.end(), GpuVertex{});
-
-	// テクスチャ設定
+	// テクスチャセット
 	SetTexture(config_.texturePath);
-
-	Clear();
 }
 
 void Trail::Clear()
@@ -58,10 +59,9 @@ void Trail::SetTexture(const std::string& texturePath)
 	textureHandle_ = textureManager_->LoadTexture(texturePath);
 }
 
-
 void Trail::PushSegment(const Vector3& baseWS, const Vector3& tipWS)
 {
-	if (!enabled_) return;
+	if (!emitting_) return;
 
 	// 間引き（どちらかが一定以上動いたら追加）
 	if (hasLast_)
@@ -100,7 +100,7 @@ void Trail::PushSegment(const Vector3& baseWS, const Vector3& tipWS)
 void Trail::Update(float deltaTime)
 {
 	// 無効なら何もしない
-	if (!enabled_) return;
+	if (!emitting_) return;
 
 	// age更新 + 寿命を超えたものを削除
 	for (auto& s : samples_)

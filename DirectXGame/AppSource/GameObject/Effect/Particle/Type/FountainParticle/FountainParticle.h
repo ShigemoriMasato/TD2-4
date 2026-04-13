@@ -12,7 +12,7 @@ public:
 	void Update(float dt);
 
 	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
-	void SetEnabled(bool isActive) { isActive_ = isActive; }
+	void SetEnabled(bool isActive);
 
 	void Clear() { particle_.Clear(); }
 
@@ -25,4 +25,17 @@ private:
 	FountainConfig config_{};
 	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
 	bool isActive_ = true;
+
+	float emitTimer_ = 0.0f;
+
+	struct ParticleInstance
+	{
+		ParticleSRT scale;
+		ParticleSRT rotate;
+		ParticleSRT translate;
+		float age = 0.0f;
+		Vector4 color{ 1,1,1,1 };
+	};
+
+	std::vector<ParticleInstance> instances_;
 };
