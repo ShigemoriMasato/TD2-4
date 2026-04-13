@@ -119,6 +119,8 @@ private:
 
 	int rerollCount_ = 3; // リロール可能な回数
 	bool pendingReroll_ = false; // リロール待機フラグ
+	float rerollIntervalTime_ = 1.0f; // 補充インターバル時間（秒）
+	float rerollIntervalTimer_ = 0.0f; // 補充インターバルタイマー
 
 	GameDisplayRange displayRange_;
 };
