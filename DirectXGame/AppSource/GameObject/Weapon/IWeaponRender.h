@@ -6,12 +6,13 @@
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
+#include <Scene/CommonData.h>
 
 class IWeaponRender {
 public:
 	// 初期化関数
 	void Initialize(
-	    SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, IWeapon* weapon, Item itemData, const std::string& trailname);
+		SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, IWeapon* weapon, Item itemData, const std::string& trailname, CommonData& commonData);
 
 	// 更新関数
 	void Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTime);

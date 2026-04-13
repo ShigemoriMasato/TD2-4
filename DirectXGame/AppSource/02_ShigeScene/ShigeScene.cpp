@@ -378,6 +378,8 @@ void ShigeScene::Draw() {
 		render->Draw(cmdObj);
 	}
 
+	commonData_->trailDrawer.Draw(cmdObj, camera_->GetVPMatrix());
+
 	enemyManager_->Draw(cmdObj);
 
 	controllers_[0]->DrawImGui();
@@ -529,7 +531,7 @@ void ShigeScene::MakeWeapon() {
 			}
 			}
 
-			weaponRender->Initialize(drawDataManager_, modelManager_, textureManager_, weapon.get(), piece->GetItem(), name);
+			weaponRender->Initialize(drawDataManager_, modelManager_, textureManager_, weapon.get(), piece->GetItem(), name, *commonData_);
 			weaponRenders_.push_back(std::move(weaponRender));
 
 			weapon->Initialize(weaponID, player_.get());

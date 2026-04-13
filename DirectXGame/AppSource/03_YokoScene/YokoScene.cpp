@@ -49,15 +49,12 @@ void YokoScene::Initialize()
 	transform_.rotate = { 0.0f, 0.0f, 0.0f };
 	transform_.scale = { 1.0f, 1.0f, 1.0f };
 
-	TrailDrawer::Config cfg{};
-	commonData_->trailDrawer.Initialize(drawDataManager_, cfg);
 
 	trail.Initialize(textureManager_, &commonData_->trailPresetDataBank);
 	trail.Add("testTrail2");
 	trail.Add("testTrail2_1");
 	trail.RegisterToDrawer(&commonData_->trailDrawer);
 
-	sparkEffect.Initialize(drawDataManager_, textureManager_, modelManager_, &commonData_->trailPresetDataBank, &particleDataBank_);
 }
 
 std::unique_ptr<IScene> YokoScene::Update()

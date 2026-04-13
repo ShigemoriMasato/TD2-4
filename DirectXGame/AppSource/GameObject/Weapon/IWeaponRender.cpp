@@ -5,7 +5,8 @@
 using namespace SHEngine;
 
 void IWeaponRender::Initialize(
-    SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, IWeapon* weapon, Item itemData, const std::string& trailname) {
+	SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, IWeapon* weapon, Item itemData, const std::string& trailname, CommonData& commonData)
+{
 	render_ = std::make_unique<RenderObject>();
 	weapon_ = weapon;
 
@@ -46,6 +47,7 @@ void IWeaponRender::Initialize(
 	if (trailname.size() != 0) {
 		trail_.Initialize(textureManager, &trailDataBank_);
 		trail_.Add(trailname);
+		trail_.RegisterToDrawer(&commonData.trailDrawer);
 	}
 }
 
@@ -303,7 +305,7 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 	wvp_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 
 	trail_.SetModelWorld(wvp_);
-	trail_.Update(deltaTime, vpMatrix);
+	trail_.Update(deltaTime);
   
 	wvp_ *= vpMatrix;
 	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -316,7 +318,12 @@ void IWeaponRender::Draw(CmdObj* cmdObj) {
 	render_->Draw(cmdObj);
 
 	if (rotOffsetAnim_.anim.GetIsActive() || posOffsetAnim_.anim.GetIsActive()) {
-		trail_.Draw(cmdObj);
+		trail_.SetEmittingFlag(true);
+	}
+	else
+	{
+		trail_.SetEmittingFlag(false);
+		trail_.Clear();
 	}
 }
 

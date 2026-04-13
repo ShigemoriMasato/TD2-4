@@ -72,10 +72,6 @@ void TrailEditorScene::Initialize()
 	camera_->SetPosition({ 0.0f, 3.0f, -10.0f });
 	camera_->Initialize(input_);
 
-	// TrailDrawer初期化
-	TrailDrawer::Config cfg{};
-	commonData_->trailDrawer.Initialize(drawDataManager_, cfg);
-
 	// 編集データ初期化
 	Reset(TrailType::RibbonTrail);
 

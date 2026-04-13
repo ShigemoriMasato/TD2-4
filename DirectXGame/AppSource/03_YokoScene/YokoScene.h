@@ -21,9 +21,6 @@ public:
 private:
 	std::unique_ptr<DebugCamera> camera_;
 
-	ParticlePresetDataBank particleDataBank_;
-
-
 	// トレイル
 	MultiTrail trail;
 	int textureIndex_ = 0;
