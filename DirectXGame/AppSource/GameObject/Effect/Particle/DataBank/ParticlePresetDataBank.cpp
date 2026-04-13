@@ -69,7 +69,7 @@ void ParticlePresetDataBank::Save(const std::string& name, FountainConfig& uniqu
 		baseName = baseName.substr(0, baseName.size() - 5);
 	}
 
-	json_.Boot("Trail/" + baseName);
+	json_.Boot("Particle/" + baseName);
 
 	// type
 	{
@@ -105,7 +105,7 @@ void ParticlePresetDataBank::Save(const std::string& name, GoToTargetConfig& uni
 		baseName = baseName.substr(0, baseName.size() - 5);
 	}
 
-	json_.Boot("Trail/" + baseName);
+	json_.Boot("Particle/" + baseName);
 
 	// type
 	{
@@ -144,7 +144,7 @@ void ParticlePresetDataBank::Save(const std::string& name, OnTrailConfig& unique
 	{
 		baseName = baseName.substr(0, baseName.size() - 5);
 	}
-	json_.Boot("Trail/" + baseName);
+	json_.Boot("Particle/" + baseName);
 	// type
 	{
 		std::string type = "OnTrail";
@@ -228,7 +228,13 @@ Particle::Config ParticlePresetDataBank::LoadConfig(JsonManager& json)
 }
 ParticlePresetVariant ParticlePresetDataBank::Load(const std::string& name)
 {
-	json_.Boot("Particle/" + name);
+	// nameに.jsonがついていたら外す
+	std::string baseName = name;
+	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
+	{
+		baseName = baseName.substr(0, baseName.size() - 5);
+	}
+	json_.Boot("Particle/" + baseName);
 
 	std::string typeStr;
 	try { typeStr = json_.Get<std::string>("type"); }

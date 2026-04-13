@@ -265,51 +265,6 @@ void TrailEditorScene::LoadTrailData()
 }
 
 
-void TrailEditorScene::DrawConfigUI_()
-{
-#ifdef USE_IMGUI
-
-	requestRebuildTrail_ |= ImGui::DragInt("cfg.maxSegments", &trailConfig_.maxSegments, 1.0f, 1, 512);
-	requestRebuildTrail_ |= ImGui::DragFloat("cfg.lifeTime", &trailConfig_.lifeTime, 0.01f, 0.001f, 10.0f);
-	requestRebuildTrail_ |= ImGui::DragFloat("cfg.minDistance", &trailConfig_.minDistance, 0.001f, 0.0f, 10.0f);
-
-	if (ImGui::InputText("cfg.texturePath", texturePathBuf_, sizeof(texturePathBuf_)))
-	{
-		trailConfig_.texturePath = texturePathBuf_;
-		requestRebuildTrail_ = true;
-	}
-
-	requestRebuildTrail_ |= ImGui::ColorEdit4("cfg.color", &trailConfig_.color.x);
-
-#endif
-}
-
-void TrailEditorScene::DrawRibbonUI_()
-{
-#ifdef USE_IMGUI
-
-	ImGui::SeparatorText("リボン型");
-	requestRebuildTrail_ |= ImGui::DragFloat3("ribbon.originLocal", &ribbonPreset_.originLocal.x, 0.01f);
-	requestRebuildTrail_ |= ImGui::DragFloat3("ribbon.tipLocal", &ribbonPreset_.tipLocal.x, 0.01f);
-
-#endif
-}
-void TrailEditorScene::DrawShockwaveUI_()
-{
-#ifdef USE_IMGUI
-
-	ImGui::SeparatorText("Shockwave Ring");
-	requestRebuildTrail_ |= ImGui::DragInt("shock.segments", &shockPreset_.segments, 1.0f, 3, 512);
-	requestRebuildTrail_ |= ImGui::DragFloat("shock.duration", &shockPreset_.duration, 0.01f, 0.01f, 10.0f);
-	requestRebuildTrail_ |= ImGui::DragFloat("shock.radiusStart", &shockPreset_.radiusStart, 0.01f, 0.0f, 100.0f);
-	requestRebuildTrail_ |= ImGui::DragFloat("shock.radiusEnd", &shockPreset_.radiusEnd, 0.01f, 0.0f, 100.0f);
-	requestRebuildTrail_ |= ImGui::DragFloat("shock.thickness", &shockPreset_.thickness, 0.01f, 0.0f, 100.0f);
-	requestRebuildTrail_ |= ImGui::DragFloat("shock.noiseAmp", &shockPreset_.noiseAmp, 0.01f, 0.0f, 100.0f);
-	requestRebuildTrail_ |= ImGui::DragFloat("shock.noiseFreq", &shockPreset_.noiseFreq, 0.01f, 0.0f, 100.0f);
-
-#endif
-}
-
 void TrailEditorScene::DrawImGui()
 {
 #ifdef USE_IMGUI
@@ -422,9 +377,11 @@ void TrailEditorScene::DrawImGui()
 		ImGui::TreePop();
 	}
 
-	ImGui::SeparatorText("Config");
+	ImGui::SeparatorText("共通Config");
 
 	DrawConfigUI_();
+
+	ImGui::SeparatorText("固有Config");
 
 	DrawRibbonUI_();
 
@@ -449,6 +406,51 @@ void TrailEditorScene::DrawImGui()
 
 #endif
 }
+void TrailEditorScene::DrawConfigUI_()
+{
+#ifdef USE_IMGUI
+
+	requestRebuildTrail_ |= ImGui::DragInt("cfg.maxSegments", &trailConfig_.maxSegments, 1.0f, 1, 512);
+	requestRebuildTrail_ |= ImGui::DragFloat("cfg.lifeTime", &trailConfig_.lifeTime, 0.01f, 0.001f, 10.0f);
+	requestRebuildTrail_ |= ImGui::DragFloat("cfg.minDistance", &trailConfig_.minDistance, 0.001f, 0.0f, 10.0f);
+
+	if (ImGui::InputText("cfg.texturePath", texturePathBuf_, sizeof(texturePathBuf_)))
+	{
+		trailConfig_.texturePath = texturePathBuf_;
+		requestRebuildTrail_ = true;
+	}
+
+	requestRebuildTrail_ |= ImGui::ColorEdit4("cfg.color", &trailConfig_.color.x);
+
+#endif
+}
+
+void TrailEditorScene::DrawRibbonUI_()
+{
+#ifdef USE_IMGUI
+
+	ImGui::SeparatorText("リボン型");
+	requestRebuildTrail_ |= ImGui::DragFloat3("ribbon.originLocal", &ribbonPreset_.originLocal.x, 0.01f);
+	requestRebuildTrail_ |= ImGui::DragFloat3("ribbon.tipLocal", &ribbonPreset_.tipLocal.x, 0.01f);
+
+#endif
+}
+void TrailEditorScene::DrawShockwaveUI_()
+{
+#ifdef USE_IMGUI
+
+	ImGui::SeparatorText("Shockwave Ring");
+	requestRebuildTrail_ |= ImGui::DragInt("shock.segments", &shockPreset_.segments, 1.0f, 3, 512);
+	requestRebuildTrail_ |= ImGui::DragFloat("shock.duration", &shockPreset_.duration, 0.01f, 0.01f, 10.0f);
+	requestRebuildTrail_ |= ImGui::DragFloat("shock.radiusStart", &shockPreset_.radiusStart, 0.01f, 0.0f, 100.0f);
+	requestRebuildTrail_ |= ImGui::DragFloat("shock.radiusEnd", &shockPreset_.radiusEnd, 0.01f, 0.0f, 100.0f);
+	requestRebuildTrail_ |= ImGui::DragFloat("shock.thickness", &shockPreset_.thickness, 0.01f, 0.0f, 100.0f);
+	requestRebuildTrail_ |= ImGui::DragFloat("shock.noiseAmp", &shockPreset_.noiseAmp, 0.01f, 0.0f, 100.0f);
+	requestRebuildTrail_ |= ImGui::DragFloat("shock.noiseFreq", &shockPreset_.noiseFreq, 0.01f, 0.0f, 100.0f);
+
+#endif
+}
+
 
 void TrailEditorScene::UpdateRenders(const Matrix4x4& vpMatrix)
 {

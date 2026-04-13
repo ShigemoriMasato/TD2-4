@@ -75,7 +75,7 @@ private:
 	// OnTrailConfig 固有
 	OnTrailConfig onTrailPreset_{};
 	// 上記Configを利用し描画するParticleが必要（編集中のParticleを描画するため）
-	Particle editingParticle_;
+	MultiParticle editingParticle_;
 
 
 	ParticleType currentType_ = ParticleType::Fountain;
@@ -87,7 +87,7 @@ private:
 	bool requestRebuildParticle_ = false;
 
 	// ImGuiがstringを許容しないばかりに生まれてしまった産廃
-	char presetNameBuf_[256]{ "particle_01" };
+	char presetNameBuf_[256]{};
 	char texturePathBuf_[256]{};
 	char modelPathBuf_[256]{};
 	std::vector<std::string> JsonList_;

@@ -203,9 +203,10 @@ void PrticleEditorScene::RebuildParticle()
 	particle_.RegisterToDrawer(&commonData_->particleDrawer);
 
 	editingParticle_.Clear();
-	editingParticle_.Initialize(textureManager_, modelManager_);
-	//editingParticle_.SetConfig(particleConfig_);
-	commonData_->particleDrawer.Register(&editingParticle_);
+	editingParticle_.Initialize(textureManager_, modelManager_, &commonData_->particlePresetDataBank);
+	if (presetNameBuf_[0] == '\0') return;
+	editingParticle_.Add(presetNameBuf_);
+	editingParticle_.RegisterToDrawer(&commonData_->particleDrawer);
 }
 
 // データ保存
@@ -279,7 +280,6 @@ void PrticleEditorScene::DrawImGui()
 #ifdef USE_IMGUI
 	ImGui::Begin("ParticleEditor");
 
-
 	// 現在編集中のプリセット名
 	if (ImGui::TreeNode("編集中トレイル名"))
 	{
@@ -316,6 +316,7 @@ void PrticleEditorScene::DrawImGui()
 		ImGui::TreePop();
 	}
 
+	ImGui::Separator();
 
 	// モデル選択
 	if (ImGui::TreeNode("表示モデル選択"))
@@ -357,7 +358,7 @@ void PrticleEditorScene::DrawImGui()
 				if (ImGui::SmallButton("編集"))
 				{
 					strncpy_s(presetNameBuf_, sizeof(presetNameBuf_), JsonList_[i].c_str(), _TRUNCATE);
-					LoadData();
+					requestRebuildParticle_ = true;
 				}
 
 				ImGui::SameLine();
@@ -437,8 +438,8 @@ void PrticleEditorScene::DrawImGui()
 	ImGui::Separator();
 
 	if (ImGui::Button("Save")) SaveData();
-	ImGui::SameLine();
-	if (ImGui::Button("Load")) LoadData();
+	ImGui::Checkbox("モデル描画", &isModelDraw_);
+	ImGui::Checkbox("エミッターAABB描画", &isEmitterDraw_);
 
 	ImGui::End();
 #endif
@@ -597,8 +598,8 @@ std::unique_ptr<IScene> PrticleEditorScene::Update()
 	// パーティクル更新
 	particle_.SetModelWorld(modelWorld_);
 	particle_.Update(dt);
-	//editingParticle_.SetModelWorld(modelWorld_);
-	//editingParticle_.Update(dt);
+	editingParticle_.SetModelWorld(modelWorld_);
+	editingParticle_.Update(dt);
 
 	// Zキーで切り替え
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z))
@@ -619,7 +620,7 @@ void PrticleEditorScene::Draw()
 
 	grid_->Draw(cmdObj);
 
-	if (isModelDraw_)modelRender_->Draw(cmdObj);
+	//if (isModelDraw_)modelRender_->Draw(cmdObj);
 
 	// if (isEmitterDraw_) emitterAABBRender_->Draw(cmdObj);
 
