@@ -24,7 +24,7 @@ void Terminal::Run() {
 	}
 
 	engine_->StopGPU(SHEngine::Command::Type::Direct);
-
+	engine_->StopGPU(SHEngine::Command::Type::Compute);
 }
 
 bool Terminal::IsLoop() const {

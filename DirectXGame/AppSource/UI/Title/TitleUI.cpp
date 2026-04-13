@@ -2,14 +2,16 @@
 #include <../Engine/Assets/Audio/AudioManager.h>
 #include <Utility/Color.h>
 #include <Utility/MatrixFactory.h>
+#include <Scene/CommonData.h>
 
 #ifdef USE_IMGUI
 #include <imgui/imgui.h>
 #endif
 
-void TitleUI::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager) {
+void TitleUI::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, CommonData* commonData) {
 	drawDataManager_ = drawDataManager;
 	modelManager_ = modelManager;
+	commonData_ = commonData;
 
 	// モデルパスの配列
 	const std::array<const char*, kUICount> modelPaths = {"Assets/Model/UI/Title/Logo", "Assets/Model/UI/Title/Start", "Assets/Model/UI/Title/Option", "Assets/Model/UI/Title/Quit"};
@@ -55,7 +57,8 @@ void TitleUI::UpdateSelection(bool upPressed, bool downPressed) {
 
 		uint32_t handle = AudioManager::GetInstance().GetHandleByName("CursorMove.mp3");
 		if (handle != 0) {
-			AudioManager::GetInstance().Play(handle, 0.1f, false);
+			float volume = commonData_->seVolume * commonData_->masterVolume;
+			AudioManager::GetInstance().Play(handle, volume, false);
 		}
 	}
 
@@ -70,7 +73,8 @@ void TitleUI::UpdateSelection(bool upPressed, bool downPressed) {
 
 		uint32_t handle = AudioManager::GetInstance().GetHandleByName("CursorMove.mp3");
 		if (handle != 0) {
-			AudioManager::GetInstance().Play(handle, 0.1f, false);
+			float volume = commonData_->seVolume * commonData_->masterVolume;
+			AudioManager::GetInstance().Play(handle, volume, false);
 		}
 	}
 }

@@ -4,7 +4,8 @@
 
 using namespace SHEngine;
 
-void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, IWeapon* weapon, Item itemData) {
+void IWeaponRender::Initialize(
+    SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, IWeapon* weapon, Item itemData, const std::string& trailname) {
 	render_ = std::make_unique<RenderObject>();
 	weapon_ = weapon;
 
@@ -42,14 +43,10 @@ void IWeaponRender::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEng
 
 	// トレイル
 	WeaponData* wData = weapon_->GetWeaponData();
-	trailSword_.Initialize(textureManager, &trailDataBank_);
-	trailSpear_.Initialize(textureManager, &trailDataBank_);
-	trailAxe_.Initialize(textureManager, &trailDataBank_);
-	trailFist_.Initialize(textureManager, &trailDataBank_);
-	trailSword_.Add("Sword_Ribbon");
-	trailSpear_.Add("Spear_Ribbon");
-	trailAxe_.Add("Axe_Ribbon3");
-	trailFist_.Add("Fist_Ribbon");
+	if (trailname.size() != 0) {
+		trail_.Initialize(textureManager, &trailDataBank_);
+		trail_.Add(trailname);
+	}
 }
 
 void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTime) {
@@ -304,14 +301,10 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 	}
 
 	wvp_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
-	trailSpear_.SetModelWorld(wvp_);
-	trailSpear_.Update(deltaTime);
-	trailSword_.SetModelWorld(wvp_);
-	trailSword_.Update(deltaTime);
-	trailAxe_.SetModelWorld(wvp_);
-	trailAxe_.Update(deltaTime);
-	trailFist_.SetModelWorld(wvp_);
-	trailFist_.Update(deltaTime);
+
+	trail_.SetModelWorld(wvp_);
+	trail_.Update(deltaTime, vpMatrix);
+  
 	wvp_ *= vpMatrix;
 	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
 	render_->CopyBufferData(0, &wvp_, sizeof(Matrix4x4));
@@ -323,30 +316,7 @@ void IWeaponRender::Draw(CmdObj* cmdObj) {
 	render_->Draw(cmdObj);
 
 	if (rotOffsetAnim_.anim.GetIsActive() || posOffsetAnim_.anim.GetIsActive()) {
-		WeaponData* wData = weapon_->GetWeaponData();
-		switch (wData->type) {
-		case WeaponType::Sword:
-			//trailSword_.Draw(cmdObj);
-			break;
-		case WeaponType::Spear:
-			//trailSpear_.Draw(cmdObj);
-			break;
-		case WeaponType::Axe:
-			//trailAxe_.Draw(cmdObj);
-			break;
-		case WeaponType::Fist:
-			//trailFist_.Draw(cmdObj);
-			break;
-		case WeaponType::Pickaxe:
-			if (currentAnimIsThrust_) {
-				//trailSpear_.Draw(cmdObj);
-			} else {
-				//trailAxe_.Draw(cmdObj);
-			}
-			break;
-		default:
-			break;
-		}
+		trail_.Draw(cmdObj);
 	}
 }
 

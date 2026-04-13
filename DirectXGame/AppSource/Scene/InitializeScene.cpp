@@ -96,6 +96,7 @@ void InitializeScene::Initialize() {
 	keyManager->SetMouse(Key::Use, 1, KeyState::Trigger);
 
 	keyManager->SetMouse(Key::AutoPlace, 1, KeyState::Trigger);
+	keyManager->SetMouse(Key::AutoPlace, 1, KeyState::Hold);
 
 	//================================================================================
 

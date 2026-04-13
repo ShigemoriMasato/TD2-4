@@ -119,6 +119,13 @@ public:
 	/// </summary>
 	void StopAll();
 
+	/// <summary>
+	/// 再生中の音声の音量を変更
+	/// </summary>
+	/// <param name="soundHandle"></param>
+	/// <param name="volume"></param>
+	void SetVolume(uint32_t soundHandle, float volume);
+
 private:
 	AudioManager() = default;
 	~AudioManager() = default;

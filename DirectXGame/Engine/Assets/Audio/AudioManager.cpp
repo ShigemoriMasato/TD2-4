@@ -295,6 +295,16 @@ void AudioManager::StopAll() {
 	activeVoices_.clear();
 }
 
+void AudioManager::SetVolume(uint32_t soundHandle, float volume) {
+	auto it = activeVoices_.find(soundHandle);
+	if (it != activeVoices_.end()) {
+		IXAudio2SourceVoice* pSourceVoice = it->second;
+		if (pSourceVoice) {
+			pSourceVoice->SetVolume(volume);
+		}
+	}
+}
+
 void AudioManager::SoundPlayMp3(const uint32_t& soundHandle, bool isloop) {
 	HRESULT result;
 

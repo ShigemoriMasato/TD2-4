@@ -31,6 +31,7 @@
 #include <02_ShigeScene/GameDisplayRange.h>
 #include <GameObject/Enemy/LevelSystemUI.h>
 #include <GameObject/Enemy/TackleEnemy.h>
+#include <UI/Game/SituationTelop.h>
 
 class ShigeScene : public IScene {
 public:
@@ -98,6 +99,10 @@ private:// System系
 	Vector3 cameraTargetOffset_ = {0.0f, 0.0f, 0.0f};
 	Vector2 lastMousePos_ = {0.0f, 0.0f};
 
+	//
+	float bgmVolume_ = 0.5f;
+	float seVolume_ = 0.5f;
+
 private:// Shop
 
 	std::unique_ptr<ShopScene> shopScene_;
@@ -118,4 +123,7 @@ private:// UI系
 	Transform enemySpawnGraphTextTransform_ = { {1.5f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {930.0f, -80.0f, 0.0f} };
 
 	GameDisplayRange displayRange_ = {};
+
+	std::unique_ptr<SituationTelop> telop_;
+
 };
