@@ -1,0 +1,153 @@
+{
+    "cfg.emitInterval": 0.10000000149011612,
+    "cfg.emitNum": 10,
+    "cfg.lifeTime": 1.0,
+    "cfg.modelPath": "Assets/.EngineResource/Model/Cube",
+    "cfg.speed": 1.0,
+    "cfg.texturePath": "Assets/.EngineResource/Texture/white1x1.png",
+    "init.rotate.acc": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.rotate.isRandomAcc": false,
+    "init.rotate.isRandomVal": true,
+    "init.rotate.isRandomVel": false,
+    "init.rotate.randomRangeAccMax": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.rotate.randomRangeAccMin": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.rotate.randomRangeValMax": [
+        1.0,
+        1.0,
+        1.0
+    ],
+    "init.rotate.randomRangeValMin": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.rotate.randomRangeVelMax": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.rotate.randomRangeVelMin": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.rotate.val": [
+        1.0,
+        1.0,
+        1.0
+    ],
+    "init.rotate.vel": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.scale.acc": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.scale.isRandomAcc": false,
+    "init.scale.isRandomVal": true,
+    "init.scale.isRandomVel": false,
+    "init.scale.randomRangeAccMax": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.scale.randomRangeAccMin": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.scale.randomRangeValMax": [
+        2.0,
+        2.0,
+        2.0
+    ],
+    "init.scale.randomRangeValMin": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.scale.randomRangeVelMax": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.scale.randomRangeVelMin": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.scale.val": [
+        1.0,
+        1.0,
+        1.0
+    ],
+    "init.scale.vel": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.translate.acc": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.translate.isRandomAcc": false,
+    "init.translate.isRandomVal": true,
+    "init.translate.isRandomVel": false,
+    "init.translate.randomRangeAccMax": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.translate.randomRangeAccMin": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.translate.randomRangeValMax": [
+        0.0,
+        10.0,
+        10.0
+    ],
+    "init.translate.randomRangeValMin": [
+        -10.0,
+        -10.0,
+        -10.0
+    ],
+    "init.translate.randomRangeVelMax": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.translate.randomRangeVelMin": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.translate.val": [
+        1.0,
+        1.0,
+        1.0
+    ],
+    "init.translate.vel": [
+        0.0,
+        3.0,
+        0.0
+    ],
+    "type": "Fountain"
+}

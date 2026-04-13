@@ -108,7 +108,6 @@ void PrticleEditorScene::Initialize()
 	// 初期モデルを選択
 	SelectModel(0);
 
-	RebuildParticle();
 }
 
 // 編集データ初期化
@@ -127,6 +126,14 @@ void PrticleEditorScene::Reset(ParticleType type)
 	// Fountain
 	fountainPreset_ = FountainConfig{};
 	fountainPreset_.cfg = particleConfig_;
+
+	// GoToTarget
+	goToTargetPreset_ = GoToTargetConfig{};
+	goToTargetPreset_.cfg = particleConfig_;
+
+	// OnTrail
+	onTrailPreset_ = OnTrailConfig{};
+	onTrailPreset_.cfg = particleConfig_;
 }
 
 // "Assets/Model/"以下のモデルをリストアップしてmodelDataList_作成。武器追従トレイルにしか使わない機能だから簡易的でよい
@@ -192,7 +199,7 @@ void PrticleEditorScene::SelectModel(int index)
 }
 
 // Particleの再構築
-void PrticleEditorScene::RebuildParticle()
+void PrticleEditorScene::RebuildDrawParticle()
 {
 	particle_.Clear();
 	particle_.Initialize(textureManager_, modelManager_, &commonData_->particlePresetDataBank);
@@ -201,7 +208,9 @@ void PrticleEditorScene::RebuildParticle()
 		particle_.Add(name);
 	}
 	particle_.RegisterToDrawer(&commonData_->particleDrawer);
-
+}
+void PrticleEditorScene::RebuildEditParticle()
+{
 	editingParticle_.Clear();
 	editingParticle_.Initialize(textureManager_, modelManager_, &commonData_->particlePresetDataBank);
 	if (presetNameBuf_[0] == '\0') return;
@@ -219,18 +228,26 @@ void PrticleEditorScene::RebuildParticle()
 	{
 		onTrailPreset_ = std::get<OnTrailConfig>(presetVar);
 	}
-	//if (currentType_ == ParticleType::Fountain)
-	//{
-	//	editingParticle_.SetConfig(slot, fountainPreset_);
-	//}
-	//else if (currentType_ == ParticleType::GoToTarget)
-	//{
-	//	editingParticle_.SetConfig(slot, goToTargetPreset_);
-	//}
-	//else if (currentType_ == ParticleType::OnTrail)
-	//{
-	//	editingParticle_.SetConfig(slot, onTrailPreset_);
-	//}
+	editingParticle_.RegisterToDrawer(&commonData_->particleDrawer);
+}
+void PrticleEditorScene::RebuildEditParticleCurrent()
+{
+	editingParticle_.Clear();
+	editingParticle_.Initialize(textureManager_, modelManager_, &commonData_->particlePresetDataBank);
+	if (presetNameBuf_[0] == '\0') return;
+	int32_t slot = editingParticle_.Add(presetNameBuf_);
+	if (currentType_ == ParticleType::Fountain)
+	{
+		editingParticle_.SetConfig(slot, fountainPreset_);
+	}
+	else if (currentType_ == ParticleType::GoToTarget)
+	{
+		editingParticle_.SetConfig(slot, goToTargetPreset_);
+	}
+	else if (currentType_ == ParticleType::OnTrail)
+	{
+		editingParticle_.SetConfig(slot, onTrailPreset_);
+	}
 	editingParticle_.RegisterToDrawer(&commonData_->particleDrawer);
 }
 
@@ -295,7 +312,6 @@ void PrticleEditorScene::LoadData()
 		strncpy_s(modelPathBuf_, sizeof(modelPathBuf_), particleConfig_.modelPath.c_str(), _TRUNCATE);
 	}
 
-	requestRebuildParticle_ = true;
 }
 
 
@@ -306,14 +322,14 @@ void PrticleEditorScene::DrawImGui()
 	ImGui::Begin("ParticleEditor");
 
 	// 現在編集中のプリセット名
-	if (ImGui::TreeNode("編集中トレイル名"))
+	if (ImGui::TreeNode("編集中パーティクル名"))
 	{
 		ImGui::InputText("##tinnko", presetNameBuf_, sizeof(presetNameBuf_));
 
 		ImGui::TreePop();
 	}
 	// 現在表示している(編集は出来ない)プリセット名
-	if (ImGui::TreeNode("表示中トレイル名"))
+	if (ImGui::TreeNode("表示中パーティクル名"))
 	{
 		// ⇩BeginListBoxに変更し、smallButtonもつけ、[削除]を追加描画リストから外せるようにする
 		if (ImGui::BeginListBox("##sihpo;dj", ImVec2(-FLT_MIN - 100, 100)))
@@ -323,14 +339,12 @@ void PrticleEditorScene::DrawImGui()
 				ImGui::PushID(i); // 行ごとにIDを分ける
 				// 行全体を横並びにする
 				ImGui::BeginGroup();
-				// 左側：Selectable
-				bool selected = ImGui::Selectable(activeParticleNameList_[i].c_str(), false, 0, ImVec2(200, 0));
-				// 右側：ボタン
+				// ボタン
 				ImGui::SameLine();
 				if (ImGui::SmallButton("削除"))
 				{
 					activeParticleNameList_.erase(activeParticleNameList_.begin() + i);
-					requestRebuildParticle_ = true;
+					requestRebuildDrawParticle_ = true;
 				}
 				ImGui::EndGroup();
 				ImGui::PopID();
@@ -354,7 +368,6 @@ void PrticleEditorScene::DrawImGui()
 				if (ImGui::Selectable(modelDataList_[i]->name.c_str(), selected))
 				{
 					SelectModel(i);
-					requestRebuildParticle_ = true;
 				}
 			}
 			ImGui::EndListBox();
@@ -373,17 +386,17 @@ void PrticleEditorScene::DrawImGui()
 
 				// 行全体を横並びにする
 				ImGui::BeginGroup();
-
+				
 				// 左側：Selectable
 				bool selected = ImGui::Selectable(JsonList_[i].c_str(), false, 0, ImVec2(200, 0));
 
-				// 右側：ボタン
 				ImGui::SameLine();
 
 				if (ImGui::SmallButton("編集"))
 				{
 					strncpy_s(presetNameBuf_, sizeof(presetNameBuf_), JsonList_[i].c_str(), _TRUNCATE);
-					requestRebuildParticle_ = true;
+					// EditerのデータをJsonのデータに合わせたい
+					requestRebuildEditParticle_ = true;
 				}
 
 				ImGui::SameLine();
@@ -391,17 +404,11 @@ void PrticleEditorScene::DrawImGui()
 				if (ImGui::SmallButton("描画"))
 				{
 					activeParticleNameList_.push_back(JsonList_[i]);
-					requestRebuildParticle_ = true;
+					// 描画リストに追加
+					requestRebuildDrawParticle_ = true;
 				}
 
 				ImGui::EndGroup();
-
-				// 単押し処理（Selectable）
-				if (selected)
-				{
-					activeParticleNameList_.push_back(JsonList_[i]);
-					requestRebuildParticle_ = true;
-				}
 
 				ImGui::PopID();
 			}
@@ -421,27 +428,28 @@ void PrticleEditorScene::DrawImGui()
 			if (currentType_ != ParticleType(t))
 			{
 				Reset(ParticleType(t));
-				requestRebuildParticle_ = true;
+				requestRebuildEditParticleCurrent_ = true;
 			}
 		}
 	}
 
 	ImGui::SeparatorText("共通Config");
 	{
-		requestRebuildParticle_ |= ImGui::DragFloat("cfg.lifeTime", &particleConfig_.lifeTime, 0.01f, 0.001f, 10.0f);
-		requestRebuildParticle_ |= ImGui::DragFloat("cfg.speed", &particleConfig_.speed, 0.01f, 0.0f, 100.0f);
-		requestRebuildParticle_ |= ImGui::DragInt("cfg.emitNum", &particleConfig_.emitNum, 1.0f, 1, 10000);
-		requestRebuildParticle_ |= ImGui::DragFloat("cfg.emitInterval", &particleConfig_.emitInterval, 0.01f, 0.01f, 10.0f);
+		// particleConfig_が変更されたとき編集パーティクルをparticleConfig_に合わせる必要がある
+		requestRebuildEditParticleCurrent_ |= ImGui::DragFloat("cfg.lifeTime", &particleConfig_.lifeTime, 0.01f, 0.001f, 10.0f);
+		requestRebuildEditParticleCurrent_ |= ImGui::DragFloat("cfg.speed", &particleConfig_.speed, 0.01f, 0.0f, 100.0f);
+		requestRebuildEditParticleCurrent_ |= ImGui::DragInt("cfg.emitNum", &particleConfig_.emitNum, 1.0f, 1, 10000);
+		requestRebuildEditParticleCurrent_ |= ImGui::DragFloat("cfg.emitInterval", &particleConfig_.emitInterval, 0.01f, 0.01f, 10.0f);
 
 		if (ImGui::InputText("cfg.texturePath", texturePathBuf_, sizeof(texturePathBuf_)))
 		{
 			particleConfig_.texturePath = texturePathBuf_;
-			requestRebuildParticle_ = true;
+			requestRebuildEditParticleCurrent_ = true;
 		}
 		if (ImGui::InputText("cfg.modelPath", modelPathBuf_, sizeof(modelPathBuf_)))
 		{
 			particleConfig_.modelPath = modelPathBuf_;
-			requestRebuildParticle_ = true;
+			requestRebuildEditParticleCurrent_ = true;
 		}
 	}
 
@@ -474,103 +482,103 @@ void PrticleEditorScene::DrawImGui_Fountain()
 {
 	if (ImGui::CollapsingHeader("scale"))
 	{
-		requestRebuildParticle_ |= ImGui::Checkbox("init.scale.isRandomVal", &fountainPreset_.scale.isRandom_value);
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.scale.isRandomVal", &fountainPreset_.scale.isRandom_value);
 		if (fountainPreset_.scale.isRandom_value)
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("scale.rand.min", &fountainPreset_.scale.randomRange_value_min.x, 0.01f);
-			requestRebuildParticle_ |= ImGui::DragFloat3("scale.rand.max", &fountainPreset_.scale.randomRange_value_max.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.rand.min", &fountainPreset_.scale.randomRange_value_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.rand.max", &fountainPreset_.scale.randomRange_value_max.x, 0.01f);
 		}
 		else
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("init.scale.val", &fountainPreset_.scale.initial.value.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.scale.val", &fountainPreset_.scale.initial.value.x, 0.01f);
 		}
-		requestRebuildParticle_ |= ImGui::Checkbox("init.scale.isRandomVel", &fountainPreset_.scale.isRandom_velocity);
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.scale.isRandomVel", &fountainPreset_.scale.isRandom_velocity);
 		if (fountainPreset_.scale.isRandom_velocity)
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("scale.vel.rand.min", &fountainPreset_.scale.randomRange_velocity_min.x, 0.01f);
-			requestRebuildParticle_ |= ImGui::DragFloat3("scale.vel.rand.max", &fountainPreset_.scale.randomRange_velocity_max.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.vel.rand.min", &fountainPreset_.scale.randomRange_velocity_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.vel.rand.max", &fountainPreset_.scale.randomRange_velocity_max.x, 0.01f);
 		}
 		else
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("init.scale.vel", &fountainPreset_.scale.initial.velocity.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.scale.vel", &fountainPreset_.scale.initial.velocity.x, 0.01f);
 		}
-		requestRebuildParticle_ |= ImGui::Checkbox("init.scale.isRandomAcc", &fountainPreset_.scale.isRandom_acceleration);
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.scale.isRandomAcc", &fountainPreset_.scale.isRandom_acceleration);
 		if (fountainPreset_.scale.isRandom_acceleration)
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("scale.acc.rand.min", &fountainPreset_.scale.randomRange_acceleration_min.x, 0.01f);
-			requestRebuildParticle_ |= ImGui::DragFloat3("scale.acc.rand.max", &fountainPreset_.scale.randomRange_acceleration_max.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.acc.rand.min", &fountainPreset_.scale.randomRange_acceleration_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.acc.rand.max", &fountainPreset_.scale.randomRange_acceleration_max.x, 0.01f);
 		}
 		else
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("init.scale.acc", &fountainPreset_.scale.initial.acceleration.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.scale.acc", &fountainPreset_.scale.initial.acceleration.x, 0.01f);
 		}
 	}
 
 	if (ImGui::CollapsingHeader("rotate"))
 	{
-		requestRebuildParticle_ |= ImGui::Checkbox("init.rotate.isRandomVal", &fountainPreset_.rotate.isRandom_value);
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.rotate.isRandomVal", &fountainPreset_.rotate.isRandom_value);
 		if (fountainPreset_.rotate.isRandom_value)
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("rotate.rand.min", &fountainPreset_.rotate.randomRange_value_min.x, 0.01f);
-			requestRebuildParticle_ |= ImGui::DragFloat3("rotate.rand.max", &fountainPreset_.rotate.randomRange_value_max.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.rand.min", &fountainPreset_.rotate.randomRange_value_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.rand.max", &fountainPreset_.rotate.randomRange_value_max.x, 0.01f);
 		}
 		else
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("init.rotate.val", &fountainPreset_.rotate.initial.value.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.rotate.val", &fountainPreset_.rotate.initial.value.x, 0.01f);
 		}
-		requestRebuildParticle_ |= ImGui::Checkbox("init.rotate.isRandomVel", &fountainPreset_.rotate.isRandom_velocity);
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.rotate.isRandomVel", &fountainPreset_.rotate.isRandom_velocity);
 		if (fountainPreset_.rotate.isRandom_velocity)
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("rotate.vel.rand.min", &fountainPreset_.rotate.randomRange_velocity_min.x, 0.01f);
-			requestRebuildParticle_ |= ImGui::DragFloat3("rotate.vel.rand.max", &fountainPreset_.rotate.randomRange_velocity_max.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.vel.rand.min", &fountainPreset_.rotate.randomRange_velocity_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.vel.rand.max", &fountainPreset_.rotate.randomRange_velocity_max.x, 0.01f);
 		}
 		else
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("init.rotate.vel", &fountainPreset_.rotate.initial.velocity.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.rotate.vel", &fountainPreset_.rotate.initial.velocity.x, 0.01f);
 		}
-		requestRebuildParticle_ |= ImGui::Checkbox("init.rotate.isRandomAcc", &fountainPreset_.rotate.isRandom_acceleration);
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.rotate.isRandomAcc", &fountainPreset_.rotate.isRandom_acceleration);
 		if (fountainPreset_.rotate.isRandom_acceleration)
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("rotate.acc.rand.min", &fountainPreset_.rotate.randomRange_acceleration_min.x, 0.01f);
-			requestRebuildParticle_ |= ImGui::DragFloat3("rotate.acc.rand.max", &fountainPreset_.rotate.randomRange_acceleration_max.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.acc.rand.min", &fountainPreset_.rotate.randomRange_acceleration_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.acc.rand.max", &fountainPreset_.rotate.randomRange_acceleration_max.x, 0.01f);
 		}
 		else
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("init.rotate.acc", &fountainPreset_.rotate.initial.acceleration.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.rotate.acc", &fountainPreset_.rotate.initial.acceleration.x, 0.01f);
 		}
 	}
 
 	if (ImGui::CollapsingHeader("translate"))
 	{
-		requestRebuildParticle_ |= ImGui::Checkbox("init.translate.isRandomVal", &fountainPreset_.translate.isRandom_value);
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.translate.isRandomVal", &fountainPreset_.translate.isRandom_value);
 		if (fountainPreset_.translate.isRandom_value)
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("translate.rand.min", &fountainPreset_.translate.randomRange_value_min.x, 0.01f);
-			requestRebuildParticle_ |= ImGui::DragFloat3("translate.rand.max", &fountainPreset_.translate.randomRange_value_max.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.rand.min", &fountainPreset_.translate.randomRange_value_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.rand.max", &fountainPreset_.translate.randomRange_value_max.x, 0.01f);
 		}
 		else
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("init.translate.val", &fountainPreset_.translate.initial.value.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.translate.val", &fountainPreset_.translate.initial.value.x, 0.01f);
 		}
-		requestRebuildParticle_ |= ImGui::Checkbox("init.translate.isRandomVel", &fountainPreset_.translate.isRandom_velocity);
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.translate.isRandomVel", &fountainPreset_.translate.isRandom_velocity);
 		if (fountainPreset_.translate.isRandom_velocity)
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("translate.vel.rand.min", &fountainPreset_.translate.randomRange_velocity_min.x, 0.01f);
-			requestRebuildParticle_ |= ImGui::DragFloat3("translate.vel.rand.max", &fountainPreset_.translate.randomRange_velocity_max.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.vel.rand.min", &fountainPreset_.translate.randomRange_velocity_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.vel.rand.max", &fountainPreset_.translate.randomRange_velocity_max.x, 0.01f);
 		}
 		else
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("init.translate.vel", &fountainPreset_.translate.initial.velocity.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.translate.vel", &fountainPreset_.translate.initial.velocity.x, 0.01f);
 		}
-		requestRebuildParticle_ |= ImGui::Checkbox("init.translate.isRandomAcc", &fountainPreset_.translate.isRandom_acceleration);
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.translate.isRandomAcc", &fountainPreset_.translate.isRandom_acceleration);
 		if (fountainPreset_.translate.isRandom_acceleration)
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("translate.acc.rand.min", &fountainPreset_.translate.randomRange_acceleration_min.x, 0.01f);
-			requestRebuildParticle_ |= ImGui::DragFloat3("translate.acc.rand.max", &fountainPreset_.translate.randomRange_acceleration_max.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.acc.rand.min", &fountainPreset_.translate.randomRange_acceleration_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.acc.rand.max", &fountainPreset_.translate.randomRange_acceleration_max.x, 0.01f);
 		}
 		else
 		{
-			requestRebuildParticle_ |= ImGui::DragFloat3("init.translate.acc", &fountainPreset_.translate.initial.acceleration.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.translate.acc", &fountainPreset_.translate.initial.acceleration.x, 0.01f);
 		}
 	}
 }
@@ -611,10 +619,20 @@ std::unique_ptr<IScene> PrticleEditorScene::Update()
 	grid_->Update(Vector3(0.0f, 0.0f, 0.0f), vp);
 
 	// パーティクル再生成
-	if (requestRebuildParticle_)
+	if (requestRebuildDrawParticle_)
 	{
-		requestRebuildParticle_ = false;
-		RebuildParticle();
+		requestRebuildDrawParticle_ = false;
+		RebuildDrawParticle();
+	}
+	if (requestRebuildEditParticle_)
+	{
+		requestRebuildEditParticle_ = false;
+		RebuildEditParticle();
+	}
+	if (requestRebuildEditParticleCurrent_)
+	{
+		requestRebuildEditParticleCurrent_ = false;
+		RebuildEditParticleCurrent();
 	}
 
 	// モデル・エミッター更新

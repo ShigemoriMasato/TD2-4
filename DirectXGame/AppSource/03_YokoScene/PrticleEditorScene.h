@@ -32,7 +32,12 @@ private:
 
 	void SelectModel(int index);
 
-	void RebuildParticle();
+	// 描画パーティクルのみ再生成
+	void RebuildDrawParticle();
+	// 編集パーティクルのみ再生成(Jsonのプリセットから再生成)
+	void RebuildEditParticle();
+	// 編集パーティクルを現在の編集内容で再生成
+	void RebuildEditParticleCurrent();
 
 	void SaveData();
 	void LoadData();
@@ -84,7 +89,14 @@ private:
 	// Particle
 	MultiParticle particle_;
 	std::vector<std::string> activeParticleNameList_;
-	bool requestRebuildParticle_ = false;
+	// 描画パーティクルのみ再生成
+	bool requestRebuildDrawParticle_ = false;
+	// 編集パーティクルのみ再生成(Jsonのプリセットから再生成)
+	bool requestRebuildEditParticle_ = false;
+	// 編集パーティクルを現在のEditerConfigで再生成
+	bool requestRebuildEditParticleCurrent_ = false;
+
+
 
 	// ImGuiがstringを許容しないばかりに生まれてしまった産廃
 	char presetNameBuf_[256]{};
