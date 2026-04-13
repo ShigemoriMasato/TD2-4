@@ -95,10 +95,6 @@ void TrailEditorScene::Initialize()
 	grid_ = std::make_unique<Grid>();
 	grid_->Initialize(drawDataManager_);
 
-	// TrailDrawer初期化
-	TrailDrawer::Config cfg{};
-	commonData_->trailDrawer.Initialize(drawDataManager_, cfg);
-
 	// 編集データ初期化
 	Reset(TrailType::RibbonTrail);
 

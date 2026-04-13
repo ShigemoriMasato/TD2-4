@@ -89,10 +89,6 @@ void PrticleEditorScene::Initialize()
 	grid_ = std::make_unique<Grid>();
 	grid_->Initialize(drawDataManager_);
 
-	// ParticleDrawer初期化
-	ParticleDrawer::Config cfg{};
-	commonData_->particleDrawer.Initialize(drawDataManager_, modelManager_, cfg);
-
 	// 編集データ初期化
 	Reset(ParticleType::Fountain);
 

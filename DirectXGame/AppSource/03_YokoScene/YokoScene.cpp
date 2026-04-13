@@ -50,13 +50,6 @@ void YokoScene::Initialize()
 	transform_.rotate = { 0.0f, 0.0f, 0.0f };
 	transform_.scale = { 1.0f, 1.0f, 1.0f };
 
-	// ドロワー初期化
-	TrailDrawer::Config trailCfg{};
-	commonData_->trailDrawer.Initialize(drawDataManager_, trailCfg);
-	ParticleDrawer::Config particleCfg{};
-	commonData_->particleDrawer.Initialize(drawDataManager_, modelManager_, particleCfg);
-
-
 	// トレイル初期化
 	trail.Initialize(textureManager_, &commonData_->trailPresetDataBank);
 	trail.Add("testTrail2");

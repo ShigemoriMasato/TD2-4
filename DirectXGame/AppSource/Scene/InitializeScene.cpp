@@ -137,6 +137,9 @@ void InitializeScene::Initialize() {
 
 	AudioManager::GetInstance().Initialize();
 	AudioManager::GetInstance().LoadAllAudio();
+
+	commonData_->trailDrawer.Initialize(drawDataManager_);
+	commonData_->particleDrawer.Initialize(drawDataManager_, modelManager_);
 }
 
 std::unique_ptr<IScene> InitializeScene::Update() {
