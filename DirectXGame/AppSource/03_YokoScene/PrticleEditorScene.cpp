@@ -339,6 +339,8 @@ void PrticleEditorScene::DrawImGui()
 				ImGui::PushID(i); // 行ごとにIDを分ける
 				// 行全体を横並びにする
 				ImGui::BeginGroup();
+				// 左側：Selectable
+				ImGui::Selectable(activeParticleNameList_[i].c_str(), false, 0, ImVec2(200, 0));
 				// ボタン
 				ImGui::SameLine();
 				if (ImGui::SmallButton("削除"))
@@ -388,7 +390,7 @@ void PrticleEditorScene::DrawImGui()
 				ImGui::BeginGroup();
 				
 				// 左側：Selectable
-				bool selected = ImGui::Selectable(JsonList_[i].c_str(), false, 0, ImVec2(200, 0));
+				ImGui::Selectable(JsonList_[i].c_str(), false, 0, ImVec2(200, 0));
 
 				ImGui::SameLine();
 
