@@ -27,6 +27,9 @@ public:
 	// 発生フラグをセット
 	void SetEmittingFlag(const int32_t id, bool flag);
 	void SetEmittingFlag(bool flag) { enabled_ = flag; }
+	// configをセット
+	void SetConfig(const int32_t id, const ParticlePresetVariant& presetVar);
+	ParticlePresetVariant GetConfig(const int32_t id);
 
 	// ParticleDrawerに登録
 	void RegisterToDrawer(ParticleDrawer* drawer);
@@ -44,4 +47,5 @@ private:
 
 	int32_t nextId_ = -1;
 	std::unordered_map<int32_t, std::unique_ptr<FountainParticle>> fountainCache_;
+	//std::unordered_map<int32_t, std::unique_ptr<GoToTargetParticle>> goToTargetCache_;
 };

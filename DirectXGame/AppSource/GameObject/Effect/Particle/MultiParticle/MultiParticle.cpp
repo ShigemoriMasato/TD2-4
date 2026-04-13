@@ -38,6 +38,11 @@ int32_t MultiParticle::Add(const std::string& presetName)
 		particle->SetConfig(preset);
 		fountainCache_[nextId_] = std::move(particle);
 	}
+	else if (std::holds_alternative<GoToTargetConfig>(presetVar))
+	{
+		const auto& preset = std::get<GoToTargetConfig>(presetVar);
+		(void)preset;
+	}
 	else if (std::holds_alternative<OnTrailConfig>(presetVar))
 	{
 		const auto& preset = std::get<OnTrailConfig>(presetVar);
@@ -53,6 +58,54 @@ void MultiParticle::SetEmittingFlag(const int32_t id, bool flag)
 	{
 		fountainCache_.at(id)->SetEnabled(flag);
 	}
+}
+
+void MultiParticle::SetConfig(const int32_t id, const ParticlePresetVariant& presetVar)
+{
+	if (fountainCache_.count(id))
+	{
+		if (std::holds_alternative<FountainConfig>(presetVar))
+		{
+			const auto& preset = std::get<FountainConfig>(presetVar);
+			fountainCache_.at(id)->SetConfig(preset);
+		}
+	}
+	//else if (.count(id))
+	//{
+	//	if (std::holds_alternative<GoToTargetConfig>(presetVar))
+	//	{
+	//		const auto& preset = std::get<GoToTargetConfig>(presetVar);
+	//		(void)preset;
+	//	}
+	//}
+	//else if (.count(id))
+	//{
+	//	if (std::holds_alternative<OnTrailConfig>(presetVar))
+	//	{
+	//		const auto& preset = std::get<OnTrailConfig>(presetVar);
+	//		(void)preset;
+	//	}
+	//}
+}
+
+ParticlePresetVariant MultiParticle::GetConfig(const int32_t id)
+{
+	if (fountainCache_.count(id))
+	{
+		FountainConfig preset = fountainCache_.at(id)->GetPreset();
+		return preset;
+	}
+	//else if (.count(id))
+	//{
+	//	GoToTargetConfig preset = goToTargetCache_.at(id)->GetPreset();
+	//	return preset;
+	//}
+	//else if (.count(id))
+	//{
+	//	OnTrailConfig preset = onTrailCache_.at(id)->GetPreset();
+	//	return preset;
+	//}
+	return {};
 }
 
 void MultiParticle::Clear()

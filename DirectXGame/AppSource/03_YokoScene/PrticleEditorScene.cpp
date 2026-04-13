@@ -205,7 +205,32 @@ void PrticleEditorScene::RebuildParticle()
 	editingParticle_.Clear();
 	editingParticle_.Initialize(textureManager_, modelManager_, &commonData_->particlePresetDataBank);
 	if (presetNameBuf_[0] == '\0') return;
-	editingParticle_.Add(presetNameBuf_);
+	int32_t slot = editingParticle_.Add(presetNameBuf_);
+	ParticlePresetVariant presetVar = editingParticle_.GetConfig(slot);
+	if (std::holds_alternative<FountainConfig>(presetVar))
+	{
+		fountainPreset_ = std::get<FountainConfig>(presetVar);
+	}
+	else if (std::holds_alternative<GoToTargetConfig>(presetVar))
+	{
+		goToTargetPreset_ = std::get<GoToTargetConfig>(presetVar);
+	}
+	else if (std::holds_alternative<OnTrailConfig>(presetVar))
+	{
+		onTrailPreset_ = std::get<OnTrailConfig>(presetVar);
+	}
+	//if (currentType_ == ParticleType::Fountain)
+	//{
+	//	editingParticle_.SetConfig(slot, fountainPreset_);
+	//}
+	//else if (currentType_ == ParticleType::GoToTarget)
+	//{
+	//	editingParticle_.SetConfig(slot, goToTargetPreset_);
+	//}
+	//else if (currentType_ == ParticleType::OnTrail)
+	//{
+	//	editingParticle_.SetConfig(slot, onTrailPreset_);
+	//}
 	editingParticle_.RegisterToDrawer(&commonData_->particleDrawer);
 }
 
