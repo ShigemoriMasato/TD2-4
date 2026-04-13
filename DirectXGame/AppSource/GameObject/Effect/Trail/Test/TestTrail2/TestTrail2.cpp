@@ -29,11 +29,8 @@ void TestTrail2::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine
 	cfg.maxSegments = 32;
 	cfg.lifeTime = 0.35f;
 	cfg.minDistance = 0.03f;
-	cfg.drawNormal = false;
-	cfg.drawAdd = true;
-	cfg.colorAdd = { 0.35f, 0.85f, 1.0f, 0.75f };
 
-	trail_.Initialize(drawDataManager, textureManager, cfg);
+	trail_.Initialize(textureManager, cfg);
 
 	// テスト用の初期位置
 	swordCenterWS_ = { 0.0f, 2.0f, 0.0f };
@@ -84,13 +81,11 @@ void TestTrail2::Update(float deltaTime, const Matrix4x4& vpMatrix)
 	const Vector3 tipWS = ringPos + widthDir * (auraWidth_ * 0.5f);
 
 	trail_.PushSegment(baseWS, tipWS);
-	trail_.Update(deltaTime, vpMatrix);
+	trail_.Update(deltaTime);
 }
 
 void TestTrail2::Draw(CmdObj* cmdObj)
 {
-	trail_.Draw(cmdObj);
-
 #ifdef USE_IMGUI
 
 	ImGui::Begin("TestTrail2 Config");

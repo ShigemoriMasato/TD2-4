@@ -43,9 +43,8 @@ void IWeaponRender::Initialize(
 
 	// トレイル
 	WeaponData* wData = weapon_->GetWeaponData();
-
 	if (trailname.size() != 0) {
-		trail_.Initialize(drawDataManager, textureManager, &trailDataBank_);
+		trail_.Initialize(textureManager, &trailDataBank_);
 		trail_.Add(trailname);
 	}
 }
@@ -302,8 +301,10 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 	}
 
 	wvp_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
+
 	trail_.SetModelWorld(wvp_);
 	trail_.Update(deltaTime, vpMatrix);
+  
 	wvp_ *= vpMatrix;
 	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
 	render_->CopyBufferData(0, &wvp_, sizeof(Matrix4x4));

@@ -2,9 +2,6 @@
 #include <stdexcept>
 #include <algorithm>
 
-// static故最強
-std::unordered_map<std::string, TrailPresetVariant> TrailPresetDataBank::cache_{};
-
 // cache_から取得。存在しない場合はLoad_してから保存する
 const TrailPresetVariant& TrailPresetDataBank::Get(const std::string& name)
 {
@@ -36,7 +33,14 @@ TrailType TrailPresetDataBank::GetTypeOf(const std::string& name)
 // Save
 void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg, RibbonTrailConfig& ribbonPreset)
 {
-	json_.Boot("Trail/" + name);
+	// nameに.jsonがついていたら外す
+	std::string baseName = name;
+	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
+	{
+		baseName = baseName.substr(0, baseName.size() - 5);
+	}
+
+	json_.Boot("Trail/" + baseName);
 
 	// type
 	{
@@ -49,11 +53,8 @@ void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg
 		json_.Add("cfg.maxSegments", cfg.maxSegments);
 		json_.Add("cfg.lifeTime", cfg.lifeTime);
 		json_.Add("cfg.minDistance", cfg.minDistance);
-		json_.Add("cfg.colorNormal", cfg.colorNormal);
-		json_.Add("cfg.colorAdd", cfg.colorAdd);
-		json_.Add("cfg.drawNormal", cfg.drawNormal);
-		json_.Add("cfg.drawAdd", cfg.drawAdd);
 		json_.Add("cfg.texturePath", cfg.texturePath);
+		json_.Add("cfg.color", cfg.color);
 	}
 
 	// type固有
@@ -68,7 +69,14 @@ void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg
 }
 void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg, ShockwaveRingConfig& shockPreset)
 {
-	json_.Boot("Trail/" + name);
+	// nameに.jsonがついていたら外す
+	std::string baseName = name;
+	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
+	{
+		baseName = baseName.substr(0, baseName.size() - 5);
+	}
+
+	json_.Boot("Trail/" + baseName);
 
 	// type
 	{
@@ -81,11 +89,8 @@ void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg
 		json_.Add("cfg.maxSegments", cfg.maxSegments);
 		json_.Add("cfg.lifeTime", cfg.lifeTime);
 		json_.Add("cfg.minDistance", cfg.minDistance);
-		json_.Add("cfg.colorNormal", cfg.colorNormal);
-		json_.Add("cfg.colorAdd", cfg.colorAdd);
-		json_.Add("cfg.drawNormal", cfg.drawNormal);
-		json_.Add("cfg.drawAdd", cfg.drawAdd);
 		json_.Add("cfg.texturePath", cfg.texturePath);
+		json_.Add("cfg.color", cfg.color);
 	}
 
 	// type固有
@@ -113,25 +118,23 @@ Trail::Config TrailPresetDataBank::LoadConfig(JsonManager& json)
 	catch (...) {}
 	try { cfg.minDistance = json.Get<float>("cfg.minDistance"); }
 	catch (...) {}
-
-	try { cfg.colorNormal = json.Get<Vector4>("cfg.colorNormal"); }
-	catch (...) {}
-	try { cfg.colorAdd = json.Get<Vector4>("cfg.colorAdd"); }
-	catch (...) {}
-
-	try { cfg.drawNormal = json.Get<bool>("cfg.drawNormal"); }
-	catch (...) {}
-	try { cfg.drawAdd = json.Get<bool>("cfg.drawAdd"); }
-	catch (...) {}
-
 	try { cfg.texturePath = json.Get<std::string>("cfg.texturePath"); }
+	catch (...) {}
+	try { cfg.color = json.Get<Vector4>("cfg.color"); }
 	catch (...) {}
 
 	return cfg;
 }
 TrailPresetVariant TrailPresetDataBank::Load(const std::string& name)
 {
-	json_.Boot("Trail/" + name);
+	// nameに.jsonがついていたら外す
+	std::string baseName = name;
+	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
+	{
+		baseName = baseName.substr(0, baseName.size() - 5);
+	}
+
+	json_.Boot("Trail/" + baseName);
 
 	std::string typeStr;
 	try { typeStr = json_.Get<std::string>("type"); }

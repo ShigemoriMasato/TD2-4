@@ -29,11 +29,8 @@ void TestTrail3::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine
 	cfg.maxSegments = maxSegments_;
 	cfg.lifeTime = 0.20f;
 	cfg.minDistance = 0.0f;
-	cfg.drawNormal = false;
-	cfg.drawAdd = true;
-	cfg.colorAdd = { 1.0f, 0.95f, 0.65f, 0.9f };
 	cfg.texturePath = "Assets/.EngineResource/Texture/uvChecker.png";
-	trail_.Initialize(drawDataManager, textureManager, cfg);
+	trail_.Initialize(textureManager, cfg);
 
 	active_ = false;
 	time_ = 0.0f;
@@ -72,18 +69,11 @@ void TestTrail3::Update(float deltaTime, const Matrix4x4& vpMatrix)
 		trail_.PushSegment(baseWS, tipWS);
 	}
 
-	trail_.Update(deltaTime, vpMatrix);
+	trail_.Update(deltaTime);
 
 	if (time_ >= 0.5f)
 	{
 		active_ = false;
 		trail_.Clear();
 	}
-}
-
-
-
-void TestTrail3::Draw(CmdObj* cmdObj)
-{
-	trail_.Draw(cmdObj);
 }

@@ -5,6 +5,8 @@
 #include <Common/KeyConfig/KeyManager.h>
 #include <Shop/Piece.h>
 #include <GameObject/Player/Parameter/ParameterData.h>
+#include <GameObject/Effect/Trail/DataBank/TrailPresetDataBank.h>
+#include <GameObject/Effect/Trail/Drawer/TrailDrawer.h>
 
 using WindowSet = std::pair<std::unique_ptr<SHEngine::Screen::WindowsAPI>, std::unique_ptr<SHEngine::Screen::SwapChain>>;
 
@@ -30,4 +32,8 @@ struct CommonData {
 	float masterVolume = 0.5f;
 	float bgmVolume = 0.5f;
 	float seVolume = 0.5f;
+  
+  // トレイル
+	TrailPresetDataBank trailPresetDataBank;
+	TrailDrawer trailDrawer;
 };

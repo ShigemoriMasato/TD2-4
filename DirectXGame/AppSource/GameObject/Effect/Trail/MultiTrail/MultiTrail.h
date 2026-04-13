@@ -8,15 +8,15 @@
 #include <GameObject/Effect/Trail/Type/RibbonTrail/RibbonTrail.h>
 #include <GameObject/Effect/Trail/Type/ShockwaveRingTrail/ShockwaveRingTrail.h>
 
+class TrailDrawer;
+
 class MultiTrail final
 {
 public:
 	void Initialize(
-		SHEngine::DrawDataManager* drawDataManager,
 		SHEngine::TextureManager* textureManager,
 		TrailPresetDataBank* presetData);
-	void Update(float dt, const Matrix4x4& vpMatrix);
-	void Draw(CmdObj* cmdObj);
+	void Update(float dt);
 	void Clear();
 
 	// プリセット名で追加（例: "Axe_Ribbon"）
@@ -27,11 +27,11 @@ public:
 	void SetEmittingFlag(const int32_t id, bool flag);
 	void SetEmittingFlag(bool flag) { enabled_ = flag; }
 
-
+	// TrailDrawerに登録
+	void RegisterToDrawer(TrailDrawer* drawer);
 
 
 private:
-	SHEngine::DrawDataManager* drawDataManager_ = nullptr;
 	SHEngine::TextureManager* textureManager_ = nullptr;
 	TrailPresetDataBank* presetData_ = nullptr;
 

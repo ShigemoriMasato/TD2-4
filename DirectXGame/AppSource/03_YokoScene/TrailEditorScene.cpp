@@ -66,30 +66,40 @@ namespace
 
 void TrailEditorScene::Initialize()
 {
+	// カメラ初期化
 	camera_ = std::make_unique<DebugCamera>();
 	camera_->SetProjectionMatrix(PerspectiveFovDesc{});
 	camera_->SetPosition({ 0.0f, 3.0f, -10.0f });
 	camera_->Initialize(input_);
 
-	modelTransform_.position = { 0.0f, 0.0f, 0.0f };
-	modelTransform_.rotate = { 0.0f, 0.0f, 0.0f };
-	modelTransform_.scale = { 1.0f, 1.0f, 1.0f };
+	// TrailDrawer初期化
+	TrailDrawer::Config cfg{};
+	commonData_->trailDrawer.Initialize(drawDataManager_, cfg);
 
 	// 編集データ初期化
 	Reset(TrailType::RibbonTrail);
 
-	// "Assets/Model/Item/Weapon"以下のモデルをリストアップしてmodelRenders_作成(名前とモデルパスのみ保存)
+	// "Assets/Model"以下のモデルをリストアップしてmodelDataList_作成
 	BuildModelList();
-	// モデル用RenderObjectインスタンス作成
-	CreateModelRender();
-	// Marker用RenderObjectインスタンス作成
-	CreateMarkerRenders();
+	// "Assets/Json/Trail"以下のjsonをリストアップしてJsonList_作成
+	BuildJsonList();
+
+	// RenderObject作成
+	modelRender_ = CreateTexturedModelRO(drawDataManager_, modelDataList_[0]->modelData, modelDataList_[0]->textureIndex);
+	int modelHandle = modelManager_->LoadModel("Assets/.EngineResource/Model/Cube");
+	auto modelData = modelManager_->GetNodeModelData(modelHandle);
+	marker[0] = CreateTexturedModelRO(drawDataManager_, modelData, 0);
+	marker[1] = CreateTexturedModelRO(drawDataManager_, modelData, 0);
+
+	// モデルトランスフォーム初期化
+	modelTransform_.position = { 0.0f, 0.0f, 0.0f };
+	modelTransform_.rotate = { 0.0f, 0.0f, 0.0f };
+	modelTransform_.scale = { 1.0f, 1.0f, 1.0f };
 
 	// 初期モデルを選択
 	SelectModel(0);
 
 	RebuildTrail();
-	//LoadTrailData();
 }
 
 // 編集データ初期化
@@ -110,20 +120,18 @@ void TrailEditorScene::Reset(TrailType type)
 	shockPreset_.cfg = trailConfig_;
 }
 
-// "Assets/Model/Item/Weapon"以下のモデルをリストアップしてmodelRenders_作成
+// "Assets/Model/"以下のモデルをリストアップしてmodelDataList_作成。武器追従トレイルにしか使わない機能だから簡易的でよい
 void TrailEditorScene::BuildModelList()
 {
-	modelRenders_.clear();
-
 	//const char* kWeaponDir = "Assets/Model/Item/Weapon";
-	const char* kWeaponDir = "Assets/Model";
+	const char* kFilePath = "Assets/Model";
 	std::error_code ec;
-	if (!std::filesystem::exists(kWeaponDir, ec))
+	if (!std::filesystem::exists(kFilePath, ec))
 	{
 		return;
 	}
 
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(kWeaponDir))
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(kFilePath))
 	{
 		// is_directory() = それがフォルダかファイルか
 		if (!entry.is_directory()) continue;
@@ -140,68 +148,54 @@ void TrailEditorScene::BuildModelList()
 		auto data = std::make_unique<DrawDataUnit>();
 		data->modelPath = entry.path().generic_string();
 		data->name = entry.path().filename().generic_string();
-		modelRenders_.push_back(std::move(data));
+		int modelHandle = modelManager_->LoadModel(data->modelPath);
+		data->modelData = modelManager_->GetNodeModelData(modelHandle);
+		data->textureIndex = data->modelData.materials[data->modelData.materialIndex.front()].textureIndex;
+		modelDataList_.push_back(std::move(data));
+	}
+}
+// "Assets/Json/Trail"以下のjsonをリストアップしてJsonList_作成
+void TrailEditorScene::BuildJsonList()
+{
+	const char* kFilePath = "Assets/Json/Trail";
+	std::error_code ec;
+	if (!std::filesystem::exists(kFilePath, ec))
+	{
+		return;
+	}
+
+	for (const auto& entry : std::filesystem::directory_iterator(kFilePath))
+	{
+		// is_directory() = それがフォルダかファイルか
+		if (entry.is_directory()) continue;
+
+		JsonList_.push_back(entry.path().filename().generic_string());
 	}
 }
 
-// RenderObJectのインスタンスを作成
-void TrailEditorScene::CreateModelRender()
-{
-	for (int i = 0; i <  modelRenders_.size(); ++i)
-	{
-		modelRenders_[i]->modelHandle = modelManager_->LoadModel(modelRenders_[i]->modelPath);
-		auto modelData = modelManager_->GetNodeModelData(modelRenders_[i]->modelHandle);
-		modelRenders_[i]->textureIndex = modelData.materials[modelData.materialIndex.front()].textureIndex;
-		modelRenders_[i]->render = CreateTexturedModelRO(drawDataManager_, modelData, modelRenders_[i]->textureIndex);
-	}
-}
-void TrailEditorScene::CreateMarkerRenders()
-{
-	// マーカー用のキューブモデルロード
-	for (int i = 0; i < 2; ++i)
-	{
-		marker[i].modelHandle = modelManager_->LoadModel("Assets/.EngineResource/Model/Cube");
-		auto modelData = modelManager_->GetNodeModelData(marker[i].modelHandle);
-		marker[i].textureIndex = 0;
-		marker[i].render = CreateTexturedModelRO(drawDataManager_, modelData, marker[i].textureIndex);
-	}
-}
 
 // 選択モデルを変更
 void TrailEditorScene::SelectModel(int index)
 {
-	if (index < 0 || index >= int(modelRenders_.size())) return;
+	if (index < 0 || index >= int(modelDataList_.size())) return;
 	selectedModelIndex_ = index;
-
-	// モデル選択が変わったらデフォルト名を設定
-	SetDefaultName();
-}
-void TrailEditorScene::SetDefaultName()
-{
-	std::string type;
-	if (currentType_ == TrailType::RibbonTrail) type = "_Ribbon";
-	else if (currentType_ == TrailType::ShockwaveRing) type = "_Shockwave";
-	std::string def = modelRenders_[selectedModelIndex_]->name + type;
-	std::memset(presetNameBuf_, 0, sizeof(presetNameBuf_));
-	strncpy_s(presetNameBuf_, sizeof(presetNameBuf_), def.c_str(), _TRUNCATE);
+	modelRender_->SetDrawData(drawDataManager_->GetDrawData(modelDataList_[index]->modelData.drawDataIndex));
 }
 
-// Trailの再構築(config更新&テクスチャ再設定)
+// Trailの再構築
 void TrailEditorScene::RebuildTrail()
 {
-	// プレビュー用Trailは共通で1つ。typeに応じた設定を適用する
-	if (currentType_ == TrailType::RibbonTrail)
+	trail_.Clear();
+	trail_.Initialize(textureManager_, &commonData_->trailPresetDataBank);
+	for (const auto& name : activeTrailNameList_)
 	{
-		trail_.Initialize(drawDataManager_, textureManager_, trailConfig_);
-		trail_.SetTexture(trailConfig_.texturePath);
-		trail_.Clear();
+		trail_.Add(name);
 	}
-	else if (currentType_ == TrailType::ShockwaveRing)
-	{
-		trail_.Initialize(drawDataManager_, textureManager_, trailConfig_);
-		trail_.SetTexture(trailConfig_.texturePath);
-		trail_.Clear();
-	}
+	trail_.RegisterToDrawer(&commonData_->trailDrawer);
+
+	editingTrail_.Clear();
+	editingTrail_.Initialize(textureManager_, trailConfig_);
+	commonData_->trailDrawer.Register(&editingTrail_);
 }
 
 // データ保存
@@ -211,11 +205,11 @@ void TrailEditorScene::SaveTrailData()
 
 	if (currentType_ == TrailType::RibbonTrail)
 	{
-		presetDataBank_.Save(presetNameBuf_, trailConfig_, ribbonPreset_);
+		commonData_->trailPresetDataBank.Save(presetNameBuf_, trailConfig_, ribbonPreset_);
 	}
 	else if (currentType_ == TrailType::ShockwaveRing)
 	{
-		presetDataBank_.Save(presetNameBuf_, trailConfig_, shockPreset_);
+		commonData_->trailPresetDataBank.Save(presetNameBuf_, trailConfig_, shockPreset_);
 	}
 }
 // データ読み込み
@@ -225,19 +219,24 @@ void TrailEditorScene::LoadTrailData()
 
 	TrailPresetVariant var{};
 
-	var = presetDataBank_.Get(presetNameBuf_);
+	var = commonData_->trailPresetDataBank.Get(presetNameBuf_);
 
 	if (std::holds_alternative<RibbonTrailConfig>(var))
 	{
 		currentType_ = TrailType::RibbonTrail;
 		ribbonPreset_ = std::get<RibbonTrailConfig>(var);
 		trailConfig_ = ribbonPreset_.cfg;
+		std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
+		strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.texturePath.c_str(), _TRUNCATE);
+
 	}
 	else if (std::holds_alternative<ShockwaveRingConfig>(var))
 	{
 		currentType_ = TrailType::ShockwaveRing;
 		shockPreset_ = std::get<ShockwaveRingConfig>(var);
 		trailConfig_ = shockPreset_.cfg;
+		std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
+		strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.texturePath.c_str(), _TRUNCATE);
 	}
 
 	requestRebuildTrail_ = true;
@@ -252,17 +251,13 @@ void TrailEditorScene::DrawConfigUI_()
 	requestRebuildTrail_ |= ImGui::DragFloat("cfg.lifeTime", &trailConfig_.lifeTime, 0.01f, 0.001f, 10.0f);
 	requestRebuildTrail_ |= ImGui::DragFloat("cfg.minDistance", &trailConfig_.minDistance, 0.001f, 0.0f, 10.0f);
 
-	requestRebuildTrail_ |= ImGui::ColorEdit4("cfg.colorNormal", &trailConfig_.colorNormal.x);
-	requestRebuildTrail_ |= ImGui::ColorEdit4("cfg.colorAdd", &trailConfig_.colorAdd.x);
-
-	requestRebuildTrail_ |= ImGui::Checkbox("cfg.drawNormal", &trailConfig_.drawNormal);
-	requestRebuildTrail_ |= ImGui::Checkbox("cfg.drawAdd", &trailConfig_.drawAdd);
-
 	if (ImGui::InputText("cfg.texturePath", texturePathBuf_, sizeof(texturePathBuf_)))
 	{
 		trailConfig_.texturePath = texturePathBuf_;
 		requestRebuildTrail_ = true;
 	}
+
+	requestRebuildTrail_ |= ImGui::ColorEdit4("cfg.color", &trailConfig_.color.x);
 
 #endif
 }
@@ -271,7 +266,7 @@ void TrailEditorScene::DrawRibbonUI_()
 {
 #ifdef USE_IMGUI
 
-	ImGui::SeparatorText("Ribbon (2Point)");
+	ImGui::SeparatorText("リボン型");
 	requestRebuildTrail_ |= ImGui::DragFloat3("ribbon.originLocal", &ribbonPreset_.originLocal.x, 0.01f);
 	requestRebuildTrail_ |= ImGui::DragFloat3("ribbon.tipLocal", &ribbonPreset_.tipLocal.x, 0.01f);
 
@@ -298,67 +293,136 @@ void TrailEditorScene::DrawImGui()
 #ifdef USE_IMGUI
 	ImGui::Begin("TrailEditor");
 
-	// Preset名
-	ImGui::InputText("PresetName (no ext)", presetNameBuf_, sizeof(presetNameBuf_));
-
-	// type
+	// 現在編集中のプリセット名
+	if (ImGui::TreeNode("編集中トレイル名"))
 	{
-		int t = (currentType_ == TrailType::RibbonTrail) ? 0 : 1;
-		const char* items[] = { "RibbonTrail", "ShockwaveRing" };
-		if (ImGui::Combo("type", &t, items, 2))
-		{
-			currentType_ = (t == 0) ? TrailType::RibbonTrail : TrailType::ShockwaveRing;
+		ImGui::InputText("##tinnko", presetNameBuf_, sizeof(presetNameBuf_));
 
-			// モデル名サフィックスも更新
-			if (selectedModelIndex_ >= 0)
-			{
-				std::string suffix = (currentType_ == TrailType::RibbonTrail) ? "_Ribbon" : "_Shockwave";
-				std::string def = modelRenders_[selectedModelIndex_]->name + suffix;
-				std::memset(presetNameBuf_, 0, sizeof(presetNameBuf_));
-				strncpy_s(presetNameBuf_, sizeof(presetNameBuf_), def.c_str(), _TRUNCATE);
-			}
-
-			requestRebuildTrail_ = true;
-		}
+		ImGui::TreePop();
 	}
-
-	if (ImGui::BeginListBox("Weapon Models"))
+	// 現在表示している(編集は出来ない)プリセット名
+	if (ImGui::TreeNode("表示中トレイル名"))
 	{
-		for (int i = 0; i < (int)modelRenders_.size(); ++i)
+		//for (const auto& name : activeTrailNameList_)
+		//{
+		//	ImGui::Text("%s", name.c_str());
+		//}
+
+		/// ⇩BeginListBoxに変更し、smallButtonもつけ、[削除]を追加描画リストから外せるようにする
+		if (ImGui::BeginListBox("##sihpo;dj", ImVec2(-FLT_MIN - 100, 100)))
 		{
-			const bool selected = (i == selectedModelIndex_);
-			if (ImGui::Selectable(modelRenders_[i]->name.c_str(), selected))
+			for (int i = 0; i < (int)activeTrailNameList_.size(); ++i)
 			{
-				SelectModel(i);
-				// モデル切替時に見た目が変わる可能性があるので再構築
-				requestRebuildTrail_ = true;
+				ImGui::PushID(i); // 行ごとにIDを分ける
+				// 行全体を横並びにする
+				ImGui::BeginGroup();
+				// 左側：Selectable
+				bool selected = ImGui::Selectable(activeTrailNameList_[i].c_str(), false, 0, ImVec2(200, 0));
+				// 右側：ボタン
+				ImGui::SameLine();
+				if (ImGui::SmallButton("削除"))
+				{
+					activeTrailNameList_.erase(activeTrailNameList_.begin() + i);
+					requestRebuildTrail_ = true;
+				}
+				ImGui::EndGroup();
+				ImGui::PopID();
 			}
+			ImGui::EndListBox();
 		}
-		ImGui::EndListBox();
+
+		ImGui::TreePop();
 	}
-
-	ImGui::SeparatorText("Config (shared keys)");
-	DrawConfigUI_();
-
-	if (currentType_ == TrailType::RibbonTrail)DrawRibbonUI_();
-	else DrawShockwaveUI_();
 
 	ImGui::Separator();
-	ImGui::Checkbox("Emit Trail", &emitTrail_);
+
+	// モデル選択
+	if (ImGui::TreeNode("表示モデル選択"))
+	{
+		if (ImGui::BeginListBox("##sihpo;dj", ImVec2(-FLT_MIN - 100, 100)))
+		{
+			for (int i = 0; i < (int)modelDataList_.size(); ++i)
+			{
+				const bool selected = (i == selectedModelIndex_);
+				if (ImGui::Selectable(modelDataList_[i]->name.c_str(), selected))
+				{
+					SelectModel(i);
+					requestRebuildTrail_ = true;
+				}
+			}
+			ImGui::EndListBox();
+		}
+
+		ImGui::TreePop();
+	}
+	// トレイル選択
+	if (ImGui::TreeNode("表示・編集トレイル選択"))
+	{
+		if (ImGui::BeginListBox("##sdubjn;", ImVec2(-FLT_MIN - 100, 100)))
+		{
+			for (int i = 0; i < (int)JsonList_.size(); ++i)
+			{
+				ImGui::PushID(i); // 行ごとにIDを分ける
+
+				// 行全体を横並びにする
+				ImGui::BeginGroup();
+
+				// 左側：Selectable
+				bool selected = ImGui::Selectable(JsonList_[i].c_str(), false, 0, ImVec2(200, 0));
+
+				// 右側：ボタン
+				ImGui::SameLine();
+
+				if (ImGui::SmallButton("編集"))
+				{
+					strncpy_s(presetNameBuf_, sizeof(presetNameBuf_), JsonList_[i].c_str(), _TRUNCATE);
+					LoadTrailData();
+				}
+
+				ImGui::SameLine();
+
+				if (ImGui::SmallButton("描画"))
+				{
+					activeTrailNameList_.push_back(JsonList_[i]);
+					requestRebuildTrail_ = true;
+				}
+
+				ImGui::EndGroup();
+
+				// 単押し処理（Selectable）
+				if (selected)
+				{
+					activeTrailNameList_.push_back(JsonList_[i]);
+					requestRebuildTrail_ = true;
+				}
+
+				ImGui::PopID();
+			}
+
+			ImGui::EndListBox();
+		}
+
+		ImGui::TreePop();
+	}
+
+	ImGui::SeparatorText("Config");
+
+	DrawConfigUI_();
+
+	DrawRibbonUI_();
+
+	ImGui::Separator();
 
 	if (ImGui::Button("Save"))
 	{
 		SaveTrailData();
 	}
-	ImGui::SameLine();
-	if (ImGui::Button("Load"))
-	{
-		LoadTrailData();
-	}
-
-	ImGui::Text("File: Assets/Json/Trail/%s.json", presetNameBuf_);
+	ImGui::Checkbox("モデル描画", &isModelDraw_);
+	ImGui::Checkbox("マーカー描画", &isMarkerDraw_);
 
 	ImGui::End();
+
+
 
 	ImGui::Begin("modelTransform");
 	ImGui::DragFloat3("position", &modelTransform_.position.x, 0.01f);
@@ -373,21 +437,20 @@ void TrailEditorScene::UpdateRenders(const Matrix4x4& vpMatrix)
 {
 	if (selectedModelIndex_ < 0) return;
 
-	const Matrix4x4 modelWorld = MakeWorld(modelTransform_);
+	modelWorld_ = MakeWorld(modelTransform_);
 
 	// モデル
 	{
-		const Matrix4x4 wvp = modelWorld * vpMatrix;
+		const Matrix4x4 wvp = modelWorld_ * vpMatrix;
 		const Vector4 color = { 1,1,1,1 };
-		auto& ro = modelRenders_[selectedModelIndex_]->render;
 
-		ro->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
-		ro->CopyBufferData(1, &color, sizeof(Vector4));
-		ro->CopyBufferData(2, &modelRenders_[selectedModelIndex_]->textureIndex, sizeof(int));
+		modelRender_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
+		modelRender_->CopyBufferData(1, &color, sizeof(Vector4));
+		modelRender_->CopyBufferData(2, &modelDataList_[selectedModelIndex_]->textureIndex, sizeof(int));
 	}
 
-	markerPos[0] = ribbonPreset_.originLocal * modelWorld;
-	markerPos[1] = ribbonPreset_.tipLocal * modelWorld;
+	markerPos[0] = ribbonPreset_.originLocal * modelWorld_;
+	markerPos[1] = ribbonPreset_.tipLocal * modelWorld_;
 
 	// marker origin
 	{
@@ -398,11 +461,11 @@ void TrailEditorScene::UpdateRenders(const Matrix4x4& vpMatrix)
 			tr.scale = { 0.5f, 0.5f, 0.5f };
 			const Matrix4x4 wvp = MakeWorld(tr) * vpMatrix;
 			const Vector4 color = { 1.0f, 0.2f, 0.2f, 1.0f };
-			auto& ro = marker[i].render;
+			const int texIndex = 0;
 
-			ro->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
-			ro->CopyBufferData(1, &color, sizeof(Vector4));
-			ro->CopyBufferData(2, &marker[i].textureIndex, sizeof(int));
+			marker[i]->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
+			marker[i]->CopyBufferData(1, &color, sizeof(Vector4));
+			marker[i]->CopyBufferData(2, &texIndex, sizeof(int));
 		}
 	}
 }
@@ -411,75 +474,27 @@ std::unique_ptr<IScene> TrailEditorScene::Update()
 {
 	const float dt = engine_->GetFPSObserver()->GetDeltatime();
 
+	// カメラ更新
 	camera_->Update();
-	DrawImGui();
+	const Matrix4x4 vp = camera_->GetVPMatrix();
 
+	// トレイル再生成
 	if (requestRebuildTrail_)
 	{
 		requestRebuildTrail_ = false;
 		RebuildTrail();
 	}
 
-	const Matrix4x4 vp = camera_->GetVPMatrix();
+	// モデル・マーカー更新
 	UpdateRenders(vp);
 
-	// プレビュー
-	if (emitTrail_)
-	{
-		if (currentType_ == TrailType::RibbonTrail)
-		{
-			trail_.PushSegment(markerPos[0], markerPos[1]);
-		}
-		else
-		{
-			// Shockwaveプレビュー：中心はモデル原点、法線はY+
-			// 毎フレームClearしてリング生成（Runtimeと同じ思想）
-			trail_.Clear();
+	// Trail更新
+	trail_.SetModelWorld(MakeWorld(modelTransform_));
+	trail_.Update(dt);
+	editingTrail_.PushSegment(markerPos[0], markerPos[1]);
+	editingTrail_.Update(dt);
 
-			const Vector3 center = modelTransform_.position;
-			const Vector3 normal = { 0.0f,1.0f,0.0f };
-
-			// 簡易：ShockwaveRingTrailと同等の基底をここで作る
-			const float t = 0.0f; // プレビューは固定（半径Endで表示したい等は後で拡張）
-			const float radius = shockPreset_.radiusEnd;
-
-			Vector3 n = normal;
-			Vector3 ref = (std::abs(n.y) > 0.99f) ? Vector3(0.0f, 0.0f, 1.0f) : Vector3(0.0f, 1.0f, 0.0f);
-			auto cross = [](const Vector3& a, const Vector3& b)
-				{
-					return Vector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
-				};
-			auto norm = [](const Vector3& v)
-				{
-					const float len = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-					if (len <= 1e-6f) return Vector3(0, 1, 0);
-					return Vector3(v.x / len, v.y / len, v.z / len);
-				};
-
-			Vector3 u = norm(cross(ref, n));
-			Vector3 v = norm(cross(n, u));
-
-			const int seg = std::max(3, shockPreset_.segments);
-			const float twoPi = std::numbers::pi_v<float> *2.0f;
-
-			for (int i = 0; i < seg; ++i)
-			{
-				const float a = (float)i / (float)seg * twoPi;
-				const float s = std::sin(a);
-				const float c = std::cos(a);
-
-				const Vector3 pos = center + u * (c * radius) + v * (s * radius);
-				Vector3 tangent = norm((u * (-s)) + (v * (c)));
-				const Vector3 baseWS = pos - tangent * (shockPreset_.thickness * 0.5f);
-				const Vector3 tipWS = pos + tangent * (shockPreset_.thickness * 0.5f);
-				trail_.PushSegment(baseWS, tipWS);
-			}
-		}
-	}
-
-	trail_.Update(dt, vp);
-
-	// Zキーで決定
+	// Zキーで切り替え
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z))
 	{
 		return std::make_unique<YokoScene>();
@@ -498,24 +513,25 @@ void TrailEditorScene::Draw()
 
 	display->PreDraw(cmdObj, true);
 
-	modelRenders_[selectedModelIndex_]->render->Draw(cmdObj);
+	if (isModelDraw_)modelRender_->Draw(cmdObj);
 
-	// Ribbon時マーカー描画
-	if (currentType_ == TrailType::RibbonTrail)
+	if (isMarkerDraw_)
 	{
 		for (int i = 0; i < 2; ++i)
 		{
-			marker[i].render->Draw(cmdObj);
+			marker[i]->Draw(cmdObj);
 		}
 	}
 
-	trail_.Draw(cmdObj);
+	commonData_->trailDrawer.Draw(cmdObj, camera_->GetVPMatrix());
+
 
 	display->PostDraw(cmdObj);
 
 	window->PreDraw(cmdObj);
 
 #ifdef USE_IMGUI
+	DrawImGui();
 	display->DrawImGui();
 #endif
 

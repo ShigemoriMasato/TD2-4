@@ -4,11 +4,12 @@
 #include <Camera/DebugCamera.h>
 #include <Render/RenderObject.h>
 
-#include <GameObject/Effect/Trail/DataBank/TrailPresetDataBank.h>
 #include <GameObject/Effect/Trail/MultiTrail/MultiTrail.h>
+
 #include <GameObject/Effect/Particle/DataBank/ParticlePresetDataBank.h>
 #include <GameObject/Effect/Particle/MultiParticle/MultiParticle.h>
 #include <GameObject/Effect/sparkEffect.h>
+#include <GameObject/Effect/Particle/Drawer/ParticleDrawer.h>
 
 class YokoScene : public IScene
 {
@@ -20,15 +21,18 @@ public:
 private:
 	std::unique_ptr<DebugCamera> camera_;
 
-	TrailPresetDataBank trailDataBank_;
 	ParticlePresetDataBank particleDataBank_;
 
-	/// トレイル
+
+	// トレイル
 	MultiTrail trail;
 	int textureIndex_ = 0;
+
+	// モデル
 	std::unique_ptr<SHEngine::RenderObject> render_;
 	Transform transform_;
 
+	// パーティクル
 	SparkEffect sparkEffect;
 
 

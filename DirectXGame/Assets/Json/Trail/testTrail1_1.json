@@ -1,22 +1,16 @@
 {
-    "cfg.colorAdd": [
-        0.6000000238418579,
-        0.8999999761581421,
-        1.0,
-        0.75
+    "cfg.color": [
+        0.0,
+        0.7450980544090271,
+        0.9921568632125854,
+        1.0
     ],
-    "cfg.colorNormal": [
-        1.0,
-        1.0,
-        1.0,
-        0.6499999761581421
-    ],
-    "cfg.texturePath": "Assets/.EngineResource/Texture/white1x1.png",
     "cfg.drawAdd": true,
     "cfg.drawNormal": true,
     "cfg.lifeTime": 0.5,
     "cfg.maxSegments": 32,
     "cfg.minDistance": 0.10000000149011612,
+    "cfg.texturePath": "Assets/.EngineResource/Texture/uvChecker.png",
     "ribbon.modelName": "Fist",
     "ribbon.originLocal": [
         0.0,

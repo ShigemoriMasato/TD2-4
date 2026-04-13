@@ -49,11 +49,15 @@ void YokoScene::Initialize()
 	transform_.rotate = { 0.0f, 0.0f, 0.0f };
 	transform_.scale = { 1.0f, 1.0f, 1.0f };
 
-	trail.Initialize(drawDataManager_, textureManager_, &trailDataBank_);
+	TrailDrawer::Config cfg{};
+	commonData_->trailDrawer.Initialize(drawDataManager_, cfg);
+
+	trail.Initialize(textureManager_, &commonData_->trailPresetDataBank);
 	trail.Add("testTrail2");
 	trail.Add("testTrail2_1");
+	trail.RegisterToDrawer(&commonData_->trailDrawer);
 
-	sparkEffect.Initialize(drawDataManager_, textureManager_, modelManager_, &trailDataBank_, &particleDataBank_);
+	sparkEffect.Initialize(drawDataManager_, textureManager_, modelManager_, &commonData_->trailPresetDataBank, &particleDataBank_);
 }
 
 std::unique_ptr<IScene> YokoScene::Update()
@@ -66,21 +70,15 @@ std::unique_ptr<IScene> YokoScene::Update()
 	camera_->Update();
 	const Matrix4x4 vp = camera_->GetVPMatrix();
 
-	// モデル更新
-	const Matrix4x4 world = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
-	const Matrix4x4 wvp = world * vp;
-	const Vector4 color = { 1, 1, 1, 1 };
-	render_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
-	render_->CopyBufferData(1, &color, sizeof(Vector4));
-	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
-
 	if (isSpaceTrigger)
 	{
 		transform_.scale = { 1.0f, 1.0f, 1.0f };
 		transform_.position = { 0.0f, -2.0f, 0.0f };
 		transform_.rotate = { 0.0f, 0.0f, 0.0f };
 
-		sparkEffect.Trigger(transform_.position);
+		trail.Clear();
+
+		//sparkEffect.Trigger(transform_.position);
 		start = true;
 	}
 	if (start)
@@ -107,12 +105,20 @@ std::unique_ptr<IScene> YokoScene::Update()
 		}
 	}
 
+	// モデル更新
+	const Matrix4x4 world = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
+	const Matrix4x4 wvp = world * vp;
+	const Vector4 color = { 1, 1, 1, 1 };
+	render_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
+	render_->CopyBufferData(1, &color, sizeof(Vector4));
+	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
+
 	// sparkEffect更新
-	sparkEffect.Update(dt, vp);
+	//sparkEffect.Update(dt, vp);
 
 	// トレイル更新
 	trail.SetModelWorld(world);
-	trail.Update(dt, vp);
+	trail.Update(dt);
 
 	// Zキーでエディタ切り替え
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z))
@@ -135,7 +141,7 @@ void YokoScene::Draw()
 	//particle.Draw(cmdObj);
 
 	// トレイル描画
-	trail.Draw(cmdObj);
+	commonData_->trailDrawer.Draw(cmdObj, camera_->GetVPMatrix());
 
 	// sparkEffect描画
 	sparkEffect.Draw(cmdObj);

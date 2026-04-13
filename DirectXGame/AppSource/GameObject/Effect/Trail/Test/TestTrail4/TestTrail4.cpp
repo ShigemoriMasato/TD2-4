@@ -64,11 +64,8 @@ void TestTrail4::Initialize(
 	cfg.maxSegments = 48;
 	cfg.lifeTime = 0.25f;
 	cfg.minDistance = 0.01f;
-	cfg.drawNormal = false;
-	cfg.drawAdd = true;
-	cfg.colorAdd = { 0.45f, 0.9f, 1.0f, 0.85f };
 	cfg.texturePath = "Assets/.EngineResource/Texture/white1x1.png";
-	trail_.Initialize(drawDataManager_, textureManager_, cfg);
+	trail_.Initialize(textureManager_, cfg);
 
 	active_ = false;
 	emitting_ = false;
@@ -103,7 +100,7 @@ void TestTrail4::Update(float deltaTime, const Matrix4x4& vpMatrix)
 
 	trail_.PushSegment(Origin_, tip_);
 	
-	trail_.Update(deltaTime, vpMatrix);
+	trail_.Update(deltaTime);
 }
 
 void TestTrail4::Draw(CmdObj* cmdObj)
@@ -120,7 +117,4 @@ void TestTrail4::Draw(CmdObj* cmdObj)
 
 
 	render_->Draw(cmdObj);
-
-	// トレイル描画
-	trail_.Draw(cmdObj);
 }
