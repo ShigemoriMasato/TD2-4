@@ -2,6 +2,7 @@
 #include "PieceManager.h"
 #include "Utility/Easing.h"
 #include <../Engine/Assets/Audio/AudioManager.h>
+#include <set>
 
 void Piece::Initialize(const Item& item, int rank) {
 	itemData_ = item;
@@ -179,6 +180,14 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 
 	float deleteT = 1.0f - (useTimer_ / deleteTime_ * 0.7f) + 0.3f;
 
+	// チップの位置を集合として保持（アウトライン判定用）
+	std::set<std::pair<int, int>> chipSet;
+	for (const auto& chip : chips_) {
+		if (!IsIgnored(chip)) {
+			chipSet.insert(GetChipPos(chip));
+		}
+	}
+
 	for (const auto& chip : chips_) {
 		if(IsIgnored(chip)) {
 			currentIdx++;
@@ -205,7 +214,7 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		uint32_t g = static_cast<uint32_t>(255.0f + t * (32.0f - 255.0f));
 		uint32_t b = static_cast<uint32_t>(255.0f + t * (176.0f - 255.0f));
 		uint32_t a = 255;
-		
+
 		info.color = (r << 24) | (g << 16) | (b << 8) | a;
 
 		if (isUsing_) {
@@ -233,6 +242,58 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 
 		drawInfos.push_back(info);
 		currentIdx++;
+	}
+
+	// アウトライン描画（各チップの境界に白い線を追加）
+	const float outlineThickness = 0.05f; // アウトラインの太さ
+	const float outlineHeight = 0.15f; // アウトラインの高さ（チップより少し高く）
+	const uint32_t outlineColor = 0xFFFFFFFF; // 白色
+
+	for (const auto& chip : chips_) {
+		if (IsIgnored(chip)) {
+			continue;
+		}
+		auto slotPos = GetChipPos(chip);
+
+		// 4方向（上下左右）をチェック
+		std::pair<int, int> directions[4] = {
+			{0, -1},  // 上
+			{0, 1},   // 下
+			{-1, 0},  // 左
+			{1, 0}    // 右
+		};
+
+		for (int dir = 0; dir < 4; ++dir) {
+			std::pair<int, int> neighbor = {
+				slotPos.first + directions[dir].first,
+				slotPos.second + directions[dir].second
+			};
+
+			// 隣接位置にチップがない場合、その辺にアウトラインを描画
+			if (chipSet.find(neighbor) == chipSet.end()) {
+				DrawInfo outlineInfo;
+				outlineInfo.position = { (float)slotPos.first + 0.5f, 0.0f, (float)slotPos.second + 0.5f };
+				outlineInfo.modelIndex = pieceModelID;
+				outlineInfo.color = outlineColor;
+
+				// 方向に応じてアウトラインの位置とスケールを調整
+				if (dir == 0) { // 上
+					outlineInfo.position.z -= 0.5f;
+					outlineInfo.scale = Vector3(0.5f, outlineHeight, outlineThickness);
+				} else if (dir == 1) { // 下
+					outlineInfo.position.z += 0.5f;
+					outlineInfo.scale = Vector3(0.5f, outlineHeight, outlineThickness);
+				} else if (dir == 2) { // 左
+					outlineInfo.position.x -= 0.5f;
+					outlineInfo.scale = Vector3(outlineThickness, outlineHeight, 0.5f);
+				} else { // 右
+					outlineInfo.position.x += 0.5f;
+					outlineInfo.scale = Vector3(outlineThickness, outlineHeight, 0.5f);
+				}
+
+				drawInfos.push_back(outlineInfo);
+			}
+		}
 	}
 	DrawInfo info;
 	info.modelIndex = itemData_.modelID;

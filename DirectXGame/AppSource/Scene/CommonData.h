@@ -30,7 +30,12 @@ struct CommonData {
 
 	bool isWin = false; // 勝利フラグ
 
-	// トレイル
+	//@brief 音量設定 (0.0f ~ 1.0f)
+	float masterVolume = 0.5f;
+	float bgmVolume = 0.5f;
+	float seVolume = 0.5f;
+  
+  // トレイル
 	TrailPresetDataBank trailPresetDataBank;
 	TrailDrawer trailDrawer;
 

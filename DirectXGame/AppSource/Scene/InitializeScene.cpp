@@ -96,6 +96,7 @@ void InitializeScene::Initialize() {
 	keyManager->SetMouse(Key::Use, 1, KeyState::Trigger);
 
 	keyManager->SetMouse(Key::AutoPlace, 1, KeyState::Trigger);
+	keyManager->SetMouse(Key::AutoPlace, 1, KeyState::Hold);
 
 	//================================================================================
 
@@ -147,11 +148,13 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	commonData_->cmdObject->ResetCommandList();
 
 	return std::make_unique<PrticleEditorScene>();
-	return std::make_unique<YokoScene>();
+	return std::make_unique<ShigeScene>();
 	return std::make_unique<TrailEditorScene>();
+	return std::make_unique<YokoScene>();
 	return std::make_unique<TitleScene>();
 	return std::make_unique<ResultScene>();
 	return std::make_unique<ShigeScene>();
+	return std::make_unique<PrticleEditorScene>();
 	return std::make_unique<TechnicalTestScene>();
 }
 

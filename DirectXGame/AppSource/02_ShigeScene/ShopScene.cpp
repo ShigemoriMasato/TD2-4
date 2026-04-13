@@ -98,6 +98,11 @@ std::unique_ptr<IScene> ShopScene::Update() {
 		desc.SetValue(cameraPerspectiveSize_.x, cameraPerspectiveSize_.y);
 		debugCamera_->SetProjectionMatrix(desc);
 	}
+	ImGui::Separator();
+	ImGui::Text("Reroll Settings");
+	ImGui::DragFloat("Reroll Interval Time", &rerollIntervalTime_, 0.1f, 0.0f, 10.0f);
+	ImGui::Text("Interval Timer: %.2f / %.2f", rerollIntervalTimer_, rerollIntervalTime_);
+	ImGui::Text("Reroll Count: %d", rerollCount_);
 	ImGui::End();
 
 	itemManager_->DrawImGui();
@@ -125,14 +130,23 @@ std::unique_ptr<IScene> ShopScene::Update() {
 
 	// ショップのアイテムがバックパックに配置されたことを検知
 	if (pieceManager_->GetShopPieceCount() < 3) {
-		pendingReroll_ = true;
+		if (!pendingReroll_) {
+			pendingReroll_ = true;
+			rerollIntervalTimer_ = 0.0f; // インターバルタイマーをリセット
+		}
 	}
 
-	// リロール待機状態で、カウントが1以上でかつピースを持っていなければ更新実行
-	if (pendingReroll_ && rerollCount_ > 0 && !shopCursor_->HasHeldPiece()) {
+	// リロール待機状態の場合、インターバルタイマーを進める
+	if (pendingReroll_) {
+		rerollIntervalTimer_ += deltaTime_;
+	}
+
+	// リロール待機状態で、インターバル経過、カウントが1以上、かつピースを持っていなければ更新実行
+	if (pendingReroll_ && rerollIntervalTimer_ >= rerollIntervalTime_ && rerollCount_ > 0 && !shopCursor_->HasHeldPiece()) {
 		pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
 		rerollCount_--;
 		pendingReroll_ = false;
+		rerollIntervalTimer_ = 0.0f;
 	}
 
 	// 何かしらのトリガーでショップのピースを更新する
@@ -140,6 +154,7 @@ std::unique_ptr<IScene> ShopScene::Update() {
 		if (!shopCursor_->HasHeldPiece()) {
 			pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
 			pendingReroll_ = false; // 強制更新されたので待機状態を解除
+			rerollIntervalTimer_ = 0.0f; // インターバルタイマーもリセット
 		}
 	}
 
