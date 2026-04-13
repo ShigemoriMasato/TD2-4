@@ -25,4 +25,9 @@ struct CommonData {
 	int stageNum = 0;	//現在のステージの番号
 
 	bool isWin = false; // 勝利フラグ
+
+	//@brief 音量設定 (0.0f ~ 1.0f)
+	float masterVolume = 0.5f;
+	float bgmVolume = 0.5f;
+	float seVolume = 0.5f;
 };

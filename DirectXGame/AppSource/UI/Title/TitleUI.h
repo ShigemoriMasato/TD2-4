@@ -7,6 +7,8 @@
 #include <memory>
 #include <array>
 
+struct CommonData;
+
 namespace Title {
 
 	/// UIモデルの種類
@@ -29,10 +31,24 @@ namespace Title {
 	};
 }
 
+namespace Option {
+
+	enum class Select {
+
+		Master,
+		BGM,
+		SE,
+		Quit,
+
+		Count,
+	};
+
+}
+
 class TitleUI {
 public:
 
-	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager);
+	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, CommonData* commonData);
 	void Update(const Matrix4x4& vpMatrix);
 	void Draw(CmdObj* cmdObj);
 
@@ -82,4 +98,5 @@ private:
 
 	SHEngine::DrawDataManager* drawDataManager_ = nullptr;
 	SHEngine::ModelManager* modelManager_ = nullptr;
+	CommonData* commonData_ = nullptr;
 };
