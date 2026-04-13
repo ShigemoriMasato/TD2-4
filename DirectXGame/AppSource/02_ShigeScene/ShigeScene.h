@@ -99,6 +99,10 @@ private:// System系
 	Vector3 cameraTargetOffset_ = {0.0f, 0.0f, 0.0f};
 	Vector2 lastMousePos_ = {0.0f, 0.0f};
 
+	//
+	float bgmVolume_ = 0.5f;
+	float seVolume_ = 0.5f;
+
 private:// Shop
 
 	std::unique_ptr<ShopScene> shopScene_;

@@ -147,10 +147,14 @@ void ShigeScene::Initialize() {
 	//
 	// #endif // DEBUG
 
+	bgmVolume_ = commonData_->bgmVolume* commonData_->masterVolume;
+	seVolume_ = commonData_->seVolume * commonData_->masterVolume;
+
 	// BGM
 	uint32_t handle = AudioManager::GetInstance().GetHandleByName("GameScene.mp3");
 	if (handle != 0) {
-		AudioManager::GetInstance().Play(handle, 0.1f, true);
+		// CommonDataから音量設定を取得して適用
+		AudioManager::GetInstance().Play(handle, bgmVolume_, true);
 	}
 
 	telop_ = std::make_unique<SituationTelop>();
