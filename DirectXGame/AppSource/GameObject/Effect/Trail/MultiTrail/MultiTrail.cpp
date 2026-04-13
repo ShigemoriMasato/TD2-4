@@ -14,7 +14,6 @@ void MultiTrail::Initialize(
 	ribbonTrailCache_.clear();
 	shockwaveRingTrailCache_.clear();
 	enabled_ = true;
-	modelWorld_ = Matrix4x4::Identity();
 }
 
 int32_t MultiTrail::Add(const std::string& presetName)
@@ -32,7 +31,6 @@ int32_t MultiTrail::Add(const std::string& presetName)
 		const auto& preset = std::get<RibbonTrailConfig>(presetVar);
 		auto trail = std::make_unique<RibbonTrail>();
 		trail->Initialize(textureManager_, preset);
-		trail->SetModelWorld(modelWorld_);
 		ribbonTrailCache_[nextId_] = std::move(trail);
 	}
 	else if (std::holds_alternative<ShockwaveRingConfig>(presetVar))
@@ -40,7 +38,6 @@ int32_t MultiTrail::Add(const std::string& presetName)
 		const auto& preset = std::get<ShockwaveRingConfig>(presetVar);
 		auto trail = std::make_unique<ShockwaveRingTrail>();
 		trail->Initialize(textureManager_, preset);
-		trail->SetModelWorld(modelWorld_);
 		shockwaveRingTrailCache_[nextId_] = std::move(trail);
 	}
 

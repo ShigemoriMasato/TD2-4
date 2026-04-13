@@ -30,7 +30,8 @@ void TestTrail2::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine
 	cfg.lifeTime = 0.35f;
 	cfg.minDistance = 0.03f;
 
-	trail_.Initialize(textureManager, cfg);
+	trail_.Initialize(textureManager);
+	trail_.SetConfig(cfg);
 
 	// テスト用の初期位置
 	swordCenterWS_ = { 0.0f, 2.0f, 0.0f };

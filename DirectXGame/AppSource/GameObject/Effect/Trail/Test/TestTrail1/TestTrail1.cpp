@@ -8,7 +8,8 @@ void TestTrail1::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine
 	cfg.lifeTime = 0.25f;
 	cfg.minDistance = 0.0f;
 	cfg.texturePath = "Assets/.EngineResource/Texture/uvChecker.png";
-	trail_.Initialize(textureManager, cfg);
+	trail_.Initialize(textureManager);
+	trail_.SetConfig(cfg);
 }
 
 void TestTrail1::Update(float deltaTime, const Matrix4x4& vpMatrix)

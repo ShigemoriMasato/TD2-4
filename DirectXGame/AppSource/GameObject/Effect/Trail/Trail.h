@@ -38,7 +38,8 @@ public:
 	Trail() = default;
 	~Trail() = default;
 
-	void Initialize(SHEngine::TextureManager* textureManager, const Config& config = {});
+	void Initialize(SHEngine::TextureManager* textureManager);
+	void SetConfig(const Config& config);
 	void Update(float deltaTime);
 
 	// ワールド座標で2点を追加
@@ -46,8 +47,8 @@ public:
 
 	// 制御
 	void Clear();
-	void SetEnabled(bool enabled) { enabled_ = enabled; }
-	bool IsEnabled() const { return enabled_; }
+	void SetEmittingFlag(bool flag) { emitting_ = flag; }
+	const bool IsEmitting() const { return emitting_; }
 
 	// テクスチャ差し替え
 	void SetTexture(const std::string& texturePath);
@@ -56,12 +57,12 @@ public:
 	Config& GetConfig() { return config_; }
 	const Config& GetConfig() const { return config_; }
 
+	// Drawer用
+	int GetTextureHandle() const { return textureHandle_; }
+
 	// 今フレーム作られた頂点を返す（最大固定長vectorの先頭から activeVertexCount_ までが有効）
 	const std::vector<GpuVertex>& GetGpuVertices() const { return gpuVertices_; }
 	int GetActiveVertexCount() const { return activeVertexCount_; }
-
-	// テクスチャ
-	int GetTextureHandle() const { return textureHandle_; }
 
 private:
 	struct Sample
@@ -81,7 +82,7 @@ private:
 
 	// 設定
 	Config config_{};
-	bool enabled_ = true;
+	bool emitting_ = true;
 
 	// 履歴
 	std::deque<Sample> samples_;
@@ -94,7 +95,6 @@ private:
 	int maxVertexCount_ = 0;
 	int activeVertexCount_ = 0;
 
-	Matrix4x4 vpMatrix_{ Matrix4x4::Identity() };
 
 	int textureHandle_ = -1;
 };

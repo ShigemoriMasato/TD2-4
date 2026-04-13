@@ -65,7 +65,8 @@ void TestTrail4::Initialize(
 	cfg.lifeTime = 0.25f;
 	cfg.minDistance = 0.01f;
 	cfg.texturePath = "Assets/.EngineResource/Texture/white1x1.png";
-	trail_.Initialize(textureManager_, cfg);
+	trail_.Initialize(textureManager);
+	trail_.SetConfig(cfg);
 
 	active_ = false;
 	emitting_ = false;

@@ -1,5 +1,6 @@
 #pragma once
 #include <Scene/IScene.h>
+#include <Tool/Grid/Grid.h>
 #include <Camera/DebugCamera.h>
 #include <Render/RenderObject.h>
 #include <Tool/Json/JsonManager.h>
@@ -21,7 +22,7 @@ private:
 	{
 		std::string name;
 		std::string modelPath;
-		NodeModelData modelData;
+		int modelIndex = -1;
 		int textureIndex = 0;
 	};
 
@@ -37,18 +38,20 @@ private:
 	void LoadTrailData();
 
 	void DrawImGui();
-	void UpdateRenders(const Matrix4x4& vpMatrix);
-
-	// UIサポート
 	void DrawConfigUI_();
 	void DrawRibbonUI_();
 	void DrawShockwaveUI_();
 
+	void UpdateRenders(const Matrix4x4& vpMatrix);
+
 	void Reset(TrailType type);
 
 private:
-
+	// カメラ
 	std::unique_ptr<DebugCamera> camera_;
+	// ワールドgrid
+	std::unique_ptr<Grid> grid_;
+
 
 	int selectedModelIndex_ = -1;
 

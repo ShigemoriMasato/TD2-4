@@ -3,8 +3,8 @@
 void RibbonTrail::Initialize(SHEngine::TextureManager* textureManager, const RibbonTrailConfig& preset)
 {
 	preset_ = preset;
-	trail_.Initialize(textureManager, preset_.cfg);
-	trail_.SetTexture(preset_.cfg.texturePath);
+	trail_.Initialize(textureManager);
+	trail_.SetConfig(preset_.cfg);
 	trail_.Clear();
 }
 

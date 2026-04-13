@@ -34,7 +34,7 @@ ParticleType ParticlePresetDataBank::GetTypeOf(const std::string& name)
 }
 
 // Save
-void ParticlePresetDataBank::SaveParticleSRT(JsonManager& json, const std::string& keyPrefix, const Particle::ParticleSRT& srt)
+void ParticlePresetDataBank::SaveParticleSRT(JsonManager& json, const std::string& keyPrefix, const ParticleSRT& srt)
 {
 	// value
 	{
@@ -60,40 +60,74 @@ void ParticlePresetDataBank::SaveParticleSRT(JsonManager& json, const std::strin
 		json.Add(keyPrefix + ".randomRangeAccMax", srt.randomRange_acceleration_max);
 	}
 }
-void ParticlePresetDataBank::Save(const std::string& name, ParticleType type, const Particle::Config& cfg)
+void ParticlePresetDataBank::Save(const std::string& name, FountainConfig& uniqueConfig)
 {
-	json_.Boot("Particle/" + name);
+	// nameに.jsonがついていたら外す
+	std::string baseName = name;
+	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
+	{
+		baseName = baseName.substr(0, baseName.size() - 5);
+	}
+
+	json_.Boot("Particle/" + baseName);
 
 	// type
 	{
-		std::string typeStr = ToString(type);
-		json_.Add("type", typeStr);
+		std::string type = "Fountain";
+		json_.Add("type", type);
 	}
 
 	// cfg
 	{
-		json_.Add("cfg.lifeTime", cfg.lifeTime);
-		json_.Add("cfg.speed", cfg.speed);
-		json_.Add("cfg.emitNum", cfg.emitNum);
-		json_.Add("cfg.emitInterval", cfg.emitInterval);
-		json_.Add("cfg.texturePath", cfg.texturePath);
-		json_.Add("cfg.modelPath", cfg.modelPath);
+		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
+		json_.Add("cfg.speed", uniqueConfig.cfg.speed);
+		json_.Add("cfg.emitNum", uniqueConfig.cfg.emitNum);
+		json_.Add("cfg.emitInterval", uniqueConfig.cfg.emitInterval);
+		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
+		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
 	}
 
-	// init
-	SaveParticleSRT(json_, "init.scale", cfg.scale);
-	SaveParticleSRT(json_, "init.rotate", cfg.rotate);
-	SaveParticleSRT(json_, "init.translate", cfg.translate);
-
-	// move
+	// type固有
 	{
-		bool b = cfg.isMoveToTarget;
-		auto target = cfg.TargetPos;
-		auto moveSpeed = cfg.moveSpeed;
+		SaveParticleSRT(json_, "init.scale", uniqueConfig.scale);
+		SaveParticleSRT(json_, "init.rotate", uniqueConfig.rotate);
+		SaveParticleSRT(json_, "init.translate", uniqueConfig.translate);
+	}
 
-		json_.Add("move.isMoveToTarget", b);
-		json_.Add("move.targetPos", target);
-		json_.Add("move.moveSpeed", moveSpeed);
+	json_.Save();
+}
+void ParticlePresetDataBank::Save(const std::string& name, GoToTargetConfig& uniqueConfig)
+{
+	// nameに.jsonがついていたら外す
+	std::string baseName = name;
+	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
+	{
+		baseName = baseName.substr(0, baseName.size() - 5);
+	}
+
+	json_.Boot("Particle/" + baseName);
+
+	// type
+	{
+		std::string type = "Fountain";
+		json_.Add("type", type);
+	}
+
+	// cfg
+	{
+		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
+		json_.Add("cfg.speed", uniqueConfig.cfg.speed);
+		json_.Add("cfg.emitNum", uniqueConfig.cfg.emitNum);
+		json_.Add("cfg.emitInterval", uniqueConfig.cfg.emitInterval);
+		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
+		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
+	}
+
+	// type固有
+	{
+		json_.Add("move.isMoveToTarget", uniqueConfig.isMoveToTarget);
+		json_.Add("move.targetPos", uniqueConfig.TargetPos);
+		json_.Add("move.moveSpeed", uniqueConfig.moveSpeed);
 	}
 
 	json_.Save();
@@ -102,10 +136,39 @@ void ParticlePresetDataBank::Save(const std::string& name, ParticleType type, co
 	Invalidate(name);
 }
 
-// Load
-Particle::ParticleSRT ParticlePresetDataBank::LoadParticleSRT(JsonManager& json, const std::string& keyPrefix)
+void ParticlePresetDataBank::Save(const std::string& name, OnTrailConfig& uniqueConfig)
 {
-	Particle::ParticleSRT outSrt{};
+	// nameに.jsonがついていたら外す
+	std::string baseName = name;
+	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
+	{
+		baseName = baseName.substr(0, baseName.size() - 5);
+	}
+	json_.Boot("Particle/" + baseName);
+	// type
+	{
+		std::string type = "OnTrail";
+		json_.Add("type", type);
+	}
+	// cfg
+	{
+		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
+		json_.Add("cfg.speed", uniqueConfig.cfg.speed);
+		json_.Add("cfg.emitNum", uniqueConfig.cfg.emitNum);
+		json_.Add("cfg.emitInterval", uniqueConfig.cfg.emitInterval);
+		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
+		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
+	}
+	json_.Save();
+	// 保存したらキャッシュも更新
+	Invalidate(name);
+}
+
+
+// Load
+ParticleSRT ParticlePresetDataBank::LoadParticleSRT(JsonManager& json, const std::string& keyPrefix)
+{
+	ParticleSRT outSrt{};
 
 	// value
 	try { outSrt.isRandom_value = json.Get<bool>(keyPrefix + ".isRandomVal"); }
@@ -156,28 +219,22 @@ Particle::Config ParticlePresetDataBank::LoadConfig(JsonManager& json)
 	try { cfg.modelPath = json.Get<std::string>("cfg.modelPath"); }
 	catch (...) {}
 
-	cfg.scale = LoadParticleSRT(json, "init.scale");
-	cfg.rotate = LoadParticleSRT(json, "init.rotate");
-	cfg.translate = LoadParticleSRT(json, "init.translate");
-
-	try { cfg.isMoveToTarget = json.Get<bool>("move.isMoveToTarget"); }
-	catch (...) {}
-	try { cfg.TargetPos = json.Get<Vector3>("move.targetPos"); }
-	catch (...) {}
-	try { cfg.moveSpeed = json.Get<float>("move.moveSpeed"); }
-	catch (...) {}
-
 	cfg.lifeTime = std::max(0.001f, cfg.lifeTime);
 	cfg.speed = std::max(0.0f, cfg.speed);
 	cfg.emitNum = std::max(0, cfg.emitNum);
 	cfg.emitInterval = std::max(0.0f, cfg.emitInterval);
-	cfg.moveSpeed = std::max(0.0f, cfg.moveSpeed);
 
 	return cfg;
 }
 ParticlePresetVariant ParticlePresetDataBank::Load(const std::string& name)
 {
-	json_.Boot("Particle/" + name);
+	// nameに.jsonがついていたら外す
+	std::string baseName = name;
+	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
+	{
+		baseName = baseName.substr(0, baseName.size() - 5);
+	}
+	json_.Boot("Particle/" + baseName);
 
 	std::string typeStr;
 	try { typeStr = json_.Get<std::string>("type"); }
@@ -193,12 +250,32 @@ ParticlePresetVariant ParticlePresetDataBank::Load(const std::string& name)
 	{
 		FountainConfig p{};
 		p.cfg = LoadConfig(json_);
+
+		p.scale = LoadParticleSRT(json_, "init.scale");
+		p.rotate = LoadParticleSRT(json_, "init.rotate");
+		p.translate = LoadParticleSRT(json_, "init.translate");
+
+		return p;
+	}
+	else if (type == ParticleType::GoToTarget)
+	{
+		GoToTargetConfig p{};
+		p.cfg = LoadConfig(json_);
+
+		try { p.isMoveToTarget = json_.Get<bool>("move.isMoveToTarget"); }
+		catch (...) {}
+		try { p.TargetPos = json_.Get<Vector3>("move.targetPos"); }
+		catch (...) {}
+		try { p.moveSpeed = json_.Get<float>("move.moveSpeed"); }
+		catch (...) {}
+
 		return p;
 	}
 	else if (type == ParticleType::OnTrail)
 	{
 		OnTrailConfig p{};
 		p.cfg = LoadConfig(json_);
+
 		return p;
 	}
 

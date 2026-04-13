@@ -1,15 +1,14 @@
 #pragma once
 #include <Scene/IScene.h>
+#include <Tool/Grid/Grid.h>
 #include <Camera/DebugCamera.h>
 #include <Render/RenderObject.h>
 #include <Tool/Json/JsonManager.h>
-#include <GameObject/Effect/Particle/Particle.h>
+#include <GameObject/Effect/Particle/MultiParticle/MultiParticle.h>
 #include <GameObject/Effect/Particle/Preset/ParticlePreset.h>
-#include <GameObject/Effect/Particle/DataBank/ParticlePresetDataBank.h>
 #include <memory>
 #include <string>
 #include <vector>
-#include <Tool/Grid/Grid.h>
 
 class PrticleEditorScene final : public IScene
 {
@@ -19,18 +18,34 @@ public:
 	void Draw() override;
 
 private:
+	struct DrawDataUnit
+	{
+		std::string name;
+		std::string modelPath;
+		int modelIndex = -1;
+		int textureIndex = 0;
+	};
 
-	void BuildParticle();
+private:
+	void BuildModelList();
+	void BuildJsonList();
+
+	void SelectModel(int index);
+
+	void RebuildParticle();
 
 	void SaveData();
 	void LoadData();
 
 	void DrawImGui();
+	void DrawImGui_Fountain();
+	void DrawImGui_GoToTarget();
+	void DrawImGui_OnTrail();
+
+	void UpdateRenders(const Matrix4x4& vpMatrix);
+
 
 	void Reset(ParticleType type);
-
-private:
-
 
 private:
 	// カメラ
@@ -38,27 +53,42 @@ private:
 	// ワールドgrid
 	std::unique_ptr<Grid> grid_;
 
+	int selectedModelIndex_ = -1;
+
+	// モデル描画データ
+	std::vector<std::unique_ptr<DrawDataUnit>> modelDataList_;
+	std::unique_ptr<SHEngine::RenderObject> modelRender_;
+	Transform modelTransform_{};
+	Matrix4x4 modelWorld_;
+	bool isModelDraw_ = true;
+
+	// エミッターAABB描画データ
+	std::unique_ptr<SHEngine::RenderObject> emitterAABBRender_;
+	bool isEmitterDraw_ = true;
+
 	// 共通Config
 	Particle::Config particleConfig_{};
 	// Fountain 固有
 	FountainConfig fountainPreset_{};
+	// GoToTarget 固有
+	GoToTargetConfig goToTargetPreset_{};
 	// OnTrailConfig 固有
 	OnTrailConfig onTrailPreset_{};
+	// 上記Configを利用し描画するParticleが必要（編集中のParticleを描画するため）
+	MultiParticle editingParticle_;
+
 
 	ParticleType currentType_ = ParticleType::Fountain;
 
-	// Particle
-	Particle particle_;
-	bool requestRebuildParticle_ = false;
-	Vector3 emitPos_{ 0.0f, 0.0f, 0.0f };
 
-	// Json
-	JsonManager json_;
-	// DataBank
-	ParticlePresetDataBank presetDataBank_;
+	// Particle
+	MultiParticle particle_;
+	std::vector<std::string> activeParticleNameList_;
+	bool requestRebuildParticle_ = false;
 
 	// ImGuiがstringを許容しないばかりに生まれてしまった産廃
-	char presetNameBuf_[256]{ "particle_01" };
+	char presetNameBuf_[256]{};
 	char texturePathBuf_[256]{};
 	char modelPathBuf_[256]{};
+	std::vector<std::string> JsonList_;
 };

@@ -6,19 +6,15 @@ class FountainParticle final
 {
 public:
 	void Initialize(
-		SHEngine::DrawDataManager* drawDataManager,
 		SHEngine::TextureManager* textureManager,
 		SHEngine::ModelManager* modelManager);
 	void SetConfig(const FountainConfig& config);
-	void Update(float dt, const Matrix4x4& vpMatrix);
-	void Draw(CmdObj* cmdObj);
+	void Update(float dt);
 
-	// 発生位置をセット
-	void SetEmitPos(const Vector3& pos);
-	// 発生フラグをセット
-	void SetEmittingFlag(bool flag);
+	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
+	void SetEnabled(bool isActive);
 
-	void Clear();
+	void Clear() { particle_.Clear(); }
 
 	const FountainConfig& GetPreset() const { return config_; }
 	Particle& GetParticle() { return particle_; }
@@ -27,4 +23,19 @@ public:
 private:
 	Particle particle_{};
 	FountainConfig config_{};
+	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
+	bool isActive_ = true;
+
+	float emitTimer_ = 0.0f;
+
+	struct ParticleInstance
+	{
+		ParticleSRT scale;
+		ParticleSRT rotate;
+		ParticleSRT translate;
+		float age = 0.0f;
+		Vector4 color{ 1,1,1,1 };
+	};
+
+	std::vector<ParticleInstance> instances_;
 };

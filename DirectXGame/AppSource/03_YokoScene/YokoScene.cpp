@@ -34,27 +34,32 @@ namespace
 
 void YokoScene::Initialize()
 {
+	// カメラ初期化
 	camera_ = std::make_unique<DebugCamera>();
 	camera_->SetProjectionMatrix(PerspectiveFovDesc{});
 	camera_->SetPosition({ 0.0f, 8.0f, -25.0f });
 	camera_->Initialize(input_);
 
+	// モデル初期化
 	int modelHandle = modelManager_->LoadModel("Assets/Model/Item/Weapon/Axe");
 	NodeModelData modelData = modelManager_->GetNodeModelData(modelHandle);
 	auto& material = modelData.materials[modelData.materialIndex.front()];
 	textureIndex_ = material.textureIndex;
 	render_ = CreateTexturedModelRO(drawDataManager_, modelData, textureIndex_);
-
 	transform_.position = { 0.0f, 0.0f, 0.0f };
 	transform_.rotate = { 0.0f, 0.0f, 0.0f };
 	transform_.scale = { 1.0f, 1.0f, 1.0f };
 
-
+	// トレイル初期化
 	trail.Initialize(textureManager_, &commonData_->trailPresetDataBank);
 	trail.Add("testTrail2");
 	trail.Add("testTrail2_1");
 	trail.RegisterToDrawer(&commonData_->trailDrawer);
 
+	// パーティクル初期化
+	particles_.Initialize(textureManager_, modelManager_, &commonData_->particlePresetDataBank);
+	particles_.Add("sparrrrk2");
+	particles_.RegisterToDrawer(&commonData_->particleDrawer);
 }
 
 std::unique_ptr<IScene> YokoScene::Update()
@@ -117,6 +122,10 @@ std::unique_ptr<IScene> YokoScene::Update()
 	trail.SetModelWorld(world);
 	trail.Update(dt);
 
+	// パーティクル更新
+	particles_.SetModelWorld(world);
+	particles_.Update(dt);
+
 	// Zキーでエディタ切り替え
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z))
 	{
@@ -135,7 +144,7 @@ void YokoScene::Draw()
 	display->PreDraw(cmdObj, true);
 
 	// パーティクル描画
-	//particle.Draw(cmdObj);
+	commonData_->particleDrawer.Draw(cmdObj, camera_->GetVPMatrix());
 
 	// トレイル描画
 	commonData_->trailDrawer.Draw(cmdObj, camera_->GetVPMatrix());
