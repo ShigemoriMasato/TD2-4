@@ -202,17 +202,16 @@ void PrticleEditorScene::SelectModel(int index)
 void PrticleEditorScene::RebuildDrawParticle()
 {
 	particle_.Clear();
-	particle_.Initialize(textureManager_, modelManager_, &commonData_->particlePresetDataBank);
+	particle_.Initialize(textureManager_, modelManager_, commonData_);
 	for (const auto& name : activeParticleNameList_)
 	{
 		particle_.Add(name);
 	}
-	particle_.RegisterToDrawer(&commonData_->particleDrawer);
 }
 void PrticleEditorScene::RebuildEditParticle()
 {
 	editingParticle_.Clear();
-	editingParticle_.Initialize(textureManager_, modelManager_, &commonData_->particlePresetDataBank);
+	editingParticle_.Initialize(textureManager_, modelManager_, commonData_);
 	if (presetNameBuf_[0] == '\0') return;
 	int32_t slot = editingParticle_.Add(presetNameBuf_);
 	ParticlePresetVariant presetVar = editingParticle_.GetConfig(slot);
@@ -228,12 +227,11 @@ void PrticleEditorScene::RebuildEditParticle()
 	{
 		onTrailPreset_ = std::get<OnTrailConfig>(presetVar);
 	}
-	editingParticle_.RegisterToDrawer(&commonData_->particleDrawer);
 }
 void PrticleEditorScene::RebuildEditParticleCurrent()
 {
 	editingParticle_.Clear();
-	editingParticle_.Initialize(textureManager_, modelManager_, &commonData_->particlePresetDataBank);
+	editingParticle_.Initialize(textureManager_, modelManager_, commonData_);
 	if (presetNameBuf_[0] == '\0') return;
 	int32_t slot = editingParticle_.Add(presetNameBuf_);
 	if (currentType_ == ParticleType::Fountain)
@@ -248,7 +246,6 @@ void PrticleEditorScene::RebuildEditParticleCurrent()
 	{
 		editingParticle_.SetConfig(slot, onTrailPreset_);
 	}
-	editingParticle_.RegisterToDrawer(&commonData_->particleDrawer);
 }
 
 // データ保存
@@ -339,6 +336,8 @@ void PrticleEditorScene::DrawImGui()
 				ImGui::PushID(i); // 行ごとにIDを分ける
 				// 行全体を横並びにする
 				ImGui::BeginGroup();
+				// 左側：Selectable
+				ImGui::Selectable(activeParticleNameList_[i].c_str(), false, 0, ImVec2(200, 0));
 				// ボタン
 				ImGui::SameLine();
 				if (ImGui::SmallButton("削除"))
@@ -388,7 +387,7 @@ void PrticleEditorScene::DrawImGui()
 				ImGui::BeginGroup();
 				
 				// 左側：Selectable
-				bool selected = ImGui::Selectable(JsonList_[i].c_str(), false, 0, ImVec2(200, 0));
+				ImGui::Selectable(JsonList_[i].c_str(), false, 0, ImVec2(200, 0));
 
 				ImGui::SameLine();
 
@@ -667,7 +666,10 @@ void PrticleEditorScene::Draw()
 
 	// if (isEmitterDraw_) emitterAABBRender_->Draw(cmdObj);
 
-	commonData_->particleDrawer.Draw(cmdObj, camera_->GetVPMatrix());
+	particle_.Draw();
+	editingParticle_.Draw();
+
+	commonData_->particleDrawer->Draw(cmdObj, camera_->GetVPMatrix());
 
 	display->PostDraw(cmdObj);
 

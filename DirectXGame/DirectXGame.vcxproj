@@ -288,6 +288,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Gurepon.cpp" />
     <ClCompile Include="AppSource\UI\Game\GameFrame.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\FountainParticle\FountainParticle.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\GoToTargetParticle\GoToTargetParticle.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Trail.cpp" />
@@ -496,6 +497,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Effect\Particle\Drawer\ParticleDrawer.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\Drawer\TrailDrawer.h" />
     <ClInclude Include="AppSource\UI\Game\SituationTelop.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\GoToTargetParticle\GoToTargetParticle.h" />
     <ClInclude Include="AppSource\UI\Game\SituationGauge.h" />
   </ItemGroup>
   <ItemGroup>

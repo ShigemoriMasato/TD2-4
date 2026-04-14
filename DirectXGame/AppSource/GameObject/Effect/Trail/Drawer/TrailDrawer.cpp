@@ -127,6 +127,12 @@ void TrailDrawer::BuildVertices()
 			const auto& src = t->GetGpuVertices();
 			const int dstBase = slot * perTrail;
 
+			if (dstBase + vcount > maxVertexCountTotal_)
+			{
+				assert(false);
+				break;
+			}
+
 			for (int i = 0; i < vcount; ++i)
 			{
 				const auto& sv = src[static_cast<size_t>(i)];
@@ -166,4 +172,6 @@ void TrailDrawer::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
 
 	render_->instanceNum_ = 1;
 	render_->Draw(cmdObj);
+
+	trails_.clear();
 }

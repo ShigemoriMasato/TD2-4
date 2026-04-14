@@ -383,7 +383,7 @@ void ShigeScene::Draw() {
 		render->Draw(cmdObj);
 	}
 
-	commonData_->trailDrawer.Draw(cmdObj, camera_->GetVPMatrix());
+	commonData_->trailDrawer->Draw(cmdObj, camera_->GetVPMatrix());
 
 	enemyManager_->Draw(cmdObj);
 

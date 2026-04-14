@@ -73,6 +73,5 @@ protected:
 	bool currentAnimIsThrust_ = true; // 現在実行中のアニメーションが突きかどうか
 
 	// トレイル
-	TrailPresetDataBank trailDataBank_;
 	MultiTrail trail_;
 };

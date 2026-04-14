@@ -206,18 +206,19 @@ void TrailEditorScene::SelectModel(int index)
 // Trailの再構築
 void TrailEditorScene::RebuildTrail()
 {
+	commonData_->trailDrawer->Clear();
+
 	trail_.Clear();
-	trail_.Initialize(textureManager_, &commonData_->trailPresetDataBank);
+	trail_.Initialize(textureManager_, commonData_);
 	for (const auto& name : activeTrailNameList_)
 	{
 		trail_.Add(name);
 	}
-	trail_.RegisterToDrawer(&commonData_->trailDrawer);
 
 	editingTrail_.Clear();
 	editingTrail_.Initialize(textureManager_);
 	editingTrail_.SetConfig(trailConfig_);
-	commonData_->trailDrawer.Register(&editingTrail_);
+	commonData_->trailDrawer->Register(&editingTrail_);
 }
 
 // データ保存
@@ -396,6 +397,12 @@ void TrailEditorScene::DrawImGui()
 
 	ImGui::End();
 
+	ImGui::Begin("FPS");
+	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
+	ImGui::Text("DeltaTime: %.3f ms", deltaTime * 1000.0f);
+	ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
+	ImGui::End();
+
 
 
 	ImGui::Begin("modelTransform");
@@ -456,6 +463,8 @@ void TrailEditorScene::UpdateRenders(const Matrix4x4& vpMatrix)
 {
 	if (selectedModelIndex_ < 0) return;
 
+	modelTransform_.rotate.x += 0.05f;
+	modelTransform_.rotate.y += 0.02f;
 	modelWorld_ = MakeWorld(modelTransform_);
 
 	// モデル
@@ -547,8 +556,10 @@ void TrailEditorScene::Draw()
 		}
 	}
 
-	commonData_->trailDrawer.Draw(cmdObj, camera_->GetVPMatrix());
+	trail_.Draw();
+	//editingTrail_.Draw();
 
+	commonData_->trailDrawer->Draw(cmdObj, camera_->GetVPMatrix());
 
 	display->PostDraw(cmdObj);
 

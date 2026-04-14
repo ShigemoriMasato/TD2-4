@@ -1,20 +1,21 @@
 #include "MultiTrail.h"
 #include <GameObject/Effect/Trail/Drawer/TrailDrawer.h>
+#include <Scene/CommonData.h>
 #include <stdexcept>
 
-void MultiTrail::Initialize(
-	SHEngine::TextureManager* textureManager,
-	TrailPresetDataBank* presetData)
+
+void MultiTrail::Initialize(SHEngine::TextureManager* textureManager, CommonData* commonData)
 {
 	textureManager_ = textureManager;
-	presetData_ = presetData;
+	presetData_ = &commonData->trailPresetDataBank;
+	drawer_ = commonData->trailDrawer.get();
 
 	nextId_ = -1;
 
 	ribbonTrailCache_.clear();
 	shockwaveRingTrailCache_.clear();
-	enabled_ = true;
 }
+
 
 int32_t MultiTrail::Add(const std::string& presetName)
 {
@@ -71,8 +72,6 @@ void MultiTrail::Clear()
 
 void MultiTrail::Update(float dt)
 {
-	if (!enabled_) return;
-
 	for (auto& [name, trail] : ribbonTrailCache_)
 	{
 		trail->SetModelWorld(modelWorld_);
@@ -86,16 +85,19 @@ void MultiTrail::Update(float dt)
 	}
 }
 
-void MultiTrail::RegisterToDrawer(TrailDrawer* drawer)
+void MultiTrail::Draw()
 {
-	if (!drawer) return;
+	RegisterToDrawer();
+}
 
+void MultiTrail::RegisterToDrawer()
+{
 	for (auto& [id, t] : ribbonTrailCache_)
 	{
-		drawer->Register(&t->GetTrail());
+		drawer_->Register(&t->GetTrail());
 	}
 	for (auto& [id, t] : shockwaveRingTrailCache_)
 	{
-		drawer->Register(&t->GetTrail());
+		drawer_->Register(&t->GetTrail());
 	}
 }
