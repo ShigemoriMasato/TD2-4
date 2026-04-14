@@ -9,6 +9,7 @@ class TitleScene : public IScene {
 public:
 
 	TitleScene();
+	~TitleScene();
 
 	void Initialize() override;
 	std::unique_ptr<IScene> Update() override;
@@ -39,4 +40,6 @@ private:
 	void UpdateCalculatedVolumes();
 
 	Option::Select currentOptionSelect_ = Option::Select::Master;
+	std::unique_ptr<PlayData> bgm_ = nullptr;
+
 };

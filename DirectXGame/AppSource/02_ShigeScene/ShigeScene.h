@@ -37,6 +37,8 @@
 class ShigeScene : public IScene {
 public:
 
+	~ShigeScene();
+
 	void Initialize() override;
 	std::unique_ptr<IScene> Update() override;
 	void Draw() override;
@@ -126,5 +128,8 @@ private:// UI系
 	GameDisplayRange displayRange_ = {};
 
 	std::unique_ptr<SituationTelop> telop_;
+
+	std::unique_ptr<PlayData> bgm_ = nullptr;
+
 	std::unique_ptr<SituationGauge> situationGauge_;
 };

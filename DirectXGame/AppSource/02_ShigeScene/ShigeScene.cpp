@@ -10,6 +10,10 @@
 #include <numbers>
 #include <windows.h>
 
+ShigeScene::~ShigeScene() {
+	bgm_->Stop();
+}
+
 void ShigeScene::Initialize() {
 	debugCamera_ = std::make_unique<DebugCamera>();
 	debugCamera_->Initialize(input_);
@@ -151,11 +155,9 @@ void ShigeScene::Initialize() {
 	seVolume_ = commonData_->seVolume * commonData_->masterVolume;
 
 	// BGM
-	uint32_t handle = AudioManager::GetInstance().GetHandleByName("GameScene.mp3");
-	if (handle != 0) {
-		// CommonDataから音量設定を取得して適用
-		AudioManager::GetInstance().Play(handle, bgmVolume_, true);
-	}
+	auto data = AudioManager::GetInstance()->GetData("GameScene.mp3");
+	data->SetVolume(bgmVolume_);
+	bgm_ = data->CustomPlay(255);
 
 	telop_ = std::make_unique<SituationTelop>();
 	telop_->Initialize(modelManager_, drawDataManager_, 0);
@@ -344,11 +346,9 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	if (player_->GetCurrentHP() <= 0) {
 		std::string debugMsg = std::format("Player Survived Time: {:.2f} s\n", gameTimer_->GetTimer());
 		OutputDebugStringA(debugMsg.c_str());
-		AudioManager::GetInstance().StopAll();
 		commonData_->isWin = false;
 		return std::make_unique<ResultScene>();
 	} else if (waveSystem_->End()) {
-		AudioManager::GetInstance().StopAll();
 		commonData_->isWin = true;
 		return std::make_unique<ResultScene>();
 	}

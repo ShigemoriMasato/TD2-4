@@ -9,6 +9,10 @@
 TitleScene::TitleScene() {
 }
 
+TitleScene::~TitleScene() {
+	bgm_->Stop();
+}
+
 void TitleScene::Initialize() {
 	// CommonDataの音量設定へのポインタを取得
 	masterVolume_ = &commonData_->masterVolume;
@@ -20,7 +24,7 @@ void TitleScene::Initialize() {
 
 	titleUI_ = std::make_unique<TitleUI>();
 	titleUI_->Initialize(drawDataManager_, modelManager_, commonData_);
-	
+
 	camera_ = std::make_unique<Camera>();
 	PerspectiveFovDesc perspectiveDesc;
 	perspectiveDesc.SetValue(1280, 720, 0.45f, 0.1f, 1000.0f);
@@ -29,10 +33,7 @@ void TitleScene::Initialize() {
 	camera_->SetRotation({ 0.0f, 0.0f, 0.0f });
 	camera_->SetScale({ 1.0f, 1.0f, 1.0f });
 
-	uint32_t handle = AudioManager::GetInstance().GetHandleByName("TitleScene.mp3");
-	if (handle != 0) {
-		AudioManager::GetInstance().Play(handle, calculatedBgmVolume_, true);
-	}
+	bgm_ = AudioManager::GetInstance()->GetData("TitleScene.mp3")->CustomPlay(255);
 
 	postEffect_ = std::make_unique<PostEffect>();
 	postEffect_->Initialize(textureManager_, drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex));
@@ -41,153 +42,11 @@ void TitleScene::Initialize() {
 }
 
 std::unique_ptr<IScene> TitleScene::Update() {
+	auto keys = commonData_->keyManager->GetKeyStates();
 
-	// 上下キーで選択を変更
-	bool upPressed =   input_->GetKeyState(DIK_UPARROW) && !input_->GetPreKeyState(DIK_UPARROW) || input_->GetKeyState(DIK_W) && !input_->GetPreKeyState(DIK_W);
-	bool downPressed = input_->GetKeyState(DIK_DOWNARROW) && !input_->GetPreKeyState(DIK_DOWNARROW) || input_->GetKeyState(DIK_S) && !input_->GetPreKeyState(DIK_S);
-	bool leftPressed = input_->GetKeyState(DIK_LEFTARROW) && !input_->GetPreKeyState(DIK_LEFTARROW) || input_->GetKeyState(DIK_A) && !input_->GetPreKeyState(DIK_A);
-	bool rightPressed = input_->GetKeyState(DIK_RIGHTARROW) && !input_->GetPreKeyState(DIK_RIGHTARROW) || input_->GetKeyState(DIK_D) && !input_->GetPreKeyState(DIK_D);
-
-	// オプションモード中の処理
-	if (isOptionMode_) {
-		// 上下キーでオプション内の選択を変更
-		if (upPressed) {
-			int currentIndex = static_cast<int>(currentOptionSelect_);
-			currentIndex--;
-			if (currentIndex < 0) {
-				currentIndex = static_cast<int>(Option::Select::Count) - 1;
-			}
-			currentOptionSelect_ = static_cast<Option::Select>(currentIndex);
-
-			uint32_t handle = AudioManager::GetInstance().GetHandleByName("CursorMove.mp3");
-			if (handle != 0) {
-				AudioManager::GetInstance().Play(handle, calculatedSeVolume_, false);
-			}
-		}
-
-		if (downPressed) {
-			int currentIndex = static_cast<int>(currentOptionSelect_);
-			currentIndex++;
-			if (currentIndex >= static_cast<int>(Option::Select::Count)) {
-				currentIndex = 0;
-			}
-			currentOptionSelect_ = static_cast<Option::Select>(currentIndex);
-
-			uint32_t handle = AudioManager::GetInstance().GetHandleByName("CursorMove.mp3");
-			if (handle != 0) {
-				AudioManager::GetInstance().Play(handle, calculatedSeVolume_, false);
-			}
-		}
-
-		// 左右キーで音量を調整
-		if (leftPressed) {
-			switch (currentOptionSelect_) {
-			case Option::Select::Master:
-				*masterVolume_ -= 0.1f;
-				break;
-			case Option::Select::BGM:
-				*bgmVolume_ -= 0.1f;
-				break;
-			case Option::Select::SE:
-				*seVolume_ -= 0.1f;
-				break;
-			default:
-				break;
-			}
-
-			// 音量を再計算
-			UpdateCalculatedVolumes();
-
-			// BGMの音量を即座に変更
-			uint32_t bgmHandle = AudioManager::GetInstance().GetHandleByName("TitleScene.mp3");
-			if (bgmHandle != 0) {
-				AudioManager::GetInstance().SetVolume(bgmHandle, calculatedBgmVolume_);
-			}
-
-		}
-
-		if (rightPressed) {
-			switch (currentOptionSelect_) {
-			case Option::Select::Master:
-				*masterVolume_ += 0.1f;
-				break;
-			case Option::Select::BGM:
-				*bgmVolume_ += 0.1f;
-				break;
-			case Option::Select::SE:
-				*seVolume_ += 0.1f;
-				break;
-			default:
-				break;
-			}
-
-			// 音量を再計算
-			UpdateCalculatedVolumes();
-
-			// BGMの音量を即座に変更
-			uint32_t bgmHandle = AudioManager::GetInstance().GetHandleByName("TitleScene.mp3");
-			if (bgmHandle != 0) {
-				AudioManager::GetInstance().SetVolume(bgmHandle, calculatedBgmVolume_);
-			}
-
-		}
-
-		*masterVolume_ = std::clamp(*masterVolume_, 0.0f, 1.0f);
-		*bgmVolume_ = std::clamp(*bgmVolume_, 0.0f, 1.0f);
-		*seVolume_ = std::clamp(*seVolume_, 0.0f, 1.0f);
-
-		// Zキーで決定（Quitの場合はオプションモードを解除）
-		if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z) || 
-			input_->GetKeyState(DIK_SPACE) && !input_->GetPreKeyState(DIK_SPACE)) {
-			if (currentOptionSelect_ == Option::Select::Quit) {
-				isOptionMode_ = false;
-				currentOptionSelect_ = Option::Select::Master;
-
-				uint32_t handle = AudioManager::GetInstance().GetHandleByName("Decide.mp3");
-				if (handle != 0) {
-					AudioManager::GetInstance().Play(handle, calculatedSeVolume_, false);
-				}
-			}
-		}
-	} else {
-		// 通常モード：メインメニューの選択
-		titleUI_->UpdateSelection(upPressed, downPressed);
-
-		// Zキーで決定
-		if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z) || 
-			input_->GetKeyState(DIK_SPACE) && !input_->GetPreKeyState(DIK_SPACE)) {
-			Title::Select currentSelect = titleUI_->GetCurrentSelect();
-
-			uint32_t handle = AudioManager::GetInstance().GetHandleByName("Decide.mp3");
-			if (handle != 0) {
-				AudioManager::GetInstance().Play(handle, calculatedSeVolume_, false);
-			}
-
-			// Startが選択されている場合はシーン遷移
-			if (currentSelect == Title::Select::Start) {
-				AudioManager::GetInstance().StopAll();
-				return std::make_unique<ShigeScene>();
-			}
-
-			else if (currentSelect == Title::Select::Option) {
-				isOptionMode_ = true;
-				currentOptionSelect_ = Option::Select::Master;
-			}
-
-			// Quitが選択されている場合はアプリケーションを終了
-			else if (currentSelect == Title::Select::Quit) {
-				AudioManager::GetInstance().StopAll();
-				commonData_->shouldQuit = true;
-			}
-		}
+	if (keys[Key::Correct]) {
+		return std::make_unique<ShigeScene>();
 	}
-
-	// カメラの行列更新
-	camera_->MakeMatrix();
-
-	// VP行列を取得してUIを更新
-	Matrix4x4 vpMatrix = camera_->GetVPMatrix();
-	titleUI_->Update(vpMatrix);
 
 	return nullptr;
 }
@@ -199,10 +58,10 @@ void TitleScene::Draw() {
 
 	// ディスプレイへの描画開始
 	display->PreDraw(cmdObj, true);
-	
+
 	// TitleUIの描画（displayに描画）
 	titleUI_->Draw(cmdObj);
-	
+
 	// ディスプレイへの描画終了
 	display->PostDraw(cmdObj);
 
@@ -266,7 +125,7 @@ void TitleScene::Draw() {
 	}
 
 	ImGui::End();
-	
+
 	// TitleUIの設定
 	titleUI_->DrawImGui();
 
@@ -280,7 +139,7 @@ void TitleScene::Draw() {
 #endif
 
 	engine_->DrawImGui();
-	
+
 	// ウィンドウへの描画終了
 	window->PostDraw(cmdObj);
 }

@@ -1,5 +1,5 @@
 #include "IWeaponRender.h"
-#include <../Engine/Assets/Audio/AudioManager.h>
+#include <Assets/Audio/AudioManager.h>
 #include <numbers>
 
 using namespace SHEngine;
@@ -180,10 +180,7 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 			}
 
 			if (!seName.empty()) {
-				uint32_t handle = AudioManager::GetInstance().GetHandleByName(seName);
-				if (handle != 0) {
-					AudioManager::GetInstance().Play(handle, 0.1f, false);
-				}
+				AudioManager::GetInstance()->GetData(seName)->Play();
 			}
 		}
 

@@ -136,9 +136,6 @@ void InitializeScene::Initialize() {
 	keyManager->SetMouse(Key::Target, 0, KeyState::Trigger);
 #pragma endregion
 
-	AudioManager::GetInstance().Initialize();
-	AudioManager::GetInstance().LoadAllAudio();
-
 	commonData_->trailDrawer.Initialize(drawDataManager_);
 	commonData_->particleDrawer.Initialize(drawDataManager_, modelManager_);
 }
@@ -147,15 +144,7 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	//更新処理
 	commonData_->cmdObject->ResetCommandList();
 
-	return std::make_unique<PrticleEditorScene>();
 	return std::make_unique<ShigeScene>();
-	return std::make_unique<TrailEditorScene>();
-	return std::make_unique<YokoScene>();
-	return std::make_unique<TitleScene>();
-	return std::make_unique<ResultScene>();
-	return std::make_unique<ShigeScene>();
-	return std::make_unique<PrticleEditorScene>();
-	return std::make_unique<TechnicalTestScene>();
 }
 
 void InitializeScene::Draw() {
