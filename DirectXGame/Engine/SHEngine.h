@@ -12,6 +12,7 @@
 #include <Utility/DirectUtilFuncs.h>
 #include <Render/PSO/PSOEditor.h>
 #include <Compute/PSO/CSPSOManager.h>
+#include <Assets/Audio/AudioManager.h>
 
 namespace SHEngine {
 

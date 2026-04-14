@@ -55,11 +55,7 @@ void TitleUI::UpdateSelection(bool upPressed, bool downPressed) {
 		}
 		currentSelect_ = static_cast<Title::Select>(currentIndex);
 
-		uint32_t handle = AudioManager::GetInstance().GetHandleByName("CursorMove.mp3");
-		if (handle != 0) {
-			float volume = commonData_->seVolume * commonData_->masterVolume;
-			AudioManager::GetInstance().Play(handle, volume, false);
-		}
+		AudioManager::GetInstance()->GetData("CursorMove.mp3")->Play();
 	}
 
 	if (downPressed) {
@@ -71,11 +67,7 @@ void TitleUI::UpdateSelection(bool upPressed, bool downPressed) {
 		}
 		currentSelect_ = static_cast<Title::Select>(currentIndex);
 
-		uint32_t handle = AudioManager::GetInstance().GetHandleByName("CursorMove.mp3");
-		if (handle != 0) {
-			float volume = commonData_->seVolume * commonData_->masterVolume;
-			AudioManager::GetInstance().Play(handle, volume, false);
-		}
+		AudioManager::GetInstance()->GetData("CursorMove.mp3")->Play();
 	}
 }
 

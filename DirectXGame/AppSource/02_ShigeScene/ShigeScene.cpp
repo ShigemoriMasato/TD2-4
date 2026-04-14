@@ -10,6 +10,10 @@
 #include <numbers>
 #include <windows.h>
 
+ShigeScene::~ShigeScene() {
+	bgm_->Stop();
+}
+
 void ShigeScene::Initialize() {
 	debugCamera_ = std::make_unique<DebugCamera>();
 	debugCamera_->Initialize(input_);
@@ -151,14 +155,15 @@ void ShigeScene::Initialize() {
 	seVolume_ = commonData_->seVolume * commonData_->masterVolume;
 
 	// BGM
-	uint32_t handle = AudioManager::GetInstance().GetHandleByName("GameScene.mp3");
-	if (handle != 0) {
-		// CommonDataから音量設定を取得して適用
-		AudioManager::GetInstance().Play(handle, bgmVolume_, true);
-	}
+	auto data = AudioManager::GetInstance()->GetData("GameScene.mp3");
+	data->SetVolume(bgmVolume_);
+	bgm_ = data->CustomPlay(255);
 
 	telop_ = std::make_unique<SituationTelop>();
 	telop_->Initialize(modelManager_, drawDataManager_, 0);
+
+	situationGauge_ = std::make_unique<SituationGauge>();
+	situationGauge_->Initialize(modelManager_, drawDataManager_);
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -333,17 +338,17 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	}
 	telop_->Update(orthoCamera_->GetVPMatrix(), key, deltaTime);
 
+	situationGauge_->Update(orthoCamera_->GetVPMatrix(), deltaTime, static_cast<float>(enemyManager_->GetEnemies().size()), static_cast<float>(weaponRenders_.size()));
+
 	if (key[Key::Debug1] || gameTimer_->IsEnd()) {
 	}
 
 	if (player_->GetCurrentHP() <= 0) {
 		std::string debugMsg = std::format("Player Survived Time: {:.2f} s\n", gameTimer_->GetTimer());
 		OutputDebugStringA(debugMsg.c_str());
-		AudioManager::GetInstance().StopAll();
 		commonData_->isWin = false;
 		return std::make_unique<ResultScene>();
 	} else if (waveSystem_->End()) {
-		AudioManager::GetInstance().StopAll();
 		commonData_->isWin = true;
 		return std::make_unique<ResultScene>();
 	}
@@ -388,9 +393,11 @@ void ShigeScene::Draw() {
 
 	enemySpawnGraphText_->Draw(cmdObj);
 
-	parameterRender_->Draw(cmdObj);
+	situationGauge_->Draw(cmdObj);
 
 	telop_->Draw(cmdObj);
+
+	parameterRender_->Draw(cmdObj);
 
 	gameDisplay_->PostDraw();
 

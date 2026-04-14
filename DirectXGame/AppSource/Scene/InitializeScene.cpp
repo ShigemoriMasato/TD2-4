@@ -157,8 +157,6 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	return std::make_unique<TitleScene>();
 	return std::make_unique<ResultScene>();
 	return std::make_unique<ShigeScene>();
-	return std::make_unique<PrticleEditorScene>();
-	return std::make_unique<TechnicalTestScene>();
 }
 
 void InitializeScene::Draw() {

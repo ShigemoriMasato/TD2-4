@@ -6,6 +6,10 @@
 
 using namespace SHEngine;
 
+SHEngine::TextureManager::~TextureManager() {
+	cmdObject_->WaitForGPUIdle();
+}
+
 void TextureManager::Initialize(DXDevice* device, Command::Manager* manager) {
 	device_ = device;
 	cmdObject_ = manager->CreateCommandObject(Command::Type::Texture, 0, 1);

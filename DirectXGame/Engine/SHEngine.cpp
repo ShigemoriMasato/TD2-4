@@ -16,6 +16,7 @@ static LONG WINAPI ClashHandler(EXCEPTION_POINTERS* pExceptionPointers) {
 }
 
 SHEngine::Engine::~Engine() {
+	AudioManager::GetInstance()->Finalize();
 	imGuiWrapper_->Finalize();
 	CoUninitialize();
 }
@@ -61,6 +62,7 @@ void Engine::Initialize(HINSTANCE hInstance) {
 	GPUBuffer::SetDevice(device_.get());
 	Text::SetFontLoader(fontLoader_.get());
 	ComputeObject::StaticInitialize(csPsoManager_.get());
+	AudioManager::GetInstance()->Initialize();
 
 	fpsObserver_ = std::make_unique<FPSObserver>();
 
@@ -78,6 +80,7 @@ bool Engine::IsLoop() {
 void Engine::BeginFrame() {
 	input_->Update();
 	fpsObserver_->TimeAdjustment();
+	AudioManager::GetInstance()->Update();
 	if (imGuiWrapper_) {
 		imGuiWrapper_->NewFrame();
 		imguiDrawed_ = false;

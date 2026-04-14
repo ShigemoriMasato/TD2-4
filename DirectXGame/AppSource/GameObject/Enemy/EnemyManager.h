@@ -53,5 +53,5 @@ private:
 	std::vector<Vector3> damageTextVelocities_;
 	std::vector<float> damageTextTimers_;
 	const float damageLifeTime_ = 0.7f;
-	const int maxDamageTextNum_ = 256;
+	const int maxDamageTextNum_ = 64;
 };

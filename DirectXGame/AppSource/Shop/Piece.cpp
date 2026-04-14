@@ -159,10 +159,7 @@ bool Piece::IsHovered(const Vector3& cursorPos, BackPack* backPack) {
 			std::abs((cursorPos.z + hoverOffsetZ) - slotWorldPos.z) < hoverSizeZ) {
 
 			if(!isHovered_){
-				uint32_t handle = AudioManager::GetInstance().GetHandleByName("ItemSelect.mp3");
-				if (handle != 0) {
-					AudioManager::GetInstance().Play(handle, 0.2f, false);
-				}
+				AudioManager::GetInstance()->GetData("ItemSelect.mp3")->Play();
 			}
 
 			isHovered_ = true;

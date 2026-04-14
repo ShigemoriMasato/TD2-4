@@ -32,9 +32,12 @@
 #include <GameObject/Enemy/LevelSystemUI.h>
 #include <GameObject/Enemy/TackleEnemy.h>
 #include <UI/Game/SituationTelop.h>
+#include <UI/Game/SituationGauge.h>
 
 class ShigeScene : public IScene {
 public:
+
+	~ShigeScene();
 
 	void Initialize() override;
 	std::unique_ptr<IScene> Update() override;
@@ -126,4 +129,7 @@ private:// UI系
 
 	std::unique_ptr<SituationTelop> telop_;
 
+	std::unique_ptr<PlayData> bgm_ = nullptr;
+
+	std::unique_ptr<SituationGauge> situationGauge_;
 };

@@ -65,10 +65,7 @@ void BackPack::SetSlot(std::pair<int, int> localPos, Slot slot) {
 	if (slots_[pos.second][pos.first] != Slot::Locked) {
 		slots_[pos.second][pos.first] = slot;
 
-		uint32_t handle = AudioManager::GetInstance().GetHandleByName("BackPackMove.mp3");
-		if(handle != 0){
-			AudioManager::GetInstance().Play(handle, 0.2f, false);
-		}
+		AudioManager::GetInstance()->GetData("BackPackMove.mp3")->Play();
 	}
 }
 

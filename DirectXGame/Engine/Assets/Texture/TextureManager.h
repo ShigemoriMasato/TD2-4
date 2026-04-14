@@ -22,7 +22,7 @@ namespace SHEngine {
 		/// @brief デフォルトコンストラクタ
 		TextureManager() = default;
 		/// @brief デストラクタ
-		~TextureManager() = default;
+		~TextureManager();
 
 		/**
 		 * @brief テクスチャマネージャーを初期化

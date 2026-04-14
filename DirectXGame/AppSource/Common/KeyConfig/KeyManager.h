@@ -93,7 +93,7 @@ private:
 	std::vector<std::unordered_map<Direction, Vector2>> stickHistory_;
 	std::vector<std::unordered_map<int, bool>> mouseHistory_;
 	//履歴の最大数
-	static const int kMaxHistory_ = 2;
+	const int kMaxHistory_ = 2;
 
 	//最終的な状態を格納する
 	std::unordered_map<Key, bool> resultKeyFlugs_;
