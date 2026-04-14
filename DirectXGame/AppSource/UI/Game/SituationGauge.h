@@ -22,9 +22,20 @@ private:
 	Vector4 enemyColor_ = {1.0, 0.0f, 0.0f, 1.0f};
 
 	// 戦力計算用の重み
-	float weaponPowerWeight_ = 4.0f; // 武器1つあたりの戦力値（敵4体分）
+	float weaponPowerWeight_ = 2.0f; // 武器1つあたりの戦力値（敵4体分）
 	float enemyPowerWeight_ = 1.0f;  // 敵1体あたりの戦力値
 
 	float currentIntensity_ = 0.5f; // 現在の戦況
-	float lerpSpeed_ = 2.0f; // 補間の速さ
+	float lerpSpeed_ = 2.0f;        // 補間の速さ
+
+	// バー同士の隙間
+	float barSpacing_ = 20.0f;
+
+	// 割合を計算するための最大値
+	float maxWeaponCount_ = 10.0f; // 最大武器数
+	float maxEnemyCount_ = 50.0f;  // 最大敵数
+
+	// 現在の割合
+	float currentPlayerRatio_ = 0.0f;
+	float currentEnemyRatio_ = 0.0f;
 };

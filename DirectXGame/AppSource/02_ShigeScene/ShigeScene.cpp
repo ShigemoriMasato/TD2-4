@@ -387,11 +387,11 @@ void ShigeScene::Draw() {
 
 	enemySpawnGraphText_->Draw(cmdObj);
 
-	parameterRender_->Draw(cmdObj);
-
 	situationGauge_->Draw(cmdObj);
 
 	telop_->Draw(cmdObj);
+
+	parameterRender_->Draw(cmdObj);
 
 	gameDisplay_->PostDraw();
 

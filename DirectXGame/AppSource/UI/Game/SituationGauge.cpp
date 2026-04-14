@@ -21,51 +21,56 @@ void SituationGauge::Initialize(SHEngine::ModelManager* modelManager, SHEngine::
 	render_->SetUseTexture(true);
 	render_->instanceNum_ = kGaugeCount;
 
-	transform_.scale = {500.0f, 50.0f, 0.0f};
-	transform_.position = {620.0f, -665.0f, 0.0f};
+	transform_.scale = {15.0f, 500.0f, 0.0f};
+	transform_.position = {1200.0f, -430.0f, 0.0f};
 }
 
 void SituationGauge::Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpawnCount, float weaponCount) {
-	// 戦況の計算
-	float playerPower = weaponCount * weaponPowerWeight_;
-	float enemyPower = enemySpawnCount * enemyPowerWeight_;
-	float totalPower = playerPower + enemyPower;
-
-	float targetIntensity = 0.5f;
-	if (totalPower > 0.0f) {
-		targetIntensity = playerPower / totalPower;
+	// 各自の最大値からターゲットとなる割合を算出
+	float targetPlayerRatio = 0.0f;
+	if (maxWeaponCount_ > 0.0f) {
+		targetPlayerRatio = std::clamp(weaponCount / maxWeaponCount_, 0.0f, 1.0f);
 	}
-	targetIntensity = std::clamp(targetIntensity, 0.0f, 1.0f);
+
+	float targetEnemyRatio = 0.0f;
+	if (maxEnemyCount_ > 0.0f) {
+		targetEnemyRatio = std::clamp(enemySpawnCount / maxEnemyCount_, 0.0f, 1.0f);
+	}
 
 	// ゲージの補間
-	currentIntensity_ += (targetIntensity - currentIntensity_) * lerpSpeed_ * deltaTime;
+	currentPlayerRatio_ += (targetPlayerRatio - currentPlayerRatio_) * lerpSpeed_ * deltaTime;
+	currentEnemyRatio_ += (targetEnemyRatio - currentEnemyRatio_) * lerpSpeed_ * deltaTime;
 
-	float playerRatio = currentIntensity_;
-	float enemyRatio = 1.0f - currentIntensity_;
+	// Xスケールを各バーの幅、Yスケールを最大高さとして扱う
+	float barWidth = transform_.scale.x;
+	float maxHeight = transform_.scale.y;
 
-	// 全体の幅からそれぞれの幅を計算
-	float totalWidth = transform_.scale.x;
-	float playerWidth = totalWidth * playerRatio;
-	float enemyWidth = totalWidth * enemyRatio;
+	// 高さを独立した割合に応じて計算
+	float playerHeight = maxHeight * currentPlayerRatio_;
+	float enemyHeight = maxHeight * currentEnemyRatio_;
 
-	// 左から右へゲージが並ぶように位置を計算
-	float leftEdgeX = transform_.position.x - (totalWidth * 0.5f);
-	float playerPosX = leftEdgeX + (playerWidth * 0.5f);
-	float enemyPosX = leftEdgeX + playerWidth + (enemyWidth * 0.5f);
+	// 横に並べるためのX座標計算
+	float playerPosX = transform_.position.x - (barWidth * 0.5f) - (barSpacing_ * 0.5f);
+	float enemyPosX = transform_.position.x + (barWidth * 0.5f) + (barSpacing_ * 0.5f);
+
+	// 下端揃えにするためのY座標計算
+	float basePosY = transform_.position.y - (maxHeight * 0.5f);
+	float playerPosY = basePosY + (playerHeight * 0.5f);
+	float enemyPosY = basePosY + (enemyHeight * 0.5f);
 
 	Matrix4x4 wvpMatrices[2];
 	Vector4 colors[2];
 
 	// プレイヤー用ゲージ
-	Vector3 playerScale = {playerWidth, transform_.scale.y, transform_.scale.z};
-	Vector3 playerPos = {playerPosX, transform_.position.y, transform_.position.z};
+	Vector3 playerScale = {barWidth, playerHeight, transform_.scale.z};
+	Vector3 playerPos = {playerPosX, playerPosY, transform_.position.z};
 	Matrix4x4 playerWorld = Matrix::MakeAffineMatrix(playerScale, transform_.rotate, playerPos);
 	wvpMatrices[0] = playerWorld * vpMatrix;
 	colors[0] = playerColor_;
 
 	// 敵用ゲージ
-	Vector3 enemyScale = {enemyWidth, transform_.scale.y, transform_.scale.z};
-	Vector3 enemyPos = {enemyPosX, transform_.position.y, transform_.position.z};
+	Vector3 enemyScale = {barWidth, enemyHeight, transform_.scale.z};
+	Vector3 enemyPos = {enemyPosX, enemyPosY, transform_.position.z};
 	Matrix4x4 enemyWorld = Matrix::MakeAffineMatrix(enemyScale, transform_.rotate, enemyPos);
 	wvpMatrices[1] = enemyWorld * vpMatrix;
 	colors[1] = enemyColor_;
@@ -78,11 +83,11 @@ void SituationGauge::Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpaw
 	ImGui::ColorEdit4("Enemy Color", &enemyColor_.x);
 	ImGui::Separator();
 	ImGui::Text("Battle Situation");
-	ImGui::DragFloat("Weapon Power Weight", &weaponPowerWeight_, 0.1f, 0.0f, 100.0f);
-	ImGui::DragFloat("Enemy Power Weight", &enemyPowerWeight_, 0.1f, 0.0f, 100.0f);
+	ImGui::DragFloat("Max Weapon Count", &maxWeaponCount_, 1.0f, 1.0f, 1000.0f);
+	ImGui::DragFloat("Max Enemy Count", &maxEnemyCount_, 1.0f, 1.0f, 1000.0f);
 	ImGui::DragFloat("Lerp Speed", &lerpSpeed_, 0.1f, 0.1f, 20.0f);
-	ImGui::Text("Target Intensity: %.3f", targetIntensity);
-	ImGui::Text("Current Intensity: %.3f", currentIntensity_);
+	ImGui::Text("Player Ratio: %.3f", currentPlayerRatio_);
+	ImGui::Text("Enemy Ratio: %.3f", currentEnemyRatio_);
 	ImGui::End();
 #endif
 
