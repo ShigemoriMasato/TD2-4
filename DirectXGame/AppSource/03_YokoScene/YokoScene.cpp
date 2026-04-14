@@ -51,15 +51,13 @@ void YokoScene::Initialize()
 	transform_.scale = { 1.0f, 1.0f, 1.0f };
 
 	// トレイル初期化
-	trail.Initialize(textureManager_, &commonData_->trailPresetDataBank);
+	trail.Initialize(textureManager_, commonData_);
 	trail.Add("testTrail2");
 	trail.Add("testTrail2_1");
-	trail.RegisterToDrawer(&commonData_->trailDrawer);
 
 	// パーティクル初期化
-	particles_.Initialize(textureManager_, modelManager_, &commonData_->particlePresetDataBank);
+	particles_.Initialize(textureManager_, modelManager_, commonData_);
 	particles_.Add("sparrrrk2");
-	particles_.RegisterToDrawer(&commonData_->particleDrawer);
 }
 
 std::unique_ptr<IScene> YokoScene::Update()
@@ -143,11 +141,14 @@ void YokoScene::Draw()
 
 	display->PreDraw(cmdObj, true);
 
+
+
+
 	// パーティクル描画
-	commonData_->particleDrawer.Draw(cmdObj, camera_->GetVPMatrix());
+	commonData_->particleDrawer->Draw(cmdObj, camera_->GetVPMatrix());
 
 	// トレイル描画
-	commonData_->trailDrawer.Draw(cmdObj, camera_->GetVPMatrix());
+	commonData_->trailDrawer->Draw(cmdObj, camera_->GetVPMatrix());
 
 	// sparkEffect描画
 	sparkEffect.Draw(cmdObj);

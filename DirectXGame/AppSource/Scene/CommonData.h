@@ -35,11 +35,11 @@ struct CommonData {
 	float bgmVolume = 0.5f;
 	float seVolume = 0.5f;
   
-  // トレイル
+	// トレイル
 	TrailPresetDataBank trailPresetDataBank;
-	TrailDrawer trailDrawer;
+	std::unique_ptr<TrailDrawer> trailDrawer;
 
 	// パーティクル
 	ParticlePresetDataBank particlePresetDataBank;
-	ParticleDrawer particleDrawer;
+	std::unique_ptr<ParticleDrawer> particleDrawer;
 };

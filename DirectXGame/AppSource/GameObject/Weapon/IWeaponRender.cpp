@@ -45,9 +45,8 @@ void IWeaponRender::Initialize(
 	// トレイル
 	WeaponData* wData = weapon_->GetWeaponData();
 	if (trailname.size() != 0) {
-		trail_.Initialize(textureManager, &trailDataBank_);
+		trail_.Initialize(textureManager, &commonData);
 		trail_.Add(trailname);
-		trail_.RegisterToDrawer(&commonData.trailDrawer);
 	}
 }
 
@@ -304,9 +303,17 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 
 	wvp_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 
-	trail_.SetModelWorld(wvp_);
-	trail_.Update(deltaTime);
   
+	if (rotOffsetAnim_.anim.GetIsActive() || posOffsetAnim_.anim.GetIsActive())
+	{
+		trail_.SetModelWorld(wvp_);
+		trail_.Update(deltaTime);
+	}
+	else
+	{
+		trail_.Clear();
+	}
+
 	wvp_ *= vpMatrix;
 	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
 	render_->CopyBufferData(0, &wvp_, sizeof(Matrix4x4));
@@ -316,15 +323,7 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 
 void IWeaponRender::Draw(CmdObj* cmdObj) {
 	render_->Draw(cmdObj);
-
-	if (rotOffsetAnim_.anim.GetIsActive() || posOffsetAnim_.anim.GetIsActive()) {
-		trail_.SetEmittingFlag(true);
-	}
-	else
-	{
-		trail_.SetEmittingFlag(false);
-		trail_.Clear();
-	}
+	trail_.Draw();
 }
 
 Matrix4x4 IWeaponRender::LookAt(const Vector3& direction, const Vector3& up) {

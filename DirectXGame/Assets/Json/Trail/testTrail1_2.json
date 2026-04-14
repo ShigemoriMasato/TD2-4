@@ -1,22 +1,16 @@
 {
-    "cfg.colorAdd": [
+    "cfg.color": [
         0.6000000238418579,
-        0.8999999761581421,
+        0.9019607901573181,
         1.0,
-        0.75
+        0.003921568859368563
     ],
-    "cfg.colorNormal": [
-        1.0,
-        1.0,
-        1.0,
-        0.6499999761581421
-    ],
-    "cfg.texturePath": "Assets/.EngineResource/Texture/white1x1.png",
     "cfg.drawAdd": true,
     "cfg.drawNormal": true,
     "cfg.lifeTime": 0.5,
     "cfg.maxSegments": 32,
     "cfg.minDistance": 0.10000000149011612,
+    "cfg.texturePath": "Assets/.EngineResource/Texture/white1x1.png",
     "ribbon.modelName": "Fist",
     "ribbon.originLocal": [
         2.0,

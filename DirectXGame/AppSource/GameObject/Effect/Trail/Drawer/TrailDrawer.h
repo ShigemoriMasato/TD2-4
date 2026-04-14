@@ -23,7 +23,7 @@ public:
 	void Clear();
 	void Register(Trail* trail);
 
-	// シーン内トレイルをすべて描画。できるなら各シーンに持たせたいのですがシゲモリさんどうですか
+	// シーン内トレイルをすべて描画
 	void Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix);
 
 private:

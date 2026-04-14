@@ -1,24 +1,9 @@
 #include "MultiParticle.h"
 #include <stdexcept>
+#include <Scene/CommonData.h>
 #include <GameObject/Effect/Particle/Particle.h>
 #include <GameObject/Effect/Particle/Preset/ParticlePreset.h>
 #include <GameObject/Effect/Particle/Drawer/ParticleDrawer.h>
-
-void MultiParticle::Initialize(
-	SHEngine::TextureManager* textureManager,
-	SHEngine::ModelManager* modelManager,
-	ParticlePresetDataBank* presetData)
-{
-	textureManager_ = textureManager;
-	modelManager_ = modelManager;
-	presetData_ = presetData;
-
-	nextId_ = -1;
-
-	fountainCache_.clear();
-	enabled_ = true;
-	modelWorld_ = Matrix4x4::Identity();
-}
 
 int32_t MultiParticle::Add(const std::string& presetName)
 {
@@ -116,10 +101,21 @@ void MultiParticle::Clear()
 	}
 }
 
+void MultiParticle::Initialize(SHEngine::TextureManager* textureManager, SHEngine::ModelManager* modelManager, CommonData* commonData)
+{
+	textureManager_ = textureManager;
+	modelManager_ = modelManager;
+	presetData_ = &commonData->particlePresetDataBank;
+	drawer_ = commonData->particleDrawer.get();
+
+	nextId_ = -1;
+
+	fountainCache_.clear();
+	modelWorld_ = Matrix4x4::Identity();
+}
+
 void MultiParticle::Update(float dt)
 {
-	if (!enabled_) return;
-
 	for (auto& [name, particle] : fountainCache_)
 	{
 		particle->SetModelWorld(modelWorld_);
@@ -127,13 +123,18 @@ void MultiParticle::Update(float dt)
 	}
 }
 
-void MultiParticle::RegisterToDrawer(ParticleDrawer* drawer)
+void MultiParticle::Draw()
 {
-	if (!drawer) return;
+	RegisterToDrawer();
+}
+
+void MultiParticle::RegisterToDrawer()
+{
+	if (!drawer_) return;
 
 	for (auto& [id, p] : fountainCache_)
 	{
-		drawer->Register(&p->GetParticle());
+		drawer_->Register(&p->GetParticle());
 	}
 }
 
