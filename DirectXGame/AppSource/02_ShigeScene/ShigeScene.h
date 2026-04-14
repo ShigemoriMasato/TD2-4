@@ -32,6 +32,7 @@
 #include <GameObject/Enemy/LevelSystemUI.h>
 #include <GameObject/Enemy/TackleEnemy.h>
 #include <UI/Game/SituationTelop.h>
+#include <UI/Game/SituationGauge.h>
 
 class ShigeScene : public IScene {
 public:
@@ -121,5 +122,5 @@ private:// UI系
 	GameDisplayRange displayRange_ = {};
 
 	std::unique_ptr<SituationTelop> telop_;
-
+	std::unique_ptr<SituationGauge> situationGauge_;
 };

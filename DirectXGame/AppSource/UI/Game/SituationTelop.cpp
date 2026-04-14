@@ -1,5 +1,7 @@
 #include "SituationTelop.h"
+#ifdef USE_IMGUI
 #include <imgui/imgui.h>
+#endif // USE_IMGUI
 #include <numbers>
 
 using namespace SHEngine;
