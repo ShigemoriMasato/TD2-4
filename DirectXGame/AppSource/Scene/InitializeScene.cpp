@@ -136,9 +136,6 @@ void InitializeScene::Initialize() {
 	keyManager->SetMouse(Key::Target, 0, KeyState::Trigger);
 #pragma endregion
 
-	AudioManager::GetInstance().Initialize();
-	AudioManager::GetInstance().LoadAllAudio();
-
 	commonData_->particleDrawer = std::make_unique<ParticleDrawer>();
 	commonData_->trailDrawer = std::make_unique<TrailDrawer>();
 
