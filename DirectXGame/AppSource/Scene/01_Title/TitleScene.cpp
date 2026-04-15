@@ -26,12 +26,12 @@ void TitleScene::Initialize() {
 	titleUI_->Initialize(drawDataManager_, modelManager_, commonData_);
 
 	camera_ = std::make_unique<Camera>();
-	PerspectiveFovDesc perspectiveDesc;
-	perspectiveDesc.SetValue(1280, 720, 0.45f, 0.1f, 1000.0f);
+	PerspectiveFovDesc perspectiveDesc{};
 	camera_->SetProjectionMatrix(perspectiveDesc);
 	camera_->SetPosition({ 0.0f, 0.0f, 0.0f });
 	camera_->SetRotation({ 0.0f, 0.0f, 0.0f });
 	camera_->SetScale({ 1.0f, 1.0f, 1.0f });
+	camera_->MakeMatrix();
 
 	bgm_ = AudioManager::GetInstance()->GetData("TitleScene.mp3")->CustomPlay(255);
 
@@ -44,9 +44,23 @@ void TitleScene::Initialize() {
 std::unique_ptr<IScene> TitleScene::Update() {
 	auto keys = commonData_->keyManager->GetKeyStates();
 
+	titleUI_->Update(camera_->GetVPMatrix());
+	titleUI_->UpdateSelection(keys[Key::Tr_Up], keys[Key::Tr_Down]);
+
 	if (keys[Key::Correct]) {
-		return std::make_unique<ShigeScene>();
+		switch (titleUI_->GetCurrentSelect()) {
+		case Title::Select::Start:
+			return std::make_unique<ShigeScene>();
+		case Title::Select::Option:
+			isOptionMode_ = true;
+			break;
+		case Title::Select::Quit:
+			commonData_->shouldQuit = true;
+			break;
+		}
 	}
+
+
 
 	return nullptr;
 }
@@ -101,6 +115,8 @@ void TitleScene::Draw() {
 		if (ImGui::DragFloat3("Scale", &cameraScale.x, 0.01f, 0.01f, 10.0f)) {
 			camera_->SetScale(cameraScale);
 		}
+
+		camera_->MakeMatrix();
 
 		ImGui::TreePop();
 	}

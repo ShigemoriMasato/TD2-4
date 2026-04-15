@@ -16,6 +16,8 @@
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif
 
+using Dir = StickDirection;
+
 void InitializeScene::Initialize() {
 	auto& windowSet = commonData_->mainWindow;
 	windowSet.first = std::make_unique<SHEngine::Screen::WindowsAPI>();
@@ -69,22 +71,22 @@ void InitializeScene::Initialize() {
 	keyManager->SetKey(Key::Right, DIK_D, KeyState::Hold);
 	keyManager->SetKey(Key::Right, DIK_RIGHTARROW, KeyState::Hold);
 	keyManager->SetButton(Key::Right, XBoxController::kRight, KeyState::Hold);
-	keyManager->SetStick(Key::Right, true, false, 0.5f);
+	keyManager->SetStick(Key::Right, true, Dir::Right, 0.5f, KeyState::Hold);
 
 	keyManager->SetKey(Key::Left, DIK_A, KeyState::Hold);
 	keyManager->SetKey(Key::Left, DIK_LEFTARROW, KeyState::Hold);
 	keyManager->SetButton(Key::Left, XBoxController::kLeft, KeyState::Hold);
-	keyManager->SetStick(Key::Left, true, false, -0.5f);
+	keyManager->SetStick(Key::Left, true, Dir::Left, 0.5f, KeyState::Hold);
 
 	keyManager->SetKey(Key::Up, DIK_W, KeyState::Hold);
 	keyManager->SetKey(Key::Up, DIK_UPARROW, KeyState::Hold);
 	keyManager->SetButton(Key::Up, XBoxController::kUp, KeyState::Hold);
-	keyManager->SetStick(Key::Up, true, true, 0.5f);
+	keyManager->SetStick(Key::Up, true, Dir::Up, 0.5f, KeyState::Hold);
 
 	keyManager->SetKey(Key::Down, DIK_S, KeyState::Hold);
 	keyManager->SetKey(Key::Down, DIK_DOWNARROW, KeyState::Hold);
 	keyManager->SetButton(Key::Down, XBoxController::kDown, KeyState::Hold);
-	keyManager->SetStick(Key::Down, true, true, -0.5f);
+	keyManager->SetStick(Key::Down, true, Dir::Down, 0.5f, KeyState::Hold);
 
 	keyManager->SetMouse(Key::Hold, 0, KeyState::Hold);
 	keyManager->SetMouse(Key::Erase, 2, KeyState::Trigger);
@@ -97,6 +99,28 @@ void InitializeScene::Initialize() {
 
 	keyManager->SetMouse(Key::AutoPlace, 1, KeyState::Trigger);
 	keyManager->SetMouse(Key::AutoPlace, 1, KeyState::Hold);
+
+	//================================================================================
+
+	keyManager->SetKey(Key::Tr_Right, DIK_D, KeyState::Trigger);
+	keyManager->SetKey(Key::Tr_Right, DIK_RIGHTARROW, KeyState::Trigger);
+	keyManager->SetButton(Key::Tr_Right, XBoxController::kRight, KeyState::Trigger);
+	keyManager->SetStick(Key::Tr_Right, true, Dir::Right, 0.5f, KeyState::Trigger);
+
+	keyManager->SetKey(Key::Tr_Left, DIK_A, KeyState::Trigger);
+	keyManager->SetKey(Key::Tr_Left, DIK_LEFTARROW, KeyState::Trigger);
+	keyManager->SetButton(Key::Tr_Left, XBoxController::kLeft, KeyState::Trigger);
+	keyManager->SetStick(Key::Tr_Left, true, Dir::Left, 0.5f, KeyState::Trigger);
+
+	keyManager->SetKey(Key::Tr_Up, DIK_W, KeyState::Trigger);
+	keyManager->SetKey(Key::Tr_Up, DIK_UPARROW, KeyState::Trigger);
+	keyManager->SetButton(Key::Tr_Up, XBoxController::kUp, KeyState::Trigger);
+	keyManager->SetStick(Key::Tr_Up, true, Dir::Up, 0.5f, KeyState::Trigger);
+
+	keyManager->SetKey(Key::Tr_Down, DIK_S, KeyState::Trigger);
+	keyManager->SetKey(Key::Tr_Down, DIK_DOWNARROW, KeyState::Trigger);
+	keyManager->SetButton(Key::Tr_Down, XBoxController::kDown, KeyState::Trigger);
+	keyManager->SetStick(Key::Tr_Down, true, Dir::Down, 0.5f, KeyState::Trigger);
 
 	//================================================================================
 
@@ -147,13 +171,10 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	//更新処理
 	commonData_->cmdObject->ResetCommandList();
 
+	return std::make_unique<TitleScene>();
 	return std::make_unique<ShigeScene>();
 	return std::make_unique<TrailEditorScene>();
 	return std::make_unique<PrticleEditorScene>();
-	return std::make_unique<YokoScene>();
-	return std::make_unique<TitleScene>();
-	return std::make_unique<ResultScene>();
-	return std::make_unique<ShigeScene>();
 }
 
 void InitializeScene::Draw() {

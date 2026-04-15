@@ -11,9 +11,8 @@ void KeyManager::Initialize(SHEngine::Input* input, MainDisplay* display) {
 
 void KeyManager::Update() {
 	// ================- keyの初期化 -================
-	for (int i = 0; i < int(Key::Count); i++) {
-		//最初に全部falseにしておく
-		resultKeyFlugs_[Key(i)] = false;
+	for(const auto& [action, _] : keyMap_){
+		resultKeyFlags_[action] = false;
 	}
 
 	// ==========================- キーの状態の更新 -==========================	
@@ -47,11 +46,9 @@ void KeyManager::Update() {
 		}
 	}
 
-	for (const auto& [action, stick] : stickMap_) {
-		//履歴を作成する
-		stickHistory_.back()[stick.first].x = input_->GetXBoxStickState(int(stick.first)).x;
-		stickHistory_.back()[stick.first].y = input_->GetXBoxStickState(int(stick.first)).y;
-	}
+	//履歴を作成する
+	stickHistory_.back().first = input_->GetXBoxStickState(1);
+	stickHistory_.back().second = input_->GetXBoxStickState(0);
 
 	for (const auto& [action, buttons] : mouseMap_) {
 		//Keyに登録されているDIKの数だけループ
@@ -63,11 +60,6 @@ void KeyManager::Update() {
 
 	// ================- keyの最終的な状態の更新 -================
 	for (const auto& [action, key] : keyMap_) {
-
-		//すでにtrueになっていたらスキップ
-		if (resultKeyFlugs_[action]) {
-			continue;
-		}
 
 		//Keyに登録されているDIKの数だけループ
 		for (const auto& [dik, targetState] : key) {
@@ -92,7 +84,7 @@ void KeyManager::Update() {
 
 			//trueになったら登録してループを抜ける
 			if (state) {
-				resultKeyFlugs_[action] = state;
+				resultKeyFlags_[action] = state;
 				break;
 			}
 
@@ -100,10 +92,12 @@ void KeyManager::Update() {
 	}
 
 	for (const auto& [action, buttons] : buttonMap_) {
+
 		//すでにtrueになっていたらスキップ
-		if (resultKeyFlugs_[action]) {
+		if (resultKeyFlags_[action]) {
 			continue;
 		}
+
 		//Keyに登録されているDIKの数だけループ
 		for (const auto& [button, targetState] : buttons) {
 			//最終的な状態
@@ -124,46 +118,70 @@ void KeyManager::Update() {
 			}
 			//trueになったら登録してループを抜ける
 			if (state) {
-				resultKeyFlugs_[action] = state;
+				resultKeyFlags_[action] = state;
 				break;
 			}
 		}
 	}
 
 	for (const auto& [action, stick] : stickMap_) {
+
 		//すでにtrueになっていたらスキップ
-		if (resultKeyFlugs_[action]) {
+		if (resultKeyFlags_[action]) {
 			continue;
 		}
 
-		//最終的な状態
-		bool state = false;
+		for (const auto& info : stick) {
 
-		///xかyか
-		int isX = static_cast<int>(stick.second.first);
-		//目標のスティックの倒れ具合
-		float toggleValue = stick.second.second;
-		//現在のスティックの倒れ具合
-		float currentValue = (&stickHistory_.back()[stick.first].x)[isX];
+			//Stickの傾き具合	[Pre, Now]
+			std::pair<float, float> stickState;
 
-		//スティックの倒れ具合がtoggleValueを超えたらtrueにする
-		if (toggleValue > 0) {
-			//右スティック
-			state = (currentValue > toggleValue);
-		} else {
-			//左スティック
-			state = (currentValue < toggleValue);
+			switch (info.stickDirection) {
+			case StickDirection::Right:
+				stickState.first = stickHistory_[stickHistory_.size() - 2].second.x;
+				stickState.second = stickHistory_.back().second.x;
+				break;
+			case StickDirection::Left:
+				stickState.first = -stickHistory_[stickHistory_.size() - 2].second.x;
+				stickState.second = -stickHistory_.back().second.x;
+				break;
+			case StickDirection::Up:
+				stickState.first = stickHistory_[stickHistory_.size() - 2].second.y;
+				stickState.second = stickHistory_.back().second.y;
+				break;
+			case StickDirection::Down:
+				stickState.first = -stickHistory_[stickHistory_.size() - 2].second.y;
+				stickState.second = -stickHistory_.back().second.y;
+				break;
+			}
+
+			switch (info.state) {
+			case KeyState::None:
+				resultKeyFlags_[action] = stickState.second < info.toggleValue;
+				break;
+			case KeyState::Trigger:
+				resultKeyFlags_[action] = stickState.second >= info.toggleValue && stickState.first < info.toggleValue;
+				break;
+			case KeyState::Hold:
+				resultKeyFlags_[action] = stickState.second >= info.toggleValue;
+				break;
+			case KeyState::Release:
+				resultKeyFlags_[action] = stickState.second < info.toggleValue && stickState.first >= info.toggleValue;
+				break;
+			}
+
+			//trueになったら登録してループを抜ける
+			if (resultKeyFlags_[action]) {
+				break;
+			}
 		}
 
-		if (state) {
-			resultKeyFlugs_[action] = state;
-		}
 	}
 
-	for(const auto& [action, buttons] : mouseMap_) {
-		
+	for (const auto& [action, buttons] : mouseMap_) {
+
 		//すでにtrueになっていたらスキップ
-		if (resultKeyFlugs_[action]) {
+		if (resultKeyFlags_[action]) {
 			continue;
 		}
 
@@ -187,7 +205,7 @@ void KeyManager::Update() {
 			}
 			//trueになったら登録してループを抜ける
 			if (state) {
-				resultKeyFlugs_[action] = state;
+				resultKeyFlags_[action] = state;
 				break;
 			}
 		}
@@ -217,8 +235,10 @@ void KeyManager::SetButton(Key action, XBoxController button, KeyState state) {
 	buttonMap_[action].emplace_back(button, state);
 }
 
-void KeyManager::SetStick(Key action, bool isLeft, bool isY, float toggleValue) {
-	stickMap_[action] = { isLeft ? Direction::Left : Direction::Right, {isY, toggleValue} };
+void KeyManager::SetStick(Key action, bool isLightStick, StickDirection direction, float toggleValue, KeyState state) {
+	Direction dir = isLightStick ? Direction::Left : Direction::Right;
+	StickInfo stickInfo = { dir, direction, toggleValue, state };
+	stickMap_[action].emplace_back(stickInfo);
 }
 
 void KeyManager::SetMouse(Key action, int mouseButton, KeyState state) {
