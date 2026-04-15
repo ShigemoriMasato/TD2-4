@@ -153,7 +153,7 @@ void YokoScene::Draw()
 	// sparkEffect描画
 	sparkEffect.Draw(cmdObj);
 
-	display->PostDraw(cmdObj);
+	display->ToPresent(cmdObj);
 
 	window->PreDraw(cmdObj);
 
@@ -168,5 +168,5 @@ void YokoScene::Draw()
 #endif
 
 	engine_->DrawImGui();
-	window->PostDraw(cmdObj);
+	window->ToPresent(cmdObj);
 }

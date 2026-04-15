@@ -107,7 +107,7 @@ void ResultScene::Draw() {
 
 	CorrectText_->Draw(cmdObj);
 
-	display->PostDraw(cmdObj);
+	display->ToPresent(cmdObj);
 
 #ifdef SH_RELEASE
 	postEffectConfig_.output = commonData_->mainWindow.second->GetCurrentDisplay();
@@ -135,5 +135,5 @@ void ResultScene::Draw() {
 #endif
 
 	engine_->DrawImGui();
-	window->PostDraw(cmdObj);
+	window->ToPresent(cmdObj);
 }

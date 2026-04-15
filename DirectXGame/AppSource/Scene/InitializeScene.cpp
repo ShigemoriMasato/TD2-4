@@ -185,5 +185,5 @@ void InitializeScene::Draw() {
 	swapChain->PreDraw(cmdObj);
 
 	engine_->DrawImGui();
-	swapChain->PostDraw(cmdObj);
+	swapChain->ToPresent(cmdObj);
 }

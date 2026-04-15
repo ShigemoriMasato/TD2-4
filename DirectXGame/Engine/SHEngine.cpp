@@ -87,7 +87,7 @@ void Engine::BeginFrame() {
 	}
 }
 
-void Engine::PostDraw() {
+void Engine::ToPresent() {
 
 	if (!imguiDrawed_) {
 		imGuiWrapper_->EndFrame();

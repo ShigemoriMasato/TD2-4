@@ -28,7 +28,7 @@ public:
 	// Inputとコマンドの更新
 	void BeginFrame();
 	// コマンドのクローズ
-	void PostDraw();
+	void ToPresent();
 
 	// コマンドの実行(Signalも送る)
 	void ExecuteCommand(Command::Type type, int index = 0, std::vector<CmdObj*> cmdObjs = {}) {

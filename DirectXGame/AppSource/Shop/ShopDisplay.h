@@ -9,7 +9,7 @@ public:
 	void SetTransform(const Vector2& leftTop, const Vector2& size);
 	void Update();
 	void PreDraw();
-	void PostDraw();
+	void ToPresent();
 	void Draw();
 
 	SHEngine::Screen::IDisplay* GetDisplay() const { return disp_.get(); }

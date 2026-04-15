@@ -8,11 +8,11 @@ void MainDisplay::Initialize(int width, int height, uint32_t clearColor, SHEngin
 }
 
 void MainDisplay::PreDraw(SHEngine::Command::Object* cmdObject, bool isClear) {
-	mainDisplay_->PreDraw(cmdObject, isClear);
+	cmdObject->SetRenderTarget(mainDisplay_.get(), isClear);
 }
 
-void MainDisplay::PostDraw(SHEngine::Command::Object* cmdObject) {
-	mainDisplay_->PostDraw(cmdObject);
+void MainDisplay::ToPresent(SHEngine::Command::Object* cmdObject) {
+	mainDisplay_->ToPresent(cmdObject);
 }
 
 void MainDisplay::DrawImGui() {

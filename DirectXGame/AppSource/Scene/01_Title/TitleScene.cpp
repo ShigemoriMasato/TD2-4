@@ -77,7 +77,7 @@ void TitleScene::Draw() {
 	titleUI_->Draw(cmdObj);
 
 	// ディスプレイへの描画終了
-	display->PostDraw(cmdObj);
+	display->ToPresent(cmdObj);
 
 #ifdef SH_RELEASE
 	postEffectConfig_.output = commonData_->mainWindow.second->GetCurrentDisplay();
@@ -157,7 +157,7 @@ void TitleScene::Draw() {
 	engine_->DrawImGui();
 
 	// ウィンドウへの描画終了
-	window->PostDraw(cmdObj);
+	window->ToPresent(cmdObj);
 }
 
 void TitleScene::UpdateCalculatedVolumes() {

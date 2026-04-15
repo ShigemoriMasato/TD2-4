@@ -400,7 +400,7 @@ void ShigeScene::Draw() {
 
 	parameterRender_->Draw(cmdObj);
 
-	gameDisplay_->PostDraw();
+	gameDisplay_->ToPresent();
 
 	// 画面全体の描画
 	display->PreDraw(cmdObj, true);
@@ -415,7 +415,7 @@ void ShigeScene::Draw() {
 
 	gameFrame_->Draw(cmdObj);
 
-	display->PostDraw(cmdObj);
+	display->ToPresent(cmdObj);
 
 	postEffectConfig_.output = commonData_->mainWindow.second->GetCurrentDisplay();
 	postEffect_->Draw(postEffectConfig_);
@@ -464,7 +464,7 @@ void ShigeScene::Draw() {
 #endif // USE_IMGUI
 	engine_->DrawImGui();
 
-	window->PostDraw(cmdObj);
+	window->ToPresent(cmdObj);
 }
 
 void ShigeScene::MakeWeapon() {

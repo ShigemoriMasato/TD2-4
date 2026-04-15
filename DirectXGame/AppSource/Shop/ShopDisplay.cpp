@@ -41,11 +41,11 @@ void ShopDisplay::Update() {
 }
 
 void ShopDisplay::PreDraw() {
-	disp_->PreDraw(cmdObj_);
+	cmdObj_->SetRenderTarget(disp_.get(), true);
 }
 
-void ShopDisplay::PostDraw() {
-	disp_->PostDraw(cmdObj_);
+void ShopDisplay::ToPresent() {
+	disp_->ToPresent(cmdObj_);
 }
 
 void ShopDisplay::Draw() {

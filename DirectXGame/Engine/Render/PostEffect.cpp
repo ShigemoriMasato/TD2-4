@@ -71,7 +71,7 @@ void PostEffect::Draw(const PostEffectConfig& config) {
 		}
 
 		//描画処理
-		output->PreDraw(cmdObject, true);
+		cmdObject->SetRenderTarget(output);
 		origin->ToTexture(cmdObject);
 		//RenderObjectにテクスチャをセット
 		int textureIndex = origin->GetTextureData()->GetOffset();
@@ -104,12 +104,12 @@ FINAL_DRAW:
 		return;
 	}
 
-	output->PreDraw(cmdObject, false);
+	cmdObject->SetRenderTarget(output, true);
 	origin->ToTexture(cmdObject);
 	int textureIndex = origin->GetTextureData()->GetOffset();
 	auto finalObj = postEffectObjects_.at(PostEffectJob::None).get();
 	finalObj->CopyBufferData(0, &textureIndex, sizeof(int));
 	finalObj->psoConfig_.isSwapChain = output->GetRTVFormat() == DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	finalObj->Draw(cmdObject);
-	output->PostDraw(cmdObject);
+	output->ToPresent(cmdObject);
 }

@@ -561,7 +561,7 @@ void TrailEditorScene::Draw()
 
 	commonData_->trailDrawer->Draw(cmdObj, camera_->GetVPMatrix());
 
-	display->PostDraw(cmdObj);
+	display->ToPresent(cmdObj);
 
 	window->PreDraw(cmdObj);
 
@@ -571,5 +571,5 @@ void TrailEditorScene::Draw()
 #endif
 
 	engine_->DrawImGui();
-	window->PostDraw(cmdObj);
+	window->ToPresent(cmdObj);
 }

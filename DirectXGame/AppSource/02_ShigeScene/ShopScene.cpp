@@ -209,7 +209,7 @@ void ShopScene::DrawReady() {
 	// リロールバーの描画
 	DrawRerollBar(cmdObj);
 
-	shopDisplay_->PostDraw();
+	shopDisplay_->ToPresent();
 }
 
 void ShopScene::Draw() {

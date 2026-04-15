@@ -26,7 +26,7 @@ void Manager::Initialize(DXDevice* device) {
 }
 
 std::unique_ptr<Object> SHEngine::Command::Manager::CreateCommandObject(Type type, int index, int listNum) {
-	QueueChecker;
+	QueueChecker(type);
 
 	auto queue = queue_[type][index].get();
 	std::unique_ptr<Object> commandObject = std::make_unique<Object>(device_, this, type, queue, listNum);
@@ -37,7 +37,7 @@ std::unique_ptr<Object> SHEngine::Command::Manager::CreateCommandObject(Type typ
 }
 
 void SHEngine::Command::Manager::Execute(Type type, int index, std::vector<CmdObj*> cmdObj) {
-	QueueChecker;
+	QueueChecker(type);
 
 	auto& cmdQueue = queue_[type][index];
 	cmdQueue->Execute(cmdObj);
@@ -52,5 +52,12 @@ void SHEngine::Command::Manager::ReleaseObject(Queue* queue, Object* obj) {
 				return;
 			}
 		}
+	}
+}
+
+void SHEngine::Command::Manager::QueueChecker(Type type) {
+	if (queue_.find(type) == queue_.end()) {
+		logger_->error("Invalid Command Queue Type: {}", static_cast<int>(type));
+		throw std::runtime_error("Invalid Command Queue Type");
 	}
 }
