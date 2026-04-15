@@ -11,8 +11,6 @@
 #pragma comment(lib, "Mfreadwrite.lib")
 #pragma comment(lib, "mfuuid.lib")
 
-//AudioManager::~AudioManager() {}
-
 AudioManager* AudioManager::GetInstance() {
 	static AudioManager instance;
 	return &instance;

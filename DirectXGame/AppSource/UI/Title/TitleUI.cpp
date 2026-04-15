@@ -30,11 +30,11 @@ void TitleUI::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::M
 		auto model = modelManager_->GetNodeModelData(modelIDs_[i]);
 		auto drawData = drawDataManager_->GetDrawData(model.drawDataIndex);
 		renders_[i]->SetDrawData(drawData);
-		renders_[i]->psoConfig_.vs = "Simples.VS.hlsl";
-		renders_[i]->psoConfig_.ps = "TexColors.PS.hlsl";
+		renders_[i]->psoConfig_.vs = "Simple.VS.hlsl";
+		renders_[i]->psoConfig_.ps = "TexColor.PS.hlsl";
 		renders_[i]->psoConfig_.isSwapChain = false; // displayに描画するのでfalseに変更
-		renders_[i]->CreateSRV(sizeof(Matrix4x4), 1, ShaderType::VERTEX_SHADER, "WVP");
-		renders_[i]->CreateSRV(sizeof(Vector4), 1, ShaderType::PIXEL_SHADER, "Color");
+		renders_[i]->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+		renders_[i]->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 		renders_[i]->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
 		renders_[i]->SetUseTexture(true);
 		renders_[i]->instanceNum_ = 1;
@@ -106,8 +106,8 @@ void TitleUI::Draw(CmdObj* cmdObj) {
 void TitleUI::DrawImGui() {
 	ImGui::Begin("Title UI Settings");
 
-	const char* uiNames[] = {"Logo", "Start", "Option", "Quit"};
-	const char* selectNames[] = {"Start", "Option", "Quit"};
+	static const char* uiNames[] = {"Logo", "Start", "Option", "Quit"};
+	static const char* selectNames[] = {"Start", "Option", "Quit"};
 
 	for (size_t i = 0; i < kUICount; ++i) {
 		if (ImGui::TreeNode(uiNames[i])) {

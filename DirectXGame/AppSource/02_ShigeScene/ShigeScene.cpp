@@ -119,8 +119,9 @@ void ShigeScene::Initialize() {
 	gameDisplay_->SetTransform({450.0f, 256.0f}, {784.0f, 416.0f});
 
 	postEffect_ = std::make_unique<PostEffect>();
+	//Post Effect Draw Data
 	auto pedd = drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex);
-	postEffect_->Initialize(textureManager_, pedd);
+	postEffect_->Initialize(textureManager_, pedd, true);
 	postEffectConfig_.cmdObj = commonData_->cmdObject.get();
 	postEffectConfig_.origin = commonData_->display->GetDisplay();
 

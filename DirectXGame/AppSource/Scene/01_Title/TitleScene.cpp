@@ -36,7 +36,7 @@ void TitleScene::Initialize() {
 	bgm_ = AudioManager::GetInstance()->GetData("TitleScene.mp3")->CustomPlay(255);
 
 	postEffect_ = std::make_unique<PostEffect>();
-	postEffect_->Initialize(textureManager_, drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex));
+	postEffect_->Initialize(textureManager_, drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex), true);
 	postEffectConfig_.cmdObj = commonData_->cmdObject.get();
 	postEffectConfig_.origin = commonData_->display->GetDisplay();
 }

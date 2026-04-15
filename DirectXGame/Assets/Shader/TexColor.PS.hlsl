@@ -12,14 +12,14 @@ struct PSOutput
     float4 color : SV_TARGET;
 };
 
-cbuffer TextureIndex : register(b0)
-{
-    int textureIndex;
-};
-
-cbuffer ColorBuffer : register(b1)
+cbuffer ColorBuffer : register(b0)
 {
     float4 color;
+};
+
+cbuffer TextureIndex : register(b1)
+{
+    int textureIndex;
 };
 
 Texture2D<float4> textures[] : register(t8);
