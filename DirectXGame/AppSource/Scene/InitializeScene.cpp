@@ -24,7 +24,7 @@ void InitializeScene::Initialize() {
 	SHEngine::Screen::WindowsAPI::WindowDesc desc;
 	desc.width = 1280;
 	desc.height = 720;
-	desc.windowName = L"3101_GaricL";
+	desc.windowName = L"3101_バトルぶち殺シアム";
 	desc.wndProc = [&](HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) -> LRESULT {
 
 #ifdef USE_IMGUI
