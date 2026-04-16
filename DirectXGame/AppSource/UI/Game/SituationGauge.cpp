@@ -23,9 +23,12 @@ void SituationGauge::Initialize(SHEngine::ModelManager* modelManager, SHEngine::
 
 	transform_.scale = {15.0f, 500.0f, 0.0f};
 	transform_.position = {1200.0f, -430.0f, 0.0f};
+
+	situationTelop_ = std::make_unique<SituationTelop>();
+	situationTelop_->Initialize(modelManager, drawDataManager, 0);
 }
 
-void SituationGauge::Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpawnCount, float weaponCount) {
+void SituationGauge::Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpawnCount, float weaponCount, std::unordered_map<Key, bool> key) {
 	// 各自の最大値からターゲットとなる割合を算出
 	float targetPlayerRatio = 0.0f;
 	if (maxWeaponCount_ > 0.0f) {
@@ -94,6 +97,36 @@ void SituationGauge::Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpaw
 	render_->CopyBufferData(0, wvpMatrices, sizeof(Matrix4x4) * kGaugeCount);
 	render_->CopyBufferData(1, colors, sizeof(Vector4) * kGaugeCount);
 	render_->CopyBufferData(2, &textureIndex, sizeof(int));
+
+	currentAdvantage_ = GetAdvantage(playerScale.y, enemyScale.y); // プレイヤーが有利かどうかの判定
+
+	// 状況が変化したと判断してテロップを表示
+	if (currentAdvantage_ != wasAdvantage_) {
+		// プレイヤーのゲージが敵のゲージの2倍以上の場合は不利、敵のゲージがプレイヤーのゲージの2倍以上の場合は有利と表示
+		if (currentAdvantage_ == Advantage::Player) {
+			situationTelop_->StartAnimation(L"有利");
+		} else if (currentAdvantage_ == Advantage::Enemy) {
+			situationTelop_->StartAnimation(L"不利");
+		}
+	}
+
+	// 有利不利を記録
+	wasAdvantage_ = currentAdvantage_;
+
+	situationTelop_->Update(vpMatrix, key, deltaTime);
 }
 
-void SituationGauge::Draw(CmdObj* cmdObj) { render_->Draw(cmdObj); }
+void SituationGauge::Draw(CmdObj* cmdObj) {
+	render_->Draw(cmdObj);
+	situationTelop_->Draw(cmdObj);
+}
+
+SituationGauge::Advantage SituationGauge::GetAdvantage(float player, float enemy) const {
+	if (player > enemy * 2.0f) {
+		return Advantage::Player;
+	}
+	if (enemy > player * 2.0f) {
+		return Advantage::Enemy;
+	}
+	return Advantage::Even;
+}

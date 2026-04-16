@@ -49,7 +49,7 @@ private:
 	Vector3 lockedTargetDir_ = {0.0f, 0.0f, 0.0f};
 
 	// 現在のAIモード
-	AIMode currentMode_ = AIMode::SKIRMISH;
+	AIMode currentMode_ = AIMode::EVASIVE;
 
 	// タイマー乱数
 	float minTime_ = 0.5f;

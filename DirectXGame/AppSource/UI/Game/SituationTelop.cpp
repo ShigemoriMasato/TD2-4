@@ -11,8 +11,8 @@ void SituationTelop::Initialize(ModelManager* modelManager, DrawDataManager* dra
 	auto modelData = modelManager->GetNodeModelData(modelHandle);
 	DrawData data = drawDataManager->GetDrawData(modelManager->GetNodeModelData(1).drawDataIndex);
 
-	colors_[L"ピンチ"] = {1.0f, 0.0f, 0.0f, 1.0f};
-	colors_[L"アドバンテージ"] = {1.0f, 1.0f, 0.0f, 1.0f};
+	colors_[L"不利"] = {1.0f, 0.0f, 0.0f, 1.0f};
+	colors_[L"有利"] = {1.0f, 1.0f, 0.0f, 1.0f};
 
 	telopText_ = std::make_unique<Text>();
 	telopText_->Initialize(data, "YDWbananaslipplus.otf", 64, "Telop");
@@ -113,10 +113,10 @@ void SituationTelop::StartAnimation(const std::wstring& telopName) {
 	state_ = State::FadeIn;
 	holdTimer_ = 0.0f;
 
-	if (telopName == L"ピンチ") {
+	if (telopName == L"不利") {
 		basePosition_ = Vector3(490.0f, -380.0f, 0.0f);
 	} else {
-		basePosition_ = Vector3(340.0f, -380.0f, 0.0f);
+		basePosition_ = Vector3(490.0f, -380.0f, 0.0f);
 	}
 
 	transform_.position = basePosition_;

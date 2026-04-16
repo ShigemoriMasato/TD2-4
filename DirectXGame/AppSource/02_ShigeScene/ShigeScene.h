@@ -125,6 +125,5 @@ private:// UI系
 
 	GameDisplayRange displayRange_ = {};
 
-	std::unique_ptr<SituationTelop> telop_;
 	std::unique_ptr<SituationGauge> situationGauge_;
 };
