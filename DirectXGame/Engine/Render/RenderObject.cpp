@@ -1,6 +1,7 @@
 #include "RenderObject.h"
 #include <Utility/DirectUtilFuncs.h>
 #include <Utility/ConvertString.h>
+#include <Render/Screen/IDisplay.h>
 
 using namespace SHEngine;
 
@@ -165,6 +166,7 @@ void RenderObject::Draw(Command::Object* cmdObject) {
 	auto cmdList = cmdObject->GetCommandList();
 
 	//パイプラインステートの設定
+	psoConfig_.isSwapChain = cmdObject->GetRenderTarget()->GetRTVFormat() == DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	psoEditor_->SetPSO(cmdList, psoConfig_);
 
 	//頂点バッファの設定

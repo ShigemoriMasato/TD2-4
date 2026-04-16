@@ -83,15 +83,15 @@ void Engine::BeginFrame() {
 	AudioManager::GetInstance()->Update();
 	if (imGuiWrapper_) {
 		imGuiWrapper_->NewFrame();
-		imguiDrawed_ = false;
+		imguiDrew_ = false;
 	}
 }
 
 void Engine::ToPresent() {
 
-	if (!imguiDrawed_) {
+	if (!imguiDrew_) {
 		imGuiWrapper_->EndFrame();
-		imguiDrawed_ = true;
+		imguiDrew_ = true;
 	}
 
 }

@@ -40,6 +40,9 @@ namespace SHEngine {
 		// @brief GPUBufferのGPUディスクリプタハンドルを取得する。bufferIndexはスワップチェーンのバッファインデックスに合わせる。
 		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(BufferType type, uint32_t bufferIndex) const;
 
+		// @brief Viewの種類を取得する
+		uint8_t GetBufferType() const { return bufferType_; }
+
 	private:
 
 		static inline DXDevice* device_ = nullptr;

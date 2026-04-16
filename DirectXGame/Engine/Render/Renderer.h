@@ -49,7 +49,7 @@ namespace SHEngine {
 		static inline D3D12_GPU_DESCRIPTOR_HANDLE textureStartHandle_ = {};
 
 		DrawData drawData_;
-		std::map<ShaderType, std::map<BufferType, std::vector<GPUBuffer*>>> gpuBuffers_;
+		std::map<BufferType, std::map<ShaderType, std::vector<GPUBuffer*>>> gpuBuffers_;
 
 	};
 

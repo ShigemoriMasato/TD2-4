@@ -160,10 +160,10 @@ void InitializeScene::Initialize() {
 	keyManager->SetMouse(Key::Target, 0, KeyState::Trigger);
 #pragma endregion
 
-	commonData_->particleDrawer = std::make_unique<ParticleDrawer>();
 	commonData_->trailDrawer = std::make_unique<TrailDrawer>();
-
 	commonData_->trailDrawer->Initialize(drawDataManager_);
+
+	commonData_->particleDrawer = std::make_unique<ParticleDrawer>();
 	commonData_->particleDrawer->Initialize(drawDataManager_, modelManager_);
 }
 

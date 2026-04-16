@@ -58,10 +58,6 @@ void EnemyManager::Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVp
 		pendingEnemies_.erase(pendingEnemies_.begin() + index);
 	}
 
-	if (enemies_.size() == 0) {
-		return;
-	}
-
 	std::vector<int> toRemove;
 	std::vector<std::pair<Vector3, std::vector<int>>> damageQueue;
 	for (auto& [id, enemy] : enemies_) {
@@ -84,7 +80,6 @@ void EnemyManager::Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVp
 	for (int id : toRemove) {
 		Kill(id);
 	}
-
 
 	CreateDamageText(damageQueue);
 
