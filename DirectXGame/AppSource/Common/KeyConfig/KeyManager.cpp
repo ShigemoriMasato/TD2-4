@@ -11,8 +11,8 @@ void KeyManager::Initialize(SHEngine::Input* input, MainDisplay* display) {
 
 void KeyManager::Update() {
 	// ================- keyの初期化 -================
-	for(const auto& [action, _] : keyMap_){
-		resultKeyFlags_[action] = false;
+	for(auto& [action, flag] : resultKeyFlags_) {
+		flag = false;
 	}
 
 	// ==========================- キーの状態の更新 -==========================	

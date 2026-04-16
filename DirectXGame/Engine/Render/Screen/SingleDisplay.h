@@ -21,6 +21,7 @@ namespace SHEngine::Screen {
 		void Initialize(TextureManager* textureManager, ID3D12Resource* resource, uint32_t clearColor);
 
 		void Clear(Command::Object* cmdObject) override;
+		void ToRenderTarget(Command::Object* cmdObject) override;
 		void ToPresent(Command::Object* cmdObject) override;
 		void ToTexture(Command::Object* cmdObject) override;
 

@@ -17,6 +17,10 @@ void SHEngine::Screen::MultiDisplay::Clear(Command::Object* cmdObject) {
 	displays_[currentDisplayIndex_]->Clear(cmdObject);
 }
 
+void SHEngine::Screen::MultiDisplay::ToRenderTarget(Command::Object* cmdObject) {
+	displays_[currentDisplayIndex_]->ToRenderTarget(cmdObject);
+}
+
 void SHEngine::Screen::MultiDisplay::ToPresent(Command::Object* cmdObject) {
 	displays_[currentDisplayIndex_]->ToPresent(cmdObject);
 	currentDisplayIndex_ = (currentDisplayIndex_ + 1) % displays_.size();

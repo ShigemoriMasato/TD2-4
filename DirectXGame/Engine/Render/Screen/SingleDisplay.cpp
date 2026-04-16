@@ -106,6 +106,11 @@ void SHEngine::Screen::SingleDisplay::Clear(Command::Object* cmdObject) {
 	cmdObject->GetCommandList()->ClearDepthStencilView(GetDSVHandle(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
+void SHEngine::Screen::SingleDisplay::ToRenderTarget(Command::Object* cmdObject) {
+    TransitionBarrier(cmdObject, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	TransitionDepthBarrier(cmdObject, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+}
+
 void SHEngine::Screen::SingleDisplay::ToPresent(Command::Object* cmdObject) {
     if (isOffScreen_) {
 		ToTexture(cmdObject);

@@ -67,6 +67,6 @@ void main(uint3 DTid : SV_DispatchThreadID)
         skinned.position = skinnedPosition;
         skinned.normal = skinnedNormal;
     }
-        
+    
     output[vertexIndex] = skinned;
 }

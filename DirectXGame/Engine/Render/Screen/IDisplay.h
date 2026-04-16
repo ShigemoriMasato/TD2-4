@@ -14,6 +14,9 @@ namespace SHEngine::Screen {
 		/// @brief 画面をClearColorで塗りつぶす
 		virtual void Clear(Command::Object* cmdObject) = 0;
 
+		/// @brief RenderTargetのBarrierを張る
+		virtual void ToRenderTarget(Command::Object* cmdObject) = 0;
+
 		/// @brief 描画後の処理（Presentや、OffScreen用テクスチャへのコピーなど）
 		/// @param cmdObject コマンドオブジェト
 		virtual void ToPresent(Command::Object* cmdObject) = 0;

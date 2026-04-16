@@ -47,6 +47,8 @@ void SHEngine::Command::Object::SetRenderTarget(Screen::IDisplay* display, bool 
 	auto dsvHandle = display->GetDSVHandle();
 	auto cmdList = GetCommandList();
 
+	display->ToRenderTarget(this);
+
 	cmdList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
 	
 	//ViewPortとScissorRectの設定
