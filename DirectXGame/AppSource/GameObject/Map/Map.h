@@ -26,6 +26,9 @@ public:
 	// @brief マップの描画処理
 	void Draw(CmdObj* cmdObj);
 
+	// @brief ImGuiでのデバッグ表示
+	void DrawDebugGUI();
+
 	// @brief 指定した座標がマップの境界内にあるか判定
 	bool IsInBounds(const Vector3& position) const;
 
@@ -61,21 +64,35 @@ private:
 	
 	// グラスブロックのモデルID
 	int grassModelID_ = -1;
-	
+
 	// テクスチャインデックス
 	int textureIndex_ = 0;
-	
+
 	// 描画用レンダーオブジェクト
 	std::unique_ptr<SHEngine::RenderObject> render_;
+
+	// ステージモデルのモデルID
+	int stageModelID_ = -1;
+
+	// ステージのテクスチャインデックス
+	int stageTextureIndex_ = 0;
+
+	// ステージの描画用レンダーオブジェクト
+	std::unique_ptr<SHEngine::RenderObject> stageRender_;
+
+	// ステージのトランスフォーム
+	Vector3 stagePosition_ = { 24.0f, 0.0f, 24.0f };
+	Vector3 stageRotation_ = { 0.0f, 0.0f, 0.0f };
+	Vector3 stageScale_ = { 5.0f, 5.0f, 5.0f };
 
 	// マップのグリッドサイズ
 	static constexpr int kMapWidth = 25;  // 20ブロック
 	static constexpr int kMapDepth = 25;  // 20ブロック
 	static constexpr int kMaxInstances = 4096;  // 最大インスタンス数
-	
+
 	// ブロックのサイズと間隔
 	static constexpr float kBlockSize = 2.0f;  // モデルサイズ2x2x2
-	
+
 	// ブロックのスケール
 	Vector3 blockScale_ = { 1.0f, 1.0f, 1.0f };
 };

@@ -431,6 +431,8 @@ void ShigeScene::Draw() {
 
 	TackleEnemy::DrawImGui();
 
+	map_->DrawDebugGUI();
+
 	ImGui::Begin("Game Timer");
 	ImGui::Text("Game Time : %.2f s", gameTimer_->GetTimer());
 	ImGui::DragFloat3("Pos", &timerTextTransform_.position.x, 1.0f);
