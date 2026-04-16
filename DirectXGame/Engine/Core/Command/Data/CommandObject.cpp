@@ -1,6 +1,7 @@
 #include "CommandObject.h"
 #include <Core/Command/CommandManager.h>
 #include <Render/Screen/IDisplay.h>
+#include <Utility/DirectUtilFuncs.h>
 
 using namespace SHEngine::Command;
 
