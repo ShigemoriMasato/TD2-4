@@ -1,6 +1,7 @@
 #pragma once
 #include <Render/RenderObject.h>
 #include <assets/Model/ModelManager.h>
+#include <UI/Game/SituationTelop.h>
 
 /// <summary>
 /// 戦況状況を視覚化するためのクラス
@@ -8,8 +9,19 @@
 class SituationGauge {
 public:
 	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager);
-	void Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpawnCount, float weaponCount);
+	void Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpawnCount, float weaponCount, std::unordered_map<Key, bool> key);
 	void Draw(CmdObj* cmdObj);
+
+private:
+	enum class Advantage{
+		Even,
+		Player,
+		Enemy,
+	};
+
+private:
+	// 現在の有利不利を受け取る
+	Advantage GetAdvantage(float player, float enemy)const;
 
 private:
 	std::unique_ptr<SHEngine::RenderObject> render_;
@@ -38,4 +50,13 @@ private:
 	// 現在の割合
 	float currentPlayerRatio_ = 0.0f;
 	float currentEnemyRatio_ = 0.0f;
+
+	// 戦況テロップ
+	std::unique_ptr<SituationTelop> situationTelop_;
+
+	// 戦況変化の検出とテロップ表示のためのタイマー
+	float timeSinceLastChange_ = 0.0f;
+
+	Advantage wasAdvantage_ = Advantage::Even;
+	Advantage currentAdvantage_ = Advantage::Even;
 };

@@ -160,9 +160,6 @@ void ShigeScene::Initialize() {
 	data->SetVolume(bgmVolume_);
 	bgm_ = data->CustomPlay(255);
 
-	telop_ = std::make_unique<SituationTelop>();
-	telop_->Initialize(modelManager_, drawDataManager_, 0);
-
 	situationGauge_ = std::make_unique<SituationGauge>();
 	situationGauge_->Initialize(modelManager_, drawDataManager_);
 }
@@ -332,14 +329,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	waveSystem_->Update(deltaTime);
 	waveSystemUI_->Update(*waveSystem_, orthoCamera_->GetVPMatrix());
 
-	if (key[Key::Debug1]) {
-		telop_->StartAnimation(L"ピンチ");
-	}else if(key[Key::Debug2]){
-		telop_->StartAnimation(L"アドバンテージ");
-	}
-	telop_->Update(orthoCamera_->GetVPMatrix(), key, deltaTime);
-
-	situationGauge_->Update(orthoCamera_->GetVPMatrix(), deltaTime, static_cast<float>(enemyManager_->GetEnemies().size()), static_cast<float>(weaponRenders_.size()));
+	situationGauge_->Update(orthoCamera_->GetVPMatrix(), deltaTime, static_cast<float>(enemyManager_->GetEnemies().size()), static_cast<float>(weaponRenders_.size()), key);
 
 	if (key[Key::Debug1] || gameTimer_->IsEnd()) {
 	}
@@ -395,8 +385,6 @@ void ShigeScene::Draw() {
 	enemySpawnGraphText_->Draw(cmdObj);
 
 	situationGauge_->Draw(cmdObj);
-
-	telop_->Draw(cmdObj);
 
 	parameterRender_->Draw(cmdObj);
 
