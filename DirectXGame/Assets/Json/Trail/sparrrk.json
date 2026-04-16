@@ -10,13 +10,13 @@
     "cfg.minDistance": 0.10000000149011612,
     "cfg.texturePath": "Assets/.EngineResource/Texture/white1x1.png",
     "ribbon.originLocal": [
-        -1.0,
-        0.30000001192092896,
+        0.0,
+        1.0,
         0.0
     ],
     "ribbon.tipLocal": [
-        -1.0,
         0.0,
+        -1.0,
         0.0
     ],
     "type": "RibbonTrail"

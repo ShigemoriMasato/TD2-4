@@ -38,8 +38,6 @@ void FountainParticle::Update(float dt)
 
 	particle_.Clear();
 
-	emitTimer_ += dt;
-
 	// 一定時間ごとにパーティクルを発生させる
 	if (isActive_ && emitTimer_ >= config_.cfg.emitInterval)
 	{
@@ -79,6 +77,8 @@ void FountainParticle::Update(float dt)
 		}
 	}
 
+	emitTimer_ += dt;
+
 	// 年齢更新 & 老人削除
 	for (auto& instance : instances_)
 	{
@@ -114,7 +114,12 @@ void FountainParticle::Update(float dt)
 void FountainParticle::SetEnabled(bool isActive)
 {
 	isActive_ = isActive;
-	if (!isActive_)
+	if (isActive_)
+	{
+		emitTimer_ = config_.cfg.emitInterval;
+
+	}
+	else 
 	{
 		emitTimer_ = 0.0f;
 	}

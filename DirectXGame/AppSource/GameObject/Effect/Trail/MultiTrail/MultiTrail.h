@@ -23,7 +23,8 @@ public:
 	// すべてのトレイルデータをクリア
 	void Clear();
 	// モデルに追従するタイプ用。モデルに追従してなくても使ってOK
-	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
+	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; };
+	void SetModelWorld(int32_t id, const Matrix4x4& modelWorld);
 
 	// プリセット名で追加（例: "Axe_Ribbon"）
 	int32_t Add(const std::string& presetName);
@@ -43,4 +44,6 @@ private:
 	int32_t nextId_ = -1;
 	std::unordered_map<int32_t, std::unique_ptr<RibbonTrail>> ribbonTrailCache_;
 	std::unordered_map<int32_t, std::unique_ptr<ShockwaveRingTrail>> shockwaveRingTrailCache_;
+
+	std::unordered_map<int32_t, Matrix4x4> perTrailModelWorld_;
 };

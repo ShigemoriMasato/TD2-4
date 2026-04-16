@@ -1,56 +1,43 @@
 #include "sparkEffect.h"
 
 void SparkEffect::Initialize(
-	SHEngine::DrawDataManager* drawDataManager,
 	SHEngine::TextureManager* textureManager,
 	SHEngine::ModelManager* modelManager,
-	TrailPresetDataBank* trailPresetDataBank,
-	ParticlePresetDataBank* particlePresetDataBank)
+	CommonData* commonData)
 {
-	//particle.Initialize(textureManager, modelManager, particlePresetDataBank);
-	//particle.Add("sparrrrk2");
-	//for (size_t i = 0; i < kMaxParticleTrails_; i++)
-	//{
-	//	auto trail = std::make_unique<MultiTrail>();
-	//	trail->Initialize(textureManager, trailPresetDataBank);
-	//	trail->Add("sparrrk");
-	//	trail->SetEmittingFlag(false);
-	//	particleTrails_.push_back(std::move(trail));
-	//}
+	particle.Initialize(textureManager, modelManager, commonData);
+	particle.Add("death");
+	particle.SetEmittingFlag(0, false);
+	trails.Initialize(textureManager, commonData);
+	for (size_t i = 0; i < 30; ++i) { trails.Add("sparrrk"); }
 }
 
-void SparkEffect::Trigger(const Vector3& position)
+void SparkEffect::Trigger()
 {
-	//// パーティクル起動
-	//particle.SetEmittingFlag(particleIndex, true);
-
-	//// トレイル起動
-	//for (auto& t : particleTrails_)
-	//{
-	//	t->SetEmittingFlag(true);
-	//}
+	// パーティクル起動
+	particle.SetEmittingFlag(0, true);
 }
 
-void SparkEffect::Update(float dt, const Matrix4x4& vpMatrix)
+void SparkEffect::Update(float dt)
 {
-	//particle.Update(dt);
+	particle.SetModelWorld(modelWorld_);
+	particle.Update(dt);
 
-	//// 粒ワールド行列
-	//const auto worlds = particle.GetParticleWorlds(particleIndex);
-	//const size_t alive = std::min(worlds.size(), particleTrails_.size());
+	// 粒ワールド行列
+	const auto worlds = particle.GetParticleWorlds(0);
 
-	//// 粒が存在する分だけ、トレイルを粒に追従させる
-	//for (size_t i = 0; i < alive; ++i)
-	//{
-	//	particleTrails_[i]->SetModelWorld(worlds[i]);
-	//	particleTrails_[i]->Update(dt);
-	//}
+	size_t max = std::min(worlds.size(), static_cast<size_t>(30));
+
+	for (size_t i = 0; i < max; ++i)
+	{
+		trails.SetModelWorld(int32_t(i), worlds[i]);
+	}
+	
+	trails.Update(dt);
 }
 
-void SparkEffect::Draw(CmdObj* cmdObj)
+void SparkEffect::Draw()
 {
-	//for (auto& trail : particleTrails_)
-	//{
-	//	trail->Draw(cmdObj);
-	//}
+	//particle.Draw();
+	trails.Draw();
 }

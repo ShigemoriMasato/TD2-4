@@ -37,8 +37,12 @@ void YokoScene::Initialize()
 	// カメラ初期化
 	camera_ = std::make_unique<DebugCamera>();
 	camera_->SetProjectionMatrix(PerspectiveFovDesc{});
-	camera_->SetPosition({ 0.0f, 8.0f, -25.0f });
+	camera_->SetPosition({ 0.0f, 3.0f, -10.0f });
 	camera_->Initialize(input_);
+
+	// ワールドグリッド初期化
+	grid_ = std::make_unique<Grid>();
+	grid_->Initialize(drawDataManager_);
 
 	// モデル初期化
 	int modelHandle = modelManager_->LoadModel("Assets/Model/Item/Weapon/Axe");
@@ -58,6 +62,9 @@ void YokoScene::Initialize()
 	// パーティクル初期化
 	particles_.Initialize(textureManager_, modelManager_, commonData_);
 	particles_.Add("sparrrrk2");
+
+	// sparkEffect初期化
+	sparkEffect.Initialize(textureManager_, modelManager_, commonData_);
 }
 
 std::unique_ptr<IScene> YokoScene::Update()
@@ -70,6 +77,9 @@ std::unique_ptr<IScene> YokoScene::Update()
 	camera_->Update();
 	const Matrix4x4 vp = camera_->GetVPMatrix();
 
+	// ワールドグリッド更新
+	grid_->Update(Vector3(0.0f, 0.0f, 0.0f), vp);
+
 	if (isSpaceTrigger)
 	{
 		transform_.scale = { 1.0f, 1.0f, 1.0f };
@@ -78,7 +88,7 @@ std::unique_ptr<IScene> YokoScene::Update()
 
 		trail.Clear();
 
-		//sparkEffect.Trigger(transform_.position);
+		sparkEffect.Trigger();
 		start = true;
 	}
 	if (start)
@@ -114,15 +124,16 @@ std::unique_ptr<IScene> YokoScene::Update()
 	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
 
 	// sparkEffect更新
-	//sparkEffect.Update(dt, vp);
+	sparkEffect.SetModelWorld(Matrix4x4::Identity());
+	sparkEffect.Update(dt);
 
 	// トレイル更新
 	trail.SetModelWorld(world);
 	trail.Update(dt);
 
 	// パーティクル更新
-	particles_.SetModelWorld(world);
-	particles_.Update(dt);
+	//particles_.SetModelWorld(world);
+	//particles_.Update(dt);
 
 	// Zキーでエディタ切り替え
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z))
@@ -141,6 +152,14 @@ void YokoScene::Draw()
 
 	display->PreDraw(cmdObj, true);
 
+	grid_->Draw(cmdObj);
+
+	// sparkEffect描画
+	sparkEffect.Draw();
+
+	//trail.Draw();
+	//particles_.Draw();
+	
 
 
 
@@ -149,9 +168,6 @@ void YokoScene::Draw()
 
 	// トレイル描画
 	commonData_->trailDrawer->Draw(cmdObj, camera_->GetVPMatrix());
-
-	// sparkEffect描画
-	sparkEffect.Draw(cmdObj);
 
 	display->ToPresent(cmdObj);
 

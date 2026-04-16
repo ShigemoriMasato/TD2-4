@@ -14,6 +14,7 @@ void MultiTrail::Initialize(SHEngine::TextureManager* textureManager, CommonData
 
 	ribbonTrailCache_.clear();
 	shockwaveRingTrailCache_.clear();
+	perTrailModelWorld_.clear();
 }
 
 
@@ -59,28 +60,41 @@ void MultiTrail::SetEmittingFlag(const int32_t id, bool flag)
 
 void MultiTrail::Clear()
 {
-	for (auto& [name, trail] : ribbonTrailCache_)
+	for (auto& [id, trail] : ribbonTrailCache_)
 	{
 		trail->Clear();
 	}
 
-	for (auto& [name, trail] : shockwaveRingTrailCache_)
+	for (auto& [id, trail] : shockwaveRingTrailCache_)
 	{
 		trail->Clear();
 	}
 }
 
+void MultiTrail::SetModelWorld(int32_t id, const Matrix4x4& modelWorld)
+{
+	perTrailModelWorld_[id] = modelWorld;
+}
+
 void MultiTrail::Update(float dt)
 {
-	for (auto& [name, trail] : ribbonTrailCache_)
+	for (auto& [id, trail] : ribbonTrailCache_)
 	{
-		trail->SetModelWorld(modelWorld_);
+		Matrix4x4 world = modelWorld_;
+		auto pit = perTrailModelWorld_.find(id);
+		if (pit != perTrailModelWorld_.end()) world = world * pit->second;
+
+		trail->SetModelWorld(world);
 		trail->Update(dt);
 	}
 
-	for (auto& [name, trail] : shockwaveRingTrailCache_)
+	for (auto& [id, trail] : shockwaveRingTrailCache_)
 	{
-		trail->SetModelWorld(modelWorld_);
+		Matrix4x4 world = modelWorld_;
+		auto pit = perTrailModelWorld_.find(id);
+		if (pit != perTrailModelWorld_.end()) world = world * pit->second;
+
+		trail->SetModelWorld(world);
 		trail->Update(dt);
 	}
 }
