@@ -1,7 +1,6 @@
-#include "SHResource.h"
+#include "GPUBuffer.h"
 #include <Utility/DirectUtilFuncs.h>
 #include <DirectXTex/d3dx12.h>
-#define Sigma(x) for (uint32_t i = 0; i < x; ++i)
 
 SHEngine::GPUBuffer::GPUBuffer(BufferType bufferType, size_t size, uint32_t num, uint32_t bufferNum) {
 	sizeInBytes_ = size * num;
@@ -24,7 +23,7 @@ SHEngine::GPUBuffer::GPUBuffer(BufferType bufferType, size_t size, uint32_t num,
 		D3D12_RESOURCE_DESC bufferResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
 		//バッファリソース、テクスチャの場合はまた別の設定をする
 		bufferResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-		bufferResourceDesc.Width = UINT64(size);
+		bufferResourceDesc.Width = alignmentSize;
 		bufferResourceDesc.Height = 1;
 		//バッファの場合はこれにする決まり
 		bufferResourceDesc.DepthOrArraySize = 1;
@@ -32,6 +31,11 @@ SHEngine::GPUBuffer::GPUBuffer(BufferType bufferType, size_t size, uint32_t num,
 		bufferResourceDesc.SampleDesc.Count = 1;
 		//バッファの場合はこれにする決まり
 		bufferResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+		//UAVバッファの場合はフラグを追加する
+		if (bufferType_ & BufferType::UAV) {
+			bufferResourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+		}
 
 		auto& bufferResource = resources_.emplace_back().res;
 

@@ -13,11 +13,7 @@ ComputeObject::ComputeObject(std::string debugName) {
 void ComputeObject::Initialize() {
 }
 
-void SHEngine::ComputeObject::SetGPUBuffer(GPUBuffer* buffer, BufferType bufferType, ShaderType shaderType) {
-	if (shaderType != ShaderType::COMPUTE_SHADER) {
-		logger_->error("Invalid shader type for ComputeObject: {}", static_cast<int>(shaderType));
-		return;
-	}
+void SHEngine::ComputeObject::SetGPUBuffer(GPUBuffer* buffer, BufferType bufferType) {
 	gpuBuffers_[bufferType].push_back(buffer);
 }
 
