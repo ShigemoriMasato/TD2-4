@@ -4,6 +4,7 @@
 #include <Camera/DebugCamera.h>
 #include <Render/Renderer.h>
 #include <Compute/ComputeObject.h>
+#include <random>
 
 struct EmitConfig {
 	int emitCount = 1;
@@ -12,7 +13,7 @@ struct EmitConfig {
 
 struct InitConfig {
 	Vector3 position = {};
-	float padding;
+	float lifeTime = 1.0f;
 	Vector3 velocity = { 0.0f, 1.0f, 0.0f };
 };
 
@@ -39,5 +40,9 @@ private:
 	EmitConfig emitConfig_ = {};
 	InitConfig initConfig_ = {};
 	float size_ = 0.2f;
-	float deadTime_ = 1.0f;
+
+	std::mt19937 randomEngine_{ std::random_device{}() };
+	std::uniform_real_distribution<float> velDistX_{ -1.0f, 1.0f };
+	std::uniform_real_distribution<float> velDistY_{ -1.0f, 1.0f };
+	std::uniform_real_distribution<float> velDistZ_{ -1.0f, 1.0f };
 };

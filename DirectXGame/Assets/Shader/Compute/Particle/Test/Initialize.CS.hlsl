@@ -7,10 +7,6 @@ cbuffer ParticleNum : register(b0)
 {
     uint maxNum;
 };
-cbuffer DeadTime : register(b1)
-{
-    float deadTime;
-};
 
 [numthreads(256, 1, 1)]
 void main(uint3 DTid : SV_DispatchThreadID)
@@ -33,5 +29,5 @@ void main(uint3 DTid : SV_DispatchThreadID)
                                    0, 0, 0, 0,
                                    0, 0, 0, 0,
                                    0, 0, 0, 0);
-    lifeTimes[index] = deadTime + 1;
+    lifeTimes[index] = 0.0f;
 }

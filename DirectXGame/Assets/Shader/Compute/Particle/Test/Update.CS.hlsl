@@ -2,19 +2,15 @@ cbuffer ParticleNum : register(b0)
 {
     uint maxNum;
 };
-cbuffer deadTime : register(b1)
-{
-    float deadTime;
-};
-cbuffer deltaTime : register(b2)
+cbuffer deltaTime : register(b1)
 {
     float deltaTime;
 };
-cbuffer Size : register(b3)
+cbuffer Size : register(b2)
 {
     float size;
 };
-cbuffer Camera : register(b4)
+cbuffer Camera : register(b3)
 {
     float4x4 vpMatrix;
 };
@@ -36,7 +32,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
         return;
     }
     
-    if (lifetimes[index] >= deadTime)
+    if (lifetimes[index] <= 0.0f)
     {
         wvp[index] = float4x4(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
         return;
@@ -52,11 +48,11 @@ void main(uint3 DTid : SV_DispatchThreadID)
     );
     wvp[index] = mul(world, vpMatrix);
     
-    lifetimes[index] += deltaTime;
-    if(lifetimes[index] > deadTime)
+    lifetimes[index] -= deltaTime;
+    if(lifetimes[index] <= 0.0f)
     {
         uint freeIndex;
         InterlockedAdd(freeListIndex[0], 1, freeIndex);
-        freeList[freeIndex] = index;
+        freeList[freeIndex + 1] = index;
     }
 }

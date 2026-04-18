@@ -1,7 +1,7 @@
 cbuffer InitData : register(b0)
 {
     float3 position;
-    float pad;
+    float lifeTime;
     float3 velocity;
 };
 cbuffer ParticleNum : register(b1)
@@ -23,29 +23,26 @@ RWStructuredBuffer<float> lifetimes : register(u4);
 [numthreads(256, 1, 1)]
 void main(uint3 DTid : SV_DispatchThreadID)
 {
-    if(isEmit == 0)
+    if (isEmit == 0)
     {
         return;
     }
     
     uint index = DTid.x;
-    if(index >= emitCount)
+    if (index >= emitCount)
     {
         return;
     }
     
+    if (freeListIndex[0] <= 0)
+    {
+        return;
+    }
     int freeIndex;
     InterlockedAdd(freeListIndex[0], -1, freeIndex);
-    freeIndex += 1;
-    
-    // freeIndexが0以下の場合は、空きがないので発生させない
-    if (freeIndex <= 0)
-    {
-        return;
-    }
     
     uint particleIndex = freeList[freeIndex];
     positions[particleIndex] = position;
     velocities[particleIndex] = velocity;
-    lifetimes[particleIndex] = 0.0f;
+    lifetimes[particleIndex] = lifeTime;
 }

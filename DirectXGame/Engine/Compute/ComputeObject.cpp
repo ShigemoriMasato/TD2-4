@@ -13,8 +13,14 @@ ComputeObject::ComputeObject(std::string debugName) {
 void ComputeObject::Initialize() {
 }
 
-void SHEngine::ComputeObject::SetGPUBuffer(GPUBuffer* buffer, BufferType bufferType) {
+void SHEngine::ComputeObject::SetGPUBuffer(BufferType bufferType, GPUBuffer* buffer) {
 	gpuBuffers_[bufferType].push_back(buffer);
+}
+
+void SHEngine::ComputeObject::SetGPUBuffers(BufferType bufferType, std::vector<GPUBuffer*> buffers) {
+	for (auto buffer : buffers) {
+		SetGPUBuffer(bufferType, buffer);
+	}
 }
 
 void ComputeObject::Execute(CmdObj* cmdObj) {
