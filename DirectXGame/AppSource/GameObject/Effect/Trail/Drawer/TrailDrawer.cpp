@@ -107,12 +107,7 @@ void TrailDrawer::BuildIndexBuffer()
 void TrailDrawer::BuildVertices()
 {
 	// 頂点配列初期化
-	//std::fill(batchVertices_.begin(), batchVertices_.end(), BatchVertex{});
-
-	// memset方式に変更
 	std::memset(batchVertices_.data(), 0, sizeof(BatchVertex) * batchVertices_.size());
-
-
 
 	const int perTrail = maxVertexCountPerTrail_;
 	const int maxTrails = config_.maxTrails;
