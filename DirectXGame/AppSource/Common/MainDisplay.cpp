@@ -11,15 +11,15 @@ void MainDisplay::PreDraw(SHEngine::Command::Object* cmdObject, bool isClear) {
 	cmdObject->SetRenderTarget(mainDisplay_.get(), isClear);
 }
 
-void MainDisplay::ToPresent(SHEngine::Command::Object* cmdObject) {
+void MainDisplay::PostDraw(SHEngine::Command::Object* cmdObject) {
 	mainDisplay_->ToPresent(cmdObject);
 }
 
 void MainDisplay::DrawImGui() {
 #ifdef USE_IMGUI
 
-	Vector2 windowSize = { 1280, 720 };
-	Vector2 imageSize = { 640, 360 };
+	const Vector2 windowSize = { 1280, 720 };
+	const Vector2 imageSize = { 640, 360 };
 
 	ImGui::Begin("MainDisplay");
 	ImVec2 windowPos = ImGui::GetCursorPos();

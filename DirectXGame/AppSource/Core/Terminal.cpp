@@ -17,7 +17,7 @@ void Terminal::Run() {
 
 		sceneManager_->Draw();
 
-		engine_->ToPresent();
+		engine_->PostDraw();
 
 		sceneManager_->Present();
 

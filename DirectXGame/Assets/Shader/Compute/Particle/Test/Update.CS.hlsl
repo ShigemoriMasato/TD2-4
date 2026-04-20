@@ -23,7 +23,7 @@ RWStructuredBuffer<float4x4> wvp : register(u3);
 RWStructuredBuffer<uint> freeList : register(u4);
 RWStructuredBuffer<uint> freeListIndex : register(u5);
 
-[numthreads(256, 1, 1)]
+[numthreads(1024, 1, 1)]
 void main(uint3 DTid : SV_DispatchThreadID)
 {
     uint index = DTid.x;

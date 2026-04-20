@@ -115,9 +115,10 @@ SHEngine::GPUBuffer::GPUBuffer(BufferType bufferType, size_t size, uint32_t num,
 	}
 }
 
-D3D12_GPU_DESCRIPTOR_HANDLE SHEngine::GPUBuffer::GetGPUDescriptorHandle(BufferType type, uint32_t bufferIndex) const {
+D3D12_GPU_DESCRIPTOR_HANDLE SHEngine::GPUBuffer::GetGPUDescriptorHandle(BufferType type) const {
 	auto it = descriptorHandles_.find(type);
 	assert(it != descriptorHandles_.end());
+	uint32_t bufferIndex = currentIndex_ % resources_.size();
 	return it->second.at(bufferIndex);
 }
 
@@ -137,7 +138,8 @@ void SHEngine::GPUBuffer::TransitionBarrier(D3D12_RESOURCE_STATES after) {
 	nextState_ = after;
 }
 
-void SHEngine::GPUBuffer::Flush(CmdObj* cmdObj, uint32_t bufferIndex) {
+void SHEngine::GPUBuffer::Flush(CmdObj* cmdObj) {
+	uint32_t bufferIndex = currentIndex_ % resources_.size();
 	//UAVが含まれていない場合は値をコピーする
 	if (!(bufferType_ & BufferType::UAV)) {
 		std::memcpy(mappedData_[bufferIndex], nextData_.data(), nextData_.size());

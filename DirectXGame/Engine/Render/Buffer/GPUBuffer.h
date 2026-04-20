@@ -34,16 +34,19 @@ namespace SHEngine {
 		void CopyBuffer(const void* data, size_t dataSize);
 		// @brief GPUBufferのリソースバリアを設定する。Flush時に切り替える。
 		void TransitionBarrier(D3D12_RESOURCE_STATES after);
-		// @brief GPUBufferの状態を実際にGPUへ反映させる。bufferIndexはスワップチェーンのバッファインデックスに合わせる。
-		void Flush(CmdObj* cmdObj, uint32_t bufferIndex);
+		// @brief GPUBufferの状態を実際にGPUへ反映させる。
+		void Flush(CmdObj* cmdObj);
 
-		// @brief GPUBufferのGPUディスクリプタハンドルを取得する。bufferIndexはスワップチェーンのバッファインデックスに合わせる。
-		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(BufferType type, uint32_t bufferIndex) const;
+		// @brief GPUBufferのGPUディスクリプタハンドルを取得する。
+		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(BufferType type) const;
 
 		// @brief Viewの種類を取得する
 		uint8_t GetBufferType() const { return bufferType_; }
 
 	private:
+
+		friend class FrameCounter;
+		static void SetCurrentIndex(uint32_t frame) { currentIndex_ = frame; }
 
 		static inline DXDevice* device_ = nullptr;
 
@@ -66,6 +69,9 @@ namespace SHEngine {
 		//Flush時に切り替える用
 		std::vector<uint8_t> nextData_;
 		D3D12_RESOURCE_STATES nextState_ = {};
+
+
+		static inline uint32_t currentIndex_ = 0;
 	};
 
 }

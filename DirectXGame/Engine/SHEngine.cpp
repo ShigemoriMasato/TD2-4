@@ -67,6 +67,8 @@ void Engine::Initialize(HINSTANCE hInstance) {
 	fpsObserver_ = std::make_unique<FPSObserver>();
 
 	hInstance_ = hInstance;
+
+	frameCounter_.Initialize();
 }
 
 bool Engine::IsLoop() {
@@ -78,6 +80,7 @@ bool Engine::IsLoop() {
 }
 
 void Engine::BeginFrame() {
+	frameCounter_.Update();
 	input_->Update();
 	fpsObserver_->TimeAdjustment();
 	AudioManager::GetInstance()->Update();
@@ -87,13 +90,31 @@ void Engine::BeginFrame() {
 	}
 }
 
-void Engine::ToPresent() {
+void Engine::PostDraw() {
 
 	if (!imguiDrew_) {
 		imGuiWrapper_->EndFrame();
 		imguiDrew_ = true;
 	}
 
+}
+
+void SHEngine::Engine::WaitFence(Command::WaitFence& waitFence, Command::Type type, int index) {
+	if(waitFence.fence && waitFence.value) {
+		cmdManager_->WaitFence(waitFence, type, index);
+	}
+}
+
+void SHEngine::Engine::ImGuiActivate(Screen::WindowsAPI* window, Command::Object* cmdObj) {
+	imGuiWrapper_ = std::make_unique<ImGuiWrapper>();
+	imGuiWrapper_->Initialize(device_.get(), cmdManager_.get(), window, cmdObj);
+	imGuiWrapper_->NewFrame();
+}
+
+void SHEngine::Engine::DrawImGui() {
+	if (imGuiWrapper_) {
+		imGuiWrapper_->Render();
+	}
 }
 
 std::unique_ptr<Screen::SwapChain> SHEngine::Engine::MakeWindow(Screen::WindowsAPI* windowsApi, uint32_t clearColor) {

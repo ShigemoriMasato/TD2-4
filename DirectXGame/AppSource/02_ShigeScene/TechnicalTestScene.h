@@ -26,6 +26,9 @@ public:
 
 private:
 
+	std::unique_ptr<SHEngine::Command::Object> computeCmdObj_ = nullptr;
+	std::unique_ptr<SHEngine::Command::Object> particleCmdObj_ = nullptr;
+	SHEngine::Command::WaitFence particleLastFence_ = {};
 	std::unique_ptr<DebugCamera> debugCamera_ = nullptr;
 
 	std::unique_ptr<SHEngine::Text> text_ = nullptr;

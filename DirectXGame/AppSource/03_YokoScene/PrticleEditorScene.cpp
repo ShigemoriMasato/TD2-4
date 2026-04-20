@@ -791,7 +791,7 @@ void PrticleEditorScene::Draw()
 
 	commonData_->particleDrawer->Draw(cmdObj, camera_->GetVPMatrix());
 
-	display->ToPresent(cmdObj);
+	display->PostDraw(cmdObj);
 
 	window->PreDraw(cmdObj);
 

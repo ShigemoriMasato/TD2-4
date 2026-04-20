@@ -13,6 +13,7 @@
 #include <Render/PSO/PSOEditor.h>
 #include <Compute/PSO/CSPSOManager.h>
 #include <Assets/Audio/AudioManager.h>
+#include <Core/FrameCounter.h>
 
 namespace SHEngine {
 
@@ -25,33 +26,27 @@ namespace SHEngine {
 		// エンジン側の終了命令
 		bool IsLoop();
 
-		// Inputとコマンドの更新
-		void BeginFrame();
-		// コマンドのクローズ
-		void ToPresent();
+	// Inputとコマンドの更新
+	void BeginFrame();
+	// コマンドのクローズ
+	void PostDraw();
 
-		// コマンドの実行(Signalも送る)
-		void ExecuteCommand(Command::Type type, int index = 0, std::vector<CmdObj*> cmdObjs = {}) {
-			cmdManager_->Execute(type, index, cmdObjs);
-		}
+	void WaitFence(Command::WaitFence& waitFence, Command::Type type, int index = 0);
+
+	// コマンドの実行(Signalも送る)
+	Command::WaitFence ExecuteCommand(Command::Type type, int index = 0, std::vector<CmdObj*> cmdObjs = {}) {
+		return cmdManager_->Execute(type, index, cmdObjs);
+	}
 
 		void StopGPU(Command::Type type, int index = 0) {
 			cmdManager_->StopGPU(type, index);
 		}
 
-		// ImGuiの有効化
-		void ImGuiActivate(Screen::WindowsAPI* window, Command::Object* cmdObj) {
-			imGuiWrapper_ = std::make_unique<ImGuiWrapper>();
-			imGuiWrapper_->Initialize(device_.get(), cmdManager_.get(), window, cmdObj);
-			imGuiWrapper_->NewFrame();
-		}
+	// ImGuiの有効化
+	void ImGuiActivate(Screen::WindowsAPI* window, Command::Object* cmdObj);
 
-		// ImGuiの描画
-		void DrawImGui() {
-			if (imGuiWrapper_) {
-				imGuiWrapper_->Render();
-			}
-		}
+	// ImGuiの描画
+	void DrawImGui();
 
 	public: // Getter
 		TextureManager* GetTextureManager() { return textureManager_.get(); }
@@ -86,11 +81,12 @@ namespace SHEngine {
 		std::unique_ptr<Input> input_;
 		std::unique_ptr<FPSObserver> fpsObserver_;
 
-	private: // その他系
-		HINSTANCE hInstance_;
-		MSG msg_{};
-		bool imguiDrew_ = true;
-		Logger logger_;
-	};
+private: // その他系
+	HINSTANCE hInstance_;
+	MSG msg_{};
+	bool imguiDrew_ = true;
+	FrameCounter frameCounter_;
+	Logger logger_;
+};
 
 } // namespace SHEngine

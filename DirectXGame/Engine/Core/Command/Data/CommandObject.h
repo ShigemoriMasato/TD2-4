@@ -1,5 +1,6 @@
 #pragma once
 #include "CommandSet.h"
+#include <Core/FrameCounter.h>
 
 namespace SHEngine::Screen {
 	class IDisplay;
@@ -31,9 +32,7 @@ namespace SHEngine::Command {
 		Screen::IDisplay* GetRenderTarget() const { return renderTarget_; }
 
 		/// @brief コマンドリストを取得
-		ID3D12GraphicsCommandList* GetCommandList() { return commandLists_[dxListIndex_].GetCommandList(); }
-
-		int GetListIndex() const { return dxListIndex_; }
+		ID3D12GraphicsCommandList* GetCommandList() { return commandLists_[currentIndex_ % uint32_t(commandLists_.size())].GetCommandList(); }
 
 		/// @brief 現在の状態を簡単に文字列であらわす
 		std::string Log() const;
@@ -44,8 +43,6 @@ namespace SHEngine::Command {
 
 		/// @brief CommandListを実行する
 		void Execute(std::vector<ID3D12CommandList*>& cmdLists);
-
-		int dxListIndex_ = 0;
 
 		std::vector<DXList> commandLists_;
 		DXDevice* device_ = nullptr;
@@ -63,6 +60,13 @@ namespace SHEngine::Command {
 
 		//描画先の管理
 		Screen::IDisplay* renderTarget_ = nullptr;
+
+
+		friend class SHEngine::FrameCounter;
+		static void SetCurrentIndex(uint32_t frame) {
+			currentIndex_ = frame;
+		}
+		static inline uint32_t currentIndex_ = 0;
 	};
 
 }

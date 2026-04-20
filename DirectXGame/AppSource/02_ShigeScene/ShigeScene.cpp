@@ -403,7 +403,7 @@ void ShigeScene::Draw() {
 
 	gameFrame_->Draw(cmdObj);
 
-	display->ToPresent(cmdObj);
+	display->PostDraw(cmdObj);
 
 	postEffectConfig_.output = commonData_->mainWindow.second->GetCurrentDisplay();
 	postEffect_->Draw(postEffectConfig_);

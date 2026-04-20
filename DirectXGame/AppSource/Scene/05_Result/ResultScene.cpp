@@ -107,7 +107,7 @@ void ResultScene::Draw() {
 
 	CorrectText_->Draw(cmdObj);
 
-	display->ToPresent(cmdObj);
+	display->PostDraw(cmdObj);
 
 #ifdef SH_RELEASE
 	postEffectConfig_.output = commonData_->mainWindow.second->GetCurrentDisplay();

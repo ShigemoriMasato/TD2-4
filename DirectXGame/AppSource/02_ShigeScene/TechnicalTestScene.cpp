@@ -6,8 +6,12 @@ void TechnicalTestScene::Initialize() {
 	debugCamera_ = std::make_unique<DebugCamera>();
 	debugCamera_->Initialize(input_);
 
-	constexpr uint32_t kParticleCount = 16384;
-	
+	computeCmdObj_ = engine_->CreateCommandObject(Command::Type::Compute, 0, 3);
+	particleCmdObj_ = engine_->CreateCommandObject(Command::Type::Direct, 0, 3);
+
+	constexpr uint32_t kParticleCount = 10000000;
+	constexpr uint32_t kThreadGroupSize = 1024;
+
 	auto wvp = bufferCont_.Create(BufferType::SRV_UAV, sizeof(Matrix4x4), kParticleCount, 1);
 	auto camera = bufferCont_.Create(BufferType::CBV, sizeof(Matrix4x4));
 
@@ -15,6 +19,7 @@ void TechnicalTestScene::Initialize() {
 	auto size = bufferCont_.Create(BufferType::CBV, sizeof(float));
 	auto emitConfig = bufferCont_.Create(BufferType::CBV, sizeof(EmitConfig));
 	auto deltaTime = bufferCont_.Create(BufferType::CBV, sizeof(float));
+	auto seed = bufferCont_.Create(BufferType::CBV, sizeof(uint32_t));
 	auto particleNum = bufferCont_.Create(BufferType::CBV, sizeof(uint32_t));
 	particleNum->CopyBuffer(&kParticleCount, sizeof(kParticleCount));
 
@@ -27,19 +32,19 @@ void TechnicalTestScene::Initialize() {
 
 	particleInit_ = std::make_unique<SHEngine::ComputeObject>("Initialize");
 	particleInit_->SetShader("Particle/Test/Initialize.CS.hlsl");
-	particleInit_->SetThreadGroupSize(kParticleCount / 256, 1, 1);
+	particleInit_->SetThreadGroupSize(kParticleCount / kThreadGroupSize, 1, 1);
 	particleInit_->SetGPUBuffers(BufferType::UAV, { freeList, freeListIndex, wvp, lifeTimes });
 	particleInit_->SetGPUBuffers(BufferType::CBV, { particleNum });
 
 	particleEmit_ = std::make_unique<SHEngine::ComputeObject>("Emitter");
 	particleEmit_->SetShader("Particle/Test/Emit.CS.hlsl");
-	particleEmit_->SetThreadGroupSize(kParticleCount / 256, 1, 1);
-	particleEmit_->SetGPUBuffers(BufferType::CBV, { initConfig, particleNum, emitConfig });
+	particleEmit_->SetThreadGroupSize(kParticleCount / kThreadGroupSize, 1, 1);
+	particleEmit_->SetGPUBuffers(BufferType::CBV, { initConfig, particleNum, emitConfig, seed });
 	particleEmit_->SetGPUBuffers(BufferType::UAV, { freeList, freeListIndex, positions, velocities, lifeTimes });
 
 	particleUpdate_ = std::make_unique<SHEngine::ComputeObject>("Update");
 	particleUpdate_->SetShader("Particle/Test/Update.CS.hlsl");
-	particleUpdate_->SetThreadGroupSize(kParticleCount / 256, 1, 1);
+	particleUpdate_->SetThreadGroupSize(kParticleCount / kThreadGroupSize, 1, 1);
 	particleUpdate_->SetGPUBuffers(BufferType::CBV, { particleNum, deltaTime, size, camera });
 	particleUpdate_->SetGPUBuffers(BufferType::UAV, { positions, velocities, lifeTimes, wvp, freeList, freeListIndex });
 
@@ -50,8 +55,8 @@ void TechnicalTestScene::Initialize() {
 	renderer_->SetGPUBuffer(wvp, ShaderType::VERTEX_SHADER, BufferType::SRV);
 	renderer_->instanceNum_ = kParticleCount;
 
-	commonData_->cmdObject->ResetCommandList();
-	particleInit_->Execute(commonData_->cmdObject.get());
+	computeCmdObj_->ResetCommandList();
+	particleInit_->Execute(computeCmdObj_.get());
 }
 
 std::unique_ptr<IScene> TechnicalTestScene::Update() {
@@ -64,27 +69,37 @@ std::unique_ptr<IScene> TechnicalTestScene::Update() {
 	float velZ = velDistZ_(randomEngine_);
 	initConfig_.velocity = Vector3(velX, velY, velZ).Normalize();
 
+	uint32_t seed = randomEngine_();
+
 	auto mat = debugCamera_->GetVPMatrix();
 	bufferCont_.Copy(1, &mat, sizeof(mat));
 	bufferCont_.Copy(5, &deltaTime, sizeof(deltaTime));
+	bufferCont_.Copy(6, &seed, sizeof(seed));
 
 	return nullptr;
 }
 
 void TechnicalTestScene::Draw() {
-
 	auto window = commonData_->mainWindow.second.get();
 	auto display = commonData_->display.get();
 	auto cmdObj = commonData_->cmdObject.get();
+	auto computeCmdObj = computeCmdObj_.get();
+	auto particleCmdObj = particleCmdObj_.get();
 
-	particleEmit_->Execute(cmdObj);
-	particleUpdate_->Execute(cmdObj);
+	computeCmdObj_->ResetCommandList();
+	particleCmdObj->ResetCommandList();
 
-	display->PreDraw(cmdObj, true);
+	engine_->WaitFence(particleLastFence_, Command::Type::Compute);
+	particleEmit_->Execute(computeCmdObj);
+	particleUpdate_->Execute(computeCmdObj);
+	engine_->ExecuteCommand(Command::Type::Compute, 0, { computeCmdObj });
 
-	renderer_->Draw(cmdObj);
+	display->PreDraw(particleCmdObj, true);
 
-	display->ToPresent(cmdObj);
+	renderer_->Draw(particleCmdObj);
+	particleLastFence_ = engine_->ExecuteCommand(Command::Type::Direct, 0, { particleCmdObj });
+
+	display->PostDraw(cmdObj);
 
 	window->PreDraw(cmdObj);
 
@@ -103,6 +118,12 @@ void TechnicalTestScene::Draw() {
 	ImGui::DragFloat3("Init Velocity", &initConfig_.velocity.x, 0.1f);
 	ImGui::DragFloat3("Init Position", &initConfig_.position.x, 0.1f);
 	ImGui::DragFloat("Life Time", &initConfig_.lifeTime, 0.1f, 0.1f);
+	ImGui::End();
+
+	ImGui::Begin("FPS");
+	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
+	ImGui::Text("DeltaTime: %.3f ms", deltaTime * 1000.0f);
+	ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
 	ImGui::End();
 
 	bufferCont_.Copy(2, &initConfig_, sizeof(initConfig_));

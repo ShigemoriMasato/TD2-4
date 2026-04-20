@@ -8,7 +8,7 @@ public:
 	void Initialize(int width, int height, uint32_t clearColor, SHEngine::TextureManager* textureManager, SHEngine::Input* input);
 
 	void PreDraw(SHEngine::Command::Object* cmdObject, bool isClear = true);
-	void ToPresent(SHEngine::Command::Object* cmdObject);
+	void PostDraw(SHEngine::Command::Object* cmdObject);
 
 	void DrawImGui();
 

@@ -171,7 +171,7 @@ void YokoScene::Draw()
 	// トレイル描画
 	commonData_->trailDrawer->Draw(cmdObj, camera_->GetVPMatrix());
 
-	display->ToPresent(cmdObj);
+	display->PostDraw(cmdObj);
 
 	window->PreDraw(cmdObj);
 

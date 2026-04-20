@@ -29,7 +29,7 @@ Object::~Object() {
 
 bool Object::CanExecute() {
 	// 現在のコマンドリストが実行可能かどうかを確認
-	return commandLists_[dxListIndex_].CanExecute();
+	return commandLists_[currentIndex_ % uint32_t(commandLists_.size())].CanExecute();
 }
 
 void SHEngine::Command::Object::WaitForGPUIdle() {
@@ -81,7 +81,7 @@ void SHEngine::Command::Object::ResetCommandList() {
 		return;
 	}
 
-	commandLists_[dxListIndex_].ResetCommandList();
+	commandLists_[currentIndex_ % uint32_t(commandLists_.size())].ResetCommandList();
 	state_ = State::Open;
 }
 
@@ -91,7 +91,7 @@ void SHEngine::Command::Object::Execute(std::vector<ID3D12CommandList*>& cmdList
 		ResetCommandList();
 	}
 
-	commandLists_[dxListIndex_].Execute(queue_, cmdLists);
+	commandLists_[currentIndex_ % uint32_t(commandLists_.size())].Execute(queue_, cmdLists);
 
 	state_ = State::Close;
 }
@@ -99,6 +99,6 @@ void SHEngine::Command::Object::Execute(std::vector<ID3D12CommandList*>& cmdList
 std::string SHEngine::Command::Object::Log() const {
 	std::string ans;
 	ans = "CommandObject - Type: " + std::to_string(static_cast<int>(type_)) +
-		", CurrentDXListIndex: " + std::to_string(dxListIndex_);
+		", CurrentDXListIndex: " + std::to_string(currentIndex_ % uint32_t(commandLists_.size()));
 	return ans;
 }

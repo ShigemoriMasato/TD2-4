@@ -13,7 +13,6 @@ void SHEngine::Renderer::SetGPUBuffer(GPUBuffer* gpuBuffer, ShaderType shaderTyp
 
 void SHEngine::Renderer::Draw(CmdObj* cmdObj) {
 	auto cmdList = cmdObj->GetCommandList();
-	uint32_t cmdIndex = cmdObj->GetListIndex();
 	auto display = cmdObj->GetRenderTarget();
 
 	PSO::Config config;
@@ -47,26 +46,35 @@ void SHEngine::Renderer::Draw(CmdObj* cmdObj) {
 	cmdList->IASetIndexBuffer(&drawData_.ibv);
 
 	int rootIndex = 0;
-	for (const auto& [shaderType, cbvs] : gpuBuffers_[BufferType::CBV]) {
-		for (const auto& cbv : cbvs) {
-			cbv->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
-			cbv->Flush(cmdObj, cmdIndex);
-			cmdList->SetGraphicsRootConstantBufferView(rootIndex++, cbv->GetGPUDescriptorHandle(BufferType::CBV, cmdIndex).ptr);
-		}
+	for (const auto& cbv : gpuBuffers_[BufferType::CBV][ShaderType::VERTEX_SHADER]) {
+		cbv->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
+		cbv->Flush(cmdObj);
+		cmdList->SetGraphicsRootConstantBufferView(rootIndex++, cbv->GetGPUDescriptorHandle(BufferType::CBV).ptr);
 	}
-	for (const auto& [shaderType, srvs] : gpuBuffers_[BufferType::SRV]) {
-		for (const auto& srv : srvs) {
-			srv->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
-			srv->Flush(cmdObj, cmdIndex);
-			cmdList->SetGraphicsRootDescriptorTable(rootIndex++, srv->GetGPUDescriptorHandle(BufferType::SRV, cmdIndex));
-		}
+	for (const auto& cbv : gpuBuffers_[BufferType::CBV][ShaderType::PIXEL_SHADER]) {
+		cbv->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
+		cbv->Flush(cmdObj);
+		cmdList->SetGraphicsRootConstantBufferView(rootIndex++, cbv->GetGPUDescriptorHandle(BufferType::CBV).ptr);
 	}
-	for (const auto& [shaderType, uavs] : gpuBuffers_[BufferType::UAV]) {
-		for (const auto& uav : uavs) {
-			uav->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
-			uav->Flush(cmdObj, cmdIndex);
-			cmdList->SetGraphicsRootDescriptorTable(rootIndex++, uav->GetGPUDescriptorHandle(BufferType::UAV, cmdIndex));
-		}
+	for (const auto& srv : gpuBuffers_[BufferType::SRV][ShaderType::VERTEX_SHADER]) {
+		srv->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
+		srv->Flush(cmdObj);
+		cmdList->SetGraphicsRootDescriptorTable(rootIndex++, srv->GetGPUDescriptorHandle(BufferType::SRV));
+	}
+	for (const auto& srv : gpuBuffers_[BufferType::SRV][ShaderType::PIXEL_SHADER]) {
+		srv->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
+		srv->Flush(cmdObj);
+		cmdList->SetGraphicsRootDescriptorTable(rootIndex++, srv->GetGPUDescriptorHandle(BufferType::SRV));
+	}
+	for (const auto& uav : gpuBuffers_[BufferType::UAV][ShaderType::VERTEX_SHADER]) {
+		uav->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
+		uav->Flush(cmdObj);
+		cmdList->SetGraphicsRootDescriptorTable(rootIndex++, uav->GetGPUDescriptorHandle(BufferType::UAV));
+	}
+	for (const auto& uav : gpuBuffers_[BufferType::UAV][ShaderType::PIXEL_SHADER]) {
+		uav->TransitionBarrier(D3D12_RESOURCE_STATE_GENERIC_READ);
+		uav->Flush(cmdObj);
+		cmdList->SetGraphicsRootDescriptorTable(rootIndex++, uav->GetGPUDescriptorHandle(BufferType::UAV));
 	}
 
 	if (isUseTexture_) {

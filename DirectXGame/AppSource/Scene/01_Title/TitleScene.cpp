@@ -77,7 +77,7 @@ void TitleScene::Draw() {
 	titleUI_->Draw(cmdObj);
 
 	// ディスプレイへの描画終了
-	display->ToPresent(cmdObj);
+	display->PostDraw(cmdObj);
 
 #ifdef SH_RELEASE
 	postEffectConfig_.output = commonData_->mainWindow.second->GetCurrentDisplay();
