@@ -6,13 +6,16 @@
 #include <GameObject/Effect/Particle/DataBank/ParticlePresetDataBank.h>
 #include <GameObject/Effect/Particle/MultiParticle/MultiParticle.h>
 
-class SparkEffect
+class TrailOnParticle
 {
 public:
 	void Initialize(
 		SHEngine::TextureManager* textureManager,
 		SHEngine::ModelManager* modelManager,
-		CommonData* commonData);
+		CommonData* commonData,
+		std::string particlePresetName,
+		std::string trailPresetName
+	);
 	void Update(float dt);
 	void Draw();
 	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
@@ -22,5 +25,7 @@ private:
 	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
 	MultiParticle particle;
 	MultiTrail trails;
+
+	bool active_ = false;
 };
 

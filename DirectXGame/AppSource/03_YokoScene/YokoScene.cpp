@@ -63,8 +63,8 @@ void YokoScene::Initialize()
 	particles_.Initialize(textureManager_, modelManager_, commonData_);
 	particles_.Add("sparrrrk2");
 
-	// sparkEffect初期化
-	sparkEffect.Initialize(textureManager_, modelManager_, commonData_);
+	// TrailOnParticle初期化
+	TrailOnParticle.Initialize(textureManager_, modelManager_, commonData_, "death", "sparrrk");
 }
 
 std::unique_ptr<IScene> YokoScene::Update()
@@ -88,7 +88,7 @@ std::unique_ptr<IScene> YokoScene::Update()
 
 		trail.Clear();
 
-		sparkEffect.Trigger();
+		TrailOnParticle.Trigger();
 		start = true;
 	}
 	if (start)
@@ -123,9 +123,10 @@ std::unique_ptr<IScene> YokoScene::Update()
 	render_->CopyBufferData(1, &color, sizeof(Vector4));
 	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
 
-	// sparkEffect更新
-	sparkEffect.SetModelWorld(Matrix4x4::Identity());
-	sparkEffect.Update(dt);
+	// TrailOnParticle更新
+	TrailOnParticle.SetModelWorld(Matrix4x4::Identity());
+	TrailOnParticle.Update(dt);
+
 
 	// トレイル更新
 	trail.SetModelWorld(world);
@@ -154,11 +155,12 @@ void YokoScene::Draw()
 
 	grid_->Draw(cmdObj);
 
-	// sparkEffect描画
-	sparkEffect.Draw();
+	// TrailOnParticle描画
 
-	//trail.Draw();
-	//particles_.Draw();
+	TrailOnParticle.Draw();
+
+	trail.Draw();
+	particles_.Draw();
 	
 
 
@@ -180,6 +182,13 @@ void YokoScene::Draw()
 	ImGui::DragFloat3("T", &transform_.position.x, 0.1f);
 	ImGui::DragFloat3("R", &transform_.rotate.x, 0.1f);
 	ImGui::DragFloat3("S", &transform_.scale.x, 0.1f);
+	ImGui::End();
+
+
+	ImGui::Begin("FPS");
+	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
+	ImGui::Text("DeltaTime: %.3f ms", deltaTime * 1000.0f);
+	ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
 	ImGui::End();
 #endif
 

@@ -313,7 +313,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Player\PlayerAI\PlayerAI.cpp" />
     <ClCompile Include="Engine\Render\Font\Text.cpp" />
     <ClCompile Include="AppSource\02_ShigeScene\TechnicalTestScene.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\sparkEffect.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\TrailOnParticle.cpp" />
     <ClCompile Include="Engine\Core\Command\Data\SHCmdQueue.cpp" />
     <ClCompile Include="Engine\Render\Renderer.cpp" />
     <ClCompile Include="Engine\Render\SHResource.cpp" />
@@ -324,6 +324,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Drawer\TrailDrawer.cpp" />
     <ClCompile Include="AppSource\UI\Game\SituationTelop.cpp" />
     <ClCompile Include="AppSource\UI\Game\SituationGauge.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\ParticleOnTrail.cpp" />
     <ClInclude Include="AppSource\02_ShigeScene\GameDisplayRange.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\DamagePopup.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\FastEnemy.h" />
@@ -481,7 +482,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\Data\Gurepon.h" />
     <ClInclude Include="AppSource\UI\Game\GameFrame.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\FountainParticle\FountainParticle.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\sparkEffect.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\TrailOnParticle.h" />
     <ClInclude Include="Engine\Core\Command\Data\SHCmdQueue.h" />
     <ClInclude Include="Engine\Render\Renderer.h" />
     <ClInclude Include="Engine\Render\SHResource.h" />
@@ -494,6 +495,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\UI\Game\SituationTelop.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\GoToTargetParticle\GoToTargetParticle.h" />
     <ClInclude Include="AppSource\UI\Game\SituationGauge.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\ParticleOnTrail.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

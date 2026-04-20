@@ -7,7 +7,7 @@
 
 #include <GameObject/Effect/Trail/MultiTrail/MultiTrail.h>
 #include <GameObject/Effect/Particle/MultiParticle/MultiParticle.h>
-#include <GameObject/Effect/sparkEffect.h>
+#include <GameObject/Effect/TrailOnParticle.h>
 
 class YokoScene : public IScene
 {
@@ -34,7 +34,7 @@ private:
 	Transform transform_;
 
 	// パーティクル
-	SparkEffect sparkEffect;
+	TrailOnParticle TrailOnParticle;
 
 
 	bool start;
