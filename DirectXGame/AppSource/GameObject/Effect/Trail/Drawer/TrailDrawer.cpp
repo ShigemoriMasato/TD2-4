@@ -107,7 +107,12 @@ void TrailDrawer::BuildIndexBuffer()
 void TrailDrawer::BuildVertices()
 {
 	// 頂点配列初期化
-	std::fill(batchVertices_.begin(), batchVertices_.end(), BatchVertex{});
+	//std::fill(batchVertices_.begin(), batchVertices_.end(), BatchVertex{});
+
+	// memset方式に変更
+	std::memset(batchVertices_.data(), 0, sizeof(BatchVertex) * batchVertices_.size());
+
+
 
 	const int perTrail = maxVertexCountPerTrail_;
 	const int maxTrails = config_.maxTrails;
@@ -133,18 +138,7 @@ void TrailDrawer::BuildVertices()
 				break;
 			}
 
-			for (int i = 0; i < vcount; ++i)
-			{
-				const auto& sv = src[static_cast<size_t>(i)];
-				batchVertices_[static_cast<size_t>(dstBase + i)] =
-				{
-					sv.position,
-					sv.uv,
-					sv.normal,
-					sv.color,
-					sv.textureIndex
-				};
-			}
+			std::memcpy(&batchVertices_[dstBase], src.data(), static_cast<size_t>(vcount) * sizeof(BatchVertex));
 		}
 
 		// 残りはゼロ -> PSでclipされる前提
