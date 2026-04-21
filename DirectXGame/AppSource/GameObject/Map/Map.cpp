@@ -126,11 +126,11 @@ void Map::Update(const Matrix4x4& vpMatrix) {
 
 void Map::Draw(CmdObj* cmdObj) {
 	if (render_) {
-		render_->Draw(cmdObj);
+		//render_->Draw(cmdObj);
 	}
 
 	if (stageRender_) {
-		//stageRender_->Draw(cmdObj);
+		stageRender_->Draw(cmdObj);
 	}
 }
 
