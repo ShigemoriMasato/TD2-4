@@ -479,6 +479,7 @@ void PrticleEditorScene::DrawImGui()
 
 void PrticleEditorScene::DrawImGui_Fountain()
 {
+#ifdef USE_IMGUI
 	if (ImGui::CollapsingHeader("scale"))
 	{
 		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.scale.isRandomVal", &fountainPreset_.scale.isRandom_value);
@@ -697,6 +698,7 @@ void PrticleEditorScene::DrawImGui_Fountain()
 			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.translate.acc", &fountainPreset_.translate.initial.acceleration.x, 0.01f);
 		}
 	}
+#endif
 }
 
 void PrticleEditorScene::DrawImGui_GoToTarget()
