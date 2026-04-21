@@ -4,7 +4,11 @@
 #include <GameObject/Map/Map.h>
 
 void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id, Map* map) {
-	drawInfo_.color = 0xff0000ff;
+	drawInfo_.resize(4);
+	localPositions_.resize(4);
+	for (auto& drawInfo : drawInfo_) {
+		drawInfo.color = 0xff0000ff;
+	}
 	playerPos_ = playerPos;
 	manager_ = manager;
 	id_ = id;
@@ -22,14 +26,32 @@ void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id, Map* 
 	enemyHP_->Initialize(modelManager_, drawDataManager_);
 }
 
-void IEnemy::Update(float deltaTime){
-	enemyHP_->Update(deltaTime, static_cast<float>(hp_), static_cast<float>(maxHp_), position_);
-}
+void IEnemy::Update(float deltaTime) { enemyHP_->Update(deltaTime, static_cast<float>(hp_), static_cast<float>(maxHp_), position_); }
 
 void IEnemy::UpdateCollider() {
-	drawInfo_.position = position_;
-	collCircle_->center = { position_.x, position_.z };
+	for (size_t i = 0; i < drawInfo_.size(); ++i) {
+		Vector3 offset = (i < localPositions_.size()) ? localPositions_[i] : Vector3{0.0f, 0.0f, 0.0f};
+		drawInfo_[i].position = position_ + offset;
+	}
+	collCircle_->center = {position_.x, position_.z};
 	velocity_ = {};
+}
+void IEnemy::SetPosition(const Vector3& pos) {
+	position_ = pos;
+	for (size_t i = 0; i < drawInfo_.size(); ++i) {
+		Vector3 offset = (i < localPositions_.size()) ? localPositions_[i] : Vector3{0.0f, 0.0f, 0.0f};
+		drawInfo_[i].position = position_ + offset;
+	}
+}
+
+void IEnemy::SetModel(std::string path, int index) {
+	if (index >= 0 && index < drawInfo_.size()) {
+		drawInfo_[index].modelIndex = modelManager_->LoadModel("Enemy/Normal/" + path);
+	} else {
+		for (auto& drawInfo : drawInfo_) {
+			drawInfo.modelIndex = modelManager_->LoadModel("Enemy/Normal/" + path);
+		}
+	}
 }
 
 void IEnemy::ClampPositionToMap() {
@@ -44,7 +66,7 @@ void IEnemy::OnCollision(Collider* other) {
 		Vector3 otherPos = enemy->GetPosition();
 		Vector3 diff = position_ - otherPos;
 		float dist = diff.Length();
-		
+
 		if (dist > 0.0f && dist < collCircle_->radius * 2.0f) {
 			Vector3 dir = diff.Normalize();
 			float overlap = (collCircle_->radius * 2.0f) - dist;
@@ -84,7 +106,9 @@ std::vector<int> IEnemy::GetDamageQueue() {
 std::vector<DrawInfo> IEnemy::GetDrawInfos() const {
 	auto info = enemyHP_->GetDrawInfo();
 	// 敵の描画情報を追加
-	info.push_back(drawInfo_);
+	for (auto& drawInfo : drawInfo_) {
+		info.push_back(drawInfo);
+	}
 	return info;
 }
 

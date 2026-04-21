@@ -22,7 +22,7 @@ void SituationGauge::Initialize(SHEngine::ModelManager* modelManager, SHEngine::
 	render_->instanceNum_ = kGaugeCount;
 
 	transform_.scale = {15.0f, 500.0f, 0.0f};
-	transform_.position = {1200.0f, -430.0f, 0.0f};
+	transform_.position = {100.0f, -430.0f, 0.0f};
 
 	situationTelop_ = std::make_unique<SituationTelop>();
 	situationTelop_->Initialize(modelManager, drawDataManager, 0);
