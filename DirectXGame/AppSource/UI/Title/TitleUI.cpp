@@ -40,8 +40,6 @@ void TitleUI::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::M
 		renders_[i]->instanceNum_ = 1;
 	}
 
-	positions_[0] = {1.8f, 0.7f, 10.0f};
-
 	currentSelect_ = Title::Select::Start;
 }
 
@@ -87,7 +85,7 @@ void TitleUI::Update(const Matrix4x4& vpMatrix) {
 		}
 
 		// WVP行列を作成
-		Matrix4x4 world = Matrix::MakeAffineMatrix(scales_[i], Vector3(), positions_[i]);
+		Matrix4x4 world = Matrix::MakeAffineMatrix(scales_[i], rotations_[i], positions_[i]);
 		Matrix4x4 wvp = world * vpMatrix;
 
 		renders_[i]->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
@@ -112,6 +110,7 @@ void TitleUI::DrawImGui() {
 	for (size_t i = 0; i < kUICount; ++i) {
 		if (ImGui::TreeNode(uiNames[i])) {
 			ImGui::DragFloat3("Position", &positions_[i].x, 0.01f);
+			ImGui::DragFloat3("Rotation", &rotations_[i].x, 0.01f);
 			ImGui::DragFloat3("Scale", &scales_[i].x, 0.01f, 0.01f, 10.0f);
 			ImGui::TreePop();
 		}

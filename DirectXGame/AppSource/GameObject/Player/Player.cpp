@@ -296,11 +296,19 @@ void Player::Base::UpdateWalkAnimation(float deltaTime, bool isMoving) {
 }
 
 void Player::Base::ClampPosition() {
-	// プレイヤーがステージ買いに出ないようにする
-	float posX = std::clamp(transform_.position.x, mapInfo_.minX, mapInfo_.maxX);
-	float posZ = std::clamp(transform_.position.z, mapInfo_.minZ, mapInfo_.maxZ);
+	// プレイヤーがXZ平面の円形範囲外に出ないようにする
+	float dx = transform_.position.x - mapInfo_.centerX;
+	float dz = transform_.position.z - mapInfo_.centerZ;
+	float distanceFromCenter = std::sqrt(dx * dx + dz * dz);
 
-	transform_.position = Vector3(posX, 0.0f, posZ);
+	// 円の範囲外にいる場合、円周上に位置を制限
+	if (distanceFromCenter > mapInfo_.radius) {
+		float ratio = mapInfo_.radius / distanceFromCenter;
+		transform_.position.x = mapInfo_.centerX + dx * ratio;
+		transform_.position.z = mapInfo_.centerZ + dz * ratio;
+	}
+
+	transform_.position.y = 0.0f; // Y座標は0に固定
 }
 
 float Base::GetParameter(const std::string& paramName) const {

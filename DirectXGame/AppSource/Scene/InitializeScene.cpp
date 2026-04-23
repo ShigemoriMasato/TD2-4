@@ -124,7 +124,7 @@ void InitializeScene::Initialize() {
 
 	//================================================================================
 
-	keyManager->SetKey(Key::Correct, DIK_RETURN, KeyState::Trigger);
+	//keyManager->SetKey(Key::Correct, DIK_RETURN, KeyState::Trigger);
 	keyManager->SetKey(Key::Correct, DIK_SPACE, KeyState::Trigger);
 	keyManager->SetKey(Key::Correct, DIK_Z, KeyState::Trigger);
 	keyManager->SetButton(Key::Correct, XBoxController::kA, KeyState::Trigger);

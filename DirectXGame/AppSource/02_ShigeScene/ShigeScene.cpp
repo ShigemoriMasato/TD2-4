@@ -42,7 +42,7 @@ void ShigeScene::Initialize() {
 	player_->UpdateParameter(commonData_->pieces);
 
 	map_ = std::make_unique<Map>();
-	map_->Initialize(drawDataManager_, modelManager_);
+	map_->Initialize(drawDataManager_, modelManager_, {}, "Assets/Model/Stage2");
 	player_->SetMapInfo(map_->GetMapInfo());
 
 	SHEngine::DrawData planeDrawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
@@ -418,6 +418,8 @@ void ShigeScene::Draw() {
 	waveSystemUI_->DrawImGui();
 
 	TackleEnemy::DrawImGui();
+
+	map_->DrawDebugGUI();
 
 	ImGui::Begin("Game Timer");
 	ImGui::Text("Game Time : %.2f s", gameTimer_->GetTimer());
