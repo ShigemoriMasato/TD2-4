@@ -8,7 +8,7 @@
 /// </summary>
 class SituationGauge {
 public:
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager);
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager);
 	void Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpawnCount, float weaponCount, std::unordered_map<Key, bool> key);
 	void Draw(CmdObj* cmdObj);
 
@@ -27,8 +27,8 @@ private:
 	std::unique_ptr<SHEngine::RenderObject> render_;
 	Transform transform_;
 
-	int kGaugeCount = 2;
-	int textureIndex = 0;
+	int gaugeCount_ = 2;
+	int textureIndex_ = 0;
 
 	Vector4 playerColor_ = {0.0, 1.0f, 1.0f, 1.0f};
 	Vector4 enemyColor_ = {1.0, 0.0f, 0.0f, 1.0f};
@@ -62,4 +62,6 @@ private:
 
 	// ゲージの最小値
 	float minGaugeHeight_ = 10.0f;
+
+	float time_ = 0.0f;
 };

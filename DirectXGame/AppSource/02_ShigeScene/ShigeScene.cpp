@@ -161,7 +161,7 @@ void ShigeScene::Initialize() {
 	bgm_ = data->CustomPlay(255);
 
 	situationGauge_ = std::make_unique<SituationGauge>();
-	situationGauge_->Initialize(modelManager_, drawDataManager_);
+	situationGauge_->Initialize(modelManager_, drawDataManager_, textureManager_);
 
 	// ライトの設定
 	dirLight_.color = {1.0f, 1.0f, 1.0f, 1.0f};

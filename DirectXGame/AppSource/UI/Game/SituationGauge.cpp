@@ -5,21 +5,38 @@
 
 using namespace SHEngine;
 
-void SituationGauge::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager) {
+namespace {
+struct GlobalData {
+	int textureIndex;
+	float time;
+	Vector2 globalPadding;
+};
+
+struct InstanceData {
+	Vector4 color;
+	float intensity;
+	float width;
+	float height;
+	float padding;
+};
+} // namespace
+
+void SituationGauge::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager) {
 	int modelHandle = modelManager->LoadModel("Assets/.EngineResource/Model/plane");
 	auto modelData = modelManager->GetNodeModelData(modelHandle);
 	DrawData data = drawDataManager->GetDrawData(modelData.drawDataIndex);
+	// textureIndex_ = textureManager->LoadTexture("Assets/.EngineResource/Texture/uvChecker.png");
 
 	render_ = std::make_unique<RenderObject>("GaugeUI");
 	render_->Initialize();
 	render_->SetDrawData(data);
 	render_->psoConfig_.vs = "Simples.VS.hlsl";
-	render_->psoConfig_.ps = "TexColors.PS.hlsl";
-	render_->CreateSRV(sizeof(Matrix4x4), kGaugeCount, ShaderType::VERTEX_SHADER, "WVP");
-	render_->CreateSRV(sizeof(Vector4), kGaugeCount, ShaderType::PIXEL_SHADER, "Color");
-	render_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	render_->psoConfig_.ps = "Game/DistortionGauge.PS.hlsl";
+	render_->CreateSRV(sizeof(Matrix4x4), gaugeCount_, ShaderType::VERTEX_SHADER, "WVP");
+	render_->CreateSRV(sizeof(InstanceData), gaugeCount_, ShaderType::PIXEL_SHADER, "InstanceData");
+	render_->CreateCBV(sizeof(GlobalData), ShaderType::PIXEL_SHADER, "GlobalData");
 	render_->SetUseTexture(true);
-	render_->instanceNum_ = kGaugeCount;
+	render_->instanceNum_ = gaugeCount_;
 
 	transform_.scale = {30.0f, 500.0f, 0.0f};
 	transform_.position = {100.0f, -430.0f, 0.0f};
@@ -29,6 +46,8 @@ void SituationGauge::Initialize(SHEngine::ModelManager* modelManager, SHEngine::
 }
 
 void SituationGauge::Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpawnCount, float weaponCount, std::unordered_map<Key, bool> key) {
+	time_ += deltaTime;
+
 	// 各自の最大値からターゲットとなる割合を算出
 	float targetPlayerRatio = 0.0f;
 	if (maxWeaponCount_ > 0.0f) {
@@ -94,9 +113,27 @@ void SituationGauge::Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpaw
 	ImGui::End();
 #endif
 
-	render_->CopyBufferData(0, wvpMatrices, sizeof(Matrix4x4) * kGaugeCount);
-	render_->CopyBufferData(1, colors, sizeof(Vector4) * kGaugeCount);
-	render_->CopyBufferData(2, &textureIndex, sizeof(int));
+	InstanceData instanceDataArray[2];
+
+	// プレイヤー用ゲージデータ
+	instanceDataArray[0].color = playerColor_;
+	instanceDataArray[0].intensity = currentPlayerRatio_;
+	instanceDataArray[0].width = barWidth;      // 追加
+	instanceDataArray[0].height = playerHeight; // 追加
+
+	// 敵用ゲージデータ
+	instanceDataArray[1].color = enemyColor_;
+	instanceDataArray[1].intensity = currentEnemyRatio_;
+	instanceDataArray[1].width = barWidth;     // 追加
+	instanceDataArray[1].height = enemyHeight; // 追加
+
+	GlobalData globalData;
+	globalData.textureIndex = textureIndex_;
+	globalData.time = time_;
+
+	render_->CopyBufferData(0, wvpMatrices, sizeof(Matrix4x4) * gaugeCount_);
+	render_->CopyBufferData(1, instanceDataArray, sizeof(InstanceData) * gaugeCount_);
+	render_->CopyBufferData(2, &globalData, sizeof(GlobalData));
 
 	currentAdvantage_ = GetAdvantage(currentPlayerRatio_, currentEnemyRatio_); // プレイヤーが有利かどうかの判定
 
