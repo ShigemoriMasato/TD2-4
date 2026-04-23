@@ -21,7 +21,7 @@ void SituationGauge::Initialize(SHEngine::ModelManager* modelManager, SHEngine::
 	render_->SetUseTexture(true);
 	render_->instanceNum_ = kGaugeCount;
 
-	transform_.scale = {15.0f, 500.0f, 0.0f};
+	transform_.scale = {30.0f, 500.0f, 0.0f};
 	transform_.position = {100.0f, -430.0f, 0.0f};
 
 	situationTelop_ = std::make_unique<SituationTelop>();
@@ -49,8 +49,8 @@ void SituationGauge::Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpaw
 	float maxHeight = transform_.scale.y;
 
 	// 高さを独立した割合に応じて計算
-	float playerHeight = maxHeight * currentPlayerRatio_;
-	float enemyHeight = maxHeight * currentEnemyRatio_;
+	float playerHeight = std::max(maxHeight * currentPlayerRatio_, minGaugeHeight_);
+	float enemyHeight = std::max(maxHeight * currentEnemyRatio_, minGaugeHeight_);
 
 	// 横に並べるためのX座標計算
 	float playerPosX = transform_.position.x - (barWidth * 0.5f) - (barSpacing_ * 0.5f);
@@ -98,7 +98,7 @@ void SituationGauge::Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpaw
 	render_->CopyBufferData(1, colors, sizeof(Vector4) * kGaugeCount);
 	render_->CopyBufferData(2, &textureIndex, sizeof(int));
 
-	currentAdvantage_ = GetAdvantage(playerScale.y, enemyScale.y); // プレイヤーが有利かどうかの判定
+	currentAdvantage_ = GetAdvantage(currentPlayerRatio_, currentEnemyRatio_); // プレイヤーが有利かどうかの判定
 
 	// 状況が変化したと判断してテロップを表示
 	if (currentAdvantage_ != wasAdvantage_) {
@@ -121,11 +121,11 @@ void SituationGauge::Draw(CmdObj* cmdObj) {
 	situationTelop_->Draw(cmdObj);
 }
 
-SituationGauge::Advantage SituationGauge::GetAdvantage(float player, float enemy) const {
-	if (player > enemy * 2.0f) {
+SituationGauge::Advantage SituationGauge::GetAdvantage(float playerRatio, float enemyRatio) const {
+	if (playerRatio > enemyRatio * 2.0f) {
 		return Advantage::Player;
 	}
-	if (enemy > player * 2.0f) {
+	if (enemyRatio > playerRatio * 2.0f) {
 		return Advantage::Enemy;
 	}
 	return Advantage::Even;

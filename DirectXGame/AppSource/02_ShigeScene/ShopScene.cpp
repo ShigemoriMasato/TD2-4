@@ -142,7 +142,7 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	}
 
 	// リロール待機状態で、インターバル経過、カウントが1以上、かつピースを持っていなければ更新実行
-	if (pendingReroll_ && rerollCount_ > 0 && !shopCursor_->HasHeldPiece()) {
+	if (pendingReroll_ && rerollIntervalTimer_ >= rerollIntervalTime_ && rerollCount_ > 0 && !shopCursor_->HasHeldPiece()) {
 		pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
 		rerollCount_--;
 		pendingReroll_ = false;
