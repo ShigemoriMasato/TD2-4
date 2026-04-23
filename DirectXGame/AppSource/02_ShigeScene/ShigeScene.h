@@ -106,6 +106,9 @@ private:// System系
 	float bgmVolume_ = 0.5f;
 	float seVolume_ = 0.5f;
 
+	// ライティング
+	DirectionalLight dirLight_;
+
 private:// Shop
 
 	std::unique_ptr<ShopScene> shopScene_;

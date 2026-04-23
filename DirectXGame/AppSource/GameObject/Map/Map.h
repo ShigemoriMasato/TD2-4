@@ -112,4 +112,6 @@ private:
 
 	// ブロックのスケール
 	Vector3 blockScale_ = { 1.0f, 1.0f, 1.0f };
+
+	DirectionalLight dirLight_;
 };

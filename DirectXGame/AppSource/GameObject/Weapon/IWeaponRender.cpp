@@ -30,6 +30,7 @@ void IWeaponRender::Initialize(
 	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
 	render_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 	render_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	render_->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "DirectionalLight");
 
 	// 描画データを設定
 	render_->SetDrawData(drawData);
@@ -316,6 +317,7 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 	render_->CopyBufferData(0, &wvp_, sizeof(Matrix4x4));
 	render_->CopyBufferData(1, &color, sizeof(Vector4));
 	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
+	render_->CopyBufferData(3, &dirLight_, sizeof(DirectionalLight));
 }
 
 void IWeaponRender::Draw(CmdObj* cmdObj) {

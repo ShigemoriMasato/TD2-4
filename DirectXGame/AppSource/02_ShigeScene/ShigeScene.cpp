@@ -162,6 +162,11 @@ void ShigeScene::Initialize() {
 
 	situationGauge_ = std::make_unique<SituationGauge>();
 	situationGauge_->Initialize(modelManager_, drawDataManager_);
+
+	// ライトの設定
+	dirLight_.color = {1.0f, 1.0f, 1.0f, 1.0f};
+	dirLight_.direction = {0.0f, 1.0f, 0.0f};
+	dirLight_.intensity = 1.0f;
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -253,6 +258,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		}
 	}
 
+	player_->SetDirectionalLight(dirLight_);
 	player_->Update(camera_->GetVPMatrix(), deltaTime, key);
 
 	// ターゲットマーカーの更新
@@ -310,6 +316,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		auto attackDI = attackManager_->GetAttackDrawInfos();
 		drawInfos_.insert(drawInfos_.end(), attackDI.begin(), attackDI.end());
 
+		objectRender_->SetDirectionalLight(dirLight_);
 		objectRender_->SetDrawInfo(drawInfos_.data(), drawInfos_.size(), camera_->GetVPMatrix());
 	}
 
@@ -321,6 +328,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 				// プレイヤー座標にオフセットを加算
 				Vector3 weaponPos = player_->GetTransform().position;
 
+				weaponRenders_[i]->SetDirectionalLight(dirLight_);
 				weaponRenders_[i]->Update(camera_->GetVPMatrix(), weaponPos, deltaTime);
 			}
 		}
@@ -449,6 +457,12 @@ void ShigeScene::Draw() {
 	ImGui::DragFloat("displayRight", &displayRange_.right, 1.0f);
 	ImGui::DragFloat("displayTop", &displayRange_.top, 1.0f);
 	ImGui::DragFloat("displayBottom", &displayRange_.bottom, 1.0f);
+	ImGui::End();
+
+	ImGui::Begin("Light");
+	ImGui::DragFloat3("Direction", &dirLight_.direction.x, 0.01f);
+	ImGui::DragFloat("intensity", &dirLight_.intensity, 0.01f);
+	dirLight_.direction = dirLight_.direction.Normalize();
 	ImGui::End();
 
 #endif // USE_IMGUI

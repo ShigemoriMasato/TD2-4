@@ -43,6 +43,7 @@ void Map::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::Model
 		render_->CreateSRV(sizeof(Matrix4x4), instanceCount, ShaderType::VERTEX_SHADER, "WVP");
 		render_->CreateSRV(sizeof(Vector4), instanceCount, ShaderType::PIXEL_SHADER, "Color");
 		render_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+		render_->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "DirectionalLight");
 		render_->SetUseTexture(true);
 		render_->instanceNum_ = instanceCount;
 
@@ -150,6 +151,7 @@ void Map::Update(const Matrix4x4& vpMatrix, float deltaTime) {
 	render_->CopyBufferData(0, wvpMatrices.data(), sizeof(Matrix4x4) * wvpMatrices.size());
 	render_->CopyBufferData(1, colors.data(), sizeof(Vector4) * colors.size());
 	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
+	render_->CopyBufferData(3, &dirLight_, sizeof(DirectionalLight));
 
 	// ステージの更新
 	if (stageRender_) {

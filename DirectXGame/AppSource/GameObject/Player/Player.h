@@ -80,6 +80,9 @@ namespace Player {
 		// Stateから呼び出す用のアニメーション更新関数
 		void UpdateWalkAnimation(float deltaTime, bool isMoving);
 
+		// ライトのパラメータSetter
+		void SetDirectionalLight(DirectionalLight dirLight) { dirLight_ = dirLight; }
+
 	private:
 		// プレイヤーの移動制限
 		void ClampPosition();
@@ -150,6 +153,8 @@ namespace Player {
 
 		std::unique_ptr<Circle> collCircle_ = nullptr;
 		Logger logger_;
+
+		DirectionalLight dirLight_;
 
 #ifdef _DEBUG
 		bool isDebugInvincible_ = false;

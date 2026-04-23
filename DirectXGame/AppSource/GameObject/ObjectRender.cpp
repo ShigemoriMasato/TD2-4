@@ -28,6 +28,7 @@ void ObjectRender::SetDrawInfo(DrawInfo* info, size_t num, Matrix4x4 vpMatrix) {
 			auto modelData = modelManager_->GetNodeModelData(id);
 			int textureIndex = modelData.materials[modelData.materialIndex.front()].textureIndex;
 			renderObject->CopyBufferData(2, &textureIndex, sizeof(int));
+			renderObject->CopyBufferData(3, &dirLight_, sizeof(DirectionalLight));
 			renderObject->instanceNum_ = (uint32_t)buffers_[id].matrix.size();
 		}
 	}
@@ -56,9 +57,10 @@ void ObjectRender::AddRenderObject(int modelID) {
 	render->SetDrawData(drawData);
 
 	render->psoConfig_.vs = "Simples.VS.hlsl";
-	render->psoConfig_.ps = "TexColors.PS.hlsl";
+	render->psoConfig_.ps = "Game/LightTexColors.PS.hlsl";
 	render->CreateSRV(sizeof(Matrix4x4), drawMax, ShaderType::VERTEX_SHADER, "WVP");
 	render->CreateSRV(sizeof(Vector4), drawMax, ShaderType::PIXEL_SHADER, "Color");
 	render->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	render->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "DirectionalLight");
 	render->SetUseTexture(true);
 }

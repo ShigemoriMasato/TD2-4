@@ -5,6 +5,7 @@ struct PSInput
     float4 position : SV_POSITION;
     float2 texCoord : TEXCOORD0;
     float3 normal : NORMAL0;
+    uint instanceID : INSTANCE0;
 };
 
 struct PSOutput
@@ -12,36 +13,30 @@ struct PSOutput
     float4 color : SV_TARGET;
 };
 
-cbuffer Color : register(b0)
-{
-    float4 color;
-};
-
-cbuffer TextureIndex : register(b1)
+cbuffer TextureIndex : register(b0)
 {
     int textureIndex;
 };
 
-cbuffer Light : register(b2)
+cbuffer Light : register(b1)
 {
     DirectionalLight light;
-};
+}
 
-Texture2D textures[] : register(t8);
+struct ColorBuffer
+{
+    float4 color;
+};
+StructuredBuffer<ColorBuffer> colors : register(t0);
+Texture2D<float4> textures[] : register(t8);
 SamplerState gSampler : register(s0);
 
 PSOutput main(PSInput input)
 {
     PSOutput output;
-    
-    // テクスチャをサンプリング
+    float4 color = colors[input.instanceID].color;
     float4 texColor = textures[textureIndex].Sample(gSampler, input.texCoord);
-    
-    // テクスチャとカラーの乗算
-    float4 baseColor = texColor * color;
-    
-    //ライトの照射
+    float4 baseColor = color * texColor;
     output.color = HalfLambert(input.normal, baseColor, light.color, light.direction, light.intensity);
-    
     return output;
 }

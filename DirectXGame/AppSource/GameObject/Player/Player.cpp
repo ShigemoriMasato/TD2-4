@@ -33,6 +33,7 @@ void Base::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMa
 		render_[i]->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
 		render_[i]->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 		render_[i]->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+		render_[i]->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "DirectionalLight");
 	}
 
 	// 単位行列の代入
@@ -151,6 +152,7 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, b
 		render_[i]->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
 		render_[i]->CopyBufferData(1, &color, sizeof(Vector4));
 		render_[i]->CopyBufferData(2, &textureIndex_, sizeof(int));
+		render_[i]->CopyBufferData(3, &dirLight_, sizeof(DirectionalLight));
 	}
 
 	collCircle_->center = {transform_.position.x, transform_.position.z};

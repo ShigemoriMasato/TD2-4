@@ -5,14 +5,15 @@
 #include <GameObject/Weapon/IWeapon.h>
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
-#include <assets/Model/ModelManager.h>
 #include <Scene/CommonData.h>
+#include <assets/Model/ModelManager.h>
 
 class IWeaponRender {
 public:
 	// 初期化関数
 	void Initialize(
-		SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, IWeapon* weapon, Item itemData, const std::string& trailname, CommonData& commonData);
+	    SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, IWeapon* weapon, Item itemData, const std::string& trailname,
+	    CommonData& commonData);
 
 	// 更新関数
 	void Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTime);
@@ -26,6 +27,7 @@ public:
 	void SetScale(Vector3 scale) { transform_.scale = scale; }
 	void SetWVP(Matrix4x4 wvp) { wvp_ = wvp; }
 	void SetRotationMatrix(Matrix4x4 rotMatrix) { rotationMatrix_ = rotMatrix; }
+	void SetDirectionalLight(DirectionalLight directionalLight) { dirLight_ = directionalLight; }
 
 	Matrix4x4 LookAt(const Vector3& direction, const Vector3& up);
 
@@ -74,4 +76,7 @@ protected:
 
 	// トレイル
 	MultiTrail trail_;
+
+	// ライト
+	DirectionalLight dirLight_;
 };

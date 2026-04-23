@@ -11,6 +11,8 @@ public:
 	void SetDrawInfo(DrawInfo* info, size_t num, Matrix4x4 vpMatrix);
 	void Draw(CmdObj* cmdObj);
 
+	void SetDirectionalLight(DirectionalLight dirLight) { dirLight_ = dirLight; }
+
 private:
 
 	void AddRenderObject(int modelID);
@@ -29,4 +31,5 @@ private:
 	//例外的に描画限界を増やすやつら
 	std::vector<int> extraIndexNums_{ 1 };
 
+	DirectionalLight dirLight_;
 };
