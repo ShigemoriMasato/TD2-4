@@ -33,8 +33,9 @@ private:
 	std::unique_ptr<SHEngine::RenderObject> render_;
 	Transform transform_;
 
-	// パーティクル
-	TrailOnParticle TrailOnParticle;
+	// パーティクル追従トレイル
+	constexpr static int32_t kTrailOnParticle = 50;
+	TrailOnParticle TrailOnParticle[kTrailOnParticle];
 
 
 	bool start;

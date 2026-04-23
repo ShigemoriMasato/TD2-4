@@ -64,7 +64,10 @@ void YokoScene::Initialize()
 	particles_.Add("sparrrrk2");
 
 	// TrailOnParticle初期化
-	TrailOnParticle.Initialize(textureManager_, modelManager_, commonData_, "death", "sparrrk");
+	for (int i = 0; i < kTrailOnParticle; ++i)
+	{
+		TrailOnParticle[i].Initialize(textureManager_, modelManager_, commonData_, "death", "sparrrk");
+	}
 }
 
 std::unique_ptr<IScene> YokoScene::Update()
@@ -88,7 +91,8 @@ std::unique_ptr<IScene> YokoScene::Update()
 
 		trail.Clear();
 
-		TrailOnParticle.Trigger();
+		for (int i = 0; i < kTrailOnParticle; ++i)
+		TrailOnParticle[i].Trigger();
 		start = true;
 	}
 	if (start)
@@ -124,8 +128,11 @@ std::unique_ptr<IScene> YokoScene::Update()
 	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
 
 	// TrailOnParticle更新
-	TrailOnParticle.SetModelWorld(Matrix4x4::Identity());
-	TrailOnParticle.Update(dt);
+	for (int i = 0; i < kTrailOnParticle; ++i)
+	{
+		TrailOnParticle[i].SetModelWorld(Matrix4x4::Identity());
+		TrailOnParticle[i].Update(dt);
+	}
 
 
 	// トレイル更新
@@ -157,7 +164,8 @@ void YokoScene::Draw()
 
 	// TrailOnParticle描画
 
-	TrailOnParticle.Draw();
+	for (int i = 0; i < kTrailOnParticle; ++i)
+	TrailOnParticle[i].Draw();
 
 	trail.Draw();
 	particles_.Draw();

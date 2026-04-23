@@ -1,9 +1,5 @@
 #pragma once
-#include <Render/RenderObject.h>
-
-#include <GameObject/Effect/Trail/DataBank/TrailPresetDataBank.h>
 #include <GameObject/Effect/Trail/MultiTrail/MultiTrail.h>
-#include <GameObject/Effect/Particle/DataBank/ParticlePresetDataBank.h>
 #include <GameObject/Effect/Particle/MultiParticle/MultiParticle.h>
 
 class TrailOnParticle
