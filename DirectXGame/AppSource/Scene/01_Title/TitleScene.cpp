@@ -52,7 +52,7 @@ std::unique_ptr<IScene> TitleScene::Update() {
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 
 	titleUI_->Update(camera_->GetVPMatrix());
-	titleUI_->UpdateSelection(keys[Key::Tr_Up], keys[Key::Tr_Down]);
+	//titleUI_->UpdateSelection(keys[Key::Tr_Up], keys[Key::Tr_Down]);
 
 	map_->Update(camera_->GetVPMatrix(), deltaTime);
 

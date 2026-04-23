@@ -95,9 +95,12 @@ void TitleUI::Update(const Matrix4x4& vpMatrix) {
 }
 
 void TitleUI::Draw(CmdObj* cmdObj) {
-	for (size_t i = 0; i < kUICount; ++i) {
+	/*for (size_t i = 0; i < kUICount; ++i) {
 		renders_[i]->Draw(cmdObj);
-	}
+	}*/
+
+	renders_[0]->Draw(cmdObj);
+	renders_[1]->Draw(cmdObj);
 }
 
 #ifdef USE_IMGUI
