@@ -21,7 +21,7 @@ private:
 
 private:
 	// 現在の有利不利を受け取る
-	Advantage GetAdvantage(float player, float enemy)const;
+	Advantage GetAdvantage(float playerRatio, float enemyRatio) const;
 
 private:
 	std::unique_ptr<SHEngine::RenderObject> render_;
@@ -41,7 +41,7 @@ private:
 	float lerpSpeed_ = 2.0f;        // 補間の速さ
 
 	// バー同士の隙間
-	float barSpacing_ = 20.0f;
+	float barSpacing_ = 40.0f;
 
 	// 割合を計算するための最大値
 	float maxWeaponCount_ = 10.0f; // 最大武器数
@@ -59,4 +59,7 @@ private:
 
 	Advantage wasAdvantage_ = Advantage::Even;
 	Advantage currentAdvantage_ = Advantage::Even;
+
+	// ゲージの最小値
+	float minGaugeHeight_ = 10.0f;
 };
