@@ -25,11 +25,6 @@ Vector2 InputController::GetMoveDirection(float deltaTime, const MapInfo& mapInf
 		}
 	}
 
-	// 入力もターゲット移動もない場合はAIに任せる
-	if (dir.x == 0.0f && dir.y == 0.0f && !hasTarget_ && fallbackController_) {
-		return fallbackController_->GetMoveDirection(deltaTime, mapInfo);
-	}
-
 	return dir;
 }
 
