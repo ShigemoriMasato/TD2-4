@@ -28,10 +28,15 @@ void TitleScene::Initialize() {
 	camera_ = std::make_unique<Camera>();
 	PerspectiveFovDesc perspectiveDesc{};
 	camera_->SetProjectionMatrix(perspectiveDesc);
-	camera_->SetPosition({ 0.0f, 0.0f, 0.0f });
-	camera_->SetRotation({ 0.0f, 0.0f, 0.0f });
+	camera_->SetPosition({ 0.0f, 0.0f, -10.0f });
+	camera_->SetRotation({ -0.5f, 0.0f, 0.0f });
 	camera_->SetScale({ 1.0f, 1.0f, 1.0f });
 	camera_->MakeMatrix();
+
+	map_ = std::make_unique<Map>();
+	map_->Initialize(drawDataManager_, modelManager_);
+	map_->SetStageTransform({ 0,-160,250 }, {0,0,0}, { 5,5,5 });
+	map_->EnableStageAutoRotation(true); // 自動回転を有効化
 
 	bgm_ = AudioManager::GetInstance()->GetData("TitleScene.mp3")->CustomPlay(255);
 
@@ -44,8 +49,12 @@ void TitleScene::Initialize() {
 std::unique_ptr<IScene> TitleScene::Update() {
 	auto keys = commonData_->keyManager->GetKeyStates();
 
+	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
+
 	titleUI_->Update(camera_->GetVPMatrix());
 	titleUI_->UpdateSelection(keys[Key::Tr_Up], keys[Key::Tr_Down]);
+
+	map_->Update(camera_->GetVPMatrix(), deltaTime);
 
 	if (keys[Key::Correct]) {
 		switch (titleUI_->GetCurrentSelect()) {
@@ -72,6 +81,9 @@ void TitleScene::Draw() {
 
 	// ディスプレイへの描画開始
 	display->PreDraw(cmdObj, true);
+
+	// Mapの描画（displayに描画）
+	map_->Draw(cmdObj);
 
 	// TitleUIの描画（displayに描画）
 	titleUI_->Draw(cmdObj);
@@ -144,6 +156,9 @@ void TitleScene::Draw() {
 
 	// TitleUIの設定
 	titleUI_->DrawImGui();
+
+	// Mapの設定（SRT調整）
+	map_->DrawDebugGUI();
 
 	display->DrawImGui();
 

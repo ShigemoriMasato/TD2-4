@@ -18,10 +18,10 @@ public:
 	~Map() = default;
 
 	// @brief マップの初期化処理
-	void Initialize(SHEngine::DrawDataManager* drawDataManager = nullptr, SHEngine::ModelManager* modelManager = nullptr, const MapInfo& mapInfo = MapInfo{});
+	void Initialize(SHEngine::DrawDataManager* drawDataManager = nullptr, SHEngine::ModelManager* modelManager = nullptr, const MapInfo& mapInfo = MapInfo{},std::string Path = "Assets/Model/Stage");
 
 	// @brief マップの更新処理
-	void Update(const Matrix4x4& vpMatrix);
+	void Update(const Matrix4x4& vpMatrix, float deltaTime = 0.0f);
 
 	// @brief マップの描画処理
 	void Draw(CmdObj* cmdObj);
@@ -55,6 +55,14 @@ public:
 	// @brief マップのz方向の奥行きを取得
 	float GetDepth() const { return mapInfo_.maxZ - mapInfo_.minZ; }
 
+	// @brief ステージの自動Y軸回転を有効化
+	void EnableStageAutoRotation(bool enable) { enableAutoRotation_ = enable; }
+
+	void SetStageTransform(const Vector3& position, const Vector3& rotation, const Vector3& scale) {
+		stagePosition_ = position;
+		stageRotation_ = rotation;
+		stageScale_ = scale;
+	}
 private:
 	MapInfo mapInfo_;
 
@@ -84,6 +92,15 @@ private:
 	Vector3 stagePosition_ = { 24.0f, -0.5f, 24.0f };
 	Vector3 stageRotation_ = { 0.0f, 0.0f, 0.0f };
 	Vector3 stageScale_ = { 5.0f, 5.0f, 5.0f };
+
+	// 自動回転用の変数
+	bool enableAutoRotation_ = false;
+	float rotationTimer_ = 0.0f;
+	float baseRotationSpeed_ = 0.25f; // 1回転/秒（2π rad/s）
+	static constexpr float kNormalDuration = 5.0f;   // 通常速度の時間
+	static constexpr float kAccelDuration = 1.0f;    // 加速の時間
+	static constexpr float kDecelDuration = 1.0f;    // 減速の時間
+	static constexpr float kTotalCycleDuration = kNormalDuration + kAccelDuration + kDecelDuration;
 
 	// マップのグリッドサイズ
 	static constexpr int kMapWidth = 25;  // 20ブロック

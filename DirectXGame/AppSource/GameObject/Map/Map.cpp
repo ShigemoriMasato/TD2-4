@@ -9,7 +9,7 @@
 
 Map::Map() {}
 
-void Map::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, const MapInfo& mapInfo) {
+void Map::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, const MapInfo& mapInfo, std::string Path) {
 	mapInfo_ = mapInfo;
 
 	drawDataManager_ = drawDataManager;
@@ -47,7 +47,7 @@ void Map::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::Model
 		render_->instanceNum_ = instanceCount;
 
 		// ステージモデルの読み込み
-		stageModelID_ = modelManager_->LoadModel("Assets/Model/Stage");
+		stageModelID_ = modelManager_->LoadModel(Path);
 
 		// ステージレンダーオブジェクトの初期化
 		stageRender_ = std::make_unique<SHEngine::RenderObject>("Map_Stage");
@@ -75,9 +75,48 @@ void Map::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::Model
 	}
 }
 
-void Map::Update(const Matrix4x4& vpMatrix) {
+void Map::Update(const Matrix4x4& vpMatrix, float deltaTime) {
 	if (!render_) {
 		return;
+	}
+
+	// 自動回転が有効な場合、Y軸回転を更新
+	if (enableAutoRotation_) {
+		rotationTimer_ += deltaTime;
+
+		// サイクルをループさせる
+		if (rotationTimer_ >= kTotalCycleDuration) {
+			rotationTimer_ -= kTotalCycleDuration;
+		}
+
+		// 現在のフェーズを判定
+		float speedMultiplier = 1.0f;
+
+		if (rotationTimer_ < kNormalDuration) {
+			// 通常速度フェーズ (0.0～5.0秒)
+			speedMultiplier = 1.0f;
+		}
+		else if (rotationTimer_ < kNormalDuration + kAccelDuration) {
+			// 加速フェーズ (5.0～6.5秒)
+			float t = (rotationTimer_ - kNormalDuration) / kAccelDuration;
+			// イージング: 1.0 から 2.0 へ
+			speedMultiplier = 3.0f + t;
+		}
+		else {
+			// 減速フェーズ (6.5～8.0秒)
+			float t = (rotationTimer_ - kNormalDuration - kAccelDuration) / kDecelDuration;
+			// イージング: 2.0 から 1.0 へ
+			speedMultiplier = 3.0f - t;
+		}
+
+		// Y軸回転を更新（2π rad/s * speedMultiplier）
+		float rotationSpeed = 6.28318530718f * baseRotationSpeed_ * speedMultiplier; // 2π
+		stageRotation_.y += rotationSpeed * deltaTime;
+
+		// 回転値を0～2πの範囲に正規化
+		if (stageRotation_.y >= 6.28318530718f) {
+			stageRotation_.y -= 6.28318530718f;
+		}
 	}
 
 	// 各ブロックの座標とカラーを計算

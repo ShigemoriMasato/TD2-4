@@ -22,7 +22,7 @@ private:
 	SHEngine::Input* input_ = nullptr;
 	float distanceScale_ = 1.0f;
 	const float minDistanceScale_ = 0.5f;
-	const float maxDistanceScale_ = 2.0f;
+	const float maxDistanceScale_ = 1.0f;
 	const float wheelSensitivity_ = 0.00075f;
 
 };

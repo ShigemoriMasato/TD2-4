@@ -60,6 +60,7 @@ public:
 #endif // USE_IMGUI
 
 	void SetPosition(Title::Kinds kind, const Vector3& position) { positions_[static_cast<size_t>(kind)] = position; }
+	void SetRotation(Title::Kinds kind, const Vector3& rotation) { rotations_[static_cast<size_t>(kind)] = rotation; }
 	void SetScale(Title::Kinds kind, const Vector3& scale) { scales_[static_cast<size_t>(kind)] = scale; }
 
 	void SetLogoPosition(const Vector3& position) { SetPosition(Title::Kinds::Logo, position); }
@@ -67,12 +68,18 @@ public:
 	void SetOptionPosition(const Vector3& position) { SetPosition(Title::Kinds::Option, position); }
 	void SetQuitPosition(const Vector3& position) { SetPosition(Title::Kinds::Quit, position); }
 
+	void SetLogoRotation(const Vector3& rotation) { SetRotation(Title::Kinds::Logo, rotation); }
+	void SetStartRotation(const Vector3& rotation) { SetRotation(Title::Kinds::Start, rotation); }
+	void SetOptionRotation(const Vector3& rotation) { SetRotation(Title::Kinds::Option, rotation); }
+	void SetQuitRotation(const Vector3& rotation) { SetRotation(Title::Kinds::Quit, rotation); }
+
 	void SetLogoScale(const Vector3& scale) { SetScale(Title::Kinds::Logo, scale); }
 	void SetStartScale(const Vector3& scale) { SetScale(Title::Kinds::Start, scale); }
 	void SetOptionScale(const Vector3& scale) { SetScale(Title::Kinds::Option, scale); }
 	void SetQuitScale(const Vector3& scale) { SetScale(Title::Kinds::Quit, scale); }
 
 	Vector3& GetPosition(Title::Kinds kind) { return positions_[static_cast<size_t>(kind)]; }
+	Vector3& GetRotation(Title::Kinds kind) { return rotations_[static_cast<size_t>(kind)]; }
 	Vector3& GetScale(Title::Kinds kind) { return scales_[static_cast<size_t>(kind)]; }
 
 private:
@@ -81,10 +88,16 @@ private:
 	
 	std::array<std::unique_ptr<SHEngine::RenderObject>, kUICount> renders_;
 	std::array<Vector3, kUICount> positions_{
-		Vector3{ 0.0f, 1.5f, 10.0f },   // Logo
-		Vector3{ 0.0f, 0.0f, 10.0f },   // Start
-		Vector3{ 0.0f, -0.75f, 10.0f },  // Option
-		Vector3{ 0.0f, -1.5f, 10.0f }   // Quit
+		Vector3{ 0.0f, -4.7f, 1.75f },   // Logo
+		Vector3{ 0.0f, -5.0f, -2.0f },   // Start
+		Vector3{ 0.0f, -5.75f, -2.0f },  // Option
+		Vector3{ 0.0f, -6.5f, -2.0f }   // Quit
+	};
+	std::array<Vector3, kUICount> rotations_{
+		Vector3{ 0.55f, 0.0f, 0.0f },   // Logo
+		Vector3{ 0.55f, 0.0f, 0.0f },   // Start
+		Vector3{ 0.55f, 0.0f, 0.0f },   // Option
+		Vector3{ 0.55f, 0.0f, 0.0f }    // Quit
 	};
 	std::array<Vector3, kUICount> scales_{
 		Vector3{ 2.0f, 2.0f, 0.5f },   // Logo

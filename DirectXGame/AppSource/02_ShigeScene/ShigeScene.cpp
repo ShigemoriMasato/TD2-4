@@ -42,7 +42,7 @@ void ShigeScene::Initialize() {
 	player_->UpdateParameter(commonData_->pieces);
 
 	map_ = std::make_unique<Map>();
-	map_->Initialize(drawDataManager_, modelManager_);
+	map_->Initialize(drawDataManager_, modelManager_, {}, "Assets/Model/Stage2");
 	player_->SetMapInfo(map_->GetMapInfo());
 
 	SHEngine::DrawData planeDrawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
