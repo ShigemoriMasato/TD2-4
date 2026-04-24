@@ -61,7 +61,7 @@ void YokoScene::Initialize()
 
 	// パーティクル初期化
 	particles_.Initialize(textureManager_, modelManager_, commonData_);
-	particles_.Add("sparrrrk2");
+	particles_.Add("sparrrk");
 
 	// TrailOnParticle初期化
 	for (int i = 0; i < kTrailOnParticle; ++i)
@@ -140,8 +140,8 @@ std::unique_ptr<IScene> YokoScene::Update()
 	trail.Update(dt);
 
 	// パーティクル更新
-	//particles_.SetModelWorld(world);
-	//particles_.Update(dt);
+	particles_.SetModelWorld(world);
+	particles_.Update(dt);
 
 	// Zキーでエディタ切り替え
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z))
