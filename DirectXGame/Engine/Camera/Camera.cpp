@@ -70,3 +70,13 @@ void Camera::SetTransform(Matrix4x4 mat) {
 Matrix4x4 Camera::GetVPMatrix() const {
 	return vpMatrix_;
 }
+
+Matrix4x4 Camera::GetBillboardMatrix() const
+{
+	Matrix4x4 billboardMatrix = transformMatrix_;
+	for (int i = 0; i < 3; ++i)
+	{
+		billboardMatrix.m[3][i] = 0.0f; 
+	}
+	return billboardMatrix.Inverse();
+}

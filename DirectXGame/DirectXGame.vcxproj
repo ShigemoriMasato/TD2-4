@@ -289,6 +289,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\FountainParticle\FountainParticle.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\GoToTargetParticle\GoToTargetParticle.cpp" />
     <ClCompile Include="Engine\Core\FrameCounter.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Particle\GPUParticle.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Particle\GPUParticlePool.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Trail.cpp" />
@@ -500,6 +502,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\UI\Game\SituationGauge.h" />
     <ClInclude Include="Engine\Core\FrameCounter.h" />
     <ClInclude Include="AppSource\GameObject\Effect\ParticleOnTrail.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Particle\GPUParticle.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Particle\GPUParticlePool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
