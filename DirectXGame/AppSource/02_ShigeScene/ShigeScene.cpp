@@ -74,6 +74,7 @@ void ShigeScene::Initialize() {
 	targetMarkerRender_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
 	targetMarkerRender_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 	targetMarkerRender_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	targetMarkerRender_->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "DirectionalLight");
 
 	targetMarkerTexIndex_ = maruModelData.materials[maruModelData.materialIndex.front()].textureIndex;
 	Vector4 markerColor = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -277,6 +278,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		                Matrix::MakeTranslationMatrix(targetMarkerTransform_.position) * camera_->GetVPMatrix();
 
 		targetMarkerRender_->CopyBufferData(0, &wvp, sizeof(wvp));
+		targetMarkerRender_->CopyBufferData(3, &dirLight_, sizeof(DirectionalLight));
 	} else {
 		isTargetMarkerVisible_ = false;
 	}
