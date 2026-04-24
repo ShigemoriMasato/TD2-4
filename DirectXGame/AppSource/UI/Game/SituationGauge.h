@@ -25,10 +25,16 @@ private:
 
 private:
 	std::unique_ptr<SHEngine::RenderObject> render_;
+	std::unique_ptr<SHEngine::RenderObject> renderWeaponIcon_;
+	std::unique_ptr<SHEngine::RenderObject> renderEnemyIcon_;
 	Transform transform_;
+	Transform transformWeaponIcon_;
+	Transform transformEnemyIcon_;
 
 	int gaugeCount_ = 2;
 	int textureIndex_ = 0;
+	int wIconTextureIndex_ = 0;
+	int eIconTextureIndex_ = 0;
 
 	Vector4 playerColor_ = {0.0, 1.0f, 1.0f, 1.0f};
 	Vector4 enemyColor_ = {1.0, 0.0f, 0.0f, 1.0f};

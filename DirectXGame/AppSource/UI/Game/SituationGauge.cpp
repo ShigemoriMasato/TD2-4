@@ -25,7 +25,6 @@ void SituationGauge::Initialize(SHEngine::ModelManager* modelManager, SHEngine::
 	int modelHandle = modelManager->LoadModel("Assets/.EngineResource/Model/plane");
 	auto modelData = modelManager->GetNodeModelData(modelHandle);
 	DrawData data = drawDataManager->GetDrawData(modelData.drawDataIndex);
-	// textureIndex_ = textureManager->LoadTexture("Assets/.EngineResource/Texture/uvChecker.png");
 
 	render_ = std::make_unique<RenderObject>("GaugeUI");
 	render_->Initialize();
@@ -39,10 +38,41 @@ void SituationGauge::Initialize(SHEngine::ModelManager* modelManager, SHEngine::
 	render_->instanceNum_ = gaugeCount_;
 
 	transform_.scale = {30.0f, 500.0f, 0.0f};
-	transform_.position = {100.0f, -430.0f, 0.0f};
+	transform_.position = {100.0f, -400.0f, 0.0f};
+
+	transformWeaponIcon_.scale = {34.0f, 34.0f, 0.0f};
+	transformWeaponIcon_.rotate = {0.0f, 0.0f, std::numbers::pi_v<float> / 2.0f};
+	transformWeaponIcon_.position = {65.0f, -690.0f, 0.0f};
+
+	transformEnemyIcon_.scale = {34.0f, 34.0f, 0.0f};
+	transformEnemyIcon_.rotate = {0.0f, 0.0f, std::numbers::pi_v<float> / 2.0f};
+	transformEnemyIcon_.position = {135.0f, -690.0f, 0.0f};
 
 	situationTelop_ = std::make_unique<SituationTelop>();
 	situationTelop_->Initialize(modelManager, drawDataManager, 0);
+
+	renderWeaponIcon_ = std::make_unique<RenderObject>("WeaponIcon");
+	renderWeaponIcon_->Initialize();
+	renderWeaponIcon_->SetDrawData(data);
+	renderWeaponIcon_->psoConfig_.vs = "Simple.VS.hlsl";
+	renderWeaponIcon_->psoConfig_.ps = "TexColor.PS.hlsl";
+	renderWeaponIcon_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+	renderWeaponIcon_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+	renderWeaponIcon_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	renderWeaponIcon_->SetUseTexture(true);
+
+	renderEnemyIcon_ = std::make_unique<RenderObject>("EnemyIcon");
+	renderEnemyIcon_->Initialize();
+	renderEnemyIcon_->SetDrawData(data);
+	renderEnemyIcon_->psoConfig_.vs = "Simple.VS.hlsl";
+	renderEnemyIcon_->psoConfig_.ps = "TexColor.PS.hlsl";
+	renderEnemyIcon_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+	renderEnemyIcon_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+	renderEnemyIcon_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	renderEnemyIcon_->SetUseTexture(true);
+
+	wIconTextureIndex_ = textureManager->LoadTexture("Sword.png");
+	eIconTextureIndex_ = textureManager->LoadTexture("Enemy.png");
 }
 
 void SituationGauge::Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpawnCount, float weaponCount, std::unordered_map<Key, bool> key) {
@@ -103,6 +133,8 @@ void SituationGauge::Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpaw
 	ImGui::DragFloat2("Scale", &transform_.scale.x, 0.01f);
 	ImGui::ColorEdit4("Player Color", &playerColor_.x);
 	ImGui::ColorEdit4("Enemy Color", &enemyColor_.x);
+	ImGui::DragFloat3("enemyPos", &transformEnemyIcon_.position.x, 1.0f);
+	ImGui::DragFloat3("weaponPos", &transformWeaponIcon_.position.x, 1.0f);
 	ImGui::Separator();
 	ImGui::Text("Battle Situation");
 	ImGui::DragFloat("Max Weapon Count", &maxWeaponCount_, 1.0f, 1.0f, 1000.0f);
@@ -135,6 +167,21 @@ void SituationGauge::Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpaw
 	render_->CopyBufferData(1, instanceDataArray, sizeof(InstanceData) * gaugeCount_);
 	render_->CopyBufferData(2, &globalData, sizeof(GlobalData));
 
+	Matrix4x4 wIconWorld = Matrix::MakeAffineMatrix(transformWeaponIcon_.scale, transformWeaponIcon_.rotate, transformWeaponIcon_.position);
+	Matrix4x4 wIconWVP = wIconWorld * vpMatrix;
+	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
+
+	renderWeaponIcon_->CopyBufferData(0, &wIconWVP, sizeof(Matrix4x4));
+	renderWeaponIcon_->CopyBufferData(1, &color, sizeof(Vector4));
+	renderWeaponIcon_->CopyBufferData(2, &wIconTextureIndex_, sizeof(int));
+
+	Matrix4x4 eIconWorld = Matrix::MakeAffineMatrix(transformEnemyIcon_.scale, transformEnemyIcon_.rotate, transformEnemyIcon_.position);
+	Matrix4x4 eIconWVP = eIconWorld * vpMatrix;
+
+	renderEnemyIcon_->CopyBufferData(0, &eIconWVP, sizeof(Matrix4x4));
+	renderEnemyIcon_->CopyBufferData(1, &color, sizeof(Vector4));
+	renderEnemyIcon_->CopyBufferData(2, &eIconTextureIndex_, sizeof(int));
+
 	currentAdvantage_ = GetAdvantage(currentPlayerRatio_, currentEnemyRatio_); // プレイヤーが有利かどうかの判定
 
 	// 状況が変化したと判断してテロップを表示
@@ -155,6 +202,8 @@ void SituationGauge::Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpaw
 
 void SituationGauge::Draw(CmdObj* cmdObj) {
 	render_->Draw(cmdObj);
+	renderWeaponIcon_->Draw(cmdObj);
+	renderEnemyIcon_->Draw(cmdObj);
 	situationTelop_->Draw(cmdObj);
 }
 
