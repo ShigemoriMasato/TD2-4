@@ -158,11 +158,8 @@ void ShigeScene::Initialize() {
 
 	// BGM
 	auto data = AudioManager::GetInstance()->GetData("GameScene.mp3");
-	data->SetVolume(bgmVolume_);
+	data->SetVolume(0);
 	bgm_ = data->CustomPlay(255);
-
-	situationGauge_ = std::make_unique<SituationGauge>();
-	situationGauge_->Initialize(modelManager_, drawDataManager_, textureManager_);
 
 	// ライトの設定
 	dirLight_.color = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -339,8 +336,6 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	waveSystem_->Update(deltaTime);
 	waveSystemUI_->Update(*waveSystem_, orthoCamera_->GetVPMatrix());
 
-	situationGauge_->Update(orthoCamera_->GetVPMatrix(), deltaTime, static_cast<float>(enemyManager_->GetEnemies().size()), static_cast<float>(weaponRenders_.size()), key);
-
 	if (key[Key::Debug1] || gameTimer_->IsEnd()) {
 	}
 
@@ -353,6 +348,9 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		commonData_->isWin = true;
 		return std::make_unique<ResultScene>();
 	}
+
+	commonData_->weaponCount = weaponRenders_.size();
+	commonData_->enemyCount = enemyManager_->GetEnemies().size();
 
 	return nullptr;
 }
@@ -393,8 +391,6 @@ void ShigeScene::Draw() {
 	timerText_->Draw(cmdObj);
 
 	enemySpawnGraphText_->Draw(cmdObj);
-
-	situationGauge_->Draw(cmdObj);
 
 	parameterRender_->Draw(cmdObj);
 

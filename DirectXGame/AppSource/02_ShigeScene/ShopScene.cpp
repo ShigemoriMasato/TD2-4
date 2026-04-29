@@ -79,6 +79,10 @@ void ShopScene::Initialize() {
 	displayRange_.bottom = 810.0f;
 	displayRange_.right = 570.0f;
 	displayRange_.left = 210.0f;
+
+	// 有利不利ゲージ
+	situationGauge_ = std::make_unique<SituationGauge>();
+	situationGauge_->Initialize(modelManager_, drawDataManager_, textureManager_);
 }
 
 std::unique_ptr<IScene> ShopScene::Update() {
@@ -103,6 +107,8 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	ImGui::DragFloat("Reroll Interval Time", &rerollIntervalTime_, 0.1f, 0.0f, 10.0f);
 	ImGui::Text("Interval Timer: %.2f / %.2f", rerollIntervalTimer_, rerollIntervalTime_);
 	ImGui::Text("Reroll Count: %d", rerollCount_);
+	ImGui::Separator();
+	ImGui::DragFloat3("BarPosition", &rerollBarPos_.x,0.01f);
 	ImGui::End();
 
 	itemManager_->DrawImGui();
@@ -192,6 +198,9 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	debugObj_->CopyBufferData(0, &wvp, sizeof(wvp));
 	debugObj_->CopyBufferData(1, &debugColor_, sizeof(debugColor_));
 
+	// 有利不利ゲージ
+	situationGauge_->Update(orthoCamera_->GetVPMatrix(), deltaTime_, static_cast<float>(commonData_->enemyCount), static_cast<float>(commonData_->weaponCount), key);
+
 	return nullptr;
 }
 
@@ -205,6 +214,7 @@ void ShopScene::DrawReady() {
 	weaponDebugger_->Draw();
 	//parameterRender_->Draw(cmdObj);
 	//debugObj_->Draw(cmdObj);
+	situationGauge_->Draw(cmdObj);
 
 	// リロールバーの描画
 	DrawRerollBar(cmdObj);

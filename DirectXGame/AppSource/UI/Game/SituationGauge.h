@@ -40,7 +40,7 @@ private:
 	Vector4 enemyColor_ = {1.0, 0.0f, 0.0f, 1.0f};
 
 	// 戦力計算用の重み
-	float weaponPowerWeight_ = 2.0f; // 武器1つあたりの戦力値（敵4体分）
+	float weaponPowerWeight_ = 2.0f; // 武器1つあたりの戦力値（敵2体分）
 	float enemyPowerWeight_ = 1.0f;  // 敵1体あたりの戦力値
 
 	float currentIntensity_ = 0.5f; // 現在の戦況
