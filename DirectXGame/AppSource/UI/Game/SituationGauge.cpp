@@ -40,11 +40,11 @@ void SituationGauge::Initialize(SHEngine::ModelManager* modelManager, SHEngine::
 	transform_.scale = {50.0f, 350.0f, 0.0f};
 	transform_.position = {1100.0f, -450.0f, 0.0f};
 
-	transformWeaponIcon_.scale = {34.0f, 34.0f, 0.0f};
+	transformWeaponIcon_.scale = {34.0f, 58.0f, 0.0f};
 	transformWeaponIcon_.rotate = {0.0f, 0.0f, std::numbers::pi_v<float> / 2.0f};
 	transformWeaponIcon_.position = {1055.0f, -650.0f, 0.0f};
 
-	transformEnemyIcon_.scale = {34.0f, 34.0f, 0.0f};
+	transformEnemyIcon_.scale = {34.0f, 58.0f, 0.0f};
 	transformEnemyIcon_.rotate = {0.0f, 0.0f, std::numbers::pi_v<float> / 2.0f};
 	transformEnemyIcon_.position = {1150.0f, -650.0f, 0.0f};
 
