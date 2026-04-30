@@ -3,6 +3,8 @@
 #include <Render/Font/Text.h>
 #include <Render/PostEffect.h>
 #include <GameObject/EasingAnimation/AnimationBundle.h>
+#include <GameObject/Result/ResultSword.h>
+#include <Camera/DebugCamera.h>
 
 class ResultScene : public IScene {
 public:
@@ -17,7 +19,9 @@ private:
 	std::unique_ptr<SHEngine::Text> clearText_;
 	std::unique_ptr<SHEngine::Text> gameOverText_;
 	std::unique_ptr<SHEngine::Text> CorrectText_;
+	std::unique_ptr<ResultSword> sword_;
 
+	std::unique_ptr<Camera> camera_;
 	std::unique_ptr<Camera> orthoCamera_;
 
 	Transform clearTextTransform_{};
