@@ -2,13 +2,14 @@
 #include "GameObject/EasingAnimation/EasingAnimation.h"
 #include <Render/RenderObject.h>
 #include <assets/Model/ModelManager.h>
+#include <SHEngine.h>
 
 /// <summary>
 /// バックパック内に武器を配置したときに生成されるエフェクト
 /// </summary>
 class GaugeAttractEffect {
 public:
-	void Initialize(const Vector3& start, const Vector3& end, SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager);
+	void Initialize(const Vector3& start, const Vector3& end, SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, Vector3 control1, Vector3 control2);
 	void Update(Matrix4x4 vpMatrix, float deltaTime);
 	void Draw(CmdObj* cmdObj);
 
@@ -33,7 +34,7 @@ private:
 	bool isFinished_ = false;
 	int textureIndex_ = 0;
 
-	static const int kTrailCount = 6;
+	static const int kTrailCount = 12;
 	float trailDelay_ = 0.03f;
 
 	EaseType easeType_ = EaseType::EaseInOutCubic;

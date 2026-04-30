@@ -114,6 +114,8 @@ std::unique_ptr<IScene> ShopScene::Update() {
 
 	ImGui::Begin("effect");
 	ImGui::DragFloat3("Pos", &effectEndPos_.x, 1.0f);
+	ImGui::DragFloat3("Control1", &control1_.x, 0.1f);
+	ImGui::DragFloat3("Control2", &control2_.x, 0.1f);
 	ImGui::End();
 
 	itemManager_->DrawImGui();
@@ -216,7 +218,7 @@ std::unique_ptr<IScene> ShopScene::Update() {
 
 		// エフェクトの生成&追加
 		auto newEffect = std::make_unique<GaugeAttractEffect>();
-		newEffect->Initialize(screenStartPos, effectEndPos_, drawDataManager_, modelManager_);
+		newEffect->Initialize(screenStartPos, effectEndPos_, drawDataManager_, modelManager_, textureManager_, control1_, control2_);
 		attractEffects_.push_back(std::move(newEffect));
 	}
 

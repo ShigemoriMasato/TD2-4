@@ -133,4 +133,6 @@ private:
 	std::vector<std::unique_ptr<GaugeAttractEffect>> attractEffects_;
 
 	Vector3 effectEndPos_ = {1050, -600.0f, 0.0f};
+	Vector3 control1_ = {200.0f, 200.0f, 0.0f}; // 制御点1
+	Vector3 control2_ = {400.0f, -200.0f, 0.0f};  // 制御点2
 };

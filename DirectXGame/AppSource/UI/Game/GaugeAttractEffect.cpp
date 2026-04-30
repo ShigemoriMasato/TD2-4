@@ -7,16 +7,18 @@
 
 using namespace SHEngine;
 
-void GaugeAttractEffect::Initialize(const Vector3& start, const Vector3& end, SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager) {
+void GaugeAttractEffect::Initialize(
+    const Vector3& start, const Vector3& end, SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, Vector3 control1,
+    Vector3 control2) {
 	startPos_ = start;
 	endPos_ = end;
 
 	// 制御点の設定
 	Vector3 dir = end - start;
-	control1_ = start + dir * 0.333f + offset1_;
-	control2_ = start + dir * 0.666f + offset2_;
+	control1_ = start + control1 + offset1_;
+	control2_ = start + control2 + offset2_;
 
-	transform_.scale = {100.0f, 50.0f, 1.0f};
+	transform_.scale = {108.0f, 64.0f, 1.0f};
 	transform_.rotate = {0.0f, 0.0f, 0.0f};
 
 	int modelHandle = modelManager->LoadModel("Assets/.EngineResource/Model/plane");
@@ -31,6 +33,7 @@ void GaugeAttractEffect::Initialize(const Vector3& start, const Vector3& end, SH
 	render_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
 	render_->SetUseTexture(true);
 	render_->instanceNum_ = kTrailCount;
+	textureIndex_ = textureManager->LoadTexture("AttractEffect.png");
 }
 
 void GaugeAttractEffect::Update(Matrix4x4 vpMatrix, float deltaTime) {
@@ -75,10 +78,10 @@ Vector3 GaugeAttractEffect::EvaluateBezier(float t) const {
 	float tt = easedT * easedT;
 	float ttt = tt * easedT;
 
-	Vector3 p = uuu * startPos_;         
-	p += 3.0f * uu * easedT * control1_; 
-	p += 3.0f * u * tt * control2_;      
-	p += ttt * endPos_;                  
+	Vector3 p = uuu * startPos_;
+	p += 3.0f * uu * easedT * control1_;
+	p += 3.0f * u * tt * control2_;
+	p += ttt * endPos_;
 
 	return p;
 }
