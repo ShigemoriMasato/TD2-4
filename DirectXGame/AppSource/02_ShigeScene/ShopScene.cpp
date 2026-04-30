@@ -1,4 +1,5 @@
 #include "ShopScene.h"
+#include <Utils/AppUtils.h>
 
 ShopScene::~ShopScene() {
 }
@@ -111,6 +112,10 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	ImGui::DragFloat3("BarPosition", &rerollBarPos_.x,0.01f);
 	ImGui::End();
 
+	ImGui::Begin("effect");
+	ImGui::DragFloat3("Pos", &effectEndPos_.x, 1.0f);
+	ImGui::End();
+
 	itemManager_->DrawImGui();
 	pieceManager_->UpdateItemInfo(itemManager_.get());
 	shop_->Initialize(itemManager_.get());
@@ -198,8 +203,36 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	debugObj_->CopyBufferData(0, &wvp, sizeof(wvp));
 	debugObj_->CopyBufferData(1, &debugColor_, sizeof(debugColor_));
 
+	if (shopCursor_->GetIsEffect()) {
+		// ワールド座標を取得
+		Vector3 worldPutPos = shopCursor_->GetPutPos();
+
+		// ビュープロジェクション行列の計算
+		Matrix4x4 viewProj = debugCamera_->GetVPMatrix();
+
+		// スクリーン座標に変換
+		Vector3 screenStartPos = AppUtils::WorldToScreenPos(worldPutPos, viewProj, 1280.0f, 720.0f);
+		screenStartPos.y *= -1;
+
+		// エフェクトの生成&追加
+		auto newEffect = std::make_unique<GaugeAttractEffect>();
+		newEffect->Initialize(screenStartPos, effectEndPos_, drawDataManager_, modelManager_);
+		attractEffects_.push_back(std::move(newEffect));
+	}
+
+	// エフェクトの更新と削除
+	for (auto it = attractEffects_.begin(); it != attractEffects_.end();) {
+		(*it)->Update(orthoCamera_->GetVPMatrix(), deltaTime_);
+		if ((*it)->IsFinished()) {
+			it = attractEffects_.erase(it);
+		} else {
+			++it;
+		}
+	}
+
 	// 有利不利ゲージ
 	situationGauge_->Update(orthoCamera_->GetVPMatrix(), deltaTime_, static_cast<float>(commonData_->enemyCount), static_cast<float>(commonData_->weaponCount), key);
+
 
 	return nullptr;
 }
@@ -215,6 +248,9 @@ void ShopScene::DrawReady() {
 	//parameterRender_->Draw(cmdObj);
 	//debugObj_->Draw(cmdObj);
 	situationGauge_->Draw(cmdObj);
+	for (auto& effect : attractEffects_) {
+		effect->Draw(cmdObj);
+	}
 
 	// リロールバーの描画
 	DrawRerollBar(cmdObj);

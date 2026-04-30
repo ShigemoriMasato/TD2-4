@@ -204,7 +204,7 @@ void SituationGauge::Draw(CmdObj* cmdObj) {
 	render_->Draw(cmdObj);
 	renderWeaponIcon_->Draw(cmdObj);
 	renderEnemyIcon_->Draw(cmdObj);
-	situationTelop_->Draw(cmdObj);
+	//situationTelop_->Draw(cmdObj);
 }
 
 SituationGauge::Advantage SituationGauge::GetAdvantage(float playerRatio, float enemyRatio) const {

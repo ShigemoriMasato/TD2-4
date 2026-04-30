@@ -206,6 +206,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Bow.cpp" />
     <ClCompile Include="AppSource\GameObject\Enemy\EnemyHP.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Arrow.cpp" />
+    <ClCompile Include="AppSource\Utils\AppUtils.cpp" />
     <ClCompile Include="Engine\Render\Buffer\BufferContainer.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\PlayData.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSPSOManager.cpp" />
@@ -289,6 +290,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\FountainParticle\FountainParticle.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\GoToTargetParticle\GoToTargetParticle.cpp" />
     <ClCompile Include="Engine\Core\FrameCounter.cpp" />
+    <ClCompile Include="AppSource\UI\Game\GaugeAttractEffect.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Trail.cpp" />
@@ -382,6 +384,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\Data\Bow.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\EnemyHP.h" />
     <ClInclude Include="AppSource\GameObject\Attack\Arrow.h" />
+    <ClInclude Include="AppSource\Utils\AppUtils.h" />
     <ClInclude Include="Engine\Render\Buffer\BufferContainer.h" />
     <ClInclude Include="Engine\Assets\Audio\Data\PlayData.h" />
     <ClInclude Include="Engine\Compute\PSO\CSPSOManager.h" />
@@ -500,6 +503,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\UI\Game\SituationGauge.h" />
     <ClInclude Include="Engine\Core\FrameCounter.h" />
     <ClInclude Include="AppSource\GameObject\Effect\ParticleOnTrail.h" />
+    <ClInclude Include="AppSource\UI\Game\GaugeAttractEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

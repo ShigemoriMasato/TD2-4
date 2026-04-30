@@ -17,6 +17,7 @@
 #include <Render/Font/Text.h>
 #include <02_ShigeScene/GameDisplayRange.h>
 #include <UI/Game/SituationGauge.h>
+#include <UI/Game/GaugeAttractEffect.h>
 
 class ShopScene : public IScene {
 public:
@@ -127,4 +128,9 @@ private:
 	
 	// 有利不利ゲージ
 	std::unique_ptr<SituationGauge> situationGauge_;
+
+	// 武器配置時に発生するエフェクト
+	std::vector<std::unique_ptr<GaugeAttractEffect>> attractEffects_;
+
+	Vector3 effectEndPos_ = {1050, -600.0f, 0.0f};
 };

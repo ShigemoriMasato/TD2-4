@@ -12,6 +12,8 @@ public:
 	void Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpawnCount, float weaponCount, std::unordered_map<Key, bool> key);
 	void Draw(CmdObj* cmdObj);
 
+	const Vector3 GetPos() const { return transform_.position; }
+
 private:
 	enum class Advantage{
 		Even,
