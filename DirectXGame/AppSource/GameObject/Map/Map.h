@@ -89,7 +89,7 @@ private:
 	std::unique_ptr<SHEngine::RenderObject> stageRender_;
 
 	// ステージのトランスフォーム
-	Vector3 stagePosition_ = { 24.0f, -0.5f, 24.0f };
+	Vector3 stagePosition_ = { 24.0f, -1.5f, 24.0f };
 	Vector3 stageRotation_ = { 0.0f, 0.0f, 0.0f };
 	Vector3 stageScale_ = { 5.0f, 5.0f, 5.0f };
 

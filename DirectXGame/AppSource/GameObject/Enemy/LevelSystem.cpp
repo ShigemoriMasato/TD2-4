@@ -46,8 +46,11 @@ void LevelSystem::Update(float deltaTime) {
 	if (castTime_ >= coolTime) {
 		castTime_ = 0.0f;
 		for (int i = 0; i < enemyNum; i++) {
-			float x = std::uniform_real_distribution<float>(mapInfo_.minX, mapInfo_.maxX)(rng_);
-			float z = std::uniform_real_distribution<float>(mapInfo_.minZ, mapInfo_.maxZ)(rng_);
+			// 円形の範囲内でランダムな位置を生成
+			float angle = std::uniform_real_distribution<float>(0.0f, 2.0f * 3.14159265359f)(rng_);
+			float distance = std::uniform_real_distribution<float>(0.0f, mapInfo_.radius)(rng_);
+			float x = mapInfo_.centerX + distance * std::cos(angle);
+			float z = mapInfo_.centerZ + distance * std::sin(angle);
 			enemyManager_->PopEnemy({ x, 0.0f, z }, enemyHP);
 		}
 	}
