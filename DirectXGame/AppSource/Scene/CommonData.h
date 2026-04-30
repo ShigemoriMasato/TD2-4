@@ -48,4 +48,10 @@ struct CommonData {
 
 	// 装備中の武器の数
 	size_t weaponCount;
+
+	// クリアタイム
+	float clearTime;
+
+	// 倒した敵の数
+	int killCount;
 };

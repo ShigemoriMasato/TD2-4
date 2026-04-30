@@ -6,6 +6,8 @@
 #include <GameObject/Map/Map.h>
 #include <Utility/ConvertString.h>
 
+int EnemyManager::killCount = 0;
+
 void EnemyManager::Initialize(Vector3* playerPos, Map* map, SHEngine::DrawData& plane, SHEngine::ModelManager* modelManager) {
 	playerPos_ = playerPos;
 	map_ = map;
@@ -175,6 +177,7 @@ std::vector<IEnemy*> EnemyManager::GetEnemies() const {
 
 void EnemyManager::Kill(int id) {
 	enemies_.erase(id);
+	killCount++;
 }
 
 void EnemyManager::CreateDamageText(std::vector<std::pair<Vector3, std::vector<int>>> damageQueue) {

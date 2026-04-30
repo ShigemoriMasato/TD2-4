@@ -34,6 +34,8 @@ public:
 
 	void Kill(int id);
 
+	const int GetKillCount() const { return killCount; }
+
 private:
 
 	void CreateDamageText(std::vector<std::pair<Vector3, std::vector<int>>>);
@@ -54,4 +56,5 @@ private:
 	std::vector<float> damageTextTimers_;
 	const float damageLifeTime_ = 0.7f;
 	const int maxDamageTextNum_ = 64;
+	static int killCount;
 };

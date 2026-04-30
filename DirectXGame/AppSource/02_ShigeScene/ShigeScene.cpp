@@ -363,11 +363,15 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 				std::string debugMsg = std::format("Player Survived Time: {:.2f} s\n", gameTimer_->GetTimer());
 				OutputDebugStringA(debugMsg.c_str());
 				commonData_->isWin = false;
+				commonData_->clearTime = gameTimer_->GetTimer();
+				commonData_->killCount = enemyManager_->GetKillCount();
 				return std::make_unique<ResultScene>();
 			}
 		}
 	} else if (waveSystem_->End()) {
 		commonData_->isWin = true;
+		commonData_->clearTime = gameTimer_->GetTimer();
+		commonData_->killCount = enemyManager_->GetKillCount();
 		return std::make_unique<ResultScene>();
 	}
 

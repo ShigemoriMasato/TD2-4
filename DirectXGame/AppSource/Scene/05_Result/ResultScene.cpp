@@ -2,6 +2,7 @@
 #include <Scene/01_Title/TitleScene.h>
 #include <Utility/Color.h>
 #include <imgui/imgui.h>
+#include <format>
 
 using namespace SHEngine;
 
@@ -44,6 +45,28 @@ void ResultScene::Initialize() {
 
 	orthoCamera_ = std::make_unique<Camera>();
 	orthoCamera_->SetProjectionMatrix(OrthographicDesc{});
+
+	clearTimeText_ = std::make_unique<Text>(64);
+	clearTimeText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
+	clearTimeText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+	clearTimeText_->SetSize(1.5f);
+	clearTimeTextTransform_.position = {450.0f, -300.0f, 0.0f};
+
+	killCountText_ = std::make_unique<Text>(64);
+	killCountText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
+	killCountText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+	killCountText_->SetSize(1.5f);
+	killCountTextTransform_.position = {450.0f, -400.0f, 0.0f};
+
+	float time = commonData_->clearTime;
+	int minutes = static_cast<int>(time) / 60;
+	int seconds = static_cast<int>(time) % 60;
+	std::wstring timerWStr = std::format(L"Time: {:d}:{:02d}", minutes, seconds);
+	clearTimeText_->SetText(timerWStr);
+
+	int killCount = commonData_->killCount;
+	std::wstring killCountWStr = std::format(L"Kill: {:d}", killCount);
+	killCountText_->SetText(killCountWStr);
 
 	isWin_ = commonData_->isWin;
 
@@ -99,6 +122,12 @@ std::unique_ptr<IScene> ResultScene::Update() {
 
 	sword_->Update(camera_->GetVPMatrix(), deltaTime);
 
+	clearTimeText_->SetTransform(clearTimeTextTransform_);
+	clearTimeText_->Update(orthoCamera_->GetVPMatrix());
+
+	killCountText_->SetTransform(killCountTextTransform_);
+	killCountText_->Update(orthoCamera_->GetVPMatrix());
+
 	auto key = commonData_->keyManager->GetKeyStates();
 	if (key[Key::Correct]) {
 		return std::make_unique<TitleScene>();
@@ -153,6 +182,8 @@ void ResultScene::Draw() {
 		gameOverText_->Draw(cmdObj);
 	}
 
+	clearTimeText_->Draw(cmdObj);
+	killCountText_->Draw(cmdObj);
 	CorrectText_->Draw(cmdObj);
 
 	sword_->Draw(cmdObj);
@@ -181,6 +212,9 @@ void ResultScene::Draw() {
 	ImGui::DragFloat2("GameClear Text Position", &clearTextTransform_.position.x, 1.0f);
 	ImGui::DragFloat2("GameOver Text Position", &gameOverTextTransform_.position.x, 1.0f);
 	ImGui::DragFloat2("Correct Text Position", &correctTextTransform_.position.x, 1.0f);
+
+	ImGui::DragFloat2("Clear Time Text Position", &clearTimeTextTransform_.position.x, 1.0f);
+	ImGui::DragFloat2("Kill Count Text Position", &killCountTextTransform_.position.x, 1.0f);
 	ImGui::End();
 #endif
 
