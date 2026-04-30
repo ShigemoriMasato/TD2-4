@@ -20,11 +20,13 @@ void GaugeAttractEffect::Initialize(
 
 	transform_.scale = {108.0f, 64.0f, 1.0f};
 	transform_.rotate = {0.0f, 0.0f, 0.0f};
+	explosionScale_ = transform_.scale;
 
 	int modelHandle = modelManager->LoadModel("Assets/.EngineResource/Model/plane");
 	auto modelData = modelManager->GetNodeModelData(modelHandle);
 	DrawData data = drawDataManager->GetDrawData(modelData.drawDataIndex);
 	render_ = std::make_unique<RenderObject>();
+	render_->Initialize();
 	render_->psoConfig_.vs = "Simples.VS.hlsl";
 	render_->psoConfig_.ps = "TexColors.PS.hlsl";
 	render_->SetDrawData(data);
@@ -34,41 +36,97 @@ void GaugeAttractEffect::Initialize(
 	render_->SetUseTexture(true);
 	render_->instanceNum_ = kTrailCount;
 	textureIndex_ = textureManager->LoadTexture("AttractEffect.png");
+
+	explosionRender_ = std::make_unique<RenderObject>();
+	explosionRender_->Initialize();
+	explosionRender_->psoConfig_.vs = "Simples.VS.hlsl";
+	explosionRender_->psoConfig_.ps = "Game/AfterImage.PS.hlsl";
+	explosionRender_->SetDrawData(data);
+	explosionRender_->CreateSRV(sizeof(Matrix4x4), 2, ShaderType::VERTEX_SHADER, "WVP");
+	explosionRender_->CreateSRV(sizeof(Vector4), 2, ShaderType::PIXEL_SHADER, "Color");
+	explosionRender_->CreateSRV(sizeof(int), 2, ShaderType::PIXEL_SHADER, "TextureIndex");
+	explosionRender_->SetUseTexture(true);
+	explosionRender_->instanceNum_ = 2;
+	ringTexture_ = textureManager->LoadTexture("Ring.png");
+	crossTexture_ = textureManager->LoadTexture("Cross.png");
 }
 
 void GaugeAttractEffect::Update(Matrix4x4 vpMatrix, float deltaTime) {
 	if (isFinished_)
 		return;
 
-	time_ += deltaTime / duration_;
-	if (time_ >= 1.0f) {
-		time_ = 1.0f;
-		isFinished_ = true;
+	if (!isMovingFinished_) {
+		time_ += deltaTime / duration_;
+		if (time_ >= 1.0f) {
+			time_ = 1.0f;
+			isMovingFinished_ = true;
+			scaleAnim_.Start(explosionScale_, explosionScale_ * 4.0f, 0.5f, EaseType::EaseOutCubic);
+			alphaAnim_.Start(1.0f, 0.0f, 0.5f, EaseType::EaseOutCubic);
+		}
+
+		std::vector<Matrix4x4> wvpMatrices(kTrailCount);
+		std::vector<Vector4> colors(kTrailCount);
+
+		for (int i = 0; i < kTrailCount; ++i) {
+			float t = std::max(0.0f, time_ - (i * trailDelay_));
+			Vector3 pos = EvaluateBezier(t);
+			Vector3 scale = transform_.scale;
+			scale.x *= std::max(0.0f, 1.0f - (i * 0.15f));
+			scale.y *= std::max(0.0f, 1.0f - (i * 0.15f));
+
+			Matrix4x4 wvpMatrix = Matrix::MakeAffineMatrix(scale, transform_.rotate, pos);
+			wvpMatrices[i] = wvpMatrix * vpMatrix;
+
+			float alpha = std::max(0.0f, 1.0f - (static_cast<float>(i) / kTrailCount));
+			colors[i] = {1.0f, 1.0f, 1.0f, alpha};
+		}
+
+		render_->CopyBufferData(0, wvpMatrices.data(), sizeof(Matrix4x4) * kTrailCount);
+		render_->CopyBufferData(1, colors.data(), sizeof(Vector4) * kTrailCount);
+		render_->CopyBufferData(2, &textureIndex_, sizeof(int));
+	} else {
+		std::vector<Matrix4x4> wvpMatrices(2);
+		std::vector<Vector4> colors(2);
+		std::vector<int> textures(2);
+
+		textures[0] = ringTexture_;
+		textures[1] = crossTexture_;
+
+		float alpha;
+		bool scaleActive = scaleAnim_.Update(deltaTime, explosionScale_);
+		bool opacityActive = alphaAnim_.Update(deltaTime, alpha);
+
+		// 両方のアニメーションが終わったら削除フラグを立てる
+		if (!scaleActive && !opacityActive) {
+			isFinished_ = true;
+		}
+
+		for (int i = 0; i < 2; ++i) {
+			// 行列と色の更新
+			Matrix4x4 world = Matrix::MakeAffineMatrix(explosionScale_, {0, 0, 0}, endPos_);
+			Matrix4x4 wvp = world * vpMatrix;
+			Vector4 color = {1.0f, 1.0f, 1.0f, alpha};
+
+			wvpMatrices[i] = world * vpMatrix;
+			colors[i] = color;
+
+			explosionRender_->CopyBufferData(0, wvpMatrices.data(), sizeof(Matrix4x4) * 2);
+			explosionRender_->CopyBufferData(1, colors.data(), sizeof(Vector4) * 2);
+			explosionRender_->CopyBufferData(2, textures.data(), sizeof(int) * 2);
+		}
 	}
-
-	std::vector<Matrix4x4> wvpMatrices(kTrailCount);
-	std::vector<Vector4> colors(kTrailCount);
-
-	for (int i = 0; i < kTrailCount; ++i) {
-		float t = std::max(0.0f, time_ - (i * trailDelay_));
-		Vector3 pos = EvaluateBezier(t);
-		Vector3 scale = transform_.scale;
-		scale.x *= std::max(0.0f, 1.0f - (i * 0.15f));
-		scale.y *= std::max(0.0f, 1.0f - (i * 0.15f));
-
-		Matrix4x4 wvpMatrix = Matrix::MakeAffineMatrix(scale, transform_.rotate, pos);
-		wvpMatrices[i] = wvpMatrix * vpMatrix;
-
-		float alpha = std::max(0.0f, 1.0f - (static_cast<float>(i) / kTrailCount));
-		colors[i] = {1.0f, 1.0f, 1.0f, alpha};
-	}
-
-	render_->CopyBufferData(0, wvpMatrices.data(), sizeof(Matrix4x4) * kTrailCount);
-	render_->CopyBufferData(1, colors.data(), sizeof(Vector4) * kTrailCount);
-	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
 }
 
-void GaugeAttractEffect::Draw(CmdObj* cmdObj) { render_->Draw(cmdObj); }
+void GaugeAttractEffect::Draw(CmdObj* cmdObj) {
+	if (isFinished_)
+		return;
+
+	if (!isMovingFinished_) {
+		render_->Draw(cmdObj);
+	} else {
+		explosionRender_->Draw(cmdObj);
+	}
+}
 
 Vector3 GaugeAttractEffect::EvaluateBezier(float t) const {
 	float easedT = lerp<float>(0.0f, 1.0f, t, easeType_);

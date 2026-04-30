@@ -1,15 +1,17 @@
 #pragma once
 #include "GameObject/EasingAnimation/EasingAnimation.h"
 #include <Render/RenderObject.h>
-#include <assets/Model/ModelManager.h>
 #include <SHEngine.h>
+#include <assets/Model/ModelManager.h>
 
 /// <summary>
 /// バックパック内に武器を配置したときに生成されるエフェクト
 /// </summary>
 class GaugeAttractEffect {
 public:
-	void Initialize(const Vector3& start, const Vector3& end, SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, Vector3 control1, Vector3 control2);
+	void Initialize(
+	    const Vector3& start, const Vector3& end, SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, Vector3 control1,
+	    Vector3 control2);
 	void Update(Matrix4x4 vpMatrix, float deltaTime);
 	void Draw(CmdObj* cmdObj);
 
@@ -31,11 +33,23 @@ private:
 
 	float time_ = 0.0f;
 	float duration_ = 0.6f;
-	bool isFinished_ = false;
 	int textureIndex_ = 0;
+
+	bool isMovingFinished_ = false; // 移動終了フラグ
+	bool isFinished_ = false;       // アニメーション全体の終了フラグ
 
 	static const int kTrailCount = 12;
 	float trailDelay_ = 0.03f;
 
 	EaseType easeType_ = EaseType::EaseInOutCubic;
+
+	std::unique_ptr<SHEngine::RenderObject> explosionRender_;
+	Vector3 explosionScale_;
+	int ringTexture_ = 0;
+	int crossTexture_ = 0;
+
+	EasingAnimation<Vector3> scaleAnim_;
+	EasingAnimation<float> alphaAnim_;
+	float currentScale_ = 0.0f;
+	float currentAlpha_ = 0.0f;
 };
