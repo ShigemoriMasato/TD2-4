@@ -12,6 +12,8 @@ public:
 	void Update(Matrix4x4 vpMatrix, float deltaTime, float enemySpawnCount, float weaponCount, std::unordered_map<Key, bool> key);
 	void Draw(CmdObj* cmdObj);
 
+	const Vector3 GetPos() const { return transform_.position; }
+
 private:
 	enum class Advantage{
 		Even,
@@ -40,7 +42,7 @@ private:
 	Vector4 enemyColor_ = {1.0, 0.0f, 0.0f, 1.0f};
 
 	// 戦力計算用の重み
-	float weaponPowerWeight_ = 2.0f; // 武器1つあたりの戦力値（敵4体分）
+	float weaponPowerWeight_ = 2.0f; // 武器1つあたりの戦力値（敵2体分）
 	float enemyPowerWeight_ = 1.0f;  // 敵1体あたりの戦力値
 
 	float currentIntensity_ = 0.5f; // 現在の戦況

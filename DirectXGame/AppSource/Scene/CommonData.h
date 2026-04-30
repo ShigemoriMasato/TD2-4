@@ -42,4 +42,10 @@ struct CommonData {
 	// パーティクル
 	ParticlePresetDataBank particlePresetDataBank;
 	std::unique_ptr<ParticleDrawer> particleDrawer;
+
+	// 敵の数
+	size_t enemyCount;
+
+	// 装備中の武器の数
+	size_t weaponCount;
 };

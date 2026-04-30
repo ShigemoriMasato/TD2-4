@@ -1,5 +1,6 @@
 #include "ShopCursor.h"
 #include <Common/KeyConfig/WorldCursor.h>
+#include <Utils/AppUtils.h>
 
 void ShopCursor::Initialize(KeyManager* keyManager, PieceManager* pieceManager) {
 	keyManager_ = keyManager;
@@ -21,6 +22,8 @@ void ShopCursor::Update(Camera* camera) {
 void ShopCursor::EditPiece(BackPack* backPack) {
 	auto pieces = pieceManager_->GetAllPieces();
 	auto keys = keyManager_->GetKeyStates();
+
+	isEffect_ = false;
 
 	//持っているピースがあるなら
 	if (heldPiece_) {
@@ -55,6 +58,10 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 			if (heldPiece_->CanPut(backPack)) {
 				//配置する
 				heldPiece_->Put(backPack);
+
+				// ゲージに吸われるエフェクトの発火
+				isEffect_ = true;
+				putPos_ = heldPiece_->GetPosition();
 
 			} else {
 				// 元の場所に戻す
@@ -116,6 +123,11 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 					// 自動配置を試みる
 					if (piece->AutoPlace(backPack)) {
 						// 配置成功：何もしない（既にPutが呼ばれている）
+
+						// ゲージに吸われるエフェクトの発火
+						isEffect_ = true;
+						putPos_ = piece->GetPosition();
+						
 					} else {
 						// 配置失敗：元の位置と回転に戻す
 						// 回転を元に戻す
@@ -129,6 +141,10 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 					if (piece->IsReserved()) {
 						// 保留エリアにある場合、通常エリアに移動
 						piece->MoveToNormal(backPack);
+
+						// ゲージに吸われるエフェクトの発火
+						isEffect_ = true;
+						putPos_ = piece->GetPosition();
 					} else {
 						// 通常エリアにある場合、保留エリアに移動
 						piece->MoveToReserve(backPack);

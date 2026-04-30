@@ -16,6 +16,8 @@
 #include <Shop/ShopDisplay.h>
 #include <Render/Font/Text.h>
 #include <02_ShigeScene/GameDisplayRange.h>
+#include <UI/Game/SituationGauge.h>
+#include <UI/Game/GaugeAttractEffect.h>
 
 class ShopScene : public IScene {
 public:
@@ -79,39 +81,39 @@ private:
 	RerollBar rerollBarFill_;  // 前面（進行状況）
 	RerollBar rerollBarBG_;    // 背景
 	Vector2 rerollBarSize_ = { 950.0f, 50.0f };
-	Vector2 rerollBarPos_ = { 640.0f, -210.0f };
+	Vector2 rerollBarPos_ = { 530.0f, -230.0f };
 	
 	// リロールテキスト用変数
 	std::unique_ptr<SHEngine::Text> rerollText_ = nullptr;
-	Transform rerollTextTransform_ = { {3.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {200.0f, -225.0f, 0.0f} };
+	Transform rerollTextTransform_ = { {3.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {70.0f, -245.0f, 0.0f} };
 	Vector4 rerollTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// 操作説明テキスト用変数
 	std::unique_ptr<SHEngine::Text> controlText_ = nullptr;
-	Transform controlTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {405.0f, -315.0f, 0.0f} };
+	Transform controlTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {190.0f, -315.0f, 0.0f} };
 	Vector4 controlTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// ラクラク配置テキスト用変数
 	std::unique_ptr<SHEngine::Text> easyPlaceText_ = nullptr;
-	Transform easyPlaceTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {765.0f, -315.0f, 0.0f} };
+	Transform easyPlaceTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {610.0f, -315.0f, 0.0f} };
 	Vector4 easyPlaceTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// 武器安置所テキスト用変数
 	std::unique_ptr<SHEngine::Text> weaponStorageText_ = nullptr;
-	Transform weaponStorageTextTransform_ = { {3.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {185.0f, -605.0f, 0.0f} };
+	Transform weaponStorageTextTransform_ = { {3.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {65.0f, -612.0f, 0.0f} };
 	Vector4 weaponStorageTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// マウスボタンスプライト用変数
 	std::unique_ptr<SHEngine::RenderObject> mouseLeftSprite_ = nullptr;
 	std::unique_ptr<SHEngine::RenderObject> mouseRightSprite_ = nullptr;
-	Transform mouseLeftTransform_ = { {150.0f, 50.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {700.0f, -300.0f, 0.0f} };
-	Transform mouseRightTransform_ = { {150.0f, 50.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {350.0f, -300.0f, 0.0f} };
+	Transform mouseLeftTransform_ = { {150.0f, 50.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {550.0f, -300.0f, 0.0f} };
+	Transform mouseRightTransform_ = { {150.0f, 50.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {125.0f, -300.0f, 0.0f} };
 	int mouseLeftTextureIndex_ = -1;
 	int mouseRightTextureIndex_ = -1;
 	int mouseLeftActiveTextureIndex_ = -1;
 	int mouseRightActiveTextureIndex_ = -1;
 
-	Vector3 cameraCenter_ = { -5.0f, -32.0f, -6.5f };
+	Vector3 cameraCenter_ = { -7.0f, -40.0f, -6.5f };
 	Vector3 cameraSpherical_ = { 20.0f, 0.0f, -1.570f };
 	Vector2 cameraPerspectiveSize_ = { 352.0f, 624.0f };
 	
@@ -123,4 +125,14 @@ private:
 	float rerollIntervalTimer_ = 0.0f; // 補充インターバルタイマー
 
 	GameDisplayRange displayRange_;
+	
+	// 有利不利ゲージ
+	std::unique_ptr<SituationGauge> situationGauge_;
+
+	// 武器配置時に発生するエフェクト
+	std::vector<std::unique_ptr<GaugeAttractEffect>> attractEffects_;
+
+	Vector3 effectEndPos_ = {1050, -600.0f, 0.0f};
+	Vector3 control1_ = {200.0f, 200.0f, 0.0f}; // 制御点1
+	Vector3 control2_ = {400.0f, -200.0f, 0.0f};  // 制御点2
 };

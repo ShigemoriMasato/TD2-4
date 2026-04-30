@@ -14,6 +14,10 @@ public:
 
 	bool HasHeldPiece() const { return heldPiece_ != nullptr; }
 
+	bool GetIsEffect() const { return isEffect_; }
+	Vector3 GetPutPos() const { return putPos_; }
+	void SetVPMatrix(Matrix4x4 vpMatrix) { vpMatrix_ = vpMatrix; }
+
 private:
 
 	KeyManager* keyManager_ = nullptr;
@@ -24,4 +28,7 @@ private:
 	Piece::Direction preHeldPieceDir_ = Piece::Direction::Up;
 	Vector3 preHeldPiecePos_ = { 0.0f, 0.0f, 0.0f };
 
+	bool isEffect_ = false;
+	Vector3 putPos_;
+	Matrix4x4 vpMatrix_;
 };
