@@ -32,6 +32,8 @@
 #include <GameObject/Enemy/LevelSystemUI.h>
 #include <GameObject/Enemy/TackleEnemy.h>
 #include <UI/Game/SituationTelop.h>
+#include <GameObject/Effect/Flash/Flash.h>
+#include <GameObject/Effect/LetterBox/LetterBox.h>
 
 class ShigeScene : public IScene {
 public:
@@ -86,6 +88,9 @@ private:// System系
 
 	std::unique_ptr<ParameterRender> parameterRender_;
 
+	std::unique_ptr<Flash> flashEffect_;
+	std::unique_ptr<LetterBox> letterBox_;
+
 	JsonManager jsonManager_;
 
 	float worldTimer_ = 0.0f;
@@ -107,6 +112,8 @@ private:// System系
 
 	// ライティング
 	DirectionalLight dirLight_;
+
+	bool isPlayerDead_ = false;
 
 private:// Shop
 

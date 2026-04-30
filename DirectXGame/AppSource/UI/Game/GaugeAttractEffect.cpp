@@ -25,7 +25,7 @@ void GaugeAttractEffect::Initialize(
 	int modelHandle = modelManager->LoadModel("Assets/.EngineResource/Model/plane");
 	auto modelData = modelManager->GetNodeModelData(modelHandle);
 	DrawData data = drawDataManager->GetDrawData(modelData.drawDataIndex);
-	render_ = std::make_unique<RenderObject>();
+	render_ = std::make_unique<RenderObject>("AttractEffect");
 	render_->Initialize();
 	render_->psoConfig_.vs = "Simples.VS.hlsl";
 	render_->psoConfig_.ps = "TexColors.PS.hlsl";
@@ -37,7 +37,7 @@ void GaugeAttractEffect::Initialize(
 	render_->instanceNum_ = kTrailCount;
 	textureIndex_ = textureManager->LoadTexture("AttractEffect.png");
 
-	explosionRender_ = std::make_unique<RenderObject>();
+	explosionRender_ = std::make_unique<RenderObject>("ExplosionEffect");
 	explosionRender_->Initialize();
 	explosionRender_->psoConfig_.vs = "Simples.VS.hlsl";
 	explosionRender_->psoConfig_.ps = "Game/AfterImage.PS.hlsl";

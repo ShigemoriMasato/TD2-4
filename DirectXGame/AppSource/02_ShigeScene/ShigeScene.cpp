@@ -165,6 +165,12 @@ void ShigeScene::Initialize() {
 	dirLight_.color = {1.0f, 1.0f, 1.0f, 1.0f};
 	dirLight_.direction = {0.0f, 1.0f, 0.0f};
 	dirLight_.intensity = 1.0f;
+
+	flashEffect_ = std::make_unique<Flash>();
+	flashEffect_->Initialize(modelManager_, drawDataManager_);
+
+	letterBox_ = std::make_unique<LetterBox>();
+	letterBox_->Initialize(modelManager_, drawDataManager_);
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -339,11 +345,27 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	if (key[Key::Debug1] || gameTimer_->IsEnd()) {
 	}
 
+	flashEffect_->Update(orthoCamera_->GetVPMatrix(), deltaTime);
+	letterBox_->Update(orthoCamera_->GetVPMatrix(), deltaTime);
+
 	if (player_->GetCurrentHP() <= 0) {
-		std::string debugMsg = std::format("Player Survived Time: {:.2f} s\n", gameTimer_->GetTimer());
-		OutputDebugStringA(debugMsg.c_str());
-		commonData_->isWin = false;
-		return std::make_unique<ResultScene>();
+		if (!flashEffect_->GetIsActive() && !isPlayerDead_) {
+			flashEffect_->Trigger();
+			isPlayerDead_ = true;
+		}
+
+		if (isPlayerDead_) {
+			if (flashEffect_->GetIntensity() <= 0.0f && flashEffect_->GetIsActive() && !letterBox_->GetIsTriggered()) {
+				letterBox_->Trigger();
+			}
+
+			if (letterBox_->GetIsTriggered() && !letterBox_->GetIsActive()) {
+				std::string debugMsg = std::format("Player Survived Time: {:.2f} s\n", gameTimer_->GetTimer());
+				OutputDebugStringA(debugMsg.c_str());
+				commonData_->isWin = false;
+				return std::make_unique<ResultScene>();
+			}
+		}
 	} else if (waveSystem_->End()) {
 		commonData_->isWin = true;
 		return std::make_unique<ResultScene>();
@@ -393,6 +415,10 @@ void ShigeScene::Draw() {
 	enemySpawnGraphText_->Draw(cmdObj);
 
 	parameterRender_->Draw(cmdObj);
+
+	flashEffect_->Draw(cmdObj);
+
+	letterBox_->Draw(cmdObj);
 
 	gameDisplay_->ToPresent();
 
