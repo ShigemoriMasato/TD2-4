@@ -118,6 +118,10 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	ImGui::DragFloat3("Control2", &control2_.x, 0.1f);
 	ImGui::End();
 
+	ImGui::Begin("ValueEffect");
+	ImGui::DragFloat3("Pos", &valueEfectPos_.x, 1.0f);
+	ImGui::End();
+
 	itemManager_->DrawImGui();
 	pieceManager_->UpdateItemInfo(itemManager_.get());
 	shop_->Initialize(itemManager_.get());
@@ -136,6 +140,15 @@ std::unique_ptr<IScene> ShopScene::Update() {
 		if (shopRerollTimer_ >= shopRerollTime_) {
 			rerollCount_++;
 			shopRerollTimer_ -= shopRerollTime_; // 超過分を維持してタイマーリセット
+
+			// エフェクトの生成
+			if (!pendingReroll_){
+			auto effect = std::make_unique<ValueDeltaEffect>();
+			effect->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
+			Vector3 effectPos = valueEfectPos_;
+			effect->Trigger(true, effectPos);
+			valueEffects_.push_back(std::move(effect));
+			}
 		}
 	} else {
 		shopRerollTimer_ = 0.0f;
@@ -160,6 +173,13 @@ std::unique_ptr<IScene> ShopScene::Update() {
 		rerollCount_--;
 		pendingReroll_ = false;
 		rerollIntervalTimer_ = 0.0f;
+
+		// エフェクトの生成
+		auto effect = std::make_unique<ValueDeltaEffect>();
+		effect->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
+		Vector3 effectPos = valueEfectPos_;
+		effect->Trigger(false, effectPos);
+		valueEffects_.push_back(std::move(effect));
 	}
 
 	// 何かしらのトリガーでショップのピースを更新する
@@ -222,11 +242,21 @@ std::unique_ptr<IScene> ShopScene::Update() {
 		attractEffects_.push_back(std::move(newEffect));
 	}
 
-	// エフェクトの更新と削除
+	// ゲージ用エフェクトの更新と削除
 	for (auto it = attractEffects_.begin(); it != attractEffects_.end();) {
 		(*it)->Update(orthoCamera_->GetVPMatrix(), deltaTime_);
 		if ((*it)->IsFinished()) {
 			it = attractEffects_.erase(it);
+		} else {
+			++it;
+		}
+	}
+
+	// 増減エフェクトの更新と削除
+	for (auto it = valueEffects_.begin(); it != valueEffects_.end();) {
+		(*it)->Update(deltaTime_, orthoCamera_->GetVPMatrix());
+		if (!(*it)->IsActive()) {
+			it = valueEffects_.erase(it);
 		} else {
 			++it;
 		}
@@ -250,12 +280,17 @@ void ShopScene::DrawReady() {
 	//parameterRender_->Draw(cmdObj);
 	//debugObj_->Draw(cmdObj);
 	situationGauge_->Draw(cmdObj);
+
 	for (auto& effect : attractEffects_) {
 		effect->Draw(cmdObj);
 	}
 
 	// リロールバーの描画
 	DrawRerollBar(cmdObj);
+
+	for (auto& effect : valueEffects_) {
+		effect->Draw(cmdObj);
+	}
 
 	shopDisplay_->ToPresent();
 }
@@ -305,25 +340,25 @@ void ShopScene::InitializeRerollBar() {
 	// テキストの初期化
 	int planeModelHandle = modelManager_->LoadModel("Assets/.EngineResource/Model/Plane");
 	auto planeModelData = modelManager_->GetNodeModelData(planeModelHandle);
-	SHEngine::DrawData textDrawData = drawDataManager_->GetDrawData(planeModelData.drawDataIndex);
+	textDrawData_ = drawDataManager_->GetDrawData(planeModelData.drawDataIndex);
 
 	rerollText_ = std::make_unique<SHEngine::Text>();
-	rerollText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
+	rerollText_->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
 	rerollText_->SetText(L"リロール");
 
 	// 操作説明テキストの初期化
 	controlText_ = std::make_unique<SHEngine::Text>();
-	controlText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
+	controlText_->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
 	controlText_->SetText(L"持つ 離す");
 
 	// ラクラク配置テキストの初期化
 	easyPlaceText_ = std::make_unique<SHEngine::Text>();
-	easyPlaceText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
+	easyPlaceText_->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
 	easyPlaceText_->SetText(L"自動配置");
 
 	// 武器安置所テキストの初期化
 	weaponStorageText_ = std::make_unique<SHEngine::Text>();
-	weaponStorageText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
+	weaponStorageText_->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
 	weaponStorageText_->SetText(L"武器安置所");
 
 	// マウスボタンスプライトの初期化
