@@ -29,6 +29,9 @@ enum class Key {
 	Reverse,//取消キー
 	Pause,//ポーズキー
 
+	Retry, // リトライ
+	ToTitle, // タイトルへ
+
 	ControllerChange,//コントローラーの切り換え
 
 	// Debug -===========

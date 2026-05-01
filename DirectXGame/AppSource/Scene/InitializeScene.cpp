@@ -129,6 +129,9 @@ void InitializeScene::Initialize() {
 	keyManager->SetKey(Key::Correct, DIK_Z, KeyState::Trigger);
 	keyManager->SetButton(Key::Correct, XBoxController::kA, KeyState::Trigger);
 
+	keyManager->SetKey(Key::Retry, DIK_A, KeyState::Trigger);
+	keyManager->SetKey(Key::ToTitle, DIK_D, KeyState::Trigger);
+
 	keyManager->SetKey(Key::Reverse, DIK_X, KeyState::Trigger);
 	keyManager->SetButton(Key::Reverse, XBoxController::kB, KeyState::Trigger);
 
@@ -171,8 +174,8 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	//更新処理
 	commonData_->cmdObject->ResetCommandList();
 
-	return std::make_unique<TitleScene>();
 	return std::make_unique<ResultScene>();
+	return std::make_unique<TitleScene>();
 	return std::make_unique<TrailEditorScene>();
 	return std::make_unique<PrticleEditorScene>();
 }

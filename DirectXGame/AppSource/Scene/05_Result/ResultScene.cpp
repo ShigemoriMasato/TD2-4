@@ -1,5 +1,6 @@
 #include "ResultScene.h"
 #include <Scene/01_Title/TitleScene.h>
+#include <02_ShigeScene/ShigeScene.h>
 #include <Utility/Color.h>
 #include <imgui/imgui.h>
 #include <format>
@@ -36,13 +37,6 @@ void ResultScene::Initialize() {
 	gameOverText_->SetSize(2.0f);
 	gameOverTextTransform_.position = {455.0f, 100.0f, 0.0f};
 
-	CorrectText_ = std::make_unique<Text>();
-	CorrectText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
-	CorrectText_->SetText(L"--- Zキー　か　スペースキーで　タイトルへ ---");
-	CorrectText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
-	CorrectText_->SetSize(2.0f);
-	correctTextTransform_.position = {45.0f, -500.0f, 0.0f};
-
 	orthoCamera_ = std::make_unique<Camera>();
 	orthoCamera_->SetProjectionMatrix(OrthographicDesc{});
 
@@ -57,6 +51,20 @@ void ResultScene::Initialize() {
 	killCountText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 	killCountText_->SetSize(1.5f);
 	killCountTextTransform_.position = {450.0f, -400.0f, 0.0f};
+
+	retryText_ = std::make_unique<Text>(64);
+	retryText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
+	retryText_->SetText(L"リトライ");
+	retryText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+	retryText_->SetSize(2.0f);
+	retryTextTransform_.position = {240.0f, -630.0f, 0.0f};
+
+	toTitleText_ = std::make_unique<Text>(64);
+	toTitleText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
+	toTitleText_->SetText(L"タイトルへ");
+	toTitleText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
+	toTitleText_->SetSize(2.0f);
+	toTitleTextTransform_.position = {720.0f, -630.0f, 0.0f};
 
 	float time = commonData_->clearTime;
 	int minutes = static_cast<int>(time) / 60;
@@ -113,13 +121,6 @@ std::unique_ptr<IScene> ResultScene::Update() {
 	gameOverText_->SetTransform(gameOverTextTransform_);
 	gameOverText_->Update(orthoCamera_->GetVPMatrix());
 
-	CorrectText_->SetTransform(correctTextTransform_);
-	alphaTime_ += engine_->GetDeltaTime();
-	float t = (std::sinf(alphaTime_) * 0.5f) + 0.5f;
-	float value = 0.1f + t * 0.5f;
-	CorrectText_->SetColor({1.0f, 1.0f, 1.0f, value});
-	CorrectText_->Update(orthoCamera_->GetVPMatrix());
-
 	sword_->Update(camera_->GetVPMatrix(), deltaTime);
 
 	clearTimeText_->SetTransform(clearTimeTextTransform_);
@@ -128,14 +129,36 @@ std::unique_ptr<IScene> ResultScene::Update() {
 	killCountText_->SetTransform(killCountTextTransform_);
 	killCountText_->Update(orthoCamera_->GetVPMatrix());
 
+	retryText_->SetTransform(retryTextTransform_);
+	retryText_->Update(orthoCamera_->GetVPMatrix());
+
+	toTitleText_->SetTransform(toTitleTextTransform_);
+	toTitleText_->Update(orthoCamera_->GetVPMatrix());
+
 	auto key = commonData_->keyManager->GetKeyStates();
+
+	if(key[Key::Retry]){
+		selectedIndex_ = (selectedIndex_ - 1 + 2) % 2;
+	}
+	if(key[Key::ToTitle]){
+		selectedIndex_ = (selectedIndex_ + 1) % 2;
+	}
+
 	if (key[Key::Correct]) {
-		return std::make_unique<TitleScene>();
+		if (selectedIndex_ == 0) {
+			// リトライ
+			return std::make_unique<ShigeScene>();
+		} else {
+			// タイトルへ
+			return std::make_unique<TitleScene>();
+		}
 	}
 
 	if (key[Key::Debug1]) {
 		sword_->StartAnimation();
 	}
+
+	UpdateSelectVisual();
 
 #ifdef USE_IMGUI
 	ImGui::Begin("Result Scene Settings");
@@ -184,7 +207,8 @@ void ResultScene::Draw() {
 
 	clearTimeText_->Draw(cmdObj);
 	killCountText_->Draw(cmdObj);
-	CorrectText_->Draw(cmdObj);
+	retryText_->Draw(cmdObj);
+	toTitleText_->Draw(cmdObj);
 
 	sword_->Draw(cmdObj);
 
@@ -211,13 +235,31 @@ void ResultScene::Draw() {
 	ImGui::Begin("Text");
 	ImGui::DragFloat2("GameClear Text Position", &clearTextTransform_.position.x, 1.0f);
 	ImGui::DragFloat2("GameOver Text Position", &gameOverTextTransform_.position.x, 1.0f);
-	ImGui::DragFloat2("Correct Text Position", &correctTextTransform_.position.x, 1.0f);
 
 	ImGui::DragFloat2("Clear Time Text Position", &clearTimeTextTransform_.position.x, 1.0f);
 	ImGui::DragFloat2("Kill Count Text Position", &killCountTextTransform_.position.x, 1.0f);
+
+	ImGui::DragFloat2("Retry Text Position", &retryTextTransform_.position.x, 1.0f);
+	ImGui::DragFloat2("ToTitle Text Position", &toTitleTextTransform_.position.x, 1.0f);
 	ImGui::End();
 #endif
 
 	engine_->DrawImGui();
 	window->ToPresent(cmdObj);
+}
+
+void ResultScene::UpdateSelectVisual() {
+	if (selectedIndex_ == 0) {
+		retryText_->SetColor({1, 0, 0, 1});
+		retryText_->SetSize(3.0f);
+
+		toTitleText_->SetColor({1, 1, 1, 1});
+		toTitleText_->SetSize(2.0f);
+	} else {
+		retryText_->SetColor({1, 1, 1, 1});
+		retryText_->SetSize(2.0f);
+
+		toTitleText_->SetColor({1, 0, 0, 1});
+		toTitleText_->SetSize(3.0f);
+	}
 }

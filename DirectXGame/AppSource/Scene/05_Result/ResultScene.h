@@ -15,11 +15,16 @@ public:
 	void Draw() override;
 
 private:
+
+	void UpdateSelectVisual();
+
+private:
 	std::unique_ptr<SHEngine::Text> clearText_;
 	std::unique_ptr<SHEngine::Text> gameOverText_;
-	std::unique_ptr<SHEngine::Text> CorrectText_;
 	std::unique_ptr<SHEngine::Text> clearTimeText_;
 	std::unique_ptr<SHEngine::Text> killCountText_;
+	std::unique_ptr<SHEngine::Text> retryText_;
+	std::unique_ptr<SHEngine::Text> toTitleText_;
 
 	std::unique_ptr<ResultSword> sword_;
 
@@ -28,9 +33,10 @@ private:
 
 	Transform clearTextTransform_{};
 	Transform gameOverTextTransform_{};
-	Transform correctTextTransform_{};
 	Transform clearTimeTextTransform_{};
 	Transform killCountTextTransform_{};
+	Transform retryTextTransform_{};
+	Transform toTitleTextTransform_{};
 
 	bool isWin_ = false;
 
@@ -41,4 +47,6 @@ private:
 	float alphaTime_ = 0.0f;
 	float posYTime_ = 0.0f;
 	float pendingTime_ = 0.0f;
+
+	int selectedIndex_ = 0;
 };
