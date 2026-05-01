@@ -64,5 +64,6 @@ private:
 	Transform hpTextTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {70.0f, -65.0f, 0.0f} };
 	float hpTextSize_ = 1.0f;
 	Vector4 hpTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Vector4 hpColor_ = {0.4f, 0.0f, 0.0f, 1.0f};
 };
 } // namespace Player

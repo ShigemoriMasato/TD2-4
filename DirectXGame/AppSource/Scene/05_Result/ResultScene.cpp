@@ -135,6 +135,27 @@ std::unique_ptr<IScene> ResultScene::Update() {
 	toTitleText_->SetTransform(toTitleTextTransform_);
 	toTitleText_->Update(orthoCamera_->GetVPMatrix());
 
+	if (isDeciding_) {
+		bool playing = decideScaleAnime_.anim.Update(deltaTime, decideScaleAnime_.temp);
+
+		if (selectedIndex_ == 0) {
+			retryText_->SetSize(decideScaleAnime_.temp);
+		} else {
+			toTitleText_->SetSize(decideScaleAnime_.temp);
+		}
+
+		// アニメーション終了後にシーン遷移
+		if (!playing) {
+			if (selectedIndex_ == 0) {
+				return std::make_unique<ShigeScene>();
+			} else {
+				return std::make_unique<TitleScene>();
+			}
+		}
+
+		return nullptr;
+	}
+
 	auto key = commonData_->keyManager->GetKeyStates();
 
 	if(key[Key::Retry]){
@@ -144,14 +165,10 @@ std::unique_ptr<IScene> ResultScene::Update() {
 		selectedIndex_ = (selectedIndex_ + 1) % 2;
 	}
 
-	if (key[Key::Correct]) {
-		if (selectedIndex_ == 0) {
-			// リトライ
-			return std::make_unique<ShigeScene>();
-		} else {
-			// タイトルへ
-			return std::make_unique<TitleScene>();
-		}
+	if (key[Key::Correct] && !isDeciding_) {
+		isDeciding_ = true;
+		float startSize = 2.0f;
+		decideScaleAnime_.anim.Start(startSize, startSize * 1.5f, 0.3f, EaseType::EaseOutBack);
 	}
 
 	if (key[Key::Debug1]) {
@@ -249,6 +266,9 @@ void ResultScene::Draw() {
 }
 
 void ResultScene::UpdateSelectVisual() {
+	if (isDeciding_)
+		return;
+
 	if (selectedIndex_ == 0) {
 		retryText_->SetColor({1, 0, 0, 1});
 		retryText_->SetSize(3.0f);

@@ -5,7 +5,6 @@ using namespace SHEngine;
 void ValueDeltaEffect::Initialize(SHEngine::DrawData& drawData, const std::string& fontPath, int fontSize) {
 	text_ = std::make_unique<Text>();
 	text_->Initialize(drawData, fontPath, fontSize, "RerollNotificationText");
-	text_->SetSize(4.0f);
 }
 
 void ValueDeltaEffect::Trigger(bool isIncrease, const Vector3& startPos) {
@@ -46,7 +45,7 @@ void ValueDeltaEffect::Update(float deltaTime, const Matrix4x4& vpMat) {
 
 	Transform transform{};
 	transform.position = currentPos_;
-	transform.scale = {1.0f, 1.0f, 1.0f};
+	transform.scale = {4.0f, 2.3f, 0.0f};
 	text_->SetTransform(transform);
 	Vector4 currentColor = baseColor_;
 	currentColor.w = currentAlpha_;

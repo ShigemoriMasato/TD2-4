@@ -49,4 +49,6 @@ private:
 	float pendingTime_ = 0.0f;
 
 	int selectedIndex_ = 0;
+	AnimationBundle<float> decideScaleAnime_;
+	bool isDeciding_ = false;
 };

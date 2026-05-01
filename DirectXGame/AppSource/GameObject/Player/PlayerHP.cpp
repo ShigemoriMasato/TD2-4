@@ -85,7 +85,7 @@ void HP::Update(Matrix4x4 vpMatrix, float deltaTime, float currentHP, float maxH
 
 	Vector4 color = {0.0f, 1.0f, 0.0f, 1.0f};
 
-	hpBarFill_.render->CopyBufferData(1, &color, sizeof(Vector4));
+	hpBarFill_.render->CopyBufferData(1, &hpColor_, sizeof(Vector4));
 
 	// 減った分の行列計算
 	hpBarAfter_.wvp = Matrix::MakeAffineMatrix(hpBarAfter_.transform.scale, hpBarAfter_.transform.rotate, hpBarAfter_.transform.position);
@@ -128,6 +128,7 @@ void HP::Draw(CmdObj* cmdObj) {
 	ImGui::Text("HP Bar Settings");
 	ImGui::DragFloat2("Bar Position", &hpBarPos_.x, 1.0f);
 	ImGui::DragFloat2("Bar Size", &hpBarSize_.x, 1.0f);
+	ImGui::ColorEdit4("Bar Color", &hpColor_.x);
 	
 	ImGui::Separator();
 	ImGui::Text("HP Text Settings");
