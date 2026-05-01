@@ -13,7 +13,7 @@ void ResultScene::Initialize() {
 	camera_ = std::make_unique<Camera>();
 	PerspectiveFovDesc perspectiveDesc{};
 	camera_->SetProjectionMatrix(perspectiveDesc);
-	camera_->SetPosition({0.0f, 0.0f, -20.0f});
+	camera_->SetPosition({0.0f, 0.0f, -35.0f});
 	camera_->SetRotation({0.0f, 0.0f, 0.0f});
 	camera_->SetScale({1.0f, 1.0f, 1.0f});
 	camera_->MakeMatrix();

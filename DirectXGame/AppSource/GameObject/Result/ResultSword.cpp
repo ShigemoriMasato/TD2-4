@@ -44,7 +44,7 @@ void ResultSword::Initialize(SHEngine::ModelManager* modelManager, SHEngine::Dra
 
 void ResultSword::StartAnimation() {
 	float duration = 1.0f;
-	EaseType easeType = EaseType::EaseOutCubic;
+	EaseType easeType = EaseType::EaseInBack;
 
 	// 剣1
 	Vector3 s1StartPos = {-13.0f, 0.0f, 0.0f};

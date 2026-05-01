@@ -118,10 +118,6 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	ImGui::DragFloat3("Control2", &control2_.x, 0.1f);
 	ImGui::End();
 
-	ImGui::Begin("ValueEffect");
-	ImGui::DragFloat3("Pos", &valueEfectPos_.x, 1.0f);
-	ImGui::End();
-
 	itemManager_->DrawImGui();
 	pieceManager_->UpdateItemInfo(itemManager_.get());
 	shop_->Initialize(itemManager_.get());
@@ -426,7 +422,7 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 	rerollBarBG_.render->CopyBufferData(1, &bgColor, sizeof(Vector4));
 
 	// テキストの更新
-	std::wstring text = L"リロール ( " + std::to_wstring(rerollCount_) + L" )";
+	std::wstring text = L"リロール : " + std::to_wstring(rerollCount_);
 	rerollText_->SetText(text.c_str());
 
 	rerollText_->SetColor(rerollTextColor_);

@@ -48,7 +48,7 @@ void HP::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataMana
 
 	hpText_ = std::make_unique<SHEngine::Text>();
 	hpText_->Initialize(data, "YDWbananaslipplus.otf", 64);
-	hpText_->SetText(L"0/0");
+	hpText_->SetText(L"0");
 	hpText_->SetSize(hpTextSize_);
 	//hpTextTransform_.position = {hpBarPos_.x, hpBarPos_.y, 0.0f}; // HPバーの初期位置辺りに配置
 }
@@ -106,7 +106,7 @@ void HP::Update(Matrix4x4 vpMatrix, float deltaTime, float currentHP, float maxH
 	hpBarBG_.render->CopyBufferData(1, &color, sizeof(Vector4));
 
 	// HPテキスト更新
-	std::wstring hpString = std::to_wstring((int)currentHP) + L"/" + std::to_wstring((int)maxHP);
+	std::wstring hpString = std::to_wstring((int)currentHP);
 	hpTextTransform_.scale = { hpTextSize_, hpTextSize_, 1.0f };
 	hpText_->SetText(hpString);
 	hpText_->SetColor(hpTextColor_);
