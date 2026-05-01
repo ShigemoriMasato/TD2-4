@@ -8,6 +8,8 @@
 
 #include <GameObject/Effect/Particle/DataBank/ParticlePresetDataBank.h>
 #include <GameObject/Effect/Particle/Type/FountainParticle/FountainParticle.h>
+#include <GameObject/Effect/Particle/Type/GoToTargetParticle/GoToTargetParticle.h>
+#include <GameObject/Effect/Particle/Type/BillboardScaleParticle/BillboardScaleParticle.h>
 
 class ParticleDrawer;
 
@@ -48,6 +50,9 @@ private:
 	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
 
 	int32_t nextId_ = -1;
-	std::unordered_map<int32_t, std::unique_ptr<FountainParticle>> fountainCache_;
-	//std::unordered_map<int32_t, std::unique_ptr<GoToTargetParticle>> goToTargetCache_;
+	std::unordered_map<int32_t, std::unique_ptr<PhysicsParticle>> physicsCache_;
+	//std::unordered_map<int32_t, std::unique_ptr<OnTrailParticle>> onTrailCache_;
+	std::unordered_map<int32_t, std::unique_ptr<GoToTargetParticle>> goToTargetCache_;
+	std::unordered_map<int32_t, std::unique_ptr<BillboardScaleParticle>> billboardScaleCache_;
+	//std::unordered_map<int32_t, std::unique_ptr<BillboardScale2Particle>> billboardScale2Cache_;
 };

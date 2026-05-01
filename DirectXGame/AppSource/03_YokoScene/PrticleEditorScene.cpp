@@ -90,7 +90,7 @@ void PrticleEditorScene::Initialize()
 	grid_->Initialize(drawDataManager_);
 
 	// 編集データ初期化
-	Reset(ParticleType::Fountain);
+	Reset(ParticleType::Physics);
 
 	// "Assets/Model"以下のモデルをリストアップしてmodelDataList_作成
 	BuildModelList();
@@ -124,8 +124,8 @@ void PrticleEditorScene::Reset(ParticleType type)
 	particleConfig_ = Particle::Config{};
 
 	// Fountain
-	fountainPreset_ = FountainConfig{};
-	fountainPreset_.cfg = particleConfig_;
+	physicsPreset_ = PhysicsConfig{};
+	physicsPreset_.cfg = particleConfig_;
 
 	// GoToTarget
 	goToTargetPreset_ = GoToTargetConfig{};
@@ -134,6 +134,14 @@ void PrticleEditorScene::Reset(ParticleType type)
 	// OnTrail
 	onTrailPreset_ = OnTrailConfig{};
 	onTrailPreset_.cfg = particleConfig_;
+
+	// Billboard_Scale
+	billboardScalePreset_ = BillboardScaleConfig{};
+	billboardScalePreset_.cfg = particleConfig_;
+
+	// Billboard_Scale2
+	billboardScale2Preset_ = BillboardScale2Config{};
+	billboardScale2Preset_.cfg = particleConfig_;
 }
 
 // "Assets/Model/"以下のモデルをリストアップしてmodelDataList_作成。武器追従トレイルにしか使わない機能だから簡易的でよい
@@ -215,9 +223,9 @@ void PrticleEditorScene::RebuildEditParticle()
 	if (presetNameBuf_[0] == '\0') return;
 	int32_t slot = editingParticle_.Add(presetNameBuf_);
 	ParticlePresetVariant presetVar = editingParticle_.GetConfig(slot);
-	if (std::holds_alternative<FountainConfig>(presetVar))
+	if (std::holds_alternative<PhysicsConfig>(presetVar))
 	{
-		fountainPreset_ = std::get<FountainConfig>(presetVar);
+		physicsPreset_ = std::get<PhysicsConfig>(presetVar);
 	}
 	else if (std::holds_alternative<GoToTargetConfig>(presetVar))
 	{
@@ -227,6 +235,14 @@ void PrticleEditorScene::RebuildEditParticle()
 	{
 		onTrailPreset_ = std::get<OnTrailConfig>(presetVar);
 	}
+	else if (std::holds_alternative<BillboardScaleConfig>(presetVar))
+	{
+		billboardScalePreset_ = std::get<BillboardScaleConfig>(presetVar);
+	}
+	else if (std::holds_alternative<BillboardScale2Config>(presetVar))
+	{
+		billboardScale2Preset_ = std::get<BillboardScale2Config>(presetVar);
+	}
 }
 void PrticleEditorScene::RebuildEditParticleCurrent()
 {
@@ -234,9 +250,9 @@ void PrticleEditorScene::RebuildEditParticleCurrent()
 	editingParticle_.Initialize(textureManager_, modelManager_, commonData_);
 	if (presetNameBuf_[0] == '\0') return;
 	int32_t slot = editingParticle_.Add(presetNameBuf_);
-	if (currentType_ == ParticleType::Fountain)
+	if (currentType_ == ParticleType::Physics)
 	{
-		editingParticle_.SetConfig(slot, fountainPreset_);
+		editingParticle_.SetConfig(slot, physicsPreset_);
 	}
 	else if (currentType_ == ParticleType::GoToTarget)
 	{
@@ -246,6 +262,14 @@ void PrticleEditorScene::RebuildEditParticleCurrent()
 	{
 		editingParticle_.SetConfig(slot, onTrailPreset_);
 	}
+	else if (currentType_ == ParticleType::Billboard_Scale)
+	{
+		editingParticle_.SetConfig(slot, billboardScalePreset_);
+	}
+	else if (currentType_ == ParticleType::Billboard_Scale2)
+	{
+		editingParticle_.SetConfig(slot, billboardScale2Preset_);
+	}
 }
 
 // データ保存
@@ -253,10 +277,10 @@ void PrticleEditorScene::SaveData()
 {
 	if (presetNameBuf_[0] == '\0') return;
 
-	if (currentType_ == ParticleType::Fountain)
+	if (currentType_ == ParticleType::Physics)
 	{
-		fountainPreset_.cfg = particleConfig_;
-		commonData_->particlePresetDataBank.Save(presetNameBuf_, fountainPreset_);
+		physicsPreset_.cfg = particleConfig_;
+		commonData_->particlePresetDataBank.Save(presetNameBuf_, physicsPreset_);
 	}
 	else if (currentType_ == ParticleType::GoToTarget)
 	{
@@ -268,6 +292,16 @@ void PrticleEditorScene::SaveData()
 		onTrailPreset_.cfg = particleConfig_;
 		commonData_->particlePresetDataBank.Save(presetNameBuf_, onTrailPreset_);
 	}
+	else if (currentType_ == ParticleType::Billboard_Scale)
+	{
+		billboardScalePreset_.cfg = particleConfig_;
+		commonData_->particlePresetDataBank.Save(presetNameBuf_, billboardScalePreset_);
+	}
+	else if (currentType_ == ParticleType::Billboard_Scale2)
+	{
+		billboardScale2Preset_.cfg = particleConfig_;
+		commonData_->particlePresetDataBank.Save(presetNameBuf_, billboardScale2Preset_);
+	}
 }
 
 // データ読み込み
@@ -278,11 +312,11 @@ void PrticleEditorScene::LoadData()
 	ParticlePresetVariant var{};
 	var = commonData_->particlePresetDataBank.Get(presetNameBuf_);
 
-	if (std::holds_alternative<FountainConfig>(var))
+	if (std::holds_alternative<PhysicsConfig>(var))
 	{
-		currentType_ = ParticleType::Fountain;
-		fountainPreset_ = std::get<FountainConfig>(var);
-		particleConfig_ = fountainPreset_.cfg;
+		currentType_ = ParticleType::Physics;
+		physicsPreset_ = std::get<PhysicsConfig>(var);
+		particleConfig_ = physicsPreset_.cfg;
 		std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
 		strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), particleConfig_.texturePath.c_str(), _TRUNCATE);
 		std::memset(modelPathBuf_, 0, sizeof(modelPathBuf_));
@@ -303,6 +337,26 @@ void PrticleEditorScene::LoadData()
 		currentType_ = ParticleType::OnTrail;
 		onTrailPreset_ = std::get<OnTrailConfig>(var);
 		particleConfig_ = onTrailPreset_.cfg;
+		std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
+		strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), particleConfig_.texturePath.c_str(), _TRUNCATE);
+		std::memset(modelPathBuf_, 0, sizeof(modelPathBuf_));
+		strncpy_s(modelPathBuf_, sizeof(modelPathBuf_), particleConfig_.modelPath.c_str(), _TRUNCATE);
+	}
+	else if (std::holds_alternative<BillboardScaleConfig>(var))
+	{
+		currentType_ = ParticleType::Billboard_Scale;
+		billboardScalePreset_ = std::get<BillboardScaleConfig>(var);
+		particleConfig_ = billboardScalePreset_.cfg;
+		std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
+		strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), particleConfig_.texturePath.c_str(), _TRUNCATE);
+		std::memset(modelPathBuf_, 0, sizeof(modelPathBuf_));
+		strncpy_s(modelPathBuf_, sizeof(modelPathBuf_), particleConfig_.modelPath.c_str(), _TRUNCATE);
+	}
+	else if (std::holds_alternative<BillboardScale2Config>(var))
+	{
+		currentType_ = ParticleType::Billboard_Scale2;
+		billboardScale2Preset_ = std::get<BillboardScale2Config>(var);
+		particleConfig_ = billboardScale2Preset_.cfg;
 		std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
 		strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), particleConfig_.texturePath.c_str(), _TRUNCATE);
 		std::memset(modelPathBuf_, 0, sizeof(modelPathBuf_));
@@ -421,7 +475,7 @@ void PrticleEditorScene::DrawImGui()
 	// type
 	{
 		int t = 0;
-		const char* items[] = { "Fountain", "GoToTarget", "OnTrail" };
+		const char* items[] = { "Fountain", "GoToTarget", "OnTrail", "Billboard_Scale", "Billboard_Scale2" };
 		if (ImGui::Combo("type", &t, items, 1))
 		{
 			if (currentType_ != ParticleType(t))
@@ -454,9 +508,9 @@ void PrticleEditorScene::DrawImGui()
 
 	ImGui::SeparatorText("固有Config");
 
-	if (currentType_ == ParticleType::Fountain)
+	if (currentType_ == ParticleType::Physics)
 	{
-		DrawImGui_Fountain();
+		DrawImGui_Physics();
 	}
 	else if (currentType_ == ParticleType::GoToTarget)
 	{
@@ -465,6 +519,14 @@ void PrticleEditorScene::DrawImGui()
 	else if (currentType_ == ParticleType::OnTrail)
 	{
 		DrawImGui_OnTrail();
+	}
+	else if (currentType_ == ParticleType::Billboard_Scale)
+	{
+		DrawImGui_BillboardScale();
+	}
+	else if (currentType_ == ParticleType::Billboard_Scale2)
+	{
+		DrawImGui_BillboardScale2();
 	}
 
 	ImGui::Separator();
@@ -477,225 +539,224 @@ void PrticleEditorScene::DrawImGui()
 #endif
 }
 
-void PrticleEditorScene::DrawImGui_Fountain()
+void PrticleEditorScene::DrawImGui_Physics()
 {
 #ifdef USE_IMGUI
+
 	if (ImGui::CollapsingHeader("scale"))
 	{
-		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.scale.isRandomVal", &fountainPreset_.scale.isRandom_value);
-		if (fountainPreset_.scale.isRandom_value)
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.scale.isRandomVal", &physicsPreset_.scale.value.isRandom);
+		if (physicsPreset_.scale.value.isRandom)
 		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.rand.min", &fountainPreset_.scale.randomRange_value_min.x, 0.01f);
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.rand.max", &fountainPreset_.scale.randomRange_value_max.x, 0.01f);
-
-			if (fountainPreset_.scale.randomRange_value_max.x < fountainPreset_.scale.randomRange_value_min.x)
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.rand.min", &physicsPreset_.scale.value.randomRange_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.rand.max", &physicsPreset_.scale.value.randomRange_max.x, 0.01f);
+			if (physicsPreset_.scale.value.randomRange_max.x < physicsPreset_.scale.value.randomRange_min.x)
 			{
-				fountainPreset_.scale.randomRange_value_max.x = fountainPreset_.scale.randomRange_value_min.x;
+				physicsPreset_.scale.value.randomRange_max.x = physicsPreset_.scale.value.randomRange_min.x;
 			}
-			if (fountainPreset_.scale.randomRange_value_max.y < fountainPreset_.scale.randomRange_value_min.y)
+			if (physicsPreset_.scale.value.randomRange_max.y < physicsPreset_.scale.value.randomRange_min.y)
 			{
-				fountainPreset_.scale.randomRange_value_max.y = fountainPreset_.scale.randomRange_value_min.y;
+				physicsPreset_.scale.value.randomRange_max.y = physicsPreset_.scale.value.randomRange_min.y;
 			}
-			if (fountainPreset_.scale.randomRange_value_max.z < fountainPreset_.scale.randomRange_value_min.z)
+			if (physicsPreset_.scale.value.randomRange_max.z < physicsPreset_.scale.value.randomRange_min.z)
 			{
-				fountainPreset_.scale.randomRange_value_max.z = fountainPreset_.scale.randomRange_value_min.z;
+				physicsPreset_.scale.value.randomRange_max.z = physicsPreset_.scale.value.randomRange_min.z;
 			}
 		}
 		else
 		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.scale.val", &fountainPreset_.scale.initial.value.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.scale.val", &physicsPreset_.scale.value.baseValue.x, 0.01f);
 		}
-		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.scale.isRandomVel", &fountainPreset_.scale.isRandom_velocity);
-		if (fountainPreset_.scale.isRandom_velocity)
-		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.vel.rand.min", &fountainPreset_.scale.randomRange_velocity_min.x, 0.01f);
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.vel.rand.max", &fountainPreset_.scale.randomRange_velocity_max.x, 0.01f);
 
-			if (fountainPreset_.scale.randomRange_velocity_max.x < fountainPreset_.scale.randomRange_velocity_min.x)
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.scale.isRandomVel", &physicsPreset_.scale.velocity.isRandom);
+		if (physicsPreset_.scale.velocity.isRandom)
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.vel.rand.min", &physicsPreset_.scale.velocity.randomRange_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.vel.rand.max", &physicsPreset_.scale.velocity.randomRange_max.x, 0.01f);
+			if (physicsPreset_.scale.velocity.randomRange_max.x < physicsPreset_.scale.velocity.randomRange_min.x)
 			{
-				fountainPreset_.scale.randomRange_velocity_max.x = fountainPreset_.scale.randomRange_velocity_min.x;
+				physicsPreset_.scale.velocity.randomRange_max.x = physicsPreset_.scale.velocity.randomRange_min.x;
 			}
-			if (fountainPreset_.scale.randomRange_velocity_max.y < fountainPreset_.scale.randomRange_velocity_min.y)
+			if (physicsPreset_.scale.velocity.randomRange_max.y < physicsPreset_.scale.velocity.randomRange_min.y)
 			{
-				fountainPreset_.scale.randomRange_velocity_max.y = fountainPreset_.scale.randomRange_velocity_min.y;
+				physicsPreset_.scale.velocity.randomRange_max.y = physicsPreset_.scale.velocity.randomRange_min.y;
 			}
-			if (fountainPreset_.scale.randomRange_velocity_max.z < fountainPreset_.scale.randomRange_velocity_min.z)
+			if (physicsPreset_.scale.velocity.randomRange_max.z < physicsPreset_.scale.velocity.randomRange_min.z)
 			{
-				fountainPreset_.scale.randomRange_velocity_max.z = fountainPreset_.scale.randomRange_velocity_min.z;
+				physicsPreset_.scale.velocity.randomRange_max.z = physicsPreset_.scale.velocity.randomRange_min.z;
 			}
 		}
 		else
 		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.scale.vel", &fountainPreset_.scale.initial.velocity.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.scale.vel", &physicsPreset_.scale.velocity.baseValue.x, 0.01f);
 		}
-		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.scale.isRandomAcc", &fountainPreset_.scale.isRandom_acceleration);
-		if (fountainPreset_.scale.isRandom_acceleration)
-		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.acc.rand.min", &fountainPreset_.scale.randomRange_acceleration_min.x, 0.01f);
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.acc.rand.max", &fountainPreset_.scale.randomRange_acceleration_max.x, 0.01f);
 
-			if (fountainPreset_.scale.randomRange_acceleration_max.x < fountainPreset_.scale.randomRange_acceleration_min.x)
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.scale.isRandomAcc", &physicsPreset_.scale.acceleration.isRandom);
+		if (physicsPreset_.scale.acceleration.isRandom)
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.acc.rand.min", &physicsPreset_.scale.acceleration.randomRange_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.acc.rand.max", &physicsPreset_.scale.acceleration.randomRange_max.x, 0.01f);
+
+			if (physicsPreset_.scale.acceleration.randomRange_max.x < physicsPreset_.scale.acceleration.randomRange_min.x)
 			{
-				fountainPreset_.scale.randomRange_acceleration_max.x = fountainPreset_.scale.randomRange_acceleration_min.x;
+				physicsPreset_.scale.acceleration.randomRange_max.x = physicsPreset_.scale.acceleration.randomRange_min.x;
 			}
-			if (fountainPreset_.scale.randomRange_acceleration_max.y < fountainPreset_.scale.randomRange_acceleration_min.y)
+			if (physicsPreset_.scale.acceleration.randomRange_max.y < physicsPreset_.scale.acceleration.randomRange_min.y)
 			{
-				fountainPreset_.scale.randomRange_acceleration_max.y = fountainPreset_.scale.randomRange_acceleration_min.y;
+				physicsPreset_.scale.acceleration.randomRange_max.y = physicsPreset_.scale.acceleration.randomRange_min.y;
 			}
-			if (fountainPreset_.scale.randomRange_acceleration_max.z < fountainPreset_.scale.randomRange_acceleration_min.z)
+			if (physicsPreset_.scale.acceleration.randomRange_max.z < physicsPreset_.scale.acceleration.randomRange_min.z)
 			{
-				fountainPreset_.scale.randomRange_acceleration_max.z = fountainPreset_.scale.randomRange_acceleration_min.z;
+				physicsPreset_.scale.acceleration.randomRange_max.z = physicsPreset_.scale.acceleration.randomRange_min.z;
 			}
 		}
 		else
 		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.scale.acc", &fountainPreset_.scale.initial.acceleration.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.scale.acc", &physicsPreset_.scale.acceleration.baseValue.x, 0.01f);
 		}
 	}
 
 	if (ImGui::CollapsingHeader("rotate"))
 	{
-		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.rotate.isRandomVal", &fountainPreset_.rotate.isRandom_value);
-		if (fountainPreset_.rotate.isRandom_value)
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.rotate.isRandomVal", &physicsPreset_.rotate.value.isRandom);
+		if (physicsPreset_.rotate.value.isRandom)
 		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.rand.min", &fountainPreset_.rotate.randomRange_value_min.x, 0.01f);
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.rand.max", &fountainPreset_.rotate.randomRange_value_max.x, 0.01f);
-
-			if (fountainPreset_.rotate.randomRange_value_max.x < fountainPreset_.rotate.randomRange_value_min.x)
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.rand.min", &physicsPreset_.rotate.value.randomRange_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.rand.max", &physicsPreset_.rotate.value.randomRange_max.x, 0.01f);
+			if (physicsPreset_.rotate.value.randomRange_max.x < physicsPreset_.rotate.value.randomRange_min.x)
 			{
-				fountainPreset_.rotate.randomRange_value_max.x = fountainPreset_.rotate.randomRange_value_min.x;
+				physicsPreset_.rotate.value.randomRange_max.x = physicsPreset_.rotate.value.randomRange_min.x;
 			}
-			if (fountainPreset_.rotate.randomRange_value_max.y < fountainPreset_.rotate.randomRange_value_min.y)
+			if (physicsPreset_.rotate.value.randomRange_max.y < physicsPreset_.rotate.value.randomRange_min.y)
 			{
-				fountainPreset_.rotate.randomRange_value_max.y = fountainPreset_.rotate.randomRange_value_min.y;
+				physicsPreset_.rotate.value.randomRange_max.y = physicsPreset_.rotate.value.randomRange_min.y;
 			}
-			if (fountainPreset_.rotate.randomRange_value_max.z < fountainPreset_.rotate.randomRange_value_min.z)
+			if (physicsPreset_.rotate.value.randomRange_max.z < physicsPreset_.rotate.value.randomRange_min.z)
 			{
-				fountainPreset_.rotate.randomRange_value_max.z = fountainPreset_.rotate.randomRange_value_min.z;
+				physicsPreset_.rotate.value.randomRange_max.z = physicsPreset_.rotate.value.randomRange_min.z;
 			}
 		}
 		else
 		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.rotate.val", &fountainPreset_.rotate.initial.value.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.rotate.val", &physicsPreset_.rotate.value.baseValue.x, 0.01f);
 		}
-		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.rotate.isRandomVel", &fountainPreset_.rotate.isRandom_velocity);
-		if (fountainPreset_.rotate.isRandom_velocity)
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.rotate.isRandomVel", &physicsPreset_.rotate.velocity.isRandom);
+		if (physicsPreset_.rotate.velocity.isRandom)
 		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.vel.rand.min", &fountainPreset_.rotate.randomRange_velocity_min.x, 0.01f);
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.vel.rand.max", &fountainPreset_.rotate.randomRange_velocity_max.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.vel.rand.min", &physicsPreset_.rotate.velocity.randomRange_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.vel.rand.max", &physicsPreset_.rotate.velocity.randomRange_max.x, 0.01f);
 
-			if (fountainPreset_.rotate.randomRange_velocity_max.x < fountainPreset_.rotate.randomRange_velocity_min.x)
+			if (physicsPreset_.rotate.velocity.randomRange_max.x < physicsPreset_.rotate.velocity.randomRange_min.x)
 			{
-				fountainPreset_.rotate.randomRange_velocity_max.x = fountainPreset_.rotate.randomRange_velocity_min.x;
+				physicsPreset_.rotate.velocity.randomRange_max.x = physicsPreset_.rotate.velocity.randomRange_min.x;
 			}
-			if (fountainPreset_.rotate.randomRange_velocity_max.y < fountainPreset_.rotate.randomRange_velocity_min.y)
+			if (physicsPreset_.rotate.velocity.randomRange_max.y < physicsPreset_.rotate.velocity.randomRange_min.y)
 			{
-				fountainPreset_.rotate.randomRange_velocity_max.y = fountainPreset_.rotate.randomRange_velocity_min.y;
+				physicsPreset_.rotate.velocity.randomRange_max.y = physicsPreset_.rotate.velocity.randomRange_min.y;
 			}
-			if (fountainPreset_.rotate.randomRange_velocity_max.z < fountainPreset_.rotate.randomRange_velocity_min.z)
+			if (physicsPreset_.rotate.velocity.randomRange_max.z < physicsPreset_.rotate.velocity.randomRange_min.z)
 			{
-				fountainPreset_.rotate.randomRange_velocity_max.z = fountainPreset_.rotate.randomRange_velocity_min.z;
+				physicsPreset_.rotate.velocity.randomRange_max.z = physicsPreset_.rotate.velocity.randomRange_min.z;
 			}
 		}
 		else
 		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.rotate.vel", &fountainPreset_.rotate.initial.velocity.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.rotate.vel", &physicsPreset_.rotate.velocity.baseValue.x, 0.01f);
 		}
-		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.rotate.isRandomAcc", &fountainPreset_.rotate.isRandom_acceleration);
-		if (fountainPreset_.rotate.isRandom_acceleration)
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.rotate.isRandomAcc", &physicsPreset_.rotate.acceleration.isRandom);
+		if (physicsPreset_.rotate.acceleration.isRandom)
 		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.acc.rand.min", &fountainPreset_.rotate.randomRange_acceleration_min.x, 0.01f);
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.acc.rand.max", &fountainPreset_.rotate.randomRange_acceleration_max.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.acc.rand.min", &physicsPreset_.rotate.acceleration.randomRange_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("rotate.acc.rand.max", &physicsPreset_.rotate.acceleration.randomRange_max.x, 0.01f);
 
-			if (fountainPreset_.rotate.randomRange_acceleration_max.x < fountainPreset_.rotate.randomRange_acceleration_min.x)
+			if (physicsPreset_.rotate.acceleration.randomRange_max.x < physicsPreset_.rotate.acceleration.randomRange_min.x)
 			{
-				fountainPreset_.rotate.randomRange_acceleration_max.x = fountainPreset_.rotate.randomRange_acceleration_min.x;
+				physicsPreset_.rotate.acceleration.randomRange_max.x = physicsPreset_.rotate.acceleration.randomRange_min.x;
 			}
-			if (fountainPreset_.rotate.randomRange_acceleration_max.y < fountainPreset_.rotate.randomRange_acceleration_min.y)
+			if (physicsPreset_.rotate.acceleration.randomRange_max.y < physicsPreset_.rotate.acceleration.randomRange_min.y)
 			{
-				fountainPreset_.rotate.randomRange_acceleration_max.y = fountainPreset_.rotate.randomRange_acceleration_min.y;
+				physicsPreset_.rotate.acceleration.randomRange_max.y = physicsPreset_.rotate.acceleration.randomRange_min.y;
 			}
-			if (fountainPreset_.rotate.randomRange_acceleration_max.z < fountainPreset_.rotate.randomRange_acceleration_min.z)
+			if (physicsPreset_.rotate.acceleration.randomRange_max.z < physicsPreset_.rotate.acceleration.randomRange_min.z)
 			{
-				fountainPreset_.rotate.randomRange_acceleration_max.z = fountainPreset_.rotate.randomRange_acceleration_min.z;
+				physicsPreset_.rotate.acceleration.randomRange_max.z = physicsPreset_.rotate.acceleration.randomRange_min.z;
 			}
 		}
 		else
 		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.rotate.acc", &fountainPreset_.rotate.initial.acceleration.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.rotate.acc", &physicsPreset_.rotate.acceleration.baseValue.x, 0.01f);
 		}
 	}
 
 	if (ImGui::CollapsingHeader("translate"))
 	{
-		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.translate.isRandomVal", &fountainPreset_.translate.isRandom_value);
-		if (fountainPreset_.translate.isRandom_value)
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.translate.isRandomVal", &physicsPreset_.translate.value.isRandom);
+		if (physicsPreset_.translate.value.isRandom)
 		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.rand.min", &fountainPreset_.translate.randomRange_value_min.x, 0.01f);
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.rand.max", &fountainPreset_.translate.randomRange_value_max.x, 0.01f);
-
-			if (fountainPreset_.translate.randomRange_acceleration_max.x < fountainPreset_.translate.randomRange_acceleration_min.x)
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.rand.min", &physicsPreset_.translate.value.randomRange_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.rand.max", &physicsPreset_.translate.value.randomRange_max.x, 0.01f);
+			if (physicsPreset_.translate.value.randomRange_max.x < physicsPreset_.translate.value.randomRange_min.x)
 			{
-				fountainPreset_.translate.randomRange_acceleration_max.x = fountainPreset_.translate.randomRange_acceleration_min.x;
+				physicsPreset_.translate.value.randomRange_max.x = physicsPreset_.translate.value.randomRange_min.x;
 			}
-			if (fountainPreset_.translate.randomRange_acceleration_max.y < fountainPreset_.translate.randomRange_acceleration_min.y)
+			if (physicsPreset_.translate.value.randomRange_max.y < physicsPreset_.translate.value.randomRange_min.y)
 			{
-				fountainPreset_.translate.randomRange_acceleration_max.y = fountainPreset_.translate.randomRange_acceleration_min.y;
+				physicsPreset_.translate.value.randomRange_max.y = physicsPreset_.translate.value.randomRange_min.y;
 			}
-			if (fountainPreset_.translate.randomRange_acceleration_max.z < fountainPreset_.translate.randomRange_acceleration_min.z)
+			if (physicsPreset_.translate.value.randomRange_max.z < physicsPreset_.translate.value.randomRange_min.z)
 			{
-				fountainPreset_.translate.randomRange_acceleration_max.z = fountainPreset_.translate.randomRange_acceleration_min.z;
+				physicsPreset_.translate.value.randomRange_max.z = physicsPreset_.translate.value.randomRange_min.z;
 			}
 		}
 		else
 		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.translate.val", &fountainPreset_.translate.initial.value.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.translate.val", &physicsPreset_.translate.value.baseValue.x, 0.01f);
 		}
-		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.translate.isRandomVel", &fountainPreset_.translate.isRandom_velocity);
-		if (fountainPreset_.translate.isRandom_velocity)
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.translate.isRandomVel", &physicsPreset_.translate.velocity.isRandom);
+		if (physicsPreset_.translate.velocity.isRandom)
 		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.vel.rand.min", &fountainPreset_.translate.randomRange_velocity_min.x, 0.01f);
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.vel.rand.max", &fountainPreset_.translate.randomRange_velocity_max.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.vel.rand.min", &physicsPreset_.translate.velocity.randomRange_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.vel.rand.max", &physicsPreset_.translate.velocity.randomRange_max.x, 0.01f);
 
-			if (fountainPreset_.translate.randomRange_velocity_max.x < fountainPreset_.translate.randomRange_velocity_min.x)
+			if (physicsPreset_.translate.velocity.randomRange_max.x < physicsPreset_.translate.velocity.randomRange_min.x)
 			{
-				fountainPreset_.translate.randomRange_velocity_max.x = fountainPreset_.translate.randomRange_velocity_min.x;
+				physicsPreset_.translate.velocity.randomRange_max.x = physicsPreset_.translate.velocity.randomRange_min.x;
 			}
-			if (fountainPreset_.translate.randomRange_velocity_max.y < fountainPreset_.translate.randomRange_velocity_min.y)
+			if (physicsPreset_.translate.velocity.randomRange_max.y < physicsPreset_.translate.velocity.randomRange_min.y)
 			{
-				fountainPreset_.translate.randomRange_velocity_max.y = fountainPreset_.translate.randomRange_velocity_min.y;
+				physicsPreset_.translate.velocity.randomRange_max.y = physicsPreset_.translate.velocity.randomRange_min.y;
 			}
-			if (fountainPreset_.translate.randomRange_velocity_max.z < fountainPreset_.translate.randomRange_velocity_min.z)
+			if (physicsPreset_.translate.velocity.randomRange_max.z < physicsPreset_.translate.velocity.randomRange_min.z)
 			{
-				fountainPreset_.translate.randomRange_velocity_max.z = fountainPreset_.translate.randomRange_velocity_min.z;
+				physicsPreset_.translate.velocity.randomRange_max.z = physicsPreset_.translate.velocity.randomRange_min.z;
 			}
 		}
 		else
 		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.translate.vel", &fountainPreset_.translate.initial.velocity.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.translate.vel", &physicsPreset_.translate.velocity.baseValue.x, 0.01f);
 		}
-		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.translate.isRandomAcc", &fountainPreset_.translate.isRandom_acceleration);
-		if (fountainPreset_.translate.isRandom_acceleration)
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.translate.isRandomAcc", &physicsPreset_.translate.acceleration.isRandom);
+		if (physicsPreset_.translate.acceleration.isRandom)
 		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.acc.rand.min", &fountainPreset_.translate.randomRange_acceleration_min.x, 0.01f);
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.acc.rand.max", &fountainPreset_.translate.randomRange_acceleration_max.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.acc.rand.min", &physicsPreset_.translate.acceleration.randomRange_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("translate.acc.rand.max", &physicsPreset_.translate.acceleration.randomRange_max.x, 0.01f);
 
-			if (fountainPreset_.translate.randomRange_acceleration_max.x < fountainPreset_.translate.randomRange_acceleration_min.x)
+			if (physicsPreset_.translate.acceleration.randomRange_max.x < physicsPreset_.translate.acceleration.randomRange_min.x)
 			{
-				fountainPreset_.translate.randomRange_acceleration_max.x = fountainPreset_.translate.randomRange_acceleration_min.x;
+				physicsPreset_.translate.acceleration.randomRange_max.x = physicsPreset_.translate.acceleration.randomRange_min.x;
 			}
-			if (fountainPreset_.translate.randomRange_acceleration_max.y < fountainPreset_.translate.randomRange_acceleration_min.y)
+			if (physicsPreset_.translate.acceleration.randomRange_max.y < physicsPreset_.translate.acceleration.randomRange_min.y)
 			{
-				fountainPreset_.translate.randomRange_acceleration_max.y = fountainPreset_.translate.randomRange_acceleration_min.y;
+				physicsPreset_.translate.acceleration.randomRange_max.y = physicsPreset_.translate.acceleration.randomRange_min.y;
 			}
-			if (fountainPreset_.translate.randomRange_acceleration_max.z < fountainPreset_.translate.randomRange_acceleration_min.z)
+			if (physicsPreset_.translate.acceleration.randomRange_max.z < physicsPreset_.translate.acceleration.randomRange_min.z)
 			{
-				fountainPreset_.translate.randomRange_acceleration_max.z = fountainPreset_.translate.randomRange_acceleration_min.z;
+				physicsPreset_.translate.acceleration.randomRange_max.z = physicsPreset_.translate.acceleration.randomRange_min.z;
 			}
 		}
 		else
 		{
-			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.translate.acc", &fountainPreset_.translate.initial.acceleration.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.translate.acc", &physicsPreset_.translate.acceleration.baseValue.x, 0.01f);
 		}
 	}
 
@@ -707,6 +768,90 @@ void PrticleEditorScene::DrawImGui_GoToTarget()
 
 void PrticleEditorScene::DrawImGui_OnTrail()
 {}
+
+void PrticleEditorScene::DrawImGui_BillboardScale()
+{
+#ifdef USE_IMGUI
+
+	if (ImGui::CollapsingHeader("scale"))
+	{
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.scale.isRandomVal", &billboardScalePreset_.scale.value.isRandom);
+		if (billboardScalePreset_.scale.value.isRandom)
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.rand.min", &billboardScalePreset_.scale.value.randomRange_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.rand.max", &billboardScalePreset_.scale.value.randomRange_max.x, 0.01f);
+			if (billboardScalePreset_.scale.value.randomRange_max.x < billboardScalePreset_.scale.value.randomRange_min.x)
+			{
+				billboardScalePreset_.scale.value.randomRange_max.x = billboardScalePreset_.scale.value.randomRange_min.x;
+			}
+			if (billboardScalePreset_.scale.value.randomRange_max.y < billboardScalePreset_.scale.value.randomRange_min.y)
+			{
+				billboardScalePreset_.scale.value.randomRange_max.y = billboardScalePreset_.scale.value.randomRange_min.y;
+			}
+			if (billboardScalePreset_.scale.value.randomRange_max.z < billboardScalePreset_.scale.value.randomRange_min.z)
+			{
+				billboardScalePreset_.scale.value.randomRange_max.z = billboardScalePreset_.scale.value.randomRange_min.z;
+			}
+		}
+		else
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.scale.val", &billboardScalePreset_.scale.value.baseValue.x, 0.01f);
+		}
+
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.scale.isRandomVel", &billboardScalePreset_.scale.velocity.isRandom);
+		if (billboardScalePreset_.scale.velocity.isRandom)
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.vel.rand.min", &billboardScalePreset_.scale.velocity.randomRange_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.vel.rand.max", &billboardScalePreset_.scale.velocity.randomRange_max.x, 0.01f);
+			if (billboardScalePreset_.scale.velocity.randomRange_max.x < billboardScalePreset_.scale.velocity.randomRange_min.x)
+			{
+				billboardScalePreset_.scale.velocity.randomRange_max.x = billboardScalePreset_.scale.velocity.randomRange_min.x;
+			}
+			if (billboardScalePreset_.scale.velocity.randomRange_max.y < billboardScalePreset_.scale.velocity.randomRange_min.y)
+			{
+				billboardScalePreset_.scale.velocity.randomRange_max.y = billboardScalePreset_.scale.velocity.randomRange_min.y;
+			}
+			if (billboardScalePreset_.scale.velocity.randomRange_max.z < billboardScalePreset_.scale.velocity.randomRange_min.z)
+			{
+				billboardScalePreset_.scale.velocity.randomRange_max.z = billboardScalePreset_.scale.velocity.randomRange_min.z;
+			}
+		}
+		else
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.scale.vel", &billboardScalePreset_.scale.velocity.baseValue.x, 0.01f);
+		}
+
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.scale.isRandomAcc", &billboardScalePreset_.scale.acceleration.isRandom);
+		if (billboardScalePreset_.scale.acceleration.isRandom)
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.acc.rand.min", &billboardScalePreset_.scale.acceleration.randomRange_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.acc.rand.max", &billboardScalePreset_.scale.acceleration.randomRange_max.x, 0.01f);
+
+			if (billboardScalePreset_.scale.acceleration.randomRange_max.x < billboardScalePreset_.scale.acceleration.randomRange_min.x)
+			{
+				billboardScalePreset_.scale.acceleration.randomRange_max.x = billboardScalePreset_.scale.acceleration.randomRange_min.x;
+			}
+			if (billboardScalePreset_.scale.acceleration.randomRange_max.y < billboardScalePreset_.scale.acceleration.randomRange_min.y)
+			{
+				billboardScalePreset_.scale.acceleration.randomRange_max.y = billboardScalePreset_.scale.acceleration.randomRange_min.y;
+			}
+			if (billboardScalePreset_.scale.acceleration.randomRange_max.z < billboardScalePreset_.scale.acceleration.randomRange_min.z)
+			{
+				billboardScalePreset_.scale.acceleration.randomRange_max.z = billboardScalePreset_.scale.acceleration.randomRange_min.z;
+			}
+		}
+		else
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.scale.acc", &billboardScalePreset_.scale.acceleration.baseValue.x, 0.01f);
+		}
+	}
+
+#endif
+}
+
+void PrticleEditorScene::DrawImGui_BillboardScale2()
+{}
+
 
 
 void PrticleEditorScene::UpdateRenders(const Matrix4x4& vpMatrix)

@@ -11,7 +11,6 @@ class Particle
 public:
 	static constexpr uint32_t kMaxParticles_ = 4096;
 
-
 	struct Config
 	{
 		float lifeTime = 1.0f;
@@ -64,6 +63,7 @@ private:
 
 	// 履歴
 	size_t aliveCount_ = 0;
+
 
 	// GPU転送用
 	std::vector<InstanceGpu> gpuInstances_;

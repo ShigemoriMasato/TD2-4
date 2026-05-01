@@ -13,7 +13,7 @@ class ParticleDrawer final
 public:
 	struct Config
 	{
-		uint32_t maxModels = 128;
+		uint32_t maxModels = 12;
 		uint32_t maxInstancesPerModel = 8192;
 	};
 

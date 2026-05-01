@@ -28,7 +28,7 @@ void Particle::Clear()
 {
 	// 履歴クリア
 	aliveCount_ = 0;
-	// GPUに送るようの頂点情報を初期化
+	// GPUに送るようの情報を初期化(重い)
 	std::fill(gpuInstances_.begin(), gpuInstances_.end(), InstanceGpu{});
 }
 

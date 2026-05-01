@@ -15,23 +15,40 @@ int32_t MultiParticle::Add(const std::string& presetName)
 	nextId_++;
 	
 	// パーティクルタイプごとに生成
-	if (std::holds_alternative<FountainConfig>(presetVar))
+	if (std::holds_alternative<PhysicsConfig>(presetVar))
 	{
-		const auto& preset = std::get<FountainConfig>(presetVar);
-		auto particle = std::make_unique<FountainParticle>();
+		const auto& preset = std::get<PhysicsConfig>(presetVar);
+		auto particle = std::make_unique<PhysicsParticle>();
 		particle->Initialize(textureManager_, modelManager_);
 		particle->SetConfig(preset);
-		fountainCache_[nextId_] = std::move(particle);
+		physicsCache_[nextId_] = std::move(particle);
+	}
+	else if (std::holds_alternative<OnTrailConfig>(presetVar))
+	{
+		const auto& preset = std::get<OnTrailConfig>(presetVar);
+		(void)preset;
 	}
 	else if (std::holds_alternative<GoToTargetConfig>(presetVar))
 	{
 		const auto& preset = std::get<GoToTargetConfig>(presetVar);
 		(void)preset;
 	}
-	else if (std::holds_alternative<OnTrailConfig>(presetVar))
+	else if (std::holds_alternative<BillboardScaleConfig>(presetVar))
 	{
-		const auto& preset = std::get<OnTrailConfig>(presetVar);
+		const auto& preset = std::get<BillboardScaleConfig>(presetVar);
+		auto particle = std::make_unique<BillboardScaleParticle>();
+		particle->Initialize(textureManager_, modelManager_);
+		particle->SetConfig(preset);
+		billboardScaleCache_[nextId_] = std::move(particle);
+	}
+	else if (std::holds_alternative<BillboardScale2Config>(presetVar))
+	{
+		const auto& preset = std::get<BillboardScale2Config>(presetVar);
 		(void)preset;
+	}
+	else
+	{
+		throw std::runtime_error("Invalid particle preset type");
 	}
 
 	return nextId_;
@@ -39,55 +56,97 @@ int32_t MultiParticle::Add(const std::string& presetName)
 
 void MultiParticle::SetEmittingFlag(const int32_t id, bool flag)
 {
-	if (fountainCache_.count(id))
+	if (physicsCache_.count(id))
 	{
-		fountainCache_.at(id)->SetEnabled(flag);
+		physicsCache_.at(id)->SetEnabled(flag);
 	}
+	//else if (onTrailCache_.count(id))
+	//{
+	//	onTrailCache_.at(id)->SetEnabled(flag);
+	//}
+	//else if (goToTargetCache_.count(id))
+	//{
+	//	goToTargetCache_.at(id)->SetEnabled(flag);
+	//}
+	else if (billboardScaleCache_.count(id))
+	{
+		billboardScaleCache_.at(id)->SetEnabled(flag);
+	}
+	//else if (billboardScale2Cache_.count(id))
+	//{
+	//	billboardScale2Cache_.at(id)->SetEnabled(flag);
+	//}
 }
 
 void MultiParticle::SetConfig(const int32_t id, const ParticlePresetVariant& presetVar)
 {
-	if (fountainCache_.count(id))
+	if (physicsCache_.count(id))
 	{
-		if (std::holds_alternative<FountainConfig>(presetVar))
+		if (std::holds_alternative<PhysicsConfig>(presetVar))
 		{
-			const auto& preset = std::get<FountainConfig>(presetVar);
-			fountainCache_.at(id)->SetConfig(preset);
+			const auto& preset = std::get<PhysicsConfig>(presetVar);
+			physicsCache_.at(id)->SetConfig(preset);
 		}
 	}
-	//else if (.count(id))
+	//else if (goToTargetCache_.count(id))
 	//{
 	//	if (std::holds_alternative<GoToTargetConfig>(presetVar))
 	//	{
 	//		const auto& preset = std::get<GoToTargetConfig>(presetVar);
-	//		(void)preset;
+	//		goToTargetCache_.at(id)->SetConfig(preset);
 	//	}
 	//}
-	//else if (.count(id))
+	//else if (onTrailCache_.count(id))
 	//{
 	//	if (std::holds_alternative<OnTrailConfig>(presetVar))
 	//	{
 	//		const auto& preset = std::get<OnTrailConfig>(presetVar);
-	//		(void)preset;
+	//		onTrailCache_.at(id)->SetConfig(preset);
+	//	}
+	//}
+	else if (billboardScaleCache_.count(id))
+	{
+		if (std::holds_alternative<BillboardScaleConfig>(presetVar))
+		{
+			const auto& preset = std::get<BillboardScaleConfig>(presetVar);
+			billboardScaleCache_.at(id)->SetConfig(preset);
+		}
+	}
+	//else if (billboardScale2Cache_.count(id))
+	//{
+	//	if (std::holds_alternative<BillboardScale2Config>(presetVar))
+	//	{
+	//		const auto& preset = std::get<BillboardScale2Config>(presetVar);
+	//		billboardScale2Cache_.at(id)->SetConfig(preset);
 	//	}
 	//}
 }
 
 ParticlePresetVariant MultiParticle::GetConfig(const int32_t id)
 {
-	if (fountainCache_.count(id))
+	if (physicsCache_.count(id))
 	{
-		FountainConfig preset = fountainCache_.at(id)->GetPreset();
+		PhysicsConfig preset = physicsCache_.at(id)->GetPreset();
 		return preset;
 	}
-	//else if (.count(id))
+	//else if (onTrailCache_.count(id))
+	//{
+	//	OnTrailConfig preset = onTrailCache_.at(id)->GetPreset();
+	//	return preset;
+	//}
+	//else if (goToTargetCache_.count(id))
 	//{
 	//	GoToTargetConfig preset = goToTargetCache_.at(id)->GetPreset();
 	//	return preset;
 	//}
-	//else if (.count(id))
+	else if (billboardScaleCache_.count(id))
+	{
+		BillboardScaleConfig preset = billboardScaleCache_.at(id)->GetPreset();
+		return preset;
+	}
+	//else if (billboardScale2Cache_.count(id))
 	//{
-	//	OnTrailConfig preset = onTrailCache_.at(id)->GetPreset();
+	//	BillboardScale2Config preset = billboardScale2Cache_.at(id)->GetPreset();
 	//	return preset;
 	//}
 	return {};
@@ -95,10 +154,26 @@ ParticlePresetVariant MultiParticle::GetConfig(const int32_t id)
 
 void MultiParticle::Clear()
 {
-	for (auto& [name, particle] : fountainCache_)
+	for (auto& [name, particle] : physicsCache_)
 	{
 		particle->Clear();
 	}
+	//for (auto& [name, particle] : onTrailCache_)
+	//{
+	//	particle->Clear();
+	//}
+	//for (auto& [name, particle] : goToTargetCache_)
+	//{
+	//	particle->Clear();
+	//}
+	for (auto& [name, particle] : billboardScaleCache_)
+	{
+		particle->Clear();
+	}
+	//for (auto& [name, particle] : billboardScale2Cache_)
+	//{
+	//	particle->Clear();
+	//}
 }
 
 void MultiParticle::Initialize(SHEngine::TextureManager* textureManager, SHEngine::ModelManager* modelManager, CommonData* commonData)
@@ -110,17 +185,41 @@ void MultiParticle::Initialize(SHEngine::TextureManager* textureManager, SHEngin
 
 	nextId_ = -1;
 
-	fountainCache_.clear();
+	physicsCache_.clear();
+	//onTrailCache_.clear();
+	goToTargetCache_.clear();
+	billboardScaleCache_.clear();
+	//billboardScale2Cache_.clear();
 	modelWorld_ = Matrix4x4::Identity();
 }
 
 void MultiParticle::Update(float dt)
 {
-	for (auto& [name, particle] : fountainCache_)
+	for (auto& [name, particle] : physicsCache_)
 	{
 		particle->SetModelWorld(modelWorld_);
 		particle->Update(dt);
 	}
+	//for (auto& [name, particle] : onTrailCache_)
+	//{
+	//	particle->SetModelWorld(modelWorld_);
+	//	particle->Update(dt);
+	//}
+	//for (auto& [name, particle] : goToTargetCache_)
+	//{
+	//	particle->SetModelWorld(modelWorld_);
+	//	particle->Update(dt);
+	//}
+	for (auto& [name, particle] : billboardScaleCache_)
+	{
+		particle->SetModelWorld(modelWorld_);
+		particle->Update(dt);
+	}
+	//for (auto& [name, particle] : billboardScale2Cache_)
+	//{
+	//	particle->SetModelWorld(modelWorld_);
+	//	particle->Update(dt);
+	//}
 }
 
 void MultiParticle::Draw()
@@ -132,26 +231,75 @@ void MultiParticle::RegisterToDrawer()
 {
 	if (!drawer_) return;
 
-	for (auto& [id, p] : fountainCache_)
+	for (auto& [id, p] : physicsCache_)
 	{
 		drawer_->Register(&p->GetParticle());
 	}
+	//for (auto& [id, p] : onTrailCache_)
+	//{
+	//	drawer_->Register(&p->GetParticle());
+	//}
+	//for (auto& [id, p] : goToTargetCache_)
+	//{
+	//	drawer_->Register(&p->GetParticle());
+	//}
+	for (auto& [id, p] : billboardScaleCache_)
+	{
+		drawer_->Register(&p->GetParticle());
+	}
+	//for (auto& [id, p] : billboardScale2Cache_)
+	//{
+	//	drawer_->Register(&p->GetParticle());
+	//}
 }
 
 std::vector<Matrix4x4> MultiParticle::GetParticleWorlds(const int32_t id)
 {
-	if (fountainCache_.count(id))
+	if (physicsCache_.count(id))
 	{
-		return fountainCache_.at(id)->GetParticle().GetParticleWorlds();
+		return physicsCache_.at(id)->GetParticle().GetParticleWorlds();
 	}
+	//else if (onTrailCache_.count(id))
+	//{
+	//	return onTrailCache_.at(id)->GetParticle().GetParticleWorlds();
+	//}
+	//else if (goToTargetCache_.count(id))
+	//{
+	//	return goToTargetCache_.at(id)->GetParticle().GetParticleWorlds();
+	//}
+	else if (billboardScaleCache_.count(id))
+	{
+		return billboardScaleCache_.at(id)->GetParticle().GetParticleWorlds();
+	}
+	//else if (billboardScale2Cache_.count(id))
+	//{
+	//	return billboardScale2Cache_.at(id)->GetParticle().GetParticleWorlds();
+	//}
 	return {};
 }
 
 size_t MultiParticle::GetAliveCount(const int32_t id) const
 {
-	if (fountainCache_.count(id))
+	if (physicsCache_.count(id))
 	{
-		return fountainCache_.at(id)->GetParticle().GetAliveCount();
+		return physicsCache_.at(id)->GetParticle().GetAliveCount();
 	}
+	//else if (onTrailCache_.count(id))
+	//{
+	//	return onTrailCache_.at(id)->GetParticle().GetAliveCount();
+	//}
+	//else if (goToTargetCache_.count(id))
+	//{
+	//	return goToTargetCache_.at(id)->GetParticle().GetAliveCount();
+	//}
+	else if (billboardScaleCache_.count(id))
+	{
+		return billboardScaleCache_.at(id)->GetParticle().GetAliveCount();
+	}
+	//else if (billboardScale2Cache_.count(id))
+	//{
+	//	return billboardScale2Cache_.at(id)->GetParticle().GetAliveCount();
+	//}
+
 	return 0;
 }

@@ -5,7 +5,13 @@
 #include <Tool/Json/JsonManager.h>
 #include <GameObject/Effect/Particle/Preset/ParticlePreset.h>
 
-using ParticlePresetVariant = std::variant<FountainConfig, OnTrailConfig, GoToTargetConfig>;
+using ParticlePresetVariant = std::variant<
+	PhysicsConfig, 
+	OnTrailConfig, 
+	GoToTargetConfig,
+	BillboardScaleConfig,
+	BillboardScale2Config
+>;
 
 class ParticlePresetDataBank
 {
@@ -38,9 +44,11 @@ public:
 	/// <summary>
 	/// 生成済みのConfigを Assets/Json/Particle/<name>.json として保存する
 	/// </summary>
-	void Save(const std::string& name, FountainConfig& uniqueConfig);
+	void Save(const std::string& name, PhysicsConfig& uniqueConfig);
 	void Save(const std::string& name, GoToTargetConfig& uniqueConfig);
 	void Save(const std::string& name, OnTrailConfig& uniqueConfig);
+	void Save(const std::string& name, BillboardScaleConfig& uniqueConfig);
+	void Save(const std::string& name, BillboardScale2Config& uniqueConfig);
 	void SaveParticleSRT(JsonManager& json, const std::string& keyPrefix, const ParticleSRT& srt);
 
 

@@ -43,9 +43,11 @@ private:
 	void LoadData();
 
 	void DrawImGui();
-	void DrawImGui_Fountain();
+	void DrawImGui_Physics();
 	void DrawImGui_GoToTarget();
 	void DrawImGui_OnTrail();
+	void DrawImGui_BillboardScale();
+	void DrawImGui_BillboardScale2();
 
 	void UpdateRenders(const Matrix4x4& vpMatrix);
 
@@ -73,18 +75,23 @@ private:
 
 	// 共通Config
 	Particle::Config particleConfig_{};
-	// Fountain 固有
-	FountainConfig fountainPreset_{};
+	// Physics 固有
+	PhysicsConfig physicsPreset_{};
 	// GoToTarget 固有
 	GoToTargetConfig goToTargetPreset_{};
 	// OnTrailConfig 固有
 	OnTrailConfig onTrailPreset_{};
+	// Billboard_Scale 固有
+	BillboardScaleConfig billboardScalePreset_{};
+	// Billboard_Scale2 固有
+	BillboardScale2Config billboardScale2Preset_{};
+
+
 	// 上記Configを利用し描画するParticleが必要（編集中のParticleを描画するため）
 	MultiParticle editingParticle_;
 
 
-	ParticleType currentType_ = ParticleType::Fountain;
-
+	ParticleType currentType_ = ParticleType::Physics;
 
 	// Particle
 	MultiParticle particle_;
