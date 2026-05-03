@@ -88,7 +88,7 @@ void PhysicsParticle::Update(float dt)
 		instances_.end());
 	instances_.erase(
 		std::remove_if(instances_.begin(), instances_.end(),
-			[this](const ParticleInstance& p) { return p.scale.value.baseValue.x <= 0.0f || p.scale.value.baseValue.y <= 0.0f || p.scale.value.baseValue.z <= 0.0f; }),
+			[this](const ParticleInstance& p) { return p.scale.value.baseValue.x < 0.0f || p.scale.value.baseValue.y < 0.0f || p.scale.value.baseValue.z < 0.0f; }),
 		instances_.end());
 
 

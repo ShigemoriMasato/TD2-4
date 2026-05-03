@@ -28,16 +28,20 @@ private:
 
 private:
 	void BuildModelList();
+	std::vector<std::string> modelList_;
+	void BuildTextureList();
+	std::vector<std::string> textureList_;
 	void BuildJsonList();
+	std::vector<std::string> JsonList_;
 
-	void SelectModel(int index);
+	//void SelectModel(int index);
 
 	// 描画パーティクルのみ再生成
 	void RebuildDrawParticle();
 	// 編集パーティクルのみ再生成(Jsonのプリセットから再生成)
-	void RebuildEditParticle();
+	void RebuildEditParticleByJson();
 	// 編集パーティクルを現在の編集内容で再生成
-	void RebuildEditParticleCurrent();
+	void RebuildEditParticleByCurrentConfig();
 
 	void SaveData();
 	void LoadData();
@@ -49,9 +53,6 @@ private:
 	void DrawImGui_BillboardScale();
 	void DrawImGui_BillboardScale2();
 
-	void UpdateRenders(const Matrix4x4& vpMatrix);
-
-
 	void Reset(ParticleType type);
 
 private:
@@ -59,15 +60,6 @@ private:
 	std::unique_ptr<DebugCamera> camera_;
 	// ワールドgrid
 	std::unique_ptr<Grid> grid_;
-
-	int selectedModelIndex_ = -1;
-
-	// モデル描画データ
-	std::vector<std::unique_ptr<DrawDataUnit>> modelDataList_;
-	std::unique_ptr<SHEngine::RenderObject> modelRender_;
-	Transform modelTransform_{};
-	Matrix4x4 modelWorld_;
-	bool isModelDraw_ = true;
 
 	// エミッターAABB描画データ
 	std::unique_ptr<SHEngine::RenderObject> emitterAABBRender_;
@@ -87,7 +79,7 @@ private:
 	BillboardScale2Config billboardScale2Preset_{};
 
 
-	// 上記Configを利用し描画するParticleが必要（編集中のParticleを描画するため）
+	// 上記Configを利用し描画するParticleが必要（編集中のParticleを描画するため）(ここには一つしかAddされない)
 	MultiParticle editingParticle_;
 
 
@@ -109,5 +101,4 @@ private:
 	char presetNameBuf_[256]{};
 	char texturePathBuf_[256]{};
 	char modelPathBuf_[256]{};
-	std::vector<std::string> JsonList_;
 };

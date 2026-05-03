@@ -65,7 +65,13 @@ void BillboardScaleParticle::Update(float dt)
 		instance.scale.value.baseValue += instance.scale.velocity.baseValue * dt + 0.5f * instance.scale.acceleration.baseValue * dt * dt;
 		instance.scale.velocity.baseValue += instance.scale.acceleration.baseValue * dt;
 
-		const Matrix4x4 world = Matrix::MakeScaleMatrix(instance.scale.value.baseValue) * modelWorld_;
+		Vector3 toCamera = cameraPos_ - Vector3(modelWorld_.m[3][0], modelWorld_.m[3][1], modelWorld_.m[3][2]);
+		toCamera = toCamera.Normalize();
+
+		float theta = std::atan2(toCamera.x, toCamera.z);
+		Matrix4x4 billboardRot = Matrix::MakeRotationYMatrix(theta);
+
+		const Matrix4x4 world = Matrix::MakeScaleMatrix(instance.scale.value.baseValue) * billboardRot * modelWorld_;
 
 		particle_.pushInstance(world, instance.color);
 	}

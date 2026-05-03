@@ -12,6 +12,7 @@ public:
 	void Update(float dt);
 
 	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
+	void SetCameraPos(const Vector3& cameraPos) { cameraPos_ = cameraPos; }
 	void SetEnabled(bool isActive);
 
 	void Clear() { particle_.Clear(); }
@@ -26,6 +27,7 @@ private:
 	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
 	bool isActive_ = true;
 	float emitTimer_ = 0.0f;
+	Vector3 cameraPos_{};
 
 	struct ParticleInstance
 	{

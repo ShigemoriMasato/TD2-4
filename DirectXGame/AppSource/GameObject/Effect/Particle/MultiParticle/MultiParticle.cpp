@@ -54,6 +54,42 @@ int32_t MultiParticle::Add(const std::string& presetName)
 	return nextId_;
 }
 
+void MultiParticle::SetCameraPos(const Vector3& cameraPos)
+{
+	for (auto& [name, particle] : billboardScaleCache_)
+	{
+		particle->SetCameraPos(cameraPos);
+	}
+	//for (auto& [name, particle] : billboardScale2Cache_)
+	//{
+	//	particle->GetParticle().SetCameraPos(cameraPos_);
+	//}
+}
+
+void MultiParticle::SetModelWorld(const Matrix4x4& modelWorld)
+{
+	for (auto& [name, particle] : physicsCache_)
+	{
+		particle->SetModelWorld(modelWorld);
+	}
+	//for (auto& [name, particle] : onTrailCache_)
+	//{
+	//	particle->SetModelWorld(modelWorld);
+	//}
+	//for (auto& [name, particle] : goToTargetCache_)
+	//{
+	//	particle->SetModelWorld(modelWorld);
+	//}
+	for (auto& [name, particle] : billboardScaleCache_)
+	{
+		particle->SetModelWorld(modelWorld);
+	}
+	//for (auto& [name, particle] : billboardScale2Cache_)
+	//{
+	//	particle->SetModelWorld(modelWorld);
+	//}}
+}
+
 void MultiParticle::SetEmittingFlag(const int32_t id, bool flag)
 {
 	if (physicsCache_.count(id))
@@ -190,34 +226,28 @@ void MultiParticle::Initialize(SHEngine::TextureManager* textureManager, SHEngin
 	goToTargetCache_.clear();
 	billboardScaleCache_.clear();
 	//billboardScale2Cache_.clear();
-	modelWorld_ = Matrix4x4::Identity();
 }
 
 void MultiParticle::Update(float dt)
 {
 	for (auto& [name, particle] : physicsCache_)
 	{
-		particle->SetModelWorld(modelWorld_);
 		particle->Update(dt);
 	}
 	//for (auto& [name, particle] : onTrailCache_)
 	//{
-	//	particle->SetModelWorld(modelWorld_);
 	//	particle->Update(dt);
 	//}
 	//for (auto& [name, particle] : goToTargetCache_)
 	//{
-	//	particle->SetModelWorld(modelWorld_);
 	//	particle->Update(dt);
 	//}
 	for (auto& [name, particle] : billboardScaleCache_)
 	{
-		particle->SetModelWorld(modelWorld_);
 		particle->Update(dt);
 	}
 	//for (auto& [name, particle] : billboardScale2Cache_)
 	//{
-	//	particle->SetModelWorld(modelWorld_);
 	//	particle->Update(dt);
 	//}
 }
