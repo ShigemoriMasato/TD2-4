@@ -1,0 +1,57 @@
+{
+    "cfg.emitInterval": 2.0,
+    "cfg.emitNum": 1,
+    "cfg.lifeTime": 1.0,
+    "cfg.modelPath": "Assets/.EngineResource/Model/Cube",
+    "cfg.speed": 1.0,
+    "cfg.texturePath": "AttractEffect.png",
+    "init.scale.acc": [
+        -200.0,
+        -200.0,
+        0.0
+    ],
+    "init.scale.isRandomAcc": false,
+    "init.scale.isRandomVal": false,
+    "init.scale.isRandomVel": false,
+    "init.scale.randomRangeAccMax": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.scale.randomRangeAccMin": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.scale.randomRangeValMax": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.scale.randomRangeValMin": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.scale.randomRangeVelMax": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.scale.randomRangeVelMin": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.scale.val": [
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.scale.vel": [
+        30.0,
+        30.0,
+        0.0
+    ],
+    "type": "Billboard_Scale"
+}

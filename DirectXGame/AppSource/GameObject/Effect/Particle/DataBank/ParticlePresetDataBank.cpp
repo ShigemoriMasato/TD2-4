@@ -42,7 +42,7 @@ void ParticlePresetDataBank::SaveParticleSRT(JsonManager& json, const std::strin
 	// value
 	{
 		json.Add(keyPrefix + ".isRandomVal", srt.value.isRandom);
-		json.Add(keyPrefix + ".val", srt.value);
+		json.Add(keyPrefix + ".val", srt.value.baseValue);
 		json.Add(keyPrefix + ".randomRangeValMin", srt.value.randomRange_min);
 		json.Add(keyPrefix + ".randomRangeValMax", srt.value.randomRange_max);
 	}
@@ -50,7 +50,7 @@ void ParticlePresetDataBank::SaveParticleSRT(JsonManager& json, const std::strin
 	// velocity
 	{
 		json.Add(keyPrefix + ".isRandomVel", srt.velocity.isRandom);
-		json.Add(keyPrefix + ".vel", srt.velocity);
+		json.Add(keyPrefix + ".vel", srt.velocity.baseValue);
 		json.Add(keyPrefix + ".randomRangeVelMin", srt.velocity.randomRange_min);
 		json.Add(keyPrefix + ".randomRangeVelMax", srt.velocity.randomRange_max);
 	}
@@ -58,7 +58,7 @@ void ParticlePresetDataBank::SaveParticleSRT(JsonManager& json, const std::strin
 	// acceleration
 	{
 		json.Add(keyPrefix + ".isRandomAcc", srt.acceleration.isRandom);
-		json.Add(keyPrefix + ".acc", srt.acceleration);
+		json.Add(keyPrefix + ".acc", srt.acceleration.baseValue);
 		json.Add(keyPrefix + ".randomRangeAccMin", srt.acceleration.randomRange_min);
 		json.Add(keyPrefix + ".randomRangeAccMax", srt.acceleration.randomRange_max);
 	}
@@ -178,7 +178,7 @@ void ParticlePresetDataBank::Save(const std::string& name, BillboardScaleConfig&
 
 	// type
 	{
-		std::string type = "BillboardScale";
+		std::string type = "Billboard_Scale";
 		json_.Add("type", type);
 	}
 

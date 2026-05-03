@@ -47,9 +47,9 @@ inline bool FromString(const std::string& s, ParticleType& out)
 struct ParticleSRTComponent
 {
 	bool isRandom = false;
-	Vector3 baseValue;
-	Vector3 randomRange_min;
-	Vector3 randomRange_max;
+	Vector3 baseValue = { 0.0f, 0.0f, 0.0f };
+	Vector3 randomRange_min = { 0.0f, 0.0f, 0.0f };
+	Vector3 randomRange_max = { 0.0f, 0.0f, 0.0f };
 };
 
 struct ParticleSRT

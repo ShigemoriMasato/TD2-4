@@ -99,6 +99,4 @@ private:
 
 	// ImGuiがstringを許容しないばかりに生まれてしまった産廃
 	char presetNameBuf_[256]{};
-	char texturePathBuf_[256]{};
-	char modelPathBuf_[256]{};
 };

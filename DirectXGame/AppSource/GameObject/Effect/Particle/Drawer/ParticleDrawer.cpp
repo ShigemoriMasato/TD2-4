@@ -118,4 +118,9 @@ void ParticleDrawer::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
 
 		batch.instances.clear();
 	}
+
+	// Register() で積まれた Particle* はフレーム単位の一時リストとして扱う。
+	// これをクリアしないと、次フレーム以降に「既に破棄された Particle へのダングリングポインタ」
+	// が残り、modelHandle が破壊されて ModelManager::GetNodeModelData の assert に繋がる。		
+	particles_.clear();
 }

@@ -141,6 +141,7 @@ std::unique_ptr<IScene> YokoScene::Update()
 
 	// パーティクル更新
 	particles_.SetModelWorld(world);
+	particles_.SetCameraPos(camera_->GetPosition());
 	particles_.Update(dt);
 
 	// Zキーでエディタ切り替え

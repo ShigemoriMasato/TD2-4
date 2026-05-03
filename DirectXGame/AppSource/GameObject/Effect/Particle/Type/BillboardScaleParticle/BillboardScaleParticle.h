@@ -27,7 +27,7 @@ private:
 	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
 	bool isActive_ = true;
 	float emitTimer_ = 0.0f;
-	Vector3 cameraPos_{};
+	Vector3 cameraPos_ = { 0.0f,0.0f,0.0f };
 
 	struct ParticleInstance
 	{

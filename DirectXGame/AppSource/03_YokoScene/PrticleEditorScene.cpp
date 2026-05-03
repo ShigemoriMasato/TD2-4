@@ -105,18 +105,16 @@ void PrticleEditorScene::Initialize()
 	BuildTextureList();
 	// "Assets/Json/Particle"以下のjsonをリストアップしてJsonList_作成
 	BuildJsonList();
+
+
+	snprintf(presetNameBuf_, sizeof(presetNameBuf_), "%s", JsonList_[0].c_str());
+	RebuildEditParticleByJson();
 }
 
 // 編集データ初期化
 void PrticleEditorScene::Reset(ParticleType type)
 {
 	currentType_ = type;
-
-	std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
-	strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), particleConfig_.texturePath.c_str(), _TRUNCATE);
-
-	std::memset(modelPathBuf_, 0, sizeof(modelPathBuf_));
-	strncpy_s(modelPathBuf_, sizeof(modelPathBuf_), particleConfig_.modelPath.c_str(), _TRUNCATE);
 
 	particleConfig_ = Particle::Config{};
 
@@ -205,17 +203,6 @@ void PrticleEditorScene::BuildJsonList()
 	}
 }
 
-// 選択モデルを変更
-//void PrticleEditorScene::SelectModel(int index)
-//{
-//	//if (index < 0 || index >= int(modelDataList_.size())) return;
-//	//selectedModelIndex_ = index;
-//	//auto modelData = modelManager_->GetNodeModelData(modelDataList_[index]->modelIndex);
-//	//const auto drawData = drawDataManager_->GetDrawData(modelData.drawDataIndex);
-//	//modelRender_->SetDrawData(drawData);
-//	//modelDataList_[index]->textureIndex = modelData.materials[modelData.materialIndex.front()].textureIndex;
-//}
-
 // 描画パーティクルのみ再生成
 void PrticleEditorScene::RebuildDrawParticle()
 {
@@ -276,22 +263,32 @@ void PrticleEditorScene::RebuildEditParticleByCurrentConfig()
 	int32_t slot = editingParticle_.Add(presetNameBuf_);
 	if (currentType_ == ParticleType::Physics)
 	{
+		physicsPreset_.cfg.modelPath = particleConfig_.modelPath;
+		physicsPreset_.cfg.texturePath = particleConfig_.texturePath;
 		editingParticle_.SetConfig(slot, physicsPreset_);
 	}
 	else if (currentType_ == ParticleType::GoToTarget)
 	{
+		goToTargetPreset_.cfg.modelPath = particleConfig_.modelPath;
+		goToTargetPreset_.cfg.texturePath = particleConfig_.texturePath;
 		editingParticle_.SetConfig(slot, goToTargetPreset_);
 	}
 	else if (currentType_ == ParticleType::OnTrail)
 	{
+		onTrailPreset_.cfg.modelPath = particleConfig_.modelPath;
+		onTrailPreset_.cfg.texturePath = particleConfig_.texturePath;
 		editingParticle_.SetConfig(slot, onTrailPreset_);
 	}
 	else if (currentType_ == ParticleType::Billboard_Scale)
 	{
+		billboardScalePreset_.cfg.modelPath = particleConfig_.modelPath;
+		billboardScalePreset_.cfg.texturePath = particleConfig_.texturePath;
 		editingParticle_.SetConfig(slot, billboardScalePreset_);
 	}
 	else if (currentType_ == ParticleType::Billboard_Scale2)
 	{
+		billboardScale2Preset_.cfg.modelPath = particleConfig_.modelPath;
+		billboardScale2Preset_.cfg.texturePath = particleConfig_.texturePath;
 		editingParticle_.SetConfig(slot, billboardScale2Preset_);
 	}
 }
@@ -341,52 +338,35 @@ void PrticleEditorScene::LoadData()
 		currentType_ = ParticleType::Physics;
 		physicsPreset_ = std::get<PhysicsConfig>(var);
 		particleConfig_ = physicsPreset_.cfg;
-		std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
-		strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), particleConfig_.texturePath.c_str(), _TRUNCATE);
-		std::memset(modelPathBuf_, 0, sizeof(modelPathBuf_));
-		strncpy_s(modelPathBuf_, sizeof(modelPathBuf_), particleConfig_.modelPath.c_str(), _TRUNCATE);
 	}
 	else if (std::holds_alternative<GoToTargetConfig>(var))
 	{
 		currentType_ = ParticleType::GoToTarget;
 		goToTargetPreset_ = std::get<GoToTargetConfig>(var);
 		particleConfig_ = goToTargetPreset_.cfg;
-		std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
-		strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), particleConfig_.texturePath.c_str(), _TRUNCATE);
-		std::memset(modelPathBuf_, 0, sizeof(modelPathBuf_));
-		strncpy_s(modelPathBuf_, sizeof(modelPathBuf_), particleConfig_.modelPath.c_str(), _TRUNCATE);
 	}
 	else if (std::holds_alternative<OnTrailConfig>(var))
 	{
 		currentType_ = ParticleType::OnTrail;
 		onTrailPreset_ = std::get<OnTrailConfig>(var);
 		particleConfig_ = onTrailPreset_.cfg;
-		std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
-		strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), particleConfig_.texturePath.c_str(), _TRUNCATE);
-		std::memset(modelPathBuf_, 0, sizeof(modelPathBuf_));
-		strncpy_s(modelPathBuf_, sizeof(modelPathBuf_), particleConfig_.modelPath.c_str(), _TRUNCATE);
 	}
 	else if (std::holds_alternative<BillboardScaleConfig>(var))
 	{
 		currentType_ = ParticleType::Billboard_Scale;
 		billboardScalePreset_ = std::get<BillboardScaleConfig>(var);
 		particleConfig_ = billboardScalePreset_.cfg;
-		std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
-		strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), particleConfig_.texturePath.c_str(), _TRUNCATE);
-		std::memset(modelPathBuf_, 0, sizeof(modelPathBuf_));
-		strncpy_s(modelPathBuf_, sizeof(modelPathBuf_), particleConfig_.modelPath.c_str(), _TRUNCATE);
 	}
 	else if (std::holds_alternative<BillboardScale2Config>(var))
 	{
 		currentType_ = ParticleType::Billboard_Scale2;
 		billboardScale2Preset_ = std::get<BillboardScale2Config>(var);
 		particleConfig_ = billboardScale2Preset_.cfg;
-		std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
-		strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), particleConfig_.texturePath.c_str(), _TRUNCATE);
-		std::memset(modelPathBuf_, 0, sizeof(modelPathBuf_));
-		strncpy_s(modelPathBuf_, sizeof(modelPathBuf_), particleConfig_.modelPath.c_str(), _TRUNCATE);
 	}
-
+	//std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
+	//strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), particleConfig_.texturePath.c_str(), _TRUNCATE);
+	//std::memset(modelPathBuf_, 0, sizeof(modelPathBuf_));
+	//strncpy_s(modelPathBuf_, sizeof(modelPathBuf_), particleConfig_.modelPath.c_str(), _TRUNCATE);
 }
 
 
@@ -406,7 +386,7 @@ void PrticleEditorScene::DrawImGui()
 	// 現在表示している(編集は出来ない)プリセット名
 	if (ImGui::TreeNode("表示中パーティクル名"))
 	{
-		// ⇩BeginListBoxに変更し、smallButtonもつけ、[削除]を追加描画リストから外せるようにする
+		// [削除]描画リストから外せるようにする
 		if (ImGui::BeginListBox("##sihpo;dj", ImVec2(-FLT_MIN - 100, 100)))
 		{
 			for (int i = 0; i < (int)activeParticleNameList_.size(); ++i)
@@ -453,7 +433,7 @@ void PrticleEditorScene::DrawImGui()
 
 				if (ImGui::SmallButton("編集"))
 				{
-					strncpy_s(presetNameBuf_, sizeof(presetNameBuf_), JsonList_[i].c_str(), _TRUNCATE);
+					snprintf(presetNameBuf_, sizeof(presetNameBuf_), "%s", JsonList_[i].c_str());
 					// EditerのデータをJsonのデータに合わせたい
 					requestRebuildEditParticle_ = true;
 				}
@@ -479,18 +459,15 @@ void PrticleEditorScene::DrawImGui()
 	}
 
 	// type
-	//{
-	//	int t = 0;
-	//	const char* items[] = { "Fountain", "GoToTarget", "OnTrail", "Billboard_Scale", "Billboard_Scale2" };
-	//	if (ImGui::Combo("type", &t, items, 1))
-	//	{
-	//		if (currentType_ != ParticleType(t))
-	//		{
-	//			Reset(ParticleType(t));
-	//			requestRebuildEditParticleCurrent_ = true;
-	//		}
-	//	}
-	//}
+	{
+		int t = int(currentType_);
+		const char* items[] = { "Fountain", "GoToTarget", "OnTrail", "Billboard_Scale", "Billboard_Scale2" };
+		if (ImGui::Combo("type", &t, items, IM_ARRAYSIZE(items)))
+		{
+			Reset(ParticleType(t));
+			requestRebuildEditParticleCurrent_ = true;
+		}
+	}
 
 	ImGui::SeparatorText("共通Config");
 	{
@@ -500,7 +477,7 @@ void PrticleEditorScene::DrawImGui()
 		requestRebuildEditParticleCurrent_ |= ImGui::DragInt("cfg.emitNum", &particleConfig_.emitNum, 1.0f, 1, 10000);
 		requestRebuildEditParticleCurrent_ |= ImGui::DragFloat("cfg.emitInterval", &particleConfig_.emitInterval, 0.01f, 0.01f, 10.0f);
 
-		ImGui::Text("cfg.texturePath %s", texturePathBuf_);
+		ImGui::Text("cfg.texturePath %s", particleConfig_.texturePath.c_str());
 		if (ImGui::TreeNode("テクスチャ選択"))
 		{
 			if (ImGui::BeginListBox("##sihpo;dj", ImVec2(-FLT_MIN - 100, 100)))
@@ -510,14 +487,15 @@ void PrticleEditorScene::DrawImGui()
 					if (ImGui::Selectable(textureList_[i].c_str(), false))
 					{
 						// texturePathBuf_に選択したテクスチャのパスをセット
-						snprintf(texturePathBuf_, sizeof(texturePathBuf_), "%s", textureList_[i].c_str());
+						particleConfig_.texturePath = textureList_[i];
+						requestRebuildEditParticleCurrent_ = true;
 					}
 				}
 				ImGui::EndListBox();
 			}
 			ImGui::TreePop();
 		}
-		ImGui::Text("cfg.modelPath %s", modelPathBuf_);
+		ImGui::Text("cfg.modelPath %s", particleConfig_.modelPath.c_str());
 		if (ImGui::TreeNode("表示モデル選択"))
 		{
 			if (ImGui::BeginListBox("##sihpo;dj", ImVec2(-FLT_MIN - 100, 100)))
@@ -526,8 +504,8 @@ void PrticleEditorScene::DrawImGui()
 				{
 					if (ImGui::Selectable(modelList_[i].c_str(), false))
 					{
-						// modelPathBuf_に選択したモデルのパスをセット
-						snprintf(modelPathBuf_, sizeof(modelPathBuf_), "%s", modelList_[i].c_str());
+						particleConfig_.modelPath = modelList_[i];
+						requestRebuildEditParticleCurrent_ = true;
 					}
 				}
 				ImGui::EndListBox();
@@ -792,13 +770,10 @@ void PrticleEditorScene::DrawImGui_Physics()
 
 #endif
 }
-
 void PrticleEditorScene::DrawImGui_GoToTarget()
 {}
-
 void PrticleEditorScene::DrawImGui_OnTrail()
 {}
-
 void PrticleEditorScene::DrawImGui_BillboardScale()
 {
 #ifdef USE_IMGUI
@@ -878,7 +853,6 @@ void PrticleEditorScene::DrawImGui_BillboardScale()
 
 #endif
 }
-
 void PrticleEditorScene::DrawImGui_BillboardScale2()
 {}
 
@@ -913,9 +887,12 @@ std::unique_ptr<IScene> PrticleEditorScene::Update()
 	}
 
 	// パーティクル更新
+	const Vector3 cameraPos = camera_->GetPosition();
 	particle_.SetModelWorld(Matrix4x4::Identity());
+	particle_.SetCameraPos(cameraPos);
 	particle_.Update(dt);
 	editingParticle_.SetModelWorld(Matrix4x4::Identity());
+	editingParticle_.SetCameraPos(cameraPos);
 	editingParticle_.Update(dt);
 
 	// Zキーで切り替え

@@ -55,7 +55,7 @@ void BillboardScaleParticle::Update(float dt)
 		instances_.end());
 	instances_.erase(
 		std::remove_if(instances_.begin(), instances_.end(),
-			[this](const ParticleInstance& p) { return p.scale.value.baseValue.x <= 0.0f || p.scale.value.baseValue.y <= 0.0f || p.scale.value.baseValue.z <= 0.0f; }),
+			[this](const ParticleInstance& p) { return p.scale.value.baseValue.x < 0.0f || p.scale.value.baseValue.y < 0.0f || p.scale.value.baseValue.z < 0.0f; }),
 		instances_.end());
 
 
@@ -65,13 +65,15 @@ void BillboardScaleParticle::Update(float dt)
 		instance.scale.value.baseValue += instance.scale.velocity.baseValue * dt + 0.5f * instance.scale.acceleration.baseValue * dt * dt;
 		instance.scale.velocity.baseValue += instance.scale.acceleration.baseValue * dt;
 
-		Vector3 toCamera = cameraPos_ - Vector3(modelWorld_.m[3][0], modelWorld_.m[3][1], modelWorld_.m[3][2]);
-		toCamera = toCamera.Normalize();
+		Vector3 myPos = Vector3(modelWorld_.m[3][0], modelWorld_.m[3][1], modelWorld_.m[3][2]);
+		Vector3 cameraPos = cameraPos_;
+		Vector3 toCameraDir = cameraPos - myPos;
+		Vector3 normDir = toCameraDir.Normalize();
+		float pitch = std::asinf(-normDir.y); // -sin(pitch) = y 成分
+		float yaw = std::atan2f(normDir.x, normDir.z); // sin(yaw) = x 成分, cos(yaw) = z 成分
+		Vector3 rotate (pitch, yaw, 0.0f); // roll はここでは未使用
 
-		float theta = std::atan2(toCamera.x, toCamera.z);
-		Matrix4x4 billboardRot = Matrix::MakeRotationYMatrix(theta);
-
-		const Matrix4x4 world = Matrix::MakeScaleMatrix(instance.scale.value.baseValue) * billboardRot * modelWorld_;
+		const Matrix4x4 world = Matrix::MakeAffineMatrix(instance.scale.value.baseValue, rotate, myPos);
 
 		particle_.pushInstance(world, instance.color);
 	}
