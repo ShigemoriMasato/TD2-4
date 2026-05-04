@@ -6,11 +6,12 @@
 #include <GameObject/Effect/Particle/Preset/ParticlePreset.h>
 
 using ParticlePresetVariant = std::variant<
-	PhysicsConfig, 
-	OnTrailConfig, 
+	PhysicsConfig,
+	OnTrailConfig,
 	GoToTargetConfig,
 	BillboardScaleConfig,
-	BillboardScale2Config
+	BillboardScale2Config,
+	BillboardColorConfig
 >;
 
 class ParticlePresetDataBank
@@ -49,7 +50,9 @@ public:
 	void Save(const std::string& name, OnTrailConfig& uniqueConfig);
 	void Save(const std::string& name, BillboardScaleConfig& uniqueConfig);
 	void Save(const std::string& name, BillboardScale2Config& uniqueConfig);
+	void Save(const std::string& name, BillboardColorConfig& uniqueConfig);
 	void SaveParticleSRT(JsonManager& json, const std::string& keyPrefix, const ParticleSRT& srt);
+	void SaveParticleSRTfloat4(JsonManager& json, const std::string& keyPrefix, const ParticleSRTfloat4& srt);
 
 
 	/// <summary>
@@ -60,6 +63,8 @@ public:
 	ParticlePresetVariant Load(const std::string& name);
 	Particle::Config LoadConfig(JsonManager& json);
 	ParticleSRT LoadParticleSRT(JsonManager& json, const std::string& keyPrefix);
+	ParticleSRTfloat4 LoadParticleSRTfloat4(JsonManager& json, const std::string& keyPrefix);
+
 
 private:
 	// 読み込みにのみ使用

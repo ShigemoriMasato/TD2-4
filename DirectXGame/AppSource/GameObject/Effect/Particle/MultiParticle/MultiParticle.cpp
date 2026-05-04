@@ -46,6 +46,14 @@ int32_t MultiParticle::Add(const std::string& presetName)
 		const auto& preset = std::get<BillboardScale2Config>(presetVar);
 		(void)preset;
 	}
+	else if (std::holds_alternative<BillboardColorConfig>(presetVar))
+	{
+		const auto& preset = std::get<BillboardColorConfig>(presetVar);
+		auto particle = std::make_unique<BillboardColorParticle>();
+		particle->Initialize(textureManager_, modelManager_);
+		particle->SetConfig(preset);
+		billboardColorCache_[nextId_] = std::move(particle);
+	}
 	else
 	{
 		throw std::runtime_error("Invalid particle preset type");
@@ -64,6 +72,10 @@ void MultiParticle::SetCameraPos(const Vector3& cameraPos)
 	//{
 	//	particle->GetParticle().SetCameraPos(cameraPos_);
 	//}
+	for (auto& [name, particle] : billboardColorCache_)
+	{
+		particle->SetCameraPos(cameraPos);
+	}
 }
 
 void MultiParticle::SetModelWorld(const Matrix4x4& modelWorld)
@@ -88,6 +100,10 @@ void MultiParticle::SetModelWorld(const Matrix4x4& modelWorld)
 	//{
 	//	particle->SetModelWorld(modelWorld);
 	//}}
+	for (auto& [name, particle] : billboardColorCache_)
+	{
+		particle->SetModelWorld(modelWorld);
+	}
 }
 
 void MultiParticle::SetEmittingFlag(const int32_t id, bool flag)
@@ -156,6 +172,14 @@ void MultiParticle::SetConfig(const int32_t id, const ParticlePresetVariant& pre
 	//		billboardScale2Cache_.at(id)->SetConfig(preset);
 	//	}
 	//}
+	else if (billboardColorCache_.count(id))
+	{
+		if (std::holds_alternative<BillboardColorConfig>(presetVar))
+		{
+			const auto& preset = std::get<BillboardColorConfig>(presetVar);
+			billboardColorCache_.at(id)->SetConfig(preset);
+		}
+	}
 }
 
 ParticlePresetVariant MultiParticle::GetConfig(const int32_t id)
@@ -185,6 +209,11 @@ ParticlePresetVariant MultiParticle::GetConfig(const int32_t id)
 	//	BillboardScale2Config preset = billboardScale2Cache_.at(id)->GetPreset();
 	//	return preset;
 	//}
+	else if (billboardColorCache_.count(id))
+	{
+		BillboardColorConfig preset = billboardColorCache_.at(id)->GetPreset();
+		return preset;
+	}
 	return {};
 }
 
@@ -210,6 +239,10 @@ void MultiParticle::Clear()
 	//{
 	//	particle->Clear();
 	//}
+	for (auto& [name, particle] : billboardColorCache_)
+	{
+		particle->Clear();
+	}
 }
 
 void MultiParticle::Initialize(SHEngine::TextureManager* textureManager, SHEngine::ModelManager* modelManager, CommonData* commonData)
@@ -226,6 +259,7 @@ void MultiParticle::Initialize(SHEngine::TextureManager* textureManager, SHEngin
 	goToTargetCache_.clear();
 	billboardScaleCache_.clear();
 	//billboardScale2Cache_.clear();
+	billboardColorCache_.clear();
 }
 
 void MultiParticle::Update(float dt)
@@ -250,6 +284,10 @@ void MultiParticle::Update(float dt)
 	//{
 	//	particle->Update(dt);
 	//}
+	for (auto& [name, particle] : billboardColorCache_)
+	{
+		particle->Update(dt);
+	}
 }
 
 void MultiParticle::Draw()
@@ -281,6 +319,10 @@ void MultiParticle::RegisterToDrawer()
 	//{
 	//	drawer_->Register(&p->GetParticle());
 	//}
+	for (auto& [id, p] : billboardColorCache_)
+	{
+		drawer_->Register(&p->GetParticle());
+	}
 }
 
 std::vector<Matrix4x4> MultiParticle::GetParticleWorlds(const int32_t id)
@@ -305,6 +347,10 @@ std::vector<Matrix4x4> MultiParticle::GetParticleWorlds(const int32_t id)
 	//{
 	//	return billboardScale2Cache_.at(id)->GetParticle().GetParticleWorlds();
 	//}
+	else if (billboardColorCache_.count(id))
+	{
+		return billboardColorCache_.at(id)->GetParticle().GetParticleWorlds();
+	}
 	return {};
 }
 
@@ -330,6 +376,10 @@ size_t MultiParticle::GetAliveCount(const int32_t id) const
 	//{
 	//	return billboardScale2Cache_.at(id)->GetParticle().GetAliveCount();
 	//}
+	else if (billboardColorCache_.count(id))
+	{
+		return billboardColorCache_.at(id)->GetParticle().GetAliveCount();
+	}
 
 	return 0;
 }

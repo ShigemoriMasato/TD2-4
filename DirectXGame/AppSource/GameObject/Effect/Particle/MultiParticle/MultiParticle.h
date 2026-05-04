@@ -10,6 +10,7 @@
 #include <GameObject/Effect/Particle/Type/FountainParticle/FountainParticle.h>
 #include <GameObject/Effect/Particle/Type/GoToTargetParticle/GoToTargetParticle.h>
 #include <GameObject/Effect/Particle/Type/BillboardScaleParticle/BillboardScaleParticle.h>
+#include <GameObject/Effect/Particle/Type/BillboardColorParticle/BillboardColorParticle.h>
 
 class ParticleDrawer;
 
@@ -55,4 +56,5 @@ private:
 	std::unordered_map<int32_t, std::unique_ptr<GoToTargetParticle>> goToTargetCache_;
 	std::unordered_map<int32_t, std::unique_ptr<BillboardScaleParticle>> billboardScaleCache_;
 	//std::unordered_map<int32_t, std::unique_ptr<BillboardScale2Particle>> billboardScale2Cache_;
+	std::unordered_map<int32_t, std::unique_ptr<BillboardColorParticle>> billboardColorCache_;
 };

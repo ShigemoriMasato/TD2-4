@@ -47,11 +47,13 @@ private:
 	void LoadData();
 
 	void DrawImGui();
-	void DrawImGui_Physics();
-	void DrawImGui_GoToTarget();
-	void DrawImGui_OnTrail();
-	void DrawImGui_BillboardScale();
-	void DrawImGui_BillboardScale2();
+	void DrawImGui_Config();
+	void DrawImGui_Config_Physics();
+	void DrawImGui_Config_GoToTarget();
+	void DrawImGui_Config_OnTrail();
+	void DrawImGui_Config_BillboardScale();
+	void DrawImGui_Config_BillboardScale2();
+	void DrawImGui_Config_BillboardColor();
 
 	void Reset(ParticleType type);
 
@@ -77,6 +79,8 @@ private:
 	BillboardScaleConfig billboardScalePreset_{};
 	// Billboard_Scale2 固有
 	BillboardScale2Config billboardScale2Preset_{};
+	// Billboard_Color 固有
+	BillboardColorConfig billboardColorPreset_{};
 
 
 	// 上記Configを利用し描画するParticleが必要（編集中のParticleを描画するため）(ここには一つしかAddされない)

@@ -142,7 +142,8 @@ void PrticleEditorScene::Reset(ParticleType type)
 // "Assets/Model/"以下のモデルをリストアップしてmodelDataList_作成。
 void PrticleEditorScene::BuildModelList()
 {
-	//const char* kWeaponDir = "Assets/Model/Item/Weapon";
+	modelList_.clear();
+
 	const char* kFilePath = "Assets/Model";
 	std::error_code ec;
 	if (!std::filesystem::exists(kFilePath, ec))
@@ -155,21 +156,15 @@ void PrticleEditorScene::BuildModelList()
 		// is_directory() = それがフォルダかファイルか
 		if (!entry.is_directory()) continue;
 	
-		//// 子フォルダがある場合はスキップ
-		//bool hasChildDir = false;
-		//for (const auto& c : std::filesystem::directory_iterator(entry.path()))
-		//{
-		//	if (c.is_directory()) { hasChildDir = true; break; }
-		//}
-		//if (hasChildDir) continue;
-	
-		// ここまで来たentryは最下層のフォルダ
 		modelList_.push_back(entry.path().filename().generic_string());
 	}
+	std::sort(modelList_.begin(), modelList_.end());
 }
 // "Assets/Texture/"以下のテクスチャをリストアップしてTextureList_作成。
 void PrticleEditorScene::BuildTextureList()
 {
+	textureList_.clear();
+
 	const char* kFilePath = "Assets/Texture";
 	std::error_code ec;
 	if (!std::filesystem::exists(kFilePath, ec))
@@ -183,10 +178,13 @@ void PrticleEditorScene::BuildTextureList()
 
 		textureList_.push_back(entry.path().filename().generic_string());
 	}
+	std::sort(textureList_.begin(), textureList_.end());
 }
 // "Assets/Json/Particle"以下のjsonをリストアップしてJsonList_作成
 void PrticleEditorScene::BuildJsonList()
 {
+	JsonList_.clear();
+
 	const char* kFilePath = "Assets/Json/Particle";
 	std::error_code ec;
 	if (!std::filesystem::exists(kFilePath, ec))
@@ -201,6 +199,7 @@ void PrticleEditorScene::BuildJsonList()
 
 		JsonList_.push_back(entry.path().filename().generic_string());
 	}
+	std::sort(JsonList_.begin(), JsonList_.end());
 }
 
 // 描画パーティクルのみ再生成
@@ -253,6 +252,12 @@ void PrticleEditorScene::RebuildEditParticleByJson()
 		particleConfig_ = billboardScale2Preset_.cfg;
 		currentType_ = ParticleType::Billboard_Scale2;
 	}
+	else if (std::holds_alternative<BillboardColorConfig>(presetVar))
+	{
+		billboardColorPreset_ = std::get<BillboardColorConfig>(presetVar);
+		particleConfig_ = billboardColorPreset_.cfg;
+		currentType_ = ParticleType::Billboard_Color;
+	}
 }
 // 編集中のParticleの再構築。現在のConfigで再構築
 void PrticleEditorScene::RebuildEditParticleByCurrentConfig()
@@ -291,6 +296,12 @@ void PrticleEditorScene::RebuildEditParticleByCurrentConfig()
 		billboardScale2Preset_.cfg.texturePath = particleConfig_.texturePath;
 		editingParticle_.SetConfig(slot, billboardScale2Preset_);
 	}
+	else if (currentType_ == ParticleType::Billboard_Color)
+	{
+		billboardColorPreset_.cfg.modelPath = particleConfig_.modelPath;
+		billboardColorPreset_.cfg.texturePath = particleConfig_.texturePath;
+		editingParticle_.SetConfig(slot, billboardColorPreset_);
+	}
 }
 
 // データ保存
@@ -322,6 +333,11 @@ void PrticleEditorScene::SaveData()
 	{
 		billboardScale2Preset_.cfg = particleConfig_;
 		commonData_->particlePresetDataBank.Save(presetNameBuf_, billboardScale2Preset_);
+	}
+	else if (currentType_ == ParticleType::Billboard_Color)
+	{
+		billboardColorPreset_.cfg = particleConfig_;
+		commonData_->particlePresetDataBank.Save(presetNameBuf_, billboardColorPreset_);
 	}
 }
 
@@ -363,10 +379,12 @@ void PrticleEditorScene::LoadData()
 		billboardScale2Preset_ = std::get<BillboardScale2Config>(var);
 		particleConfig_ = billboardScale2Preset_.cfg;
 	}
-	//std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
-	//strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), particleConfig_.texturePath.c_str(), _TRUNCATE);
-	//std::memset(modelPathBuf_, 0, sizeof(modelPathBuf_));
-	//strncpy_s(modelPathBuf_, sizeof(modelPathBuf_), particleConfig_.modelPath.c_str(), _TRUNCATE);
+	else if (std::holds_alternative<BillboardColorConfig>(var))
+	{
+		currentType_ = ParticleType::Billboard_Color;
+		billboardColorPreset_ = std::get<BillboardColorConfig>(var);
+		particleConfig_ = billboardColorPreset_.cfg;
+	}
 }
 
 
@@ -461,7 +479,7 @@ void PrticleEditorScene::DrawImGui()
 	// type
 	{
 		int t = int(currentType_);
-		const char* items[] = { "Fountain", "GoToTarget", "OnTrail", "Billboard_Scale", "Billboard_Scale2" };
+		const char* items[] = { "Fountain", "GoToTarget", "OnTrail", "Billboard_Scale", "Billboard_Scale2", "Billboard_Color" };
 		if (ImGui::Combo("type", &t, items, IM_ARRAYSIZE(items)))
 		{
 			Reset(ParticleType(t));
@@ -470,84 +488,95 @@ void PrticleEditorScene::DrawImGui()
 	}
 
 	ImGui::SeparatorText("共通Config");
-	{
-		// particleConfig_が変更されたとき編集パーティクルをparticleConfig_に合わせる必要がある
-		requestRebuildEditParticleCurrent_ |= ImGui::DragFloat("cfg.lifeTime", &particleConfig_.lifeTime, 0.01f, 0.001f, 10.0f);
-		requestRebuildEditParticleCurrent_ |= ImGui::DragFloat("cfg.speed", &particleConfig_.speed, 0.01f, 0.0f, 100.0f);
-		requestRebuildEditParticleCurrent_ |= ImGui::DragInt("cfg.emitNum", &particleConfig_.emitNum, 1.0f, 1, 10000);
-		requestRebuildEditParticleCurrent_ |= ImGui::DragFloat("cfg.emitInterval", &particleConfig_.emitInterval, 0.01f, 0.01f, 10.0f);
-
-		ImGui::Text("cfg.texturePath %s", particleConfig_.texturePath.c_str());
-		if (ImGui::TreeNode("テクスチャ選択"))
-		{
-			if (ImGui::BeginListBox("##sihpo;dj", ImVec2(-FLT_MIN - 100, 100)))
-			{
-				for (int i = 0; i < (int)textureList_.size(); ++i)
-				{
-					if (ImGui::Selectable(textureList_[i].c_str(), false))
-					{
-						// texturePathBuf_に選択したテクスチャのパスをセット
-						particleConfig_.texturePath = textureList_[i];
-						requestRebuildEditParticleCurrent_ = true;
-					}
-				}
-				ImGui::EndListBox();
-			}
-			ImGui::TreePop();
-		}
-		ImGui::Text("cfg.modelPath %s", particleConfig_.modelPath.c_str());
-		if (ImGui::TreeNode("表示モデル選択"))
-		{
-			if (ImGui::BeginListBox("##sihpo;dj", ImVec2(-FLT_MIN - 100, 100)))
-			{
-				for (int i = 0; i < (int)modelList_.size(); ++i)
-				{
-					if (ImGui::Selectable(modelList_[i].c_str(), false))
-					{
-						particleConfig_.modelPath = modelList_[i];
-						requestRebuildEditParticleCurrent_ = true;
-					}
-				}
-				ImGui::EndListBox();
-			}
-
-			ImGui::TreePop();
-		}
-	}
+	DrawImGui_Config();
 
 	ImGui::SeparatorText("固有Config");
+	switch (currentType_)
+	{
+	case ParticleType::Physics:
+		DrawImGui_Config_Physics();
+		break;
+	case ParticleType::GoToTarget:
+		DrawImGui_Config_GoToTarget();
+		break;
+	case ParticleType::OnTrail:
+		DrawImGui_Config_OnTrail();
+		break;
+	case ParticleType::Billboard_Scale:
+		DrawImGui_Config_BillboardScale();
+		break;
+	case ParticleType::Billboard_Scale2:
+		DrawImGui_Config_BillboardScale2();
+		break;
+	case ParticleType::Billboard_Color:
+		DrawImGui_Config_BillboardColor();
+		break;
+	case ParticleType::None:
 
-	if (currentType_ == ParticleType::Physics)
-	{
-		DrawImGui_Physics();
-	}
-	else if (currentType_ == ParticleType::GoToTarget)
-	{
-		DrawImGui_GoToTarget();
-	}
-	else if (currentType_ == ParticleType::OnTrail)
-	{
-		DrawImGui_OnTrail();
-	}
-	else if (currentType_ == ParticleType::Billboard_Scale)
-	{
-		DrawImGui_BillboardScale();
-	}
-	else if (currentType_ == ParticleType::Billboard_Scale2)
-	{
-		DrawImGui_BillboardScale2();
+		break;
+	default:
+		break;
 	}
 
 	ImGui::Separator();
-
-	if (ImGui::Button("Save")) SaveData();
-	ImGui::Checkbox("エミッターAABB描画", &isEmitterDraw_);
+	if (ImGui::Button("Save"))
+	{
+		SaveData();
+		BuildJsonList();
+	}
 
 	ImGui::End();
 #endif
 }
 
-void PrticleEditorScene::DrawImGui_Physics()
+// DrawImGui_Config系でconfigが変更された場合はrequestRebuildEditParticleCurrent_フラグを立て、editingParticle_をconfifに合わせて再構築する。
+void PrticleEditorScene::DrawImGui_Config()
+{
+#ifdef USE_IMGUI
+	requestRebuildEditParticleCurrent_ |= ImGui::DragFloat("cfg.lifeTime", &particleConfig_.lifeTime, 0.01f, 0.001f, 10.0f);
+	requestRebuildEditParticleCurrent_ |= ImGui::DragFloat("cfg.speed", &particleConfig_.speed, 0.01f, 0.0f, 100.0f);
+	requestRebuildEditParticleCurrent_ |= ImGui::DragInt("cfg.emitNum", &particleConfig_.emitNum, 1.0f, 1, 10000);
+	requestRebuildEditParticleCurrent_ |= ImGui::DragFloat("cfg.emitInterval", &particleConfig_.emitInterval, 0.01f, 0.01f, 10.0f);
+
+	ImGui::Text("cfg.texturePath %s", particleConfig_.texturePath.c_str());
+	if (ImGui::TreeNode("テクスチャ選択"))
+	{
+		if (ImGui::BeginListBox("##sihpo;dj", ImVec2(-FLT_MIN - 100, 100)))
+		{
+			for (int i = 0; i < (int)textureList_.size(); ++i)
+			{
+				if (ImGui::Selectable(textureList_[i].c_str(), false))
+				{
+					// texturePathBuf_に選択したテクスチャのパスをセット
+					particleConfig_.texturePath = textureList_[i];
+					requestRebuildEditParticleCurrent_ = true;
+				}
+			}
+			ImGui::EndListBox();
+		}
+		ImGui::TreePop();
+	}
+	ImGui::Text("cfg.modelPath %s", particleConfig_.modelPath.c_str());
+	if (ImGui::TreeNode("表示モデル選択"))
+	{
+		if (ImGui::BeginListBox("##sihpo;dj", ImVec2(-FLT_MIN - 100, 100)))
+		{
+			for (int i = 0; i < (int)modelList_.size(); ++i)
+			{
+				if (ImGui::Selectable(modelList_[i].c_str(), false))
+				{
+					particleConfig_.modelPath = modelList_[i];
+					requestRebuildEditParticleCurrent_ = true;
+				}
+			}
+			ImGui::EndListBox();
+		}
+
+		ImGui::TreePop();
+	}
+#endif
+}
+void PrticleEditorScene::DrawImGui_Config_Physics()
 {
 #ifdef USE_IMGUI
 
@@ -770,11 +799,11 @@ void PrticleEditorScene::DrawImGui_Physics()
 
 #endif
 }
-void PrticleEditorScene::DrawImGui_GoToTarget()
+void PrticleEditorScene::DrawImGui_Config_GoToTarget()
 {}
-void PrticleEditorScene::DrawImGui_OnTrail()
+void PrticleEditorScene::DrawImGui_Config_OnTrail()
 {}
-void PrticleEditorScene::DrawImGui_BillboardScale()
+void PrticleEditorScene::DrawImGui_Config_BillboardScale()
 {
 #ifdef USE_IMGUI
 
@@ -853,8 +882,171 @@ void PrticleEditorScene::DrawImGui_BillboardScale()
 
 #endif
 }
-void PrticleEditorScene::DrawImGui_BillboardScale2()
+void PrticleEditorScene::DrawImGui_Config_BillboardScale2()
 {}
+void PrticleEditorScene::DrawImGui_Config_BillboardColor()
+{
+#ifdef USE_IMGUI
+
+	if (ImGui::CollapsingHeader("scale"))
+	{
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.scale.isRandomVal", &billboardColorPreset_.scale.value.isRandom);
+		if (billboardColorPreset_.scale.value.isRandom)
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.rand.min", &billboardColorPreset_.scale.value.randomRange_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.rand.max", &billboardColorPreset_.scale.value.randomRange_max.x, 0.01f);
+			if (billboardColorPreset_.scale.value.randomRange_max.x < billboardColorPreset_.scale.value.randomRange_min.x)
+			{
+				billboardColorPreset_.scale.value.randomRange_max.x = billboardColorPreset_.scale.value.randomRange_min.x;
+			}
+			if (billboardColorPreset_.scale.value.randomRange_max.y < billboardColorPreset_.scale.value.randomRange_min.y)
+			{
+				billboardColorPreset_.scale.value.randomRange_max.y = billboardColorPreset_.scale.value.randomRange_min.y;
+			}
+			if (billboardColorPreset_.scale.value.randomRange_max.z < billboardColorPreset_.scale.value.randomRange_min.z)
+			{
+				billboardColorPreset_.scale.value.randomRange_max.z = billboardColorPreset_.scale.value.randomRange_min.z;
+			}
+		}
+		else
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.scale.val", &billboardColorPreset_.scale.value.baseValue.x, 0.01f);
+		}
+
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.scale.isRandomVel", &billboardColorPreset_.scale.velocity.isRandom);
+		if (billboardColorPreset_.scale.velocity.isRandom)
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.vel.rand.min", &billboardColorPreset_.scale.velocity.randomRange_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.vel.rand.max", &billboardColorPreset_.scale.velocity.randomRange_max.x, 0.01f);
+			if (billboardColorPreset_.scale.velocity.randomRange_max.x < billboardColorPreset_.scale.velocity.randomRange_min.x)
+			{
+				billboardColorPreset_.scale.velocity.randomRange_max.x = billboardColorPreset_.scale.velocity.randomRange_min.x;
+			}
+			if (billboardColorPreset_.scale.velocity.randomRange_max.y < billboardColorPreset_.scale.velocity.randomRange_min.y)
+			{
+				billboardColorPreset_.scale.velocity.randomRange_max.y = billboardColorPreset_.scale.velocity.randomRange_min.y;
+			}
+			if (billboardColorPreset_.scale.velocity.randomRange_max.z < billboardColorPreset_.scale.velocity.randomRange_min.z)
+			{
+				billboardColorPreset_.scale.velocity.randomRange_max.z = billboardColorPreset_.scale.velocity.randomRange_min.z;
+			}
+		}
+		else
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.scale.vel", &billboardColorPreset_.scale.velocity.baseValue.x, 0.01f);
+		}
+
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.scale.isRandomAcc", &billboardColorPreset_.scale.acceleration.isRandom);
+		if (billboardColorPreset_.scale.acceleration.isRandom)
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.acc.rand.min", &billboardColorPreset_.scale.acceleration.randomRange_min.x, 0.01f);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("scale.acc.rand.max", &billboardColorPreset_.scale.acceleration.randomRange_max.x, 0.01f);
+
+			if (billboardColorPreset_.scale.acceleration.randomRange_max.x < billboardColorPreset_.scale.acceleration.randomRange_min.x)
+			{
+				billboardColorPreset_.scale.acceleration.randomRange_max.x = billboardColorPreset_.scale.acceleration.randomRange_min.x;
+			}
+			if (billboardColorPreset_.scale.acceleration.randomRange_max.y < billboardColorPreset_.scale.acceleration.randomRange_min.y)
+			{
+				billboardColorPreset_.scale.acceleration.randomRange_max.y = billboardColorPreset_.scale.acceleration.randomRange_min.y;
+			}
+			if (billboardColorPreset_.scale.acceleration.randomRange_max.z < billboardColorPreset_.scale.acceleration.randomRange_min.z)
+			{
+				billboardColorPreset_.scale.acceleration.randomRange_max.z = billboardColorPreset_.scale.acceleration.randomRange_min.z;
+			}
+		}
+		else
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat3("init.scale.acc", &billboardColorPreset_.scale.acceleration.baseValue.x, 0.01f);
+		}
+	}
+
+	if (ImGui::CollapsingHeader("color"))
+	{
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.color.isRandomVal", &billboardColorPreset_.color.value.isRandom);
+		if (billboardColorPreset_.color.value.isRandom)
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::ColorEdit4("color.rand.min", &billboardColorPreset_.color.value.randomRange_min.x);
+			requestRebuildEditParticleCurrent_ |= ImGui::ColorEdit4("color.rand.max", &billboardColorPreset_.color.value.randomRange_max.x);
+			if (billboardColorPreset_.color.value.randomRange_max.x < billboardColorPreset_.color.value.randomRange_min.x)
+			{
+				billboardColorPreset_.color.value.randomRange_max.x = billboardColorPreset_.color.value.randomRange_min.x;
+			}
+			if (billboardColorPreset_.color.value.randomRange_max.y < billboardColorPreset_.color.value.randomRange_min.y)
+			{
+				billboardColorPreset_.color.value.randomRange_max.y = billboardColorPreset_.color.value.randomRange_min.y;
+			}
+			if (billboardColorPreset_.color.value.randomRange_max.z < billboardColorPreset_.color.value.randomRange_min.z)
+			{
+				billboardColorPreset_.color.value.randomRange_max.z = billboardColorPreset_.color.value.randomRange_min.z;
+			}
+			if (billboardColorPreset_.color.value.randomRange_max.w < billboardColorPreset_.color.value.randomRange_min.w)
+			{
+				billboardColorPreset_.color.value.randomRange_max.w = billboardColorPreset_.color.value.randomRange_min.w;
+			}
+		}
+		else
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::ColorEdit4("init.color.val", &billboardColorPreset_.color.value.baseValue.x);
+		}
+
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.color.isRandomVel", &billboardColorPreset_.color.velocity.isRandom);
+		if (billboardColorPreset_.color.velocity.isRandom)
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat4("color.vel.rand.min", &billboardColorPreset_.color.velocity.randomRange_min.x);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat4("color.vel.rand.max", &billboardColorPreset_.color.velocity.randomRange_max.x);
+			if (billboardColorPreset_.color.velocity.randomRange_max.x < billboardColorPreset_.color.velocity.randomRange_min.x)
+			{
+				billboardColorPreset_.color.velocity.randomRange_max.x = billboardColorPreset_.color.velocity.randomRange_min.x;
+			}
+			if (billboardColorPreset_.color.velocity.randomRange_max.y < billboardColorPreset_.color.velocity.randomRange_min.y)
+			{
+				billboardColorPreset_.color.velocity.randomRange_max.y = billboardColorPreset_.color.velocity.randomRange_min.y;
+			}
+			if (billboardColorPreset_.color.velocity.randomRange_max.z < billboardColorPreset_.color.velocity.randomRange_min.z)
+			{
+				billboardColorPreset_.color.velocity.randomRange_max.z = billboardColorPreset_.color.velocity.randomRange_min.z;
+			}
+			if (billboardColorPreset_.color.velocity.randomRange_max.w < billboardColorPreset_.color.velocity.randomRange_min.w)
+			{
+				billboardColorPreset_.color.velocity.randomRange_max.w = billboardColorPreset_.color.velocity.randomRange_min.w;
+			}
+		}
+		else
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat4("init.color.vel", &billboardColorPreset_.color.velocity.baseValue.x);
+		}
+
+		requestRebuildEditParticleCurrent_ |= ImGui::Checkbox("init.color.isRandomAcc", &billboardColorPreset_.color.acceleration.isRandom);
+		if (billboardColorPreset_.color.acceleration.isRandom)
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat4("color.acc.rand.min", &billboardColorPreset_.color.acceleration.randomRange_min.x);
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat4("color.acc.rand.max", &billboardColorPreset_.color.acceleration.randomRange_max.x);
+			if (billboardColorPreset_.color.acceleration.randomRange_max.x < billboardColorPreset_.color.acceleration.randomRange_min.x)
+			{
+				billboardColorPreset_.color.acceleration.randomRange_max.x = billboardColorPreset_.color.acceleration.randomRange_min.x;
+			}
+			if (billboardColorPreset_.color.acceleration.randomRange_max.y < billboardColorPreset_.color.acceleration.randomRange_min.y)
+			{
+				billboardColorPreset_.color.acceleration.randomRange_max.y = billboardColorPreset_.color.acceleration.randomRange_min.y;
+			}
+			if (billboardColorPreset_.color.acceleration.randomRange_max.z < billboardColorPreset_.color.acceleration.randomRange_min.z)
+			{
+				billboardColorPreset_.color.acceleration.randomRange_max.z = billboardColorPreset_.color.acceleration.randomRange_min.z;
+			}
+			if (billboardColorPreset_.color.acceleration.randomRange_max.w < billboardColorPreset_.color.acceleration.randomRange_min.w)
+			{
+				billboardColorPreset_.color.acceleration.randomRange_max.w = billboardColorPreset_.color.acceleration.randomRange_min.w;
+			}
+		}
+		else
+		{
+			requestRebuildEditParticleCurrent_ |= ImGui::DragFloat4("init.color.acc", &billboardColorPreset_.color.acceleration.baseValue.x);
+		}
+	}
+
+#endif
+}
 
 
 

@@ -208,6 +208,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Attack\Arrow.cpp" />
     <ClCompile Include="AppSource\Utils\AppUtils.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\BillboardScaleParticle\BillboardScaleParticle.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\BillboardColorParticle\BillboardColorParticle.cpp" />
     <ClCompile Include="Engine\Render\Buffer\BufferContainer.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\PlayData.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSPSOManager.cpp" />
@@ -391,6 +392,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Attack\Arrow.h" />
     <ClInclude Include="AppSource\Utils\AppUtils.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\BillboardScaleParticle\BillboardScaleParticle.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\BillboardColorParticle\BillboardColorParticle.h" />
     <ClInclude Include="Engine\Render\Buffer\BufferContainer.h" />
     <ClInclude Include="Engine\Assets\Audio\Data\PlayData.h" />
     <ClInclude Include="Engine\Compute\PSO\CSPSOManager.h" />

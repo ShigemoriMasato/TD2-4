@@ -63,6 +63,32 @@ void ParticlePresetDataBank::SaveParticleSRT(JsonManager& json, const std::strin
 		json.Add(keyPrefix + ".randomRangeAccMax", srt.acceleration.randomRange_max);
 	}
 }
+void ParticlePresetDataBank::SaveParticleSRTfloat4(JsonManager& json, const std::string& keyPrefix, const ParticleSRTfloat4& srt)
+{
+	// value
+	{
+		json.Add(keyPrefix + ".isRandomVal", srt.value.isRandom);
+		json.Add(keyPrefix + ".val", srt.value.baseValue);
+		json.Add(keyPrefix + ".randomRangeValMin", srt.value.randomRange_min);
+		json.Add(keyPrefix + ".randomRangeValMax", srt.value.randomRange_max);
+	}
+
+	// velocity
+	{
+		json.Add(keyPrefix + ".isRandomVel", srt.velocity.isRandom);
+		json.Add(keyPrefix + ".vel", srt.velocity.baseValue);
+		json.Add(keyPrefix + ".randomRangeVelMin", srt.velocity.randomRange_min);
+		json.Add(keyPrefix + ".randomRangeVelMax", srt.velocity.randomRange_max);
+	}
+
+	// acceleration
+	{
+		json.Add(keyPrefix + ".isRandomAcc", srt.acceleration.isRandom);
+		json.Add(keyPrefix + ".acc", srt.acceleration.baseValue);
+		json.Add(keyPrefix + ".randomRangeAccMin", srt.acceleration.randomRange_min);
+		json.Add(keyPrefix + ".randomRangeAccMax", srt.acceleration.randomRange_max);
+	}
+}
 void ParticlePresetDataBank::Save(const std::string& name, PhysicsConfig& uniqueConfig)
 {
 	// nameに.jsonがついていたら外す
@@ -201,6 +227,41 @@ void ParticlePresetDataBank::Save(const std::string& name, BillboardScaleConfig&
 }
 void ParticlePresetDataBank::Save(const std::string & name, BillboardScale2Config & uniqueConfig)
 {}
+void ParticlePresetDataBank::Save(const std::string & name, BillboardColorConfig & uniqueConfig)
+{
+	// nameに.jsonがついていたら外す
+	std::string baseName = name;
+	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
+	{
+		baseName = baseName.substr(0, baseName.size() - 5);
+	}
+
+	json_.Boot("Particle/" + baseName);
+
+	// type
+	{
+		std::string type = "Billboard_Color";
+		json_.Add("type", type);
+	}
+
+	// cfg
+	{
+		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
+		json_.Add("cfg.speed", uniqueConfig.cfg.speed);
+		json_.Add("cfg.emitNum", uniqueConfig.cfg.emitNum);
+		json_.Add("cfg.emitInterval", uniqueConfig.cfg.emitInterval);
+		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
+		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
+	}
+
+	// type固有
+	{
+		SaveParticleSRT(json_, "init.scale", uniqueConfig.scale);
+		SaveParticleSRTfloat4(json_, "init.color", uniqueConfig.color);
+	}
+
+	json_.Save();
+}
 
 
 // Load
@@ -236,6 +297,42 @@ ParticleSRT ParticlePresetDataBank::LoadParticleSRT(JsonManager& json, const std
 	try { outSrt.acceleration.randomRange_min = json.Get<Vector3>(keyPrefix + ".randomRangeAccMin"); }
 	catch (...) {}
 	try { outSrt.acceleration.randomRange_max = json.Get<Vector3>(keyPrefix + ".randomRangeAccMax"); }
+	catch (...) {}
+
+	return outSrt;
+}
+ParticleSRTfloat4 ParticlePresetDataBank::LoadParticleSRTfloat4(JsonManager& json, const std::string& keyPrefix)
+{
+	ParticleSRTfloat4 outSrt{};
+
+	// value
+	try { outSrt.value.isRandom = json.Get<bool>(keyPrefix + ".isRandomVal"); }
+	catch (...) {}
+	try { outSrt.value.baseValue = json.Get<Vector4>(keyPrefix + ".val"); }
+	catch (...) {}
+	try { outSrt.value.randomRange_min = json.Get<Vector4>(keyPrefix + ".randomRangeValMin"); }
+	catch (...) {}
+	try { outSrt.value.randomRange_max = json.Get<Vector4>(keyPrefix + ".randomRangeValMax"); }
+	catch (...) {}
+
+	// velocity
+	try { outSrt.velocity.isRandom = json.Get<bool>(keyPrefix + ".isRandomVel"); }
+	catch (...) {}
+	try { outSrt.velocity.baseValue = json.Get<Vector4>(keyPrefix + ".vel"); }
+	catch (...) {}
+	try { outSrt.velocity.randomRange_min = json.Get<Vector4>(keyPrefix + ".randomRangeVelMin"); }
+	catch (...) {}
+	try { outSrt.velocity.randomRange_max = json.Get<Vector4>(keyPrefix + ".randomRangeVelMax"); }
+	catch (...) {}
+
+	// acceleration
+	try { outSrt.acceleration.isRandom = json.Get<bool>(keyPrefix + ".isRandomAcc"); }
+	catch (...) {}
+	try { outSrt.acceleration.baseValue = json.Get<Vector4>(keyPrefix + ".acc"); }
+	catch (...) {}
+	try { outSrt.acceleration.randomRange_min = json.Get<Vector4>(keyPrefix + ".randomRangeAccMin"); }
+	catch (...) {}
+	try { outSrt.acceleration.randomRange_max = json.Get<Vector4>(keyPrefix + ".randomRangeAccMax"); }
 	catch (...) {}
 
 	return outSrt;
@@ -328,6 +425,14 @@ ParticlePresetVariant ParticlePresetDataBank::Load(const std::string& name)
 		BillboardScale2Config p{};
 		p.cfg = LoadConfig(json_);
 		p.scale = LoadParticleSRT(json_, "init.scale");
+		return p;
+	}
+	else if (type == ParticleType::Billboard_Color)
+	{
+		BillboardColorConfig p{};
+		p.cfg = LoadConfig(json_);
+		p.scale = LoadParticleSRT(json_, "init.scale");
+		p.color = LoadParticleSRTfloat4(json_, "init.color");
 		return p;
 	}
 
