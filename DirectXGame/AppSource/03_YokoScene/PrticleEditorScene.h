@@ -46,12 +46,13 @@ private:
 
 	void DrawImGui();
 	void DrawImGui_Config();
-	void DrawImGui_Config_Physics();
+	void DrawImGui_Config_S_R_T();
 	void DrawImGui_Config_GoToTarget();
 	void DrawImGui_Config_OnTrail();
-	void DrawImGui_Config_BillboardScale();
-	void DrawImGui_Config_BillboardScale2();
-	void DrawImGui_Config_BillboardColor();
+	void DrawImGui_Config_B_S();
+	void DrawImGui_Config_B_S_T();
+	void DrawImGui_Config_B_S_C();
+	void DrawImGui_Config_B_S_R_T_C();
 
 	void Reset(ParticleType type);
 
@@ -90,11 +91,11 @@ private:
 	// 描画しているParticleのプリセット名リスト
 	std::vector<std::string> activeParticleNameList_;
 	// 描画パーティクルのみ再生成
-	bool requestRebuildDrawParticle_ = false;
+	bool requestRebuildDrawingParticle_ = false;
 	// 編集パーティクルのみ再生成(Jsonのプリセットから再生成)
-	bool requestRebuildEditParticle_ = false;
+	bool requestRebuildEditingParticleByJson_ = false;
 	// 編集パーティクルを現在のEditerConfigで再生成
-	bool requestRebuildEditParticleCurrent_ = false;
+	bool requestRebuildEditingParticleByCurrentConfig_ = false;
 
 
 	// ImGuiがstringを許容しないばかりに生まれてしまった産廃

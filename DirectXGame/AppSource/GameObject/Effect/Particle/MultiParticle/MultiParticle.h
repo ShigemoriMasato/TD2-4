@@ -7,10 +7,6 @@
 #include <Scene/CommonData.h>
 
 #include <GameObject/Effect/Particle/DataBank/ParticlePresetDataBank.h>
-#include <GameObject/Effect/Particle/Type/PhysicsParticle/PhysicsParticle.h>
-#include <GameObject/Effect/Particle/Type/GoToTargetParticle/GoToTargetParticle.h>
-#include <GameObject/Effect/Particle/Type/B_S_Particle/B_S_Particle.h>
-#include <GameObject/Effect/Particle/Type/B_S_C_Particle/B_S_C_Particle.h>
 
 class ParticleDrawer;
 
