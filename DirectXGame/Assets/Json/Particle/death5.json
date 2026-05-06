@@ -160,12 +160,12 @@
     ],
     "init.translate.acc": [
         0.0,
-        0.0,
+        -100.0,
         0.0
     ],
     "init.translate.isRandomAcc": false,
     "init.translate.isRandomVal": true,
-    "init.translate.isRandomVel": false,
+    "init.translate.isRandomVel": true,
     "init.translate.randomRangeAccMax": [
         0.0,
         0.0,
@@ -187,14 +187,14 @@
         -1.0
     ],
     "init.translate.randomRangeVelMax": [
-        0.0,
-        0.0,
-        0.0
+        5.0,
+        30.0,
+        5.0
     ],
     "init.translate.randomRangeVelMin": [
-        0.0,
-        0.0,
-        0.0
+        -5.0,
+        30.0,
+        -5.0
     ],
     "init.translate.val": [
         0.0,
@@ -203,7 +203,7 @@
     ],
     "init.translate.vel": [
         0.0,
-        3.0,
+        10.0,
         0.0
     ],
     "type": "B_S_R_T_C"
