@@ -2,7 +2,7 @@
 #include <GameObject/Effect/Particle/IParticle.h>
 #include <GameObject/Effect/Particle/Preset/ParticlePreset.h>
 
-class GoToTargetParticle : public IParticle
+class B_S_C_Particle : public IParticle
 {
 public:
 	void SetConfig(const ParticlePresetVariant& config) override;
@@ -13,10 +13,8 @@ private:
 	struct ParticleInstance
 	{
 		ParticleSRT scale;
-		ParticleSRT rotate;
-		ParticleSRT translate;
+		ParticleSRTfloat4 color;
 		float age = 0.0f;
-		Vector4 color{ 1,1,1,1 };
 	};
 
 	std::vector<ParticleInstance> instances_;

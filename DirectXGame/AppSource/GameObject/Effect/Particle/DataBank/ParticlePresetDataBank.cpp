@@ -2,6 +2,18 @@
 #include <stdexcept>
 #include <algorithm>
 
+namespace
+{
+	std::string removeJsonExtension(const std::string& name)
+	{
+		if (name.size() > 5 && name.substr(name.size() - 5) == ".json")
+		{
+			return name.substr(0, name.size() - 5);
+		}
+		return name;
+	}
+}
+
 // static故最強
 std::unordered_map<std::string, ParticlePresetVariant> ParticlePresetDataBank::cache_{};
 
@@ -31,8 +43,10 @@ ParticleType ParticlePresetDataBank::GetTypeOf(const std::string& name)
 	if (std::holds_alternative<PhysicsConfig>(v)) return ParticleType::Physics;
 	else if (std::holds_alternative<OnTrailConfig>(v)) return ParticleType::OnTrail;
 	else if (std::holds_alternative<GoToTargetConfig>(v)) return ParticleType::GoToTarget;
-	else if (std::holds_alternative<BillboardScaleConfig>(v)) return ParticleType::Billboard_Scale;
-	else if (std::holds_alternative<BillboardScale2Config>(v)) return ParticleType::Billboard_Scale2;
+	else if (std::holds_alternative<B_S_Config>(v)) return ParticleType::B_S;
+	else if (std::holds_alternative<B_S_T_Config>(v)) return ParticleType::B_S_T;
+	else if (std::holds_alternative<B_S_C_Config>(v)) return ParticleType::B_S_C;
+	else if (std::holds_alternative<B_S_R_T_C_Config>(v)) return ParticleType::B_S_R_T_C;
 	return ParticleType::None;
 }
 
@@ -92,17 +106,11 @@ void ParticlePresetDataBank::SaveParticleSRTfloat4(JsonManager& json, const std:
 void ParticlePresetDataBank::Save(const std::string& name, PhysicsConfig& uniqueConfig)
 {
 	// nameに.jsonがついていたら外す
-	std::string baseName = name;
-	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
-	{
-		baseName = baseName.substr(0, baseName.size() - 5);
-	}
-
-	json_.Boot("Particle/" + baseName);
+	json_.Boot("Particle/" + removeJsonExtension(name));
 
 	// type
 	{
-		std::string type = "Physics";
+		std::string type = ToString(ParticleType::Physics);
 		json_.Add("type", type);
 	}
 
@@ -128,17 +136,11 @@ void ParticlePresetDataBank::Save(const std::string& name, PhysicsConfig& unique
 void ParticlePresetDataBank::Save(const std::string& name, GoToTargetConfig& uniqueConfig)
 {
 	// nameに.jsonがついていたら外す
-	std::string baseName = name;
-	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
-	{
-		baseName = baseName.substr(0, baseName.size() - 5);
-	}
-
-	json_.Boot("Particle/" + baseName);
+	json_.Boot("Particle/" + removeJsonExtension(name));
 
 	// type
 	{
-		std::string type = "Fountain";
+		std::string type = ToString(ParticleType::GoToTarget);
 		json_.Add("type", type);
 	}
 
@@ -167,17 +169,14 @@ void ParticlePresetDataBank::Save(const std::string& name, GoToTargetConfig& uni
 void ParticlePresetDataBank::Save(const std::string& name, OnTrailConfig& uniqueConfig)
 {
 	// nameに.jsonがついていたら外す
-	std::string baseName = name;
-	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
-	{
-		baseName = baseName.substr(0, baseName.size() - 5);
-	}
-	json_.Boot("Particle/" + baseName);
+	json_.Boot("Particle/" + removeJsonExtension(name));
+
 	// type
 	{
-		std::string type = "OnTrail";
+		std::string type = ToString(ParticleType::OnTrail);
 		json_.Add("type", type);
 	}
+
 	// cfg
 	{
 		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
@@ -187,24 +186,24 @@ void ParticlePresetDataBank::Save(const std::string& name, OnTrailConfig& unique
 		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
 		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
 	}
+
+	// type固有
+	{
+	}
+
 	json_.Save();
+
 	// 保存したらキャッシュも更新
 	Invalidate(name);
 }
-void ParticlePresetDataBank::Save(const std::string& name, BillboardScaleConfig& uniqueConfig)
+void ParticlePresetDataBank::Save(const std::string& name, B_S_Config& uniqueConfig)
 {
 	// nameに.jsonがついていたら外す
-	std::string baseName = name;
-	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
-	{
-		baseName = baseName.substr(0, baseName.size() - 5);
-	}
-
-	json_.Boot("Particle/" + baseName);
+	json_.Boot("Particle/" + removeJsonExtension(name));
 
 	// type
 	{
-		std::string type = "Billboard_Scale";
+		std::string type = ToString(ParticleType::B_S);
 		json_.Add("type", type);
 	}
 
@@ -225,22 +224,40 @@ void ParticlePresetDataBank::Save(const std::string& name, BillboardScaleConfig&
 
 	json_.Save();
 }
-void ParticlePresetDataBank::Save(const std::string & name, BillboardScale2Config & uniqueConfig)
-{}
-void ParticlePresetDataBank::Save(const std::string & name, BillboardColorConfig & uniqueConfig)
+void ParticlePresetDataBank::Save(const std::string & name, B_S_T_Config & uniqueConfig)
 {
 	// nameに.jsonがついていたら外す
-	std::string baseName = name;
-	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
-	{
-		baseName = baseName.substr(0, baseName.size() - 5);
-	}
-
-	json_.Boot("Particle/" + baseName);
+	json_.Boot("Particle/" + removeJsonExtension(name));
 
 	// type
 	{
-		std::string type = "Billboard_Color";
+		std::string type = ToString(ParticleType::B_S_T);
+		json_.Add("type", type);
+	}
+
+	// cfg
+	{
+		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
+		json_.Add("cfg.speed", uniqueConfig.cfg.speed);
+		json_.Add("cfg.emitNum", uniqueConfig.cfg.emitNum);
+		json_.Add("cfg.emitInterval", uniqueConfig.cfg.emitInterval);
+		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
+		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
+	}
+
+	// type固有
+	{
+		SaveParticleSRT(json_, "init.scale", uniqueConfig.scale);
+	}
+}
+void ParticlePresetDataBank::Save(const std::string & name, B_S_C_Config & uniqueConfig)
+{
+	// nameに.jsonがついていたら外す
+	json_.Boot("Particle/" + removeJsonExtension(name));
+
+	// type
+	{
+		std::string type = ToString(ParticleType::B_S_C);
 		json_.Add("type", type);
 	}
 
@@ -260,6 +277,34 @@ void ParticlePresetDataBank::Save(const std::string & name, BillboardColorConfig
 		SaveParticleSRTfloat4(json_, "init.color", uniqueConfig.color);
 	}
 
+	json_.Save();
+}
+void ParticlePresetDataBank::Save(const std::string & name, B_S_R_T_C_Config & uniqueConfig)
+{
+	// nameに.jsonがついていたら外す
+	json_.Boot("Particle/" + removeJsonExtension(name));
+
+	// type
+	{
+		std::string type = ToString(ParticleType::B_S_R_T_C);
+		json_.Add("type", type);
+	}
+	// cfg
+	{
+		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
+		json_.Add("cfg.speed", uniqueConfig.cfg.speed);
+		json_.Add("cfg.emitNum", uniqueConfig.cfg.emitNum);
+		json_.Add("cfg.emitInterval", uniqueConfig.cfg.emitInterval);
+		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
+		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
+	}
+	// type固有
+	{
+		SaveParticleSRT(json_, "init.scale", uniqueConfig.scale);
+		SaveParticleSRT(json_, "init.rotate", uniqueConfig.rotate);
+		SaveParticleSRT(json_, "init.translate", uniqueConfig.translate);
+		SaveParticleSRTfloat4(json_, "init.color", uniqueConfig.color);
+	}
 	json_.Save();
 }
 
@@ -337,9 +382,9 @@ ParticleSRTfloat4 ParticlePresetDataBank::LoadParticleSRTfloat4(JsonManager& jso
 
 	return outSrt;
 }
-Particle::Config ParticlePresetDataBank::LoadConfig(JsonManager& json)
+ParticleConfig ParticlePresetDataBank::LoadConfig(JsonManager& json)
 {
-	Particle::Config cfg{};
+	ParticleConfig cfg{};
 
 	try { cfg.lifeTime = json.Get<float>("cfg.lifeTime"); }
 	catch (...) {}
@@ -413,25 +458,37 @@ ParticlePresetVariant ParticlePresetDataBank::Load(const std::string& name)
 
 		return p;
 	}
-	else if (type == ParticleType::Billboard_Scale)
+	else if (type == ParticleType::B_S)
 	{
-		BillboardScaleConfig p{};
+		B_S_Config p{};
 		p.cfg = LoadConfig(json_);
 		p.scale = LoadParticleSRT(json_, "init.scale");
 		return p;
 	}
-	else if (type == ParticleType::Billboard_Scale2)
+	else if (type == ParticleType::B_S_T)
 	{
-		BillboardScale2Config p{};
+		B_S_T_Config p{};
 		p.cfg = LoadConfig(json_);
 		p.scale = LoadParticleSRT(json_, "init.scale");
 		return p;
 	}
-	else if (type == ParticleType::Billboard_Color)
+	else if (type == ParticleType::B_S_C)
 	{
-		BillboardColorConfig p{};
+		B_S_C_Config p{};
 		p.cfg = LoadConfig(json_);
 		p.scale = LoadParticleSRT(json_, "init.scale");
+		p.color = LoadParticleSRTfloat4(json_, "init.color");
+		return p;
+	}
+	else if (type == ParticleType::B_S_R_T_C)
+	{
+		B_S_R_T_C_Config p{};
+		p.cfg = LoadConfig(json_);
+		try { p.billboard = json_.Get<bool>("init.billboard"); }
+		catch (...) {}
+		p.scale = LoadParticleSRT(json_, "init.scale");
+		p.rotate = LoadParticleSRT(json_, "init.rotate");
+		p.translate = LoadParticleSRT(json_, "init.translate");
 		p.color = LoadParticleSRTfloat4(json_, "init.color");
 		return p;
 	}

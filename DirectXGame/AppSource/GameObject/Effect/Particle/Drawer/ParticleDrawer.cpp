@@ -28,7 +28,7 @@ void ParticleDrawer::Clear()
 	particles_.clear();
 }
 
-void ParticleDrawer::Register(Particle* particle)
+void ParticleDrawer::Register(IParticle* particle)
 {
 	if (!particle) return;
 	particles_.push_back(particle);
@@ -40,7 +40,7 @@ void ParticleDrawer::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
 	if (!drawDataManager_ || !modelManager_) return;
 
 	// 収集（モデル単位に詰める）
-	for (Particle* p : particles_)
+	for (IParticle* p : particles_)
 	{
 		if (!p) continue;
 
@@ -73,7 +73,7 @@ void ParticleDrawer::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
 			batch.render->SetUseTexture(true);
 
 			batch.render->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "VP");
-			batch.render->CreateSRV(sizeof(Particle::InstanceGpu), config_.maxInstancesPerModel, ShaderType::VERTEX_SHADER, "ParticleInstances");
+			batch.render->CreateSRV(sizeof(IParticle::InstanceGpu), config_.maxInstancesPerModel, ShaderType::VERTEX_SHADER, "ParticleInstances");
 			batch.render->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 
 			/// 各モデルは最大でconfig_.maxInstancesPerModel個のインスタンスを描画できるようにする。
@@ -83,7 +83,7 @@ void ParticleDrawer::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
 		}
 
 		// GPU転送用のデータを取得
-		const Particle::InstanceGpu* src = p->GetGpuInstanceData();
+		const IParticle::InstanceGpu* src = p->GetGpuInstanceData();
 
 		// remain = 残りの描画可能数 = (max描画数 - すでに描画予定リストに入ってる数)
 		const uint32_t remain =
@@ -108,7 +108,7 @@ void ParticleDrawer::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
 		if (batch.instances.empty()) continue;
 
 		batch.render->CopyBufferData(0, &vpMatrix, sizeof(Matrix4x4));
-		batch.render->CopyBufferData(1, batch.instances.data(), sizeof(Particle::InstanceGpu) * batch.instances.size());
+		batch.render->CopyBufferData(1, batch.instances.data(), sizeof(IParticle::InstanceGpu) * batch.instances.size());
 
 		const Vector4 white = { 1,1,1,1 };
 		batch.render->CopyBufferData(2, &white, sizeof(Vector4));

@@ -6,7 +6,7 @@
 #include <Render/DrawDataManager.h>
 #include <Assets/Model/ModelManager.h>
 #include <Utility/Matrix.h>
-#include <GameObject/Effect/Particle/Particle.h>
+#include <GameObject/Effect/Particle/IParticle.h>
 
 class ParticleDrawer final
 {
@@ -25,7 +25,7 @@ public:
 	void SetConfig(const Config& cfg);
 
 	void Clear();
-	void Register(Particle* particle);
+	void Register(IParticle* particle);
 
 	// シーン内パーティクルをすべて描画。
 	void Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix);
@@ -34,7 +34,7 @@ private:
 	struct ModelBatch
 	{
 		std::unique_ptr<SHEngine::RenderObject> render;
-		std::vector<Particle::InstanceGpu> instances;
+		std::vector<IParticle::InstanceGpu> instances;
 	};
 
 private:
@@ -43,6 +43,6 @@ private:
 
 	Config config_{};
 
-	std::vector<Particle*> particles_;
+	std::vector<IParticle*> particles_;
 	std::unordered_map<int, ModelBatch> batches_;
 };

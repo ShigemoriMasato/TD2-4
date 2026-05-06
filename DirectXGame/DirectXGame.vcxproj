@@ -207,8 +207,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Enemy\EnemyHP.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Arrow.cpp" />
     <ClCompile Include="AppSource\Utils\AppUtils.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\BillboardScaleParticle\BillboardScaleParticle.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\BillboardColorParticle\BillboardColorParticle.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\B_S_Particle\B_S_Particle.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\B_S_C_Particle\B_S_C_Particle.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\B_S_R_T_C_Particle\B_S_R_T_C_Particle.cpp" />
     <ClCompile Include="Engine\Render\Buffer\BufferContainer.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\PlayData.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSPSOManager.cpp" />
@@ -289,7 +290,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Attack\GrenadeBullet.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Gurepon.cpp" />
     <ClCompile Include="AppSource\UI\Game\GameFrame.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\FountainParticle\FountainParticle.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\PhysicsParticle\PhysicsParticle.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\GoToTargetParticle\GoToTargetParticle.cpp" />
     <ClCompile Include="Engine\Core\FrameCounter.cpp" />
     <ClCompile Include="AppSource\UI\Game\GaugeAttractEffect.cpp" />
@@ -308,7 +309,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Enemy\LevelSystem.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Render\ShotgunRender.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\ShotGun.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Particle\Particle.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Particle\IParticle.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Test\TestTrail4\TestTrail4.cpp" />
     <ClCompile Include="AppSource\03_YokoScene\TrailEditorScene.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\DataBank\TrailPresetDataBank.cpp" />
@@ -391,8 +392,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Enemy\EnemyHP.h" />
     <ClInclude Include="AppSource\GameObject\Attack\Arrow.h" />
     <ClInclude Include="AppSource\Utils\AppUtils.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\BillboardScaleParticle\BillboardScaleParticle.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\BillboardColorParticle\BillboardColorParticle.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\B_S_Particle\B_S_Particle.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\B_S_C_Particle\B_S_C_Particle.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\B_S_R_T_C_Particle\B_S_R_T_C_Particle.h" />
     <ClInclude Include="Engine\Render\Buffer\BufferContainer.h" />
     <ClInclude Include="Engine\Assets\Audio\Data\PlayData.h" />
     <ClInclude Include="Engine\Compute\PSO\CSPSOManager.h" />
@@ -474,7 +476,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\Render\ShotgunRender.h" />
     <ClInclude Include="AppSource\GameObject\GameTimer.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Data\ShotGun.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Particle\Particle.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Particle\IParticle.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\Test\TestTrail4\TestTrail4.h" />
     <ClInclude Include="AppSource\03_YokoScene\TrailEditorScene.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\DataBank\TrailPresetDataBank.h" />
@@ -495,7 +497,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Attack\GrenadeBullet.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Data\Gurepon.h" />
     <ClInclude Include="AppSource\UI\Game\GameFrame.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\FountainParticle\FountainParticle.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\PhysicsParticle\PhysicsParticle.h" />
     <ClInclude Include="AppSource\GameObject\Effect\TrailOnParticle.h" />
     <ClInclude Include="Engine\Core\Command\Data\SHCmdQueue.h" />
     <ClInclude Include="Engine\Render\Renderer.h" />

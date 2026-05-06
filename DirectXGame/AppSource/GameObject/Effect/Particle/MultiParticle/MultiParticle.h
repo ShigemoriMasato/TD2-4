@@ -7,10 +7,10 @@
 #include <Scene/CommonData.h>
 
 #include <GameObject/Effect/Particle/DataBank/ParticlePresetDataBank.h>
-#include <GameObject/Effect/Particle/Type/FountainParticle/FountainParticle.h>
+#include <GameObject/Effect/Particle/Type/PhysicsParticle/PhysicsParticle.h>
 #include <GameObject/Effect/Particle/Type/GoToTargetParticle/GoToTargetParticle.h>
-#include <GameObject/Effect/Particle/Type/BillboardScaleParticle/BillboardScaleParticle.h>
-#include <GameObject/Effect/Particle/Type/BillboardColorParticle/BillboardColorParticle.h>
+#include <GameObject/Effect/Particle/Type/B_S_Particle/B_S_Particle.h>
+#include <GameObject/Effect/Particle/Type/B_S_C_Particle/B_S_C_Particle.h>
 
 class ParticleDrawer;
 
@@ -51,10 +51,15 @@ private:
 	void RegisterToDrawer();
 
 	int32_t nextId_ = -1;
-	std::unordered_map<int32_t, std::unique_ptr<PhysicsParticle>> physicsCache_;
-	//std::unordered_map<int32_t, std::unique_ptr<OnTrailParticle>> onTrailCache_;
-	std::unordered_map<int32_t, std::unique_ptr<GoToTargetParticle>> goToTargetCache_;
-	std::unordered_map<int32_t, std::unique_ptr<BillboardScaleParticle>> billboardScaleCache_;
-	//std::unordered_map<int32_t, std::unique_ptr<BillboardScale2Particle>> billboardScale2Cache_;
-	std::unordered_map<int32_t, std::unique_ptr<BillboardColorParticle>> billboardColorCache_;
+	//std::unordered_map<int32_t, std::unique_ptr<PhysicsParticle>> physicsCache_;
+	////std::unordered_map<int32_t, std::unique_ptr<OnTrailParticle>> onTrailCache_;
+	//std::unordered_map<int32_t, std::unique_ptr<GoToTargetParticle>> goToTargetCache_;
+	//std::unordered_map<int32_t, std::unique_ptr<B_S_Particle>> B_S_Cache_;
+	////std::unordered_map<int32_t, std::unique_ptr<BillboardScale2Particle>> B_S_T_Cache_;
+	//std::unordered_map<int32_t, std::unique_ptr<BillboardColorParticle>> B_C_Cache_;
+	//std::unordered_map<int32_t, std::unique_ptr<B_S_Particle>> B_S_R_T_Cache_;
+	//// 上のやつら全部Variantで行けるのでは？
+	//std::unordered_map<int32_t, ParticleInstanceVariant> instanceCache_;
+
+	std::unordered_map<int32_t, std::unique_ptr<IParticle>> instanceCache_;
 };

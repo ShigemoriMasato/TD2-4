@@ -1,6 +1,7 @@
 #pragma once
-#include <GameObject/Effect/Particle/Particle.h>
 #include <string>
+#include <variant>
+#include <Utility/Vector.h>
 
 enum class ParticleType
 {
@@ -10,12 +11,14 @@ enum class ParticleType
 	GoToTarget,
 	// エミッターがトレイルなやつ
 	OnTrail,
-	// 拡大→縮小→消滅(ビルボード)
-	Billboard_Scale,
-	// 生成→拡散→縮小→消滅(ビルボード)
-	Billboard_Scale2, 
-	// 透明化→消滅(ビルボード)
-	Billboard_Color,
+	// 拡縮→scale0以下で消滅(ビルボード)
+	B_S,
+	// 生成→拡散→拡縮→scale0以下で消滅(ビルボード)
+	B_S_T,
+	// 透明化&拡縮→color.w0以下で消滅(ビルボード)
+	B_S_C,
+	// ビルボード可能・Scale/Rotate/Translate/ColorをPhysics操作可能
+	B_S_R_T_C,
 
 	None
 };
@@ -27,9 +30,10 @@ inline const char* ToString(ParticleType t)
 	case ParticleType::Physics: return "Physics";
 	case ParticleType::OnTrail: return "OnTrail";
 	case ParticleType::GoToTarget: return "GoToTarget";
-	case ParticleType::Billboard_Scale: return "Billboard_Scale";
-	case ParticleType::Billboard_Scale2: return "Billboard_Scale2";
-	case ParticleType::Billboard_Color: return "Billboard_Color";
+	case ParticleType::B_S: return "B_S";
+	case ParticleType::B_S_T: return "B_S_T";
+	case ParticleType::B_S_C: return "B_S_C";
+	case ParticleType::B_S_R_T_C: return "B_S_R_T_C";
 	default: return "Unknown";
 	}
 }
@@ -39,9 +43,10 @@ inline bool FromString(const std::string& s, ParticleType& out)
 	if (s == "Physics") { out = ParticleType::Physics; return true; }
 	else if (s == "GoToTarget") { out = ParticleType::GoToTarget; return true; }
 	else if (s == "OnTrail") { out = ParticleType::OnTrail; return true; }
-	else if (s == "Billboard_Scale") { out = ParticleType::Billboard_Scale; return true; }
-	else if (s == "Billboard_Scale2") { out = ParticleType::Billboard_Scale2; return true; }
-	else if (s == "Billboard_Color") { out = ParticleType::Billboard_Color; return true; }
+	else if (s == "B_S") { out = ParticleType::B_S; return true; }
+	else if (s == "B_S_T") { out = ParticleType::B_S_T; return true; }
+	else if (s == "B_S_C") { out = ParticleType::B_S_C; return true; }
+	else if (s == "B_S_R_T_C") { out = ParticleType::B_S_R_T_C; return true; }
 	return false;
 }
 
@@ -75,11 +80,26 @@ struct ParticleSRTfloat4
 	ParticleSRTComponentFloat4 acceleration;
 };
 
+
+
+
+struct ParticleConfig
+{
+	float lifeTime = 1.0f;
+	float speed = 1.0f;
+
+	int emitNum = 10;
+	float emitInterval = 0.1f;
+
+	std::string texturePath = "Assets/.EngineResource/Texture/white1x1.png";
+	std::string modelPath = "Assets/.EngineResource/Model/Cube";
+};
+
 #pragma region PhysicsConfig
 
 struct PhysicsConfig
 {
-	Particle::Config cfg{};
+	ParticleConfig cfg{};
 
 	ParticleSRT scale;
 	ParticleSRT rotate;
@@ -92,7 +112,7 @@ struct PhysicsConfig
 
 struct GoToTargetConfig
 {
-	Particle::Config cfg{};
+	ParticleConfig cfg{};
 
 	bool isMoveToTarget = false;
 	Vector3 TargetPos = { 0.0f, 0.0f, 0.0f };
@@ -105,39 +125,63 @@ struct GoToTargetConfig
 
 struct OnTrailConfig
 {
-	Particle::Config cfg{};
+	ParticleConfig cfg{};
 };
 
 #pragma endregion
 
-#pragma region BillboardScaleConfig
+#pragma region B_S_Config
 
-struct BillboardScaleConfig
+struct B_S_Config
 {
-	Particle::Config cfg{};
+	ParticleConfig cfg{};
 
 	ParticleSRT scale;
 };
 
 #pragma endregion
 
-#pragma region BillboardScale2Config
+#pragma region B_S_T_Config
 
-struct BillboardScale2Config
+struct B_S_T_Config
 {
-	Particle::Config cfg{};
+	ParticleConfig cfg{};
 	ParticleSRT scale;
 };
 
 #pragma endregion
 
-#pragma region BillboardColorConfig
+#pragma region B_S_C_Config
 
-struct BillboardColorConfig
+struct B_S_C_Config
 {
-	Particle::Config cfg{};
+	ParticleConfig cfg{};
 	ParticleSRT scale;
 	ParticleSRTfloat4 color;
 };
 
 #pragma endregion
+
+#pragma region B_S_R_T_C_Config
+
+struct B_S_R_T_C_Config
+{
+	ParticleConfig cfg{};
+	bool billboard = false;
+	ParticleSRT scale;
+	ParticleSRT rotate;
+	ParticleSRT translate;
+	ParticleSRTfloat4 color;
+};
+
+#pragma endregion
+
+using ParticlePresetVariant = std::variant<
+	PhysicsConfig,
+	OnTrailConfig,
+	GoToTargetConfig,
+	B_S_Config,
+	B_S_T_Config,
+	B_S_C_Config,
+	B_S_R_T_C_Config
+>;

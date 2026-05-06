@@ -2,8 +2,6 @@
 #include <Scene/IScene.h>
 #include <Tool/Grid/Grid.h>
 #include <Camera/DebugCamera.h>
-#include <Render/RenderObject.h>
-#include <Tool/Json/JsonManager.h>
 #include <GameObject/Effect/Particle/MultiParticle/MultiParticle.h>
 #include <GameObject/Effect/Particle/Preset/ParticlePreset.h>
 #include <memory>
@@ -63,34 +61,33 @@ private:
 	// ワールドgrid
 	std::unique_ptr<Grid> grid_;
 
-	// エミッターAABB描画データ
-	std::unique_ptr<SHEngine::RenderObject> emitterAABBRender_;
-	bool isEmitterDraw_ = true;
-
 	// 共通Config
-	Particle::Config particleConfig_{};
+	ParticleConfig particleConfig_{};
 	// Physics 固有
-	PhysicsConfig physicsPreset_{};
+	PhysicsConfig physicsConfig_{};
 	// GoToTarget 固有
-	GoToTargetConfig goToTargetPreset_{};
+	GoToTargetConfig goToTargetConfig_{};
 	// OnTrailConfig 固有
-	OnTrailConfig onTrailPreset_{};
-	// Billboard_Scale 固有
-	BillboardScaleConfig billboardScalePreset_{};
-	// Billboard_Scale2 固有
-	BillboardScale2Config billboardScale2Preset_{};
-	// Billboard_Color 固有
-	BillboardColorConfig billboardColorPreset_{};
+	OnTrailConfig onTrailConfig_{};
+	// B_S 固有
+	B_S_Config b_S_Config_{};
+	// B_S_T 固有
+	B_S_T_Config b_S_T_Config_{};
+	// B_S_C 固有
+	B_S_C_Config b_S_C_Config_{};
+	// B_S_R_T_C 固有
+	B_S_R_T_C_Config b_S_R_T_C_Config_{};
 
-
-	// 上記Configを利用し描画するParticleが必要（編集中のParticleを描画するため）(ここには一つしかAddされない)
-	MultiParticle editingParticle_;
+	// 上記Configを利用し描画するParticleが必要（編集中のParticleを描画するため）
 
 
 	ParticleType currentType_ = ParticleType::Physics;
 
-	// Particle
-	MultiParticle particle_;
+	// 編集しているParticle。ImGuiで編集している内容を反映させるためのParticle(ここには一つしかAddされない)
+	MultiParticle editingParticle_;
+	// 描画しているParticle。複数のプリセットをAddして描画するためのParticle(activeParticleNameList_のプリセットをAddする)
+	MultiParticle drawingParticle_;
+	// 描画しているParticleのプリセット名リスト
 	std::vector<std::string> activeParticleNameList_;
 	// 描画パーティクルのみ再生成
 	bool requestRebuildDrawParticle_ = false;
@@ -98,7 +95,6 @@ private:
 	bool requestRebuildEditParticle_ = false;
 	// 編集パーティクルを現在のEditerConfigで再生成
 	bool requestRebuildEditParticleCurrent_ = false;
-
 
 
 	// ImGuiがstringを許容しないばかりに生まれてしまった産廃

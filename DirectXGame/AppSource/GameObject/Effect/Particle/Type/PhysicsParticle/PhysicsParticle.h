@@ -2,7 +2,7 @@
 #include <GameObject/Effect/Particle/IParticle.h>
 #include <GameObject/Effect/Particle/Preset/ParticlePreset.h>
 
-class GoToTargetParticle : public IParticle
+class PhysicsParticle : public IParticle
 {
 public:
 	void SetConfig(const ParticlePresetVariant& config) override;
