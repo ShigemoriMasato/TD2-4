@@ -103,6 +103,16 @@ void ParticlePresetDataBank::SaveParticleSRTfloat4(JsonManager& json, const std:
 		json.Add(keyPrefix + ".randomRangeAccMax", srt.acceleration.randomRange_max);
 	}
 }
+void ParticlePresetDataBank::SaveConfig(JsonManager& json, const std::string& keyPrefix, const ParticleConfig& cfg)
+{
+	json_.Add("lifeTime", cfg.lifeTime);
+	json_.Add("speed", cfg.speed);
+	json_.Add("emitNum", cfg.emitNum);
+	json_.Add("emitInterval", cfg.emitInterval);
+	json_.Add("isBillboard", cfg.isBillboard_);
+	json_.Add("texturePath", cfg.texturePath);
+	json_.Add("modelPath", cfg.modelPath);
+}
 void ParticlePresetDataBank::Save(const std::string& name, PhysicsConfig& uniqueConfig)
 {
 	// nameに.jsonがついていたら外す
@@ -116,12 +126,7 @@ void ParticlePresetDataBank::Save(const std::string& name, PhysicsConfig& unique
 
 	// cfg
 	{
-		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
-		json_.Add("cfg.speed", uniqueConfig.cfg.speed);
-		json_.Add("cfg.emitNum", uniqueConfig.cfg.emitNum);
-		json_.Add("cfg.emitInterval", uniqueConfig.cfg.emitInterval);
-		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
-		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
+		SaveConfig(json_, "cfg", uniqueConfig.cfg);
 	}
 
 	// type固有
@@ -146,12 +151,7 @@ void ParticlePresetDataBank::Save(const std::string& name, GoToTargetConfig& uni
 
 	// cfg
 	{
-		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
-		json_.Add("cfg.speed", uniqueConfig.cfg.speed);
-		json_.Add("cfg.emitNum", uniqueConfig.cfg.emitNum);
-		json_.Add("cfg.emitInterval", uniqueConfig.cfg.emitInterval);
-		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
-		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
+		SaveConfig(json_, "cfg", uniqueConfig.cfg);
 	}
 
 	// type固有
@@ -179,12 +179,7 @@ void ParticlePresetDataBank::Save(const std::string& name, OnTrailConfig& unique
 
 	// cfg
 	{
-		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
-		json_.Add("cfg.speed", uniqueConfig.cfg.speed);
-		json_.Add("cfg.emitNum", uniqueConfig.cfg.emitNum);
-		json_.Add("cfg.emitInterval", uniqueConfig.cfg.emitInterval);
-		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
-		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
+		SaveConfig(json_, "cfg", uniqueConfig.cfg);
 	}
 
 	// type固有
@@ -209,12 +204,7 @@ void ParticlePresetDataBank::Save(const std::string& name, B_S_Config& uniqueCon
 
 	// cfg
 	{
-		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
-		json_.Add("cfg.speed", uniqueConfig.cfg.speed);
-		json_.Add("cfg.emitNum", uniqueConfig.cfg.emitNum);
-		json_.Add("cfg.emitInterval", uniqueConfig.cfg.emitInterval);
-		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
-		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
+		SaveConfig(json_, "cfg", uniqueConfig.cfg);
 	}
 
 	// type固有
@@ -237,12 +227,7 @@ void ParticlePresetDataBank::Save(const std::string & name, B_S_T_Config & uniqu
 
 	// cfg
 	{
-		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
-		json_.Add("cfg.speed", uniqueConfig.cfg.speed);
-		json_.Add("cfg.emitNum", uniqueConfig.cfg.emitNum);
-		json_.Add("cfg.emitInterval", uniqueConfig.cfg.emitInterval);
-		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
-		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
+		SaveConfig(json_, "cfg", uniqueConfig.cfg);
 	}
 
 	// type固有
@@ -263,12 +248,7 @@ void ParticlePresetDataBank::Save(const std::string & name, B_S_C_Config & uniqu
 
 	// cfg
 	{
-		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
-		json_.Add("cfg.speed", uniqueConfig.cfg.speed);
-		json_.Add("cfg.emitNum", uniqueConfig.cfg.emitNum);
-		json_.Add("cfg.emitInterval", uniqueConfig.cfg.emitInterval);
-		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
-		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
+		SaveConfig(json_, "cfg", uniqueConfig.cfg);
 	}
 
 	// type固有
@@ -289,15 +269,12 @@ void ParticlePresetDataBank::Save(const std::string & name, B_S_R_T_C_Config & u
 		std::string type = ToString(ParticleType::B_S_R_T_C);
 		json_.Add("type", type);
 	}
+
 	// cfg
 	{
-		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
-		json_.Add("cfg.speed", uniqueConfig.cfg.speed);
-		json_.Add("cfg.emitNum", uniqueConfig.cfg.emitNum);
-		json_.Add("cfg.emitInterval", uniqueConfig.cfg.emitInterval);
-		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
-		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
+		SaveConfig(json_, "cfg", uniqueConfig.cfg);
 	}
+
 	// type固有
 	{
 		SaveParticleSRT(json_, "init.scale", uniqueConfig.scale);
@@ -307,6 +284,7 @@ void ParticlePresetDataBank::Save(const std::string & name, B_S_R_T_C_Config & u
 	}
 	json_.Save();
 }
+
 
 
 // Load
@@ -393,6 +371,8 @@ ParticleConfig ParticlePresetDataBank::LoadConfig(JsonManager& json)
 	try { cfg.emitNum = json.Get<int>("cfg.emitNum"); }
 	catch (...) {}
 	try { cfg.emitInterval = json.Get<float>("cfg.emitInterval"); }
+	catch (...) {}
+	try { cfg.isBillboard_ = json.Get<bool>("cfg.isBillboard"); }
 	catch (...) {}
 	try { cfg.texturePath = json.Get<std::string>("cfg.texturePath"); }
 	catch (...) {}

@@ -91,6 +91,8 @@ struct ParticleConfig
 	int emitNum = 10;
 	float emitInterval = 0.1f;
 
+	bool isBillboard_ = false;
+
 	std::string texturePath = "Assets/.EngineResource/Texture/white1x1.png";
 	std::string modelPath = "Assets/.EngineResource/Model/Cube";
 };

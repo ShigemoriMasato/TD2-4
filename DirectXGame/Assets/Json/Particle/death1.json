@@ -1,10 +1,67 @@
 {
-    "cfg.emitInterval": 20.0,
+    "cfg.emitInterval": 3.0,
     "cfg.emitNum": 30,
     "cfg.lifeTime": 1.0,
     "cfg.modelPath": "Assets/.EngineResource/Model/Cube",
     "cfg.speed": 1.0,
     "cfg.texturePath": "Assets/.EngineResource/Texture/white1x1.png",
+    "init.color.acc": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.color.isRandomAcc": false,
+    "init.color.isRandomVal": false,
+    "init.color.isRandomVel": false,
+    "init.color.randomRangeAccMax": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.color.randomRangeAccMin": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.color.randomRangeValMax": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.color.randomRangeValMin": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.color.randomRangeVelMax": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.color.randomRangeVelMin": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+    ],
+    "init.color.val": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+    ],
+    "init.color.vel": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+    ],
     "init.rotate.acc": [
         0.0,
         0.0,
@@ -149,5 +206,5 @@
         3.0,
         0.0
     ],
-    "type": "Physics"
+    "type": "B_S_R_T_C"
 }

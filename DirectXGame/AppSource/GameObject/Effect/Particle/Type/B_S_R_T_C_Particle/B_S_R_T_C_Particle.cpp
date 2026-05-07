@@ -140,20 +140,30 @@ void B_S_R_T_C_Particle::Update(float dt)
 	
 	for (auto& instance : instances_)
 	{
-		Vector3 localPos = instance.translate.value.baseValue;
-		Vector3 worldPos = Transformmm(localPos, modelWorld_);
-		Vector3 toCameraDir = cameraPos_ - worldPos;
-		Vector3 normDir = toCameraDir.Normalize();
-		float pitch = std::asinf(-normDir.y); // -sin(pitch) = y 成分
-		float yaw = std::atan2f(normDir.x, normDir.z); // sin(yaw) = x 成分, cos(yaw) = z 成分
-		Vector3 rotate(pitch, yaw, 0.0f); // roll はここでは未使用
-
-		const Matrix4x4 world = Matrix::MakeAffineMatrix(instance.scale.value.baseValue, rotate, worldPos);
-
+		// 色のクランプ
 		instance.color.value.baseValue.x = std::clamp(instance.color.value.baseValue.x, 0.0f, 1.0f);
 		instance.color.value.baseValue.y = std::clamp(instance.color.value.baseValue.y, 0.0f, 1.0f);
 		instance.color.value.baseValue.z = std::clamp(instance.color.value.baseValue.z, 0.0f, 1.0f);
 		instance.color.value.baseValue.w = std::clamp(instance.color.value.baseValue.w, 0.0f, 1.0f);
+
+		// ワールド行列作成
+		Matrix4x4 world;
+		if (uniqueConfig.cfg.isBillboard_)
+		{
+			Vector3 localPos = instance.translate.value.baseValue;
+			Vector3 worldPos = Transformmm(localPos, modelWorld_);
+			Vector3 toCameraDir = cameraPos_ - worldPos;
+			Vector3 normDir = toCameraDir.Normalize();
+			float pitch = std::asinf(-normDir.y); // -sin(pitch) = y 成分
+			float yaw = std::atan2f(normDir.x, normDir.z); // sin(yaw) = x 成分, cos(yaw) = z 成分
+			Vector3 rotate(pitch, yaw, 0.0f); // roll はここでは未使用
+
+			world = Matrix::MakeAffineMatrix(instance.scale.value.baseValue, rotate, worldPos);
+		}
+		else
+		{
+			world = Matrix::MakeAffineMatrix(instance.scale.value.baseValue, instance.rotate.value.baseValue, instance.translate.value.baseValue) * modelWorld_;
+		}
 
 		pushInstance(world, instance.color.value.baseValue);
 	}

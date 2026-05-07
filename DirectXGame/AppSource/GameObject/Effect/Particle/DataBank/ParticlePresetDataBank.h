@@ -44,6 +44,7 @@ public:
 	void Save(const std::string& name, B_S_T_Config& uniqueConfig);
 	void Save(const std::string& name, B_S_C_Config& uniqueConfig);
 	void Save(const std::string& name, B_S_R_T_C_Config& uniqueConfig);
+	void SaveConfig(JsonManager& json, const std::string& keyPrefix, const ParticleConfig& cfg);
 	void SaveParticleSRT(JsonManager& json, const std::string& keyPrefix, const ParticleSRT& srt);
 	void SaveParticleSRTfloat4(JsonManager& json, const std::string& keyPrefix, const ParticleSRTfloat4& srt);
 

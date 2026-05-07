@@ -282,44 +282,37 @@ void PrticleEditorScene::RebuildEditParticleByCurrentConfig()
 	int32_t slot = editingParticle_.Add(presetNameBuf_);
 	if (currentType_ == ParticleType::Physics)
 	{
-		physicsConfig_.cfg.modelPath = particleConfig_.modelPath;
-		physicsConfig_.cfg.texturePath = particleConfig_.texturePath;
+		physicsConfig_.cfg = particleConfig_;
 		editingParticle_.SetConfig(slot, physicsConfig_);
 	}
 	else if (currentType_ == ParticleType::GoToTarget)
 	{
-		goToTargetConfig_.cfg.modelPath = particleConfig_.modelPath;
-		goToTargetConfig_.cfg.texturePath = particleConfig_.texturePath;
+		physicsConfig_.cfg = particleConfig_;
 		editingParticle_.SetConfig(slot, goToTargetConfig_);
 	}
 	else if (currentType_ == ParticleType::OnTrail)
 	{
-		onTrailConfig_.cfg.modelPath = particleConfig_.modelPath;
-		onTrailConfig_.cfg.texturePath = particleConfig_.texturePath;
+		physicsConfig_.cfg = particleConfig_;
 		editingParticle_.SetConfig(slot, onTrailConfig_);
 	}
 	else if (currentType_ == ParticleType::B_S)
 	{
-		b_S_Config_.cfg.modelPath = particleConfig_.modelPath;
-		b_S_Config_.cfg.texturePath = particleConfig_.texturePath;
+		physicsConfig_.cfg = particleConfig_;
 		editingParticle_.SetConfig(slot, b_S_Config_);
 	}
 	else if (currentType_ == ParticleType::B_S_T)
 	{
-		b_S_T_Config_.cfg.modelPath = particleConfig_.modelPath;
-		b_S_T_Config_.cfg.texturePath = particleConfig_.texturePath;
+		physicsConfig_.cfg = particleConfig_;
 		editingParticle_.SetConfig(slot, b_S_T_Config_);
 	}
 	else if (currentType_ == ParticleType::B_S_C)
 	{
-		b_S_C_Config_.cfg.modelPath = particleConfig_.modelPath;
-		b_S_C_Config_.cfg.texturePath = particleConfig_.texturePath;
+		physicsConfig_.cfg = particleConfig_;
 		editingParticle_.SetConfig(slot, b_S_C_Config_);
 	}
 	else if (currentType_ == ParticleType::B_S_R_T_C)
 	{
-		b_S_R_T_C_Config_.cfg.modelPath = particleConfig_.modelPath;
-		b_S_R_T_C_Config_.cfg.texturePath = particleConfig_.texturePath;
+		physicsConfig_.cfg = particleConfig_;
 		editingParticle_.SetConfig(slot, b_S_R_T_C_Config_);
 	}
 }
@@ -576,10 +569,26 @@ void PrticleEditorScene::DrawImGui()
 void PrticleEditorScene::DrawImGui_Config()
 {
 #ifdef USE_IMGUI
-	requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat("cfg.lifeTime", &particleConfig_.lifeTime, 0.01f, 0.001f, 10.0f);
-	requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat("cfg.speed", &particleConfig_.speed, 0.01f, 0.0f, 100.0f);
-	requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragInt("cfg.emitNum", &particleConfig_.emitNum, 1.0f, 1, 10000);
-	requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat("cfg.emitInterval", &particleConfig_.emitInterval, 0.01f, 0.01f, 10.0f);
+	if (ImGui::DragFloat("cfg.lifeTime", &particleConfig_.lifeTime, 0.01f, 0.001f, 10.0f))
+	{
+		requestRebuildEditingParticleByCurrentConfig_ = true;
+	}
+	if (ImGui::DragFloat("cfg.speed", &particleConfig_.speed, 0.01f, 0.0f, 100.0f))
+	{
+		requestRebuildEditingParticleByCurrentConfig_ = true;
+	}
+	if (ImGui::DragInt("cfg.emitNum", &particleConfig_.emitNum, 1.0f, 1, 10000))
+	{
+		requestRebuildEditingParticleByCurrentConfig_ = true;
+	}
+	if (ImGui::DragFloat("cfg.emitInterval", &particleConfig_.emitInterval, 0.01f, 0.01f, 10.0f))
+	{
+		requestRebuildEditingParticleByCurrentConfig_ = true;
+	}
+	if (ImGui::Checkbox("cfg.isBillboard", &particleConfig_.isBillboard_))
+	{
+		requestRebuildEditingParticleByCurrentConfig_ = true;
+	}
 
 	ImGui::Text("cfg.texturePath %s", particleConfig_.texturePath.c_str());
 	if (ImGui::TreeNode("テクスチャ選択"))
