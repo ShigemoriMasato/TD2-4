@@ -156,7 +156,7 @@ void B_S_R_T_C_Particle::Update(float dt)
 			Vector3 normDir = toCameraDir.Normalize();
 			float pitch = std::asinf(-normDir.y); // -sin(pitch) = y 成分
 			float yaw = std::atan2f(normDir.x, normDir.z); // sin(yaw) = x 成分, cos(yaw) = z 成分
-			Vector3 rotate(pitch, yaw, 0.0f); // roll はここでは未使用
+			Vector3 rotate(pitch, yaw, instance.rotate.value.baseValue.x); // roll はここでは未使用
 
 			world = Matrix::MakeAffineMatrix(instance.scale.value.baseValue, rotate, worldPos);
 		}

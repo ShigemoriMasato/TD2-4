@@ -589,73 +589,123 @@ void PrticleEditorScene::DrawImGui_Config_B_S_R_T_C()
 
 	if (ImGui::CollapsingHeader("rotate"))
 	{
-		requestRebuildEditingParticleByCurrentConfig_ = ImGui::Checkbox("init.rotate.isRandomVal", &b_S_R_T_C_Config_.rotate.value.isRandom);
-		if (b_S_R_T_C_Config_.rotate.value.isRandom)
+		if (!particleConfig_.isBillboard_)
 		{
-			requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("rotate.rand.min", &b_S_R_T_C_Config_.rotate.value.randomRange_min.x, 0.01f);
-			requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("rotate.rand.max", &b_S_R_T_C_Config_.rotate.value.randomRange_max.x, 0.01f);
-			if (b_S_R_T_C_Config_.rotate.value.randomRange_max.x < b_S_R_T_C_Config_.rotate.value.randomRange_min.x)
+			requestRebuildEditingParticleByCurrentConfig_ |= ImGui::Checkbox("init.rotate.isRandomVal", &b_S_R_T_C_Config_.rotate.value.isRandom);
+			if (b_S_R_T_C_Config_.rotate.value.isRandom)
 			{
-				b_S_R_T_C_Config_.rotate.value.randomRange_max.x = b_S_R_T_C_Config_.rotate.value.randomRange_min.x;
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("rotate.rand.min", &b_S_R_T_C_Config_.rotate.value.randomRange_min.x, 0.01f);
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("rotate.rand.max", &b_S_R_T_C_Config_.rotate.value.randomRange_max.x, 0.01f);
+				if (b_S_R_T_C_Config_.rotate.value.randomRange_max.x < b_S_R_T_C_Config_.rotate.value.randomRange_min.x)
+				{
+					b_S_R_T_C_Config_.rotate.value.randomRange_max.x = b_S_R_T_C_Config_.rotate.value.randomRange_min.x;
+				}
+				if (b_S_R_T_C_Config_.rotate.value.randomRange_max.y < b_S_R_T_C_Config_.rotate.value.randomRange_min.y)
+				{
+					b_S_R_T_C_Config_.rotate.value.randomRange_max.y = b_S_R_T_C_Config_.rotate.value.randomRange_min.y;
+				}
+				if (b_S_R_T_C_Config_.rotate.value.randomRange_max.z < b_S_R_T_C_Config_.rotate.value.randomRange_min.z)
+				{
+					b_S_R_T_C_Config_.rotate.value.randomRange_max.z = b_S_R_T_C_Config_.rotate.value.randomRange_min.z;
+				}
 			}
-			if (b_S_R_T_C_Config_.rotate.value.randomRange_max.y < b_S_R_T_C_Config_.rotate.value.randomRange_min.y)
+			else
 			{
-				b_S_R_T_C_Config_.rotate.value.randomRange_max.y = b_S_R_T_C_Config_.rotate.value.randomRange_min.y;
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("init.rotate.val", &b_S_R_T_C_Config_.rotate.value.baseValue.x, 0.01f);
 			}
-			if (b_S_R_T_C_Config_.rotate.value.randomRange_max.z < b_S_R_T_C_Config_.rotate.value.randomRange_min.z)
-			{
-				b_S_R_T_C_Config_.rotate.value.randomRange_max.z = b_S_R_T_C_Config_.rotate.value.randomRange_min.z;
-			}
-		}
-		else
-		{
-			requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("init.rotate.val", &b_S_R_T_C_Config_.rotate.value.baseValue.x, 0.01f);
-		}
 
-		requestRebuildEditingParticleByCurrentConfig_ = ImGui::Checkbox("init.rotate.isRandomVel", &b_S_R_T_C_Config_.rotate.velocity.isRandom);
-		if (b_S_R_T_C_Config_.rotate.velocity.isRandom)
-		{
-			requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("rotate.vel.rand.min", &b_S_R_T_C_Config_.rotate.velocity.randomRange_min.x, 0.01f);
-			requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("rotate.vel.rand.max", &b_S_R_T_C_Config_.rotate.velocity.randomRange_max.x, 0.01f);
-			if (b_S_R_T_C_Config_.rotate.velocity.randomRange_max.x < b_S_R_T_C_Config_.rotate.velocity.randomRange_min.x)
+			requestRebuildEditingParticleByCurrentConfig_ |= ImGui::Checkbox("init.rotate.isRandomVel", &b_S_R_T_C_Config_.rotate.velocity.isRandom);
+			if (b_S_R_T_C_Config_.rotate.velocity.isRandom)
 			{
-				b_S_R_T_C_Config_.rotate.velocity.randomRange_max.x = b_S_R_T_C_Config_.rotate.velocity.randomRange_min.x;
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("rotate.vel.rand.min", &b_S_R_T_C_Config_.rotate.velocity.randomRange_min.x, 0.01f);
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("rotate.vel.rand.max", &b_S_R_T_C_Config_.rotate.velocity.randomRange_max.x, 0.01f);
+				if (b_S_R_T_C_Config_.rotate.velocity.randomRange_max.x < b_S_R_T_C_Config_.rotate.velocity.randomRange_min.x)
+				{
+					b_S_R_T_C_Config_.rotate.velocity.randomRange_max.x = b_S_R_T_C_Config_.rotate.velocity.randomRange_min.x;
+				}
+				if (b_S_R_T_C_Config_.rotate.velocity.randomRange_max.y < b_S_R_T_C_Config_.rotate.velocity.randomRange_min.y)
+				{
+					b_S_R_T_C_Config_.rotate.velocity.randomRange_max.y = b_S_R_T_C_Config_.rotate.velocity.randomRange_min.y;
+				}
+				if (b_S_R_T_C_Config_.rotate.velocity.randomRange_max.z < b_S_R_T_C_Config_.rotate.velocity.randomRange_min.z)
+				{
+					b_S_R_T_C_Config_.rotate.velocity.randomRange_max.z = b_S_R_T_C_Config_.rotate.velocity.randomRange_min.z;
+				}
 			}
-			if (b_S_R_T_C_Config_.rotate.velocity.randomRange_max.y < b_S_R_T_C_Config_.rotate.velocity.randomRange_min.y)
+			else
 			{
-				b_S_R_T_C_Config_.rotate.velocity.randomRange_max.y = b_S_R_T_C_Config_.rotate.velocity.randomRange_min.y;
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("init.rotate.vel", &b_S_R_T_C_Config_.rotate.velocity.baseValue.x, 0.01f);
 			}
-			if (b_S_R_T_C_Config_.rotate.velocity.randomRange_max.z < b_S_R_T_C_Config_.rotate.velocity.randomRange_min.z)
-			{
-				b_S_R_T_C_Config_.rotate.velocity.randomRange_max.z = b_S_R_T_C_Config_.rotate.velocity.randomRange_min.z;
-			}
-		}
-		else
-		{
-			requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("init.rotate.vel", &b_S_R_T_C_Config_.rotate.velocity.baseValue.x, 0.01f);
-		}
 
-		requestRebuildEditingParticleByCurrentConfig_ = ImGui::Checkbox("init.rotate.isRandomAcc", &b_S_R_T_C_Config_.rotate.acceleration.isRandom);
-		if (b_S_R_T_C_Config_.rotate.acceleration.isRandom)
-		{
-			requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("rotate.acc.rand.min", &b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.x, 0.01f);
-			requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("rotate.acc.rand.max", &b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.x, 0.01f);
-			if (b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.x < b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.x)
+			requestRebuildEditingParticleByCurrentConfig_ |= ImGui::Checkbox("init.rotate.isRandomAcc", &b_S_R_T_C_Config_.rotate.acceleration.isRandom);
+			if (b_S_R_T_C_Config_.rotate.acceleration.isRandom)
 			{
-				b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.x = b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.x;
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("rotate.acc.rand.min", &b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.x, 0.01f);
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("rotate.acc.rand.max", &b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.x, 0.01f);
+				if (b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.x < b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.x)
+				{
+					b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.x = b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.x;
+				}
+				if (b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.y < b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.y)
+				{
+					b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.y = b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.y;
+				}
+				if (b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.z < b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.z)
+				{
+					b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.z = b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.z;
+				}
 			}
-			if (b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.y < b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.y)
+			else
 			{
-				b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.y = b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.y;
-			}
-			if (b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.z < b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.z)
-			{
-				b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.z = b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.z;
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("init.rotate.acc", &b_S_R_T_C_Config_.rotate.acceleration.baseValue.x, 0.01f);
 			}
 		}
 		else
 		{
-			requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat3("init.rotate.acc", &b_S_R_T_C_Config_.rotate.acceleration.baseValue.x, 0.01f);
+			requestRebuildEditingParticleByCurrentConfig_ |= ImGui::Checkbox("init.rotate.isRandomVal", &b_S_R_T_C_Config_.rotate.value.isRandom);
+			if (b_S_R_T_C_Config_.rotate.value.isRandom)
+			{
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat("rotate.rand.min", &b_S_R_T_C_Config_.rotate.value.randomRange_min.x, 0.01f);
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat("rotate.rand.max", &b_S_R_T_C_Config_.rotate.value.randomRange_max.x, 0.01f);
+				if (b_S_R_T_C_Config_.rotate.value.randomRange_max.x < b_S_R_T_C_Config_.rotate.value.randomRange_min.x)
+				{
+					b_S_R_T_C_Config_.rotate.value.randomRange_max.x = b_S_R_T_C_Config_.rotate.value.randomRange_min.x;
+				}
+			}
+			else
+			{
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat("init.rotate.val", &b_S_R_T_C_Config_.rotate.value.baseValue.x, 0.01f);
+			}
+
+			requestRebuildEditingParticleByCurrentConfig_ |= ImGui::Checkbox("init.rotate.isRandomVel", &b_S_R_T_C_Config_.rotate.velocity.isRandom);
+			if (b_S_R_T_C_Config_.rotate.velocity.isRandom)
+			{
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat("rotate.vel.rand.min", &b_S_R_T_C_Config_.rotate.velocity.randomRange_min.x, 0.01f);
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat("rotate.vel.rand.max", &b_S_R_T_C_Config_.rotate.velocity.randomRange_max.x, 0.01f);
+				if (b_S_R_T_C_Config_.rotate.velocity.randomRange_max.x < b_S_R_T_C_Config_.rotate.velocity.randomRange_min.x)
+				{
+					b_S_R_T_C_Config_.rotate.velocity.randomRange_max.x = b_S_R_T_C_Config_.rotate.velocity.randomRange_min.x;
+				}
+			}
+			else
+			{
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat("init.rotate.vel", &b_S_R_T_C_Config_.rotate.velocity.baseValue.x, 0.01f);
+			}
+
+			requestRebuildEditingParticleByCurrentConfig_ |= ImGui::Checkbox("init.rotate.isRandomAcc", &b_S_R_T_C_Config_.rotate.acceleration.isRandom);
+			if (b_S_R_T_C_Config_.rotate.acceleration.isRandom)
+			{
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat("rotate.acc.rand.min", &b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.x, 0.01f);
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat("rotate.acc.rand.max", &b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.x, 0.01f);
+				if (b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.x < b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.x)
+				{
+					b_S_R_T_C_Config_.rotate.acceleration.randomRange_max.x = b_S_R_T_C_Config_.rotate.acceleration.randomRange_min.x;
+				}
+			}
+			else
+			{
+				requestRebuildEditingParticleByCurrentConfig_ |= ImGui::DragFloat("init.rotate.acc", &b_S_R_T_C_Config_.rotate.acceleration.baseValue.x, 0.01f);
+			}
 		}
 	}
 
