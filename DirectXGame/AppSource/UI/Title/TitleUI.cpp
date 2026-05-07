@@ -14,10 +14,10 @@ void TitleUI::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::M
 	commonData_ = commonData;
 
 	// モデルパスの配列
-	const std::array<const char*, kUICount> modelPaths = {"Assets/Model/UI/Title/Logo", "Assets/Model/UI/Title/Start", "Assets/Model/UI/Title/Option", "Assets/Model/UI/Title/Quit"};
+	const std::array<const char*, kUICount> modelPaths = {"Assets/Model/Frame", "Assets/Model/UI/Title/Logo", "Assets/Model/UI/Title/Start", "Assets/Model/UI/Title/Option", "Assets/Model/UI/Title/Quit"};
 
 	// デバッグ名の配列
-	const std::array<const char*, kUICount> debugNames = {"TitleUI_Logo", "TitleUI_Start", "TitleUI_Option", "TitleUI_Quit"};
+	const std::array<const char*, kUICount> debugNames = {"TitleUI_Frame", "TitleUI_Logo", "TitleUI_Start", "TitleUI_Option", "TitleUI_Quit"};
 
 	// 各UIの初期化
 	for (size_t i = 0; i < kUICount; ++i) {
@@ -75,10 +75,10 @@ void TitleUI::Update(const Matrix4x4& vpMatrix) {
 	for (size_t i = 0; i < kUICount; ++i) {
 		Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
 
-		// 選択中の項目を赤色にする（Logoは除外）
-		if (i > 0) {
+		// 選択中の項目を赤色にする（FrameとLogoは除外）
+		if (i > 1) {
 			Title::Kinds kind = static_cast<Title::Kinds>(i);
-			Title::Select selectFromKind = static_cast<Title::Select>(static_cast<int>(kind) - 1);
+			Title::Select selectFromKind = static_cast<Title::Select>(static_cast<int>(kind) - 2);
 			if (selectFromKind == currentSelect_) {
 				color = {1.0f, 0.0f, 0.0f, 1.0f};
 			}
@@ -95,19 +95,16 @@ void TitleUI::Update(const Matrix4x4& vpMatrix) {
 }
 
 void TitleUI::Draw(CmdObj* cmdObj) {
-	/*for (size_t i = 0; i < kUICount; ++i) {
+	for (size_t i = 0; i < kUICount; ++i) {
 		renders_[i]->Draw(cmdObj);
-	}*/
-
-	renders_[0]->Draw(cmdObj);
-	renders_[1]->Draw(cmdObj);
+	}
 }
 
 #ifdef USE_IMGUI
 void TitleUI::DrawImGui() {
 	ImGui::Begin("Title UI Settings");
 
-	static const char* uiNames[] = {"Logo", "Start", "Option", "Quit"};
+	static const char* uiNames[] = {"Frame", "Logo", "Start", "Option", "Quit"};
 	static const char* selectNames[] = {"Start", "Option", "Quit"};
 
 	for (size_t i = 0; i < kUICount; ++i) {

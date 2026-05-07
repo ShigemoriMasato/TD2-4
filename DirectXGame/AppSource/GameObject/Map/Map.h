@@ -63,6 +63,8 @@ public:
 		stageRotation_ = rotation;
 		stageScale_ = scale;
 	}
+
+	void SetMapInfo(const MapInfo& mapInfo) { mapInfo_ = mapInfo; }
 private:
 	MapInfo mapInfo_;
 
