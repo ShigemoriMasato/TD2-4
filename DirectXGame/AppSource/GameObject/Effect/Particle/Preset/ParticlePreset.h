@@ -1,15 +1,14 @@
 #pragma once
-#include <GameObject/Effect/Particle/Particle.h>
 #include <string>
+#include <variant>
+#include <Utility/Vector.h>
 
 enum class ParticleType
 {
-	// 噴水型
-	Fountain,
 	// ターゲットに向かって移動するやつ
 	GoToTarget,
-	// エミッターがトレイルなやつ
-	OnTrail,
+	// ビルボード可能・Scale/Rotate/Translate/ColorをPhysics操作可能
+	B_S_R_T_C,
 
 	None
 };
@@ -18,65 +17,94 @@ inline const char* ToString(ParticleType t)
 {
 	switch (t)
 	{
-	case ParticleType::Fountain: return "Fountain";
-	case ParticleType::OnTrail: return "OnTrail";
+	case ParticleType::GoToTarget: return "GoToTarget";
+	case ParticleType::B_S_R_T_C: return "B_S_R_T_C";
 	default: return "Unknown";
 	}
 }
 
 inline bool FromString(const std::string& s, ParticleType& out)
 {
-	if (s == "Fountain") { out = ParticleType::Fountain; return true; }
-	else if (s == "GoToTarget") { out = ParticleType::Fountain; return true; }
-	else if (s == "OnTrail") { out = ParticleType::OnTrail; return true; }
+	if (s == "GoToTarget") { out = ParticleType::GoToTarget; return true; }
+	else if (s == "B_S_R_T_C") { out = ParticleType::B_S_R_T_C; return true; }
 	return false;
 }
 
-struct VectorDynamics
+struct ParticleSRTComponent
 {
-	Vector3 value = { 1.0f,1.0f,1.0f };
-	Vector3 velocity;
-	Vector3 acceleration;
+	bool isRandom = false;
+	Vector3 baseValue = { 0.0f, 0.0f, 0.0f };
+	Vector3 randomRange_min = { 0.0f, 0.0f, 0.0f };
+	Vector3 randomRange_max = { 0.0f, 0.0f, 0.0f };
+};
+
+struct ParticleSRTComponentFloat4
+{
+	bool isRandom = false;
+	Vector4 baseValue = { 0.0f, 0.0f, 0.0f, 0.0f };
+	Vector4 randomRange_min = { 0.0f, 0.0f, 0.0f, 0.0f };
+	Vector4 randomRange_max = { 0.0f, 0.0f, 0.0f, 0.0f };
 };
 
 struct ParticleSRT
 {
-	VectorDynamics initial;
-
-	bool isRandom_value = false;
-	Vector3 randomRange_value_min;
-	Vector3 randomRange_value_max;
-
-	bool isRandom_velocity = false;
-	Vector3 randomRange_velocity_min;
-	Vector3 randomRange_velocity_max;
-
-	bool isRandom_acceleration = false;
-	Vector3 randomRange_acceleration_min;
-	Vector3 randomRange_acceleration_max;
+	ParticleSRTComponent value;
+	ParticleSRTComponent velocity;
+	ParticleSRTComponent acceleration;
 };
 
-
-
-struct FountainConfig
+struct ParticleSRTfloat4
 {
-	Particle::Config cfg{};
-
-	ParticleSRT scale;
-	ParticleSRT rotate;
-	ParticleSRT translate;
+	ParticleSRTComponentFloat4 value;
+	ParticleSRTComponentFloat4 velocity;
+	ParticleSRTComponentFloat4 acceleration;
 };
+
+
+
+
+struct ParticleConfig
+{
+	float lifeTime = 1.0f;
+	float speed = 1.0f;
+
+	int emitNum = 10;
+	float emitInterval = 0.1f;
+
+	bool isBillboard_ = false;
+
+	std::string texturePath = "Assets/.EngineResource/Texture/white1x1.png";
+	std::string modelPath = "Assets/.EngineResource/Model/Cube";
+};
+
+#pragma region GoToTargetConfig
 
 struct GoToTargetConfig
 {
-	Particle::Config cfg{};
+	ParticleConfig cfg{};
 
 	bool isMoveToTarget = false;
 	Vector3 TargetPos = { 0.0f, 0.0f, 0.0f };
 	float moveSpeed = 1.0f;
 };
 
-struct OnTrailConfig
+#pragma endregion
+
+#pragma region B_S_R_T_C_Config
+
+struct B_S_R_T_C_Config
 {
-	Particle::Config cfg{};
+	ParticleConfig cfg{};
+	bool billboard = false;
+	ParticleSRT scale;
+	ParticleSRT rotate;
+	ParticleSRT translate;
+	ParticleSRTfloat4 color;
 };
+
+#pragma endregion
+
+using ParticlePresetVariant = std::variant<
+	GoToTargetConfig,
+	B_S_R_T_C_Config
+>;

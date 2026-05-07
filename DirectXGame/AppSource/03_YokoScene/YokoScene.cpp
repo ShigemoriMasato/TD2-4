@@ -61,12 +61,12 @@ void YokoScene::Initialize()
 
 	// パーティクル初期化
 	particles_.Initialize(textureManager_, modelManager_, commonData_);
-	particles_.Add("sparrrk");
+	particles_.Add("death6");
 
 	// TrailOnParticle初期化
 	for (int i = 0; i < kTrailOnParticle; ++i)
 	{
-		TrailOnParticle[i].Initialize(textureManager_, modelManager_, commonData_, "death", "sparrrk");
+		TrailOnParticle[i].Initialize(textureManager_, modelManager_, commonData_, "death1", "sparrrk");
 	}
 }
 
@@ -141,6 +141,7 @@ std::unique_ptr<IScene> YokoScene::Update()
 
 	// パーティクル更新
 	particles_.SetModelWorld(world);
+	particles_.SetCameraPos(camera_->GetPosition());
 	particles_.Update(dt);
 
 	// Zキーでエディタ切り替え

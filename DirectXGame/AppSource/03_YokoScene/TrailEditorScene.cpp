@@ -5,6 +5,7 @@
 #include <cstring>
 #include <numbers>
 #include "03_YokoScene/YokoScene.h"
+#include <Utility/DataStructures.h>
 #include "PrticleEditorScene.h"
 
 using namespace SHEngine;
@@ -26,13 +27,16 @@ namespace
 		ro->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
 		ro->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 		ro->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+		ro->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "DirectionalLight");
 
 		const auto drawData = drawDataManager->GetDrawData(modelData.drawDataIndex);
 		ro->SetDrawData(drawData);
 
 		const Vector4 color = { 1,1,1,1 };
+		const DirectionalLight dirLight = { {1,1,1,1}, {0,-1,0}, 1.0f };
 		ro->CopyBufferData(1, &color, sizeof(Vector4));
 		ro->CopyBufferData(2, &textureIndex, sizeof(int));
+		ro->CopyBufferData(3, &dirLight, sizeof(DirectionalLight));
 
 		return ro;
 	}
@@ -49,9 +53,12 @@ namespace
 		ro->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
 		ro->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 		ro->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+		ro->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "DirectionalLight");
 
 		const Vector4 color = { 1,1,1,1 };
+		const DirectionalLight dirLight = { {1,1,1,1}, {0,-1,0}, 1.0f };
 		ro->CopyBufferData(1, &color, sizeof(Vector4));
+		ro->CopyBufferData(3, &dirLight, sizeof(DirectionalLight));
 
 		return ro;
 	}
@@ -471,10 +478,12 @@ void TrailEditorScene::UpdateRenders(const Matrix4x4& vpMatrix)
 	{
 		const Matrix4x4 wvp = modelWorld_ * vpMatrix;
 		const Vector4 color = { 1,1,1,1 };
+		const DirectionalLight dirLight = { {1,1,1,1}, {0,-1,0}, 1.0f };
 
 		modelRender_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
 		modelRender_->CopyBufferData(1, &color, sizeof(Vector4));
 		modelRender_->CopyBufferData(2, &modelDataList_[selectedModelIndex_]->textureIndex, sizeof(int));
+		modelRender_->CopyBufferData(3, &dirLight, sizeof(DirectionalLight));
 	}
 
 	markerPos[0] = ribbonPreset_.originLocal * modelWorld_;
@@ -490,10 +499,12 @@ void TrailEditorScene::UpdateRenders(const Matrix4x4& vpMatrix)
 			const Matrix4x4 wvp = MakeWorld(tr) * vpMatrix;
 			const Vector4 color = { 1.0f, 0.2f, 0.2f, 1.0f };
 			const int texIndex = 0;
+			const DirectionalLight dirLight = { {1,1,1,1}, {0,-1,0}, 1.0f };
 
 			marker[i]->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
 			marker[i]->CopyBufferData(1, &color, sizeof(Vector4));
 			marker[i]->CopyBufferData(2, &texIndex, sizeof(int));
+			marker[i]->CopyBufferData(3, &dirLight, sizeof(DirectionalLight));
 		}
 	}
 }

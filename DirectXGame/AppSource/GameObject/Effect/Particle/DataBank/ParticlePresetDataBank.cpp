@@ -2,6 +2,18 @@
 #include <stdexcept>
 #include <algorithm>
 
+namespace
+{
+	std::string removeJsonExtension(const std::string& name)
+	{
+		if (name.size() > 5 && name.substr(name.size() - 5) == ".json")
+		{
+			return name.substr(0, name.size() - 5);
+		}
+		return name;
+	}
+}
+
 // static故最強
 std::unordered_map<std::string, ParticlePresetVariant> ParticlePresetDataBank::cache_{};
 
@@ -28,8 +40,8 @@ void ParticlePresetDataBank::Clear()
 ParticleType ParticlePresetDataBank::GetTypeOf(const std::string& name)
 {
 	const auto& v = Get(name);
-	if (std::holds_alternative<FountainConfig>(v)) return ParticleType::Fountain;
-	else if (std::holds_alternative<OnTrailConfig>(v)) return ParticleType::OnTrail;
+	if (std::holds_alternative<GoToTargetConfig>(v)) return ParticleType::GoToTarget;
+	else if (std::holds_alternative<B_S_R_T_C_Config>(v)) return ParticleType::B_S_R_T_C;
 	return ParticleType::None;
 }
 
@@ -38,89 +50,78 @@ void ParticlePresetDataBank::SaveParticleSRT(JsonManager& json, const std::strin
 {
 	// value
 	{
-		json.Add(keyPrefix + ".isRandomVal", srt.isRandom_value);
-		json.Add(keyPrefix + ".val", srt.initial.value);
-		json.Add(keyPrefix + ".randomRangeValMin", srt.randomRange_value_min);
-		json.Add(keyPrefix + ".randomRangeValMax", srt.randomRange_value_max);
+		json.Add(keyPrefix + ".isRandomVal", srt.value.isRandom);
+		json.Add(keyPrefix + ".val", srt.value.baseValue);
+		json.Add(keyPrefix + ".randomRangeValMin", srt.value.randomRange_min);
+		json.Add(keyPrefix + ".randomRangeValMax", srt.value.randomRange_max);
 	}
 
 	// velocity
 	{
-		json.Add(keyPrefix + ".isRandomVel", srt.isRandom_velocity);
-		json.Add(keyPrefix + ".vel", srt.initial.velocity);
-		json.Add(keyPrefix + ".randomRangeVelMin", srt.randomRange_velocity_min);
-		json.Add(keyPrefix + ".randomRangeVelMax", srt.randomRange_velocity_max);
+		json.Add(keyPrefix + ".isRandomVel", srt.velocity.isRandom);
+		json.Add(keyPrefix + ".vel", srt.velocity.baseValue);
+		json.Add(keyPrefix + ".randomRangeVelMin", srt.velocity.randomRange_min);
+		json.Add(keyPrefix + ".randomRangeVelMax", srt.velocity.randomRange_max);
 	}
 
 	// acceleration
 	{
-		json.Add(keyPrefix + ".isRandomAcc", srt.isRandom_acceleration);
-		json.Add(keyPrefix + ".acc", srt.initial.acceleration);
-		json.Add(keyPrefix + ".randomRangeAccMin", srt.randomRange_acceleration_min);
-		json.Add(keyPrefix + ".randomRangeAccMax", srt.randomRange_acceleration_max);
+		json.Add(keyPrefix + ".isRandomAcc", srt.acceleration.isRandom);
+		json.Add(keyPrefix + ".acc", srt.acceleration.baseValue);
+		json.Add(keyPrefix + ".randomRangeAccMin", srt.acceleration.randomRange_min);
+		json.Add(keyPrefix + ".randomRangeAccMax", srt.acceleration.randomRange_max);
 	}
 }
-void ParticlePresetDataBank::Save(const std::string& name, FountainConfig& uniqueConfig)
+void ParticlePresetDataBank::SaveParticleSRTfloat4(JsonManager& json, const std::string& keyPrefix, const ParticleSRTfloat4& srt)
 {
-	// nameに.jsonがついていたら外す
-	std::string baseName = name;
-	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
+	// value
 	{
-		baseName = baseName.substr(0, baseName.size() - 5);
+		json.Add(keyPrefix + ".isRandomVal", srt.value.isRandom);
+		json.Add(keyPrefix + ".val", srt.value.baseValue);
+		json.Add(keyPrefix + ".randomRangeValMin", srt.value.randomRange_min);
+		json.Add(keyPrefix + ".randomRangeValMax", srt.value.randomRange_max);
 	}
 
-	json_.Boot("Particle/" + baseName);
-
-	// type
+	// velocity
 	{
-		std::string type = "Fountain";
-		json_.Add("type", type);
+		json.Add(keyPrefix + ".isRandomVel", srt.velocity.isRandom);
+		json.Add(keyPrefix + ".vel", srt.velocity.baseValue);
+		json.Add(keyPrefix + ".randomRangeVelMin", srt.velocity.randomRange_min);
+		json.Add(keyPrefix + ".randomRangeVelMax", srt.velocity.randomRange_max);
 	}
 
-	// cfg
+	// acceleration
 	{
-		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
-		json_.Add("cfg.speed", uniqueConfig.cfg.speed);
-		json_.Add("cfg.emitNum", uniqueConfig.cfg.emitNum);
-		json_.Add("cfg.emitInterval", uniqueConfig.cfg.emitInterval);
-		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
-		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
+		json.Add(keyPrefix + ".isRandomAcc", srt.acceleration.isRandom);
+		json.Add(keyPrefix + ".acc", srt.acceleration.baseValue);
+		json.Add(keyPrefix + ".randomRangeAccMin", srt.acceleration.randomRange_min);
+		json.Add(keyPrefix + ".randomRangeAccMax", srt.acceleration.randomRange_max);
 	}
-
-	// type固有
-	{
-		SaveParticleSRT(json_, "init.scale", uniqueConfig.scale);
-		SaveParticleSRT(json_, "init.rotate", uniqueConfig.rotate);
-		SaveParticleSRT(json_, "init.translate", uniqueConfig.translate);
-	}
-
-	json_.Save();
+}
+void ParticlePresetDataBank::SaveConfig(JsonManager& json, const std::string& keyPrefix, const ParticleConfig& cfg)
+{
+	json_.Add(keyPrefix + ".lifeTime", cfg.lifeTime);
+	json_.Add(keyPrefix + ".speed", cfg.speed);
+	json_.Add(keyPrefix + ".emitNum", cfg.emitNum);
+	json_.Add(keyPrefix + ".emitInterval", cfg.emitInterval);
+	json_.Add(keyPrefix + ".isBillboard", cfg.isBillboard_);
+	json_.Add(keyPrefix + ".texturePath", cfg.texturePath);
+	json_.Add(keyPrefix + ".modelPath", cfg.modelPath);
 }
 void ParticlePresetDataBank::Save(const std::string& name, GoToTargetConfig& uniqueConfig)
 {
 	// nameに.jsonがついていたら外す
-	std::string baseName = name;
-	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
-	{
-		baseName = baseName.substr(0, baseName.size() - 5);
-	}
-
-	json_.Boot("Particle/" + baseName);
+	json_.Boot("Particle/" + removeJsonExtension(name));
 
 	// type
 	{
-		std::string type = "Fountain";
+		std::string type = ToString(ParticleType::GoToTarget);
 		json_.Add("type", type);
 	}
 
 	// cfg
 	{
-		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
-		json_.Add("cfg.speed", uniqueConfig.cfg.speed);
-		json_.Add("cfg.emitNum", uniqueConfig.cfg.emitNum);
-		json_.Add("cfg.emitInterval", uniqueConfig.cfg.emitInterval);
-		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
-		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
+		SaveConfig(json_, "cfg", uniqueConfig.cfg);
 	}
 
 	// type固有
@@ -135,35 +136,31 @@ void ParticlePresetDataBank::Save(const std::string& name, GoToTargetConfig& uni
 	// 保存したらキャッシュも更新
 	Invalidate(name);
 }
-
-void ParticlePresetDataBank::Save(const std::string& name, OnTrailConfig& uniqueConfig)
+void ParticlePresetDataBank::Save(const std::string & name, B_S_R_T_C_Config & uniqueConfig)
 {
 	// nameに.jsonがついていたら外す
-	std::string baseName = name;
-	if (baseName.size() > 5 && baseName.substr(baseName.size() - 5) == ".json")
-	{
-		baseName = baseName.substr(0, baseName.size() - 5);
-	}
-	json_.Boot("Particle/" + baseName);
+	json_.Boot("Particle/" + removeJsonExtension(name));
+
 	// type
 	{
-		std::string type = "OnTrail";
+		std::string type = ToString(ParticleType::B_S_R_T_C);
 		json_.Add("type", type);
 	}
+
 	// cfg
 	{
-		json_.Add("cfg.lifeTime", uniqueConfig.cfg.lifeTime);
-		json_.Add("cfg.speed", uniqueConfig.cfg.speed);
-		json_.Add("cfg.emitNum", uniqueConfig.cfg.emitNum);
-		json_.Add("cfg.emitInterval", uniqueConfig.cfg.emitInterval);
-		json_.Add("cfg.texturePath", uniqueConfig.cfg.texturePath);
-		json_.Add("cfg.modelPath", uniqueConfig.cfg.modelPath);
+		SaveConfig(json_, "cfg", uniqueConfig.cfg);
+	}
+
+	// type固有
+	{
+		SaveParticleSRT(json_, "init.scale", uniqueConfig.scale);
+		SaveParticleSRT(json_, "init.rotate", uniqueConfig.rotate);
+		SaveParticleSRT(json_, "init.translate", uniqueConfig.translate);
+		SaveParticleSRTfloat4(json_, "init.color", uniqueConfig.color);
 	}
 	json_.Save();
-	// 保存したらキャッシュも更新
-	Invalidate(name);
 }
-
 
 // Load
 ParticleSRT ParticlePresetDataBank::LoadParticleSRT(JsonManager& json, const std::string& keyPrefix)
@@ -171,40 +168,76 @@ ParticleSRT ParticlePresetDataBank::LoadParticleSRT(JsonManager& json, const std
 	ParticleSRT outSrt{};
 
 	// value
-	try { outSrt.isRandom_value = json.Get<bool>(keyPrefix + ".isRandomVal"); }
+	try { outSrt.value.isRandom = json.Get<bool>(keyPrefix + ".isRandomVal"); }
 	catch (...) {}
-	try { outSrt.initial.value = json.Get<Vector3>(keyPrefix + ".val"); }
+	try { outSrt.value.baseValue = json.Get<Vector3>(keyPrefix + ".val"); }
 	catch (...) {}
-	try { outSrt.randomRange_value_min = json.Get<Vector3>(keyPrefix + ".randomRangeValMin"); }
+	try { outSrt.value.randomRange_min = json.Get<Vector3>(keyPrefix + ".randomRangeValMin"); }
 	catch (...) {}
-	try { outSrt.randomRange_value_max = json.Get<Vector3>(keyPrefix + ".randomRangeValMax"); }
+	try { outSrt.value.randomRange_max = json.Get<Vector3>(keyPrefix + ".randomRangeValMax"); }
 	catch (...) {}
 
 	// velocity
-	try { outSrt.isRandom_velocity = json.Get<bool>(keyPrefix + ".isRandomVel"); }
+	try { outSrt.velocity.isRandom = json.Get<bool>(keyPrefix + ".isRandomVel"); }
 	catch (...) {}
-	try { outSrt.initial.velocity = json.Get<Vector3>(keyPrefix + ".vel"); }
+	try { outSrt.velocity.baseValue = json.Get<Vector3>(keyPrefix + ".vel"); }
 	catch (...) {}
-	try { outSrt.randomRange_velocity_min = json.Get<Vector3>(keyPrefix + ".randomRangeVelMin"); }
+	try { outSrt.velocity.randomRange_min = json.Get<Vector3>(keyPrefix + ".randomRangeVelMin"); }
 	catch (...) {}
-	try { outSrt.randomRange_velocity_max = json.Get<Vector3>(keyPrefix + ".randomRangeVelMax"); }
+	try { outSrt.velocity.randomRange_max = json.Get<Vector3>(keyPrefix + ".randomRangeVelMax"); }
 	catch (...) {}
 
 	// acceleration
-	try { outSrt.isRandom_acceleration = json.Get<bool>(keyPrefix + ".isRandomAcc"); }
+	try { outSrt.acceleration.isRandom = json.Get<bool>(keyPrefix + ".isRandomAcc"); }
 	catch (...) {}
-	try { outSrt.initial.acceleration = json.Get<Vector3>(keyPrefix + ".acc"); }
+	try { outSrt.acceleration.baseValue = json.Get<Vector3>(keyPrefix + ".acc"); }
 	catch (...) {}
-	try { outSrt.randomRange_acceleration_min = json.Get<Vector3>(keyPrefix + ".randomRangeAccMin"); }
+	try { outSrt.acceleration.randomRange_min = json.Get<Vector3>(keyPrefix + ".randomRangeAccMin"); }
 	catch (...) {}
-	try { outSrt.randomRange_acceleration_max = json.Get<Vector3>(keyPrefix + ".randomRangeAccMax"); }
+	try { outSrt.acceleration.randomRange_max = json.Get<Vector3>(keyPrefix + ".randomRangeAccMax"); }
 	catch (...) {}
 
 	return outSrt;
 }
-Particle::Config ParticlePresetDataBank::LoadConfig(JsonManager& json)
+ParticleSRTfloat4 ParticlePresetDataBank::LoadParticleSRTfloat4(JsonManager& json, const std::string& keyPrefix)
 {
-	Particle::Config cfg{};
+	ParticleSRTfloat4 outSrt{};
+
+	// value
+	try { outSrt.value.isRandom = json.Get<bool>(keyPrefix + ".isRandomVal"); }
+	catch (...) {}
+	try { outSrt.value.baseValue = json.Get<Vector4>(keyPrefix + ".val"); }
+	catch (...) {}
+	try { outSrt.value.randomRange_min = json.Get<Vector4>(keyPrefix + ".randomRangeValMin"); }
+	catch (...) {}
+	try { outSrt.value.randomRange_max = json.Get<Vector4>(keyPrefix + ".randomRangeValMax"); }
+	catch (...) {}
+
+	// velocity
+	try { outSrt.velocity.isRandom = json.Get<bool>(keyPrefix + ".isRandomVel"); }
+	catch (...) {}
+	try { outSrt.velocity.baseValue = json.Get<Vector4>(keyPrefix + ".vel"); }
+	catch (...) {}
+	try { outSrt.velocity.randomRange_min = json.Get<Vector4>(keyPrefix + ".randomRangeVelMin"); }
+	catch (...) {}
+	try { outSrt.velocity.randomRange_max = json.Get<Vector4>(keyPrefix + ".randomRangeVelMax"); }
+	catch (...) {}
+
+	// acceleration
+	try { outSrt.acceleration.isRandom = json.Get<bool>(keyPrefix + ".isRandomAcc"); }
+	catch (...) {}
+	try { outSrt.acceleration.baseValue = json.Get<Vector4>(keyPrefix + ".acc"); }
+	catch (...) {}
+	try { outSrt.acceleration.randomRange_min = json.Get<Vector4>(keyPrefix + ".randomRangeAccMin"); }
+	catch (...) {}
+	try { outSrt.acceleration.randomRange_max = json.Get<Vector4>(keyPrefix + ".randomRangeAccMax"); }
+	catch (...) {}
+
+	return outSrt;
+}
+ParticleConfig ParticlePresetDataBank::LoadConfig(JsonManager& json)
+{
+	ParticleConfig cfg{};
 
 	try { cfg.lifeTime = json.Get<float>("cfg.lifeTime"); }
 	catch (...) {}
@@ -213,6 +246,8 @@ Particle::Config ParticlePresetDataBank::LoadConfig(JsonManager& json)
 	try { cfg.emitNum = json.Get<int>("cfg.emitNum"); }
 	catch (...) {}
 	try { cfg.emitInterval = json.Get<float>("cfg.emitInterval"); }
+	catch (...) {}
+	try { cfg.isBillboard_ = json.Get<bool>("cfg.isBillboard"); }
 	catch (...) {}
 	try { cfg.texturePath = json.Get<std::string>("cfg.texturePath"); }
 	catch (...) {}
@@ -246,18 +281,7 @@ ParticlePresetVariant ParticlePresetDataBank::Load(const std::string& name)
 		throw std::runtime_error("ParticlePresetDataBank: unknown type '" + typeStr + "'");
 	}
 
-	if (type == ParticleType::Fountain)
-	{
-		FountainConfig p{};
-		p.cfg = LoadConfig(json_);
-
-		p.scale = LoadParticleSRT(json_, "init.scale");
-		p.rotate = LoadParticleSRT(json_, "init.rotate");
-		p.translate = LoadParticleSRT(json_, "init.translate");
-
-		return p;
-	}
-	else if (type == ParticleType::GoToTarget)
+	if (type == ParticleType::GoToTarget)
 	{
 		GoToTargetConfig p{};
 		p.cfg = LoadConfig(json_);
@@ -271,11 +295,16 @@ ParticlePresetVariant ParticlePresetDataBank::Load(const std::string& name)
 
 		return p;
 	}
-	else if (type == ParticleType::OnTrail)
+	else if (type == ParticleType::B_S_R_T_C)
 	{
-		OnTrailConfig p{};
+		B_S_R_T_C_Config p{};
 		p.cfg = LoadConfig(json_);
-
+		try { p.billboard = json_.Get<bool>("init.billboard"); }
+		catch (...) {}
+		p.scale = LoadParticleSRT(json_, "init.scale");
+		p.rotate = LoadParticleSRT(json_, "init.rotate");
+		p.translate = LoadParticleSRT(json_, "init.translate");
+		p.color = LoadParticleSRTfloat4(json_, "init.color");
 		return p;
 	}
 

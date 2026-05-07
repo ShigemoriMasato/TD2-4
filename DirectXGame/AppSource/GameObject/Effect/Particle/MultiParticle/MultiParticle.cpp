@@ -1,9 +1,12 @@
 #include "MultiParticle.h"
 #include <stdexcept>
 #include <Scene/CommonData.h>
-#include <GameObject/Effect/Particle/Particle.h>
+#include <GameObject/Effect/Particle/IParticle.h>
 #include <GameObject/Effect/Particle/Preset/ParticlePreset.h>
 #include <GameObject/Effect/Particle/Drawer/ParticleDrawer.h>
+
+#include <GameObject/Effect/Particle/Type/GoToTargetParticle/GoToTargetParticle.h>
+#include <GameObject/Effect/Particle/Type/B_S_R_T_C_Particle/B_S_R_T_C_Particle.h>
 
 int32_t MultiParticle::Add(const std::string& presetName)
 {
@@ -13,89 +16,79 @@ int32_t MultiParticle::Add(const std::string& presetName)
 	const auto& presetVar = presetData_->Get(presetName);
 
 	nextId_++;
-	
+
+
+	std::unique_ptr<IParticle> particle;
+
 	// パーティクルタイプごとに生成
-	if (std::holds_alternative<FountainConfig>(presetVar))
-	{
-		const auto& preset = std::get<FountainConfig>(presetVar);
-		auto particle = std::make_unique<FountainParticle>();
-		particle->Initialize(textureManager_, modelManager_);
-		particle->SetConfig(preset);
-		fountainCache_[nextId_] = std::move(particle);
-	}
-	else if (std::holds_alternative<GoToTargetConfig>(presetVar))
+	if (std::holds_alternative<GoToTargetConfig>(presetVar))
 	{
 		const auto& preset = std::get<GoToTargetConfig>(presetVar);
-		(void)preset;
+		particle = std::make_unique<GoToTargetParticle>();
+		particle->Initialize(textureManager_, modelManager_);
+		particle->SetConfig(preset);
 	}
-	else if (std::holds_alternative<OnTrailConfig>(presetVar))
+	else if (std::holds_alternative<B_S_R_T_C_Config>(presetVar))
 	{
-		const auto& preset = std::get<OnTrailConfig>(presetVar);
-		(void)preset;
+		const auto& preset = std::get<B_S_R_T_C_Config>(presetVar);
+		particle = std::make_unique<B_S_R_T_C_Particle>();
+		particle->Initialize(textureManager_, modelManager_);
+		particle->SetConfig(preset);
 	}
+	else
+	{
+		throw std::runtime_error("Invalid particle preset type");
+	}
+
+	instanceCache_[nextId_] = std::move(particle);
 
 	return nextId_;
 }
 
+void MultiParticle::SetCameraPos(const Vector3& cameraPos)
+{
+	for (auto& [name, particle] : instanceCache_)
+	{
+		particle->SetCameraPos(cameraPos);
+	}
+}
+
+void MultiParticle::SetModelWorld(const Matrix4x4& modelWorld)
+{
+	for (auto& [name, particle] : instanceCache_)
+	{
+		particle->SetModelWorld(modelWorld);
+	}
+}
+
 void MultiParticle::SetEmittingFlag(const int32_t id, bool flag)
 {
-	if (fountainCache_.count(id))
+	if (instanceCache_.count(id))
 	{
-		fountainCache_.at(id)->SetEnabled(flag);
+		instanceCache_.at(id)->SetEnabled(flag);
 	}
 }
 
 void MultiParticle::SetConfig(const int32_t id, const ParticlePresetVariant& presetVar)
 {
-	if (fountainCache_.count(id))
+	if (instanceCache_.count(id))
 	{
-		if (std::holds_alternative<FountainConfig>(presetVar))
-		{
-			const auto& preset = std::get<FountainConfig>(presetVar);
-			fountainCache_.at(id)->SetConfig(preset);
-		}
+		instanceCache_.at(id)->SetConfig(presetVar);
 	}
-	//else if (.count(id))
-	//{
-	//	if (std::holds_alternative<GoToTargetConfig>(presetVar))
-	//	{
-	//		const auto& preset = std::get<GoToTargetConfig>(presetVar);
-	//		(void)preset;
-	//	}
-	//}
-	//else if (.count(id))
-	//{
-	//	if (std::holds_alternative<OnTrailConfig>(presetVar))
-	//	{
-	//		const auto& preset = std::get<OnTrailConfig>(presetVar);
-	//		(void)preset;
-	//	}
-	//}
 }
 
 ParticlePresetVariant MultiParticle::GetConfig(const int32_t id)
 {
-	if (fountainCache_.count(id))
+	if (instanceCache_.count(id))
 	{
-		FountainConfig preset = fountainCache_.at(id)->GetPreset();
-		return preset;
+		return instanceCache_.at(id)->GetUniqueConfig();
 	}
-	//else if (.count(id))
-	//{
-	//	GoToTargetConfig preset = goToTargetCache_.at(id)->GetPreset();
-	//	return preset;
-	//}
-	//else if (.count(id))
-	//{
-	//	OnTrailConfig preset = onTrailCache_.at(id)->GetPreset();
-	//	return preset;
-	//}
 	return {};
 }
 
 void MultiParticle::Clear()
 {
-	for (auto& [name, particle] : fountainCache_)
+	for (auto& [name, particle] : instanceCache_)
 	{
 		particle->Clear();
 	}
@@ -110,15 +103,13 @@ void MultiParticle::Initialize(SHEngine::TextureManager* textureManager, SHEngin
 
 	nextId_ = -1;
 
-	fountainCache_.clear();
-	modelWorld_ = Matrix4x4::Identity();
+	instanceCache_.clear();
 }
 
 void MultiParticle::Update(float dt)
 {
-	for (auto& [name, particle] : fountainCache_)
+	for (auto& [name, particle] : instanceCache_)
 	{
-		particle->SetModelWorld(modelWorld_);
 		particle->Update(dt);
 	}
 }
@@ -132,26 +123,26 @@ void MultiParticle::RegisterToDrawer()
 {
 	if (!drawer_) return;
 
-	for (auto& [id, p] : fountainCache_)
+	for (auto& [id, p] : instanceCache_)
 	{
-		drawer_->Register(&p->GetParticle());
+		drawer_->Register(p.get());
 	}
 }
 
 std::vector<Matrix4x4> MultiParticle::GetParticleWorlds(const int32_t id)
 {
-	if (fountainCache_.count(id))
+	if (instanceCache_.count(id))
 	{
-		return fountainCache_.at(id)->GetParticle().GetParticleWorlds();
+		return instanceCache_.at(id)->GetParticleWorlds();
 	}
 	return {};
 }
 
 size_t MultiParticle::GetAliveCount(const int32_t id) const
 {
-	if (fountainCache_.count(id))
+	if (instanceCache_.count(id))
 	{
-		return fountainCache_.at(id)->GetParticle().GetAliveCount();
+		return instanceCache_.at(id)->GetAliveCount();
 	}
 	return 0;
 }

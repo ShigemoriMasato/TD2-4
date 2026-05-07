@@ -83,6 +83,7 @@ public:
 	void SetScale(Vector3 scale) { scale_ = scale; }
 	void SetRotation(Vector3 rotation) { rotation_ = rotation; }
 	void SetPosition(Vector3 position) { position_ = position; }
+	Vector3 GetPosition() const { return position_; }
 
 	//VPMatrixを取得
 	virtual Matrix4x4 GetVPMatrix() const;

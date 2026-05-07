@@ -1,18 +1,76 @@
 {
     "cfg.emitInterval": 0.10000000149011612,
-    "cfg.emitNum": 5,
-    "cfg.lifeTime": 5.0,
+    "cfg.emitNum": 10,
+    "cfg.isBillboard": true,
+    "cfg.lifeTime": 1.0,
     "cfg.modelPath": "Assets/.EngineResource/Model/Cube",
     "cfg.speed": 1.0,
-    "cfg.texturePath": "Assets/.EngineResource/Texture/white1x1.png",
+    "cfg.texturePath": "mouse_right.png",
+    "init.color.acc": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+    ],
+    "init.color.isRandomAcc": false,
+    "init.color.isRandomVal": true,
+    "init.color.isRandomVel": false,
+    "init.color.randomRangeAccMax": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+    ],
+    "init.color.randomRangeAccMin": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+    ],
+    "init.color.randomRangeValMax": [
+        1.0,
+        0.4156862795352936,
+        0.1725490242242813,
+        1.0
+    ],
+    "init.color.randomRangeValMin": [
+        0.5215686559677124,
+        0.0,
+        0.0,
+        1.0
+    ],
+    "init.color.randomRangeVelMax": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+    ],
+    "init.color.randomRangeVelMin": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+    ],
+    "init.color.val": [
+        1.0,
+        0.06854838132858276,
+        0.06854838132858276,
+        1.0
+    ],
+    "init.color.vel": [
+        0.0,
+        0.0,
+        0.0,
+        -2.0
+    ],
     "init.rotate.acc": [
         0.0,
         0.0,
         0.0
     ],
     "init.rotate.isRandomAcc": false,
-    "init.rotate.isRandomVal": true,
-    "init.rotate.isRandomVel": false,
+    "init.rotate.isRandomVal": false,
+    "init.rotate.isRandomVel": true,
     "init.rotate.randomRangeAccMax": [
         0.0,
         0.0,
@@ -24,9 +82,9 @@
         0.0
     ],
     "init.rotate.randomRangeValMax": [
-        1.0,
-        1.0,
-        1.0
+        0.0,
+        0.0,
+        0.0
     ],
     "init.rotate.randomRangeValMin": [
         0.0,
@@ -34,9 +92,9 @@
         0.0
     ],
     "init.rotate.randomRangeVelMax": [
-        0.0,
-        0.0,
-        0.0
+        3.1415927410125732,
+        5.0,
+        5.0
     ],
     "init.rotate.randomRangeVelMin": [
         0.0,
@@ -44,9 +102,9 @@
         0.0
     ],
     "init.rotate.val": [
-        1.0,
-        1.0,
-        1.0
+        0.0,
+        0.0,
+        0.0
     ],
     "init.rotate.vel": [
         0.0,
@@ -54,12 +112,12 @@
         0.0
     ],
     "init.scale.acc": [
-        0.0,
-        0.0,
+        -10.0,
+        -10.0,
         0.0
     ],
     "init.scale.isRandomAcc": false,
-    "init.scale.isRandomVal": true,
+    "init.scale.isRandomVal": false,
     "init.scale.isRandomVel": false,
     "init.scale.randomRangeAccMax": [
         0.0,
@@ -72,9 +130,9 @@
         0.0
     ],
     "init.scale.randomRangeValMax": [
-        2.0,
-        2.0,
-        2.0
+        0.0,
+        0.0,
+        0.0
     ],
     "init.scale.randomRangeValMin": [
         0.0,
@@ -94,11 +152,11 @@
     "init.scale.val": [
         1.0,
         1.0,
-        1.0
+        0.0
     ],
     "init.scale.vel": [
-        0.0,
-        0.0,
+        1.0,
+        1.0,
         0.0
     ],
     "init.translate.acc": [
@@ -108,7 +166,7 @@
     ],
     "init.translate.isRandomAcc": false,
     "init.translate.isRandomVal": true,
-    "init.translate.isRandomVel": false,
+    "init.translate.isRandomVel": true,
     "init.translate.randomRangeAccMax": [
         0.0,
         0.0,
@@ -120,34 +178,34 @@
         0.0
     ],
     "init.translate.randomRangeValMax": [
-        10.0,
-        10.0,
-        10.0
-    ],
-    "init.translate.randomRangeValMin": [
-        -10.0,
-        -10.0,
-        -10.0
-    ],
-    "init.translate.randomRangeVelMax": [
-        0.0,
-        0.0,
-        0.0
-    ],
-    "init.translate.randomRangeVelMin": [
-        0.0,
-        0.0,
-        0.0
-    ],
-    "init.translate.val": [
         1.0,
         1.0,
         1.0
     ],
-    "init.translate.vel": [
+    "init.translate.randomRangeValMin": [
+        -1.0,
+        -1.0,
+        -1.0
+    ],
+    "init.translate.randomRangeVelMax": [
+        5.0,
+        5.0,
+        5.0
+    ],
+    "init.translate.randomRangeVelMin": [
+        -5.0,
+        -5.0,
+        -5.0
+    ],
+    "init.translate.val": [
         0.0,
-        3.0,
+        0.0,
         0.0
     ],
-    "type": "Fountain"
+    "init.translate.vel": [
+        0.0,
+        10.0,
+        0.0
+    ],
+    "type": "B_S_R_T_C"
 }

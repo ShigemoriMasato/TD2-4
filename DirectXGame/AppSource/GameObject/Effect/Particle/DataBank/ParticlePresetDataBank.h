@@ -1,11 +1,10 @@
 #pragma once
 #include <unordered_map>
-#include <variant>
 #include <string>
 #include <Tool/Json/JsonManager.h>
 #include <GameObject/Effect/Particle/Preset/ParticlePreset.h>
 
-using ParticlePresetVariant = std::variant<FountainConfig, OnTrailConfig, GoToTargetConfig>;
+
 
 class ParticlePresetDataBank
 {
@@ -38,10 +37,11 @@ public:
 	/// <summary>
 	/// 生成済みのConfigを Assets/Json/Particle/<name>.json として保存する
 	/// </summary>
-	void Save(const std::string& name, FountainConfig& uniqueConfig);
 	void Save(const std::string& name, GoToTargetConfig& uniqueConfig);
-	void Save(const std::string& name, OnTrailConfig& uniqueConfig);
+	void Save(const std::string& name, B_S_R_T_C_Config& uniqueConfig);
+	void SaveConfig(JsonManager& json, const std::string& keyPrefix, const ParticleConfig& cfg);
 	void SaveParticleSRT(JsonManager& json, const std::string& keyPrefix, const ParticleSRT& srt);
+	void SaveParticleSRTfloat4(JsonManager& json, const std::string& keyPrefix, const ParticleSRTfloat4& srt);
 
 
 	/// <summary>
@@ -50,8 +50,10 @@ public:
 	/// <param name="name">例："Fountain_01" → Assets/Json/Particle/Fountain_01.json</param>
 	/// <returns></returns>
 	ParticlePresetVariant Load(const std::string& name);
-	Particle::Config LoadConfig(JsonManager& json);
+	ParticleConfig LoadConfig(JsonManager& json);
 	ParticleSRT LoadParticleSRT(JsonManager& json, const std::string& keyPrefix);
+	ParticleSRTfloat4 LoadParticleSRTfloat4(JsonManager& json, const std::string& keyPrefix);
+
 
 private:
 	// 読み込みにのみ使用

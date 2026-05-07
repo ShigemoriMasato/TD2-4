@@ -7,7 +7,6 @@
 #include <Scene/CommonData.h>
 
 #include <GameObject/Effect/Particle/DataBank/ParticlePresetDataBank.h>
-#include <GameObject/Effect/Particle/Type/FountainParticle/FountainParticle.h>
 
 class ParticleDrawer;
 
@@ -24,8 +23,10 @@ public:
 
 	// プリセット名で追加（例: "Axe_Ribbon"）
 	int32_t Add(const std::string& presetName);
+	// カメラ位置をセット。Billboard等のカメラ座標が必要なParticleを利用する場合のみ必要。
+	void SetCameraPos(const Vector3& cameraPos);
 	// モデルに追従するタイプ用。モデルに追従してなくても使ってOK
-	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
+	void SetModelWorld(const Matrix4x4& modelWorld);
 	// 発生フラグをセット
 	void SetEmittingFlag(const int32_t id, bool flag);
 	// configをセット
@@ -45,9 +46,16 @@ private:
 	// ParticleDrawerに登録
 	void RegisterToDrawer();
 
-	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
-
 	int32_t nextId_ = -1;
-	std::unordered_map<int32_t, std::unique_ptr<FountainParticle>> fountainCache_;
+	//std::unordered_map<int32_t, std::unique_ptr<PhysicsParticle>> physicsCache_;
+	////std::unordered_map<int32_t, std::unique_ptr<OnTrailParticle>> onTrailCache_;
 	//std::unordered_map<int32_t, std::unique_ptr<GoToTargetParticle>> goToTargetCache_;
+	//std::unordered_map<int32_t, std::unique_ptr<B_S_Particle>> B_S_Cache_;
+	////std::unordered_map<int32_t, std::unique_ptr<BillboardScale2Particle>> B_S_T_Cache_;
+	//std::unordered_map<int32_t, std::unique_ptr<BillboardColorParticle>> B_C_Cache_;
+	//std::unordered_map<int32_t, std::unique_ptr<B_S_Particle>> B_S_R_T_Cache_;
+	//// 上のやつら全部Variantで行けるのでは？
+	//std::unordered_map<int32_t, ParticleInstanceVariant> instanceCache_;
+
+	std::unordered_map<int32_t, std::unique_ptr<IParticle>> instanceCache_;
 };
