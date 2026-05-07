@@ -34,7 +34,7 @@ private:
 	Transform transform_;
 
 	// パーティクル追従トレイル
-	constexpr static int32_t kTrailOnParticle = 50;
+	constexpr static int32_t kTrailOnParticle = 1;
 	TrailOnParticle TrailOnParticle[kTrailOnParticle];
 
 

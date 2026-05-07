@@ -441,6 +441,17 @@ void PrticleEditorScene::DrawImGui()
 	}
 
 	ImGui::End();
+
+	ImGui::Begin("worldTransform_");
+
+	ImGui::DragFloat3("position", &worldTransform_.position.x, 0.01f);
+	ImGui::DragFloat3("rotate", &worldTransform_.rotate.x, 0.01f);
+	ImGui::DragFloat3("scale", &worldTransform_.scale.x, 0.01f);
+
+	ImGui::End();
+
+
+
 #endif
 }
 
@@ -899,10 +910,11 @@ std::unique_ptr<IScene> PrticleEditorScene::Update()
 	}
 
 	// パーティクル更新
-	drawingParticle_.SetModelWorld(Matrix4x4::Identity());
+	Matrix4x4 worldMatrix = Matrix::MakeAffineMatrix(worldTransform_.scale, worldTransform_.rotate, worldTransform_.position);
+	drawingParticle_.SetModelWorld(worldMatrix);
 	drawingParticle_.SetCameraPos(cameraPos);
 	drawingParticle_.Update(dt);
-	editingParticle_.SetModelWorld(Matrix4x4::Identity());
+	editingParticle_.SetModelWorld(worldMatrix);
 	editingParticle_.SetCameraPos(cameraPos);
 	editingParticle_.Update(dt);
 

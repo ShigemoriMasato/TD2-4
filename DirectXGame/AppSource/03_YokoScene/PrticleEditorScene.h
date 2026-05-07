@@ -36,10 +36,13 @@ private:
 
 	// 描画パーティクルのみ再生成
 	void RebuildDrawParticle();
+	bool requestRebuildDrawingParticle_ = false;
 	// 編集パーティクルのみ再生成(Jsonのプリセットから再生成)
 	void RebuildEditParticleByJson();
-	// 編集パーティクルを現在の編集内容で再生成
+	bool requestRebuildEditingParticleByJson_ = false;
+	// 編集パーティクルのみ再生成(CurrentEditorConfigから再生成)
 	void RebuildEditParticleByCurrentConfig();
+	bool requestRebuildEditingParticleByCurrentConfig_ = false;
 
 	void SaveData();
 	void LoadData();
@@ -67,9 +70,6 @@ private:
 	// B_S_R_T_C 固有
 	B_S_R_T_C_Config b_S_R_T_C_Config_{};
 
-	// 上記Configを利用し描画するParticleが必要（編集中のParticleを描画するため）
-
-
 	ParticleType currentType_ = ParticleType::B_S_R_T_C;
 
 	// 編集しているParticle。ImGuiで編集している内容を反映させるためのParticle(ここには一つしかAddされない)
@@ -78,13 +78,8 @@ private:
 	MultiParticle drawingParticle_;
 	// 描画しているParticleのプリセット名リスト
 	std::vector<std::string> activeParticleNameList_;
-	// 描画パーティクルのみ再生成
-	bool requestRebuildDrawingParticle_ = false;
-	// 編集パーティクルのみ再生成(Jsonのプリセットから再生成)
-	bool requestRebuildEditingParticleByJson_ = false;
-	// 編集パーティクルを現在のEditerConfigで再生成
-	bool requestRebuildEditingParticleByCurrentConfig_ = false;
 
+	Transform worldTransform_;
 
 	// ImGuiがstringを許容しないばかりに生まれてしまった産廃
 	char presetNameBuf_[256]{};

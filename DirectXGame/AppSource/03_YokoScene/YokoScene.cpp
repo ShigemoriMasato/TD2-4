@@ -61,12 +61,12 @@ void YokoScene::Initialize()
 
 	// パーティクル初期化
 	particles_.Initialize(textureManager_, modelManager_, commonData_);
-	particles_.Add("sparrrk");
+	particles_.Add("death6");
 
 	// TrailOnParticle初期化
 	for (int i = 0; i < kTrailOnParticle; ++i)
 	{
-		TrailOnParticle[i].Initialize(textureManager_, modelManager_, commonData_, "death", "sparrrk");
+		TrailOnParticle[i].Initialize(textureManager_, modelManager_, commonData_, "death1", "sparrrk");
 	}
 }
 
