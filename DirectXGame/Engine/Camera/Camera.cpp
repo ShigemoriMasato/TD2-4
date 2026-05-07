@@ -68,5 +68,6 @@ void Camera::SetTransform(Matrix4x4 mat) {
 }
 
 Matrix4x4 Camera::GetVPMatrix() const {
-	return vpMatrix_;
-}
+	return vpMatrix_; }
+
+Vector3 Camera::GetPosition() const { return position_; }

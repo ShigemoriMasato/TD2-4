@@ -49,4 +49,14 @@ private:
 	int selectedIndex_ = 0;
 	AnimationBundle<float> decideScaleAnime_;
 	bool isDeciding_ = false;
+
+	// カメラシェイク用
+	bool isCameraShaking_ = false;
+	float shakeTime_ = 0.0f;
+	float shakeDuration_ = 0.5f;
+	float shakeIntensity_ = 0.5f;
+	Vector3 cameraBasePos_;
+	Vector3 orthoCameraBasePos_;
+
+	bool isPreFinished_ = false;
 };

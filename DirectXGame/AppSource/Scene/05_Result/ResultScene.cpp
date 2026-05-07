@@ -151,6 +151,34 @@ std::unique_ptr<IScene> ResultScene::Update() {
 		sword_->StartAnimation();
 	}
 
+	if (sword_->IsAnimationFinished() && !isPreFinished_) {
+		if (!isCameraShaking_) {
+			isCameraShaking_ = true;
+			shakeTime_ = 0.0f;
+			cameraBasePos_ = camera_->GetPosition();
+			orthoCameraBasePos_ = orthoCamera_->GetPosition();
+		}
+	}
+
+	isPreFinished_ = sword_->IsAnimationFinished();
+
+	if (isCameraShaking_) {
+		shakeTime_ += deltaTime;
+
+		if (shakeTime_ >= shakeDuration_) {
+			isCameraShaking_ = false;
+			camera_->SetPosition(cameraBasePos_);
+		} else {
+			float t = 1.0f - (shakeTime_ / shakeDuration_);
+			float offsetX = (RandomUtils::RangeFloat(-1.0f, 1.0f) * shakeIntensity_) * t;
+			float offsetY = (RandomUtils::RangeFloat(-1.0f, 1.0f) * shakeIntensity_) * t;
+
+			camera_->SetPosition({cameraBasePos_.x + offsetX, cameraBasePos_.y + offsetY, cameraBasePos_.z});
+		}
+
+		camera_->MakeMatrix();
+	}
+
 	UpdateSelectVisual();
 
 #ifdef USE_IMGUI
