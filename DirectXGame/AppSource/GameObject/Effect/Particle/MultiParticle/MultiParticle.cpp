@@ -5,10 +5,7 @@
 #include <GameObject/Effect/Particle/Preset/ParticlePreset.h>
 #include <GameObject/Effect/Particle/Drawer/ParticleDrawer.h>
 
-#include <GameObject/Effect/Particle/Type/PhysicsParticle/PhysicsParticle.h>
 #include <GameObject/Effect/Particle/Type/GoToTargetParticle/GoToTargetParticle.h>
-#include <GameObject/Effect/Particle/Type/B_S_Particle/B_S_Particle.h>
-#include <GameObject/Effect/Particle/Type/B_S_C_Particle/B_S_C_Particle.h>
 #include <GameObject/Effect/Particle/Type/B_S_R_T_C_Particle/B_S_R_T_C_Particle.h>
 
 int32_t MultiParticle::Add(const std::string& presetName)
@@ -24,14 +21,7 @@ int32_t MultiParticle::Add(const std::string& presetName)
 	std::unique_ptr<IParticle> particle;
 
 	// パーティクルタイプごとに生成
-	if (std::holds_alternative<PhysicsConfig>(presetVar))
-	{
-		const auto& preset = std::get<PhysicsConfig>(presetVar);
-		particle = std::make_unique<PhysicsParticle>();
-		particle->Initialize(textureManager_, modelManager_);
-		particle->SetConfig(preset);
-	}
-	else if (std::holds_alternative<OnTrailConfig>(presetVar))
+	if (std::holds_alternative<OnTrailConfig>(presetVar))
 	{
 		const auto& preset = std::get<OnTrailConfig>(presetVar);
 		//particle = std::make_unique<OnTrailParticle>();
@@ -42,27 +32,6 @@ int32_t MultiParticle::Add(const std::string& presetName)
 	{
 		const auto& preset = std::get<GoToTargetConfig>(presetVar);
 		particle = std::make_unique<GoToTargetParticle>();
-		particle->Initialize(textureManager_, modelManager_);
-		particle->SetConfig(preset);
-	}
-	else if (std::holds_alternative<B_S_Config>(presetVar))
-	{
-		const auto& preset = std::get<B_S_Config>(presetVar);
-		particle = std::make_unique<B_S_Particle>();
-		particle->Initialize(textureManager_, modelManager_);
-		particle->SetConfig(preset);
-	}
-	else if (std::holds_alternative<B_S_T_Config>(presetVar))
-	{
-		const auto& preset = std::get<B_S_T_Config>(presetVar);
-		//particle = std::make_unique<B_S_T_Particle>();
-		//particle->Initialize(textureManager_, modelManager_);
-		//particle->SetConfig(preset);
-	}
-	else if (std::holds_alternative<B_S_C_Config>(presetVar))
-	{
-		const auto& preset = std::get<B_S_C_Config>(presetVar);
-		particle = std::make_unique<B_S_C_Particle>();
 		particle->Initialize(textureManager_, modelManager_);
 		particle->SetConfig(preset);
 	}

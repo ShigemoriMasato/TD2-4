@@ -46,15 +46,11 @@ private:
 
 	void DrawImGui();
 	void DrawImGui_Config();
-	void DrawImGui_Config_S_R_T();
 	void DrawImGui_Config_GoToTarget();
 	void DrawImGui_Config_OnTrail();
-	void DrawImGui_Config_B_S();
-	void DrawImGui_Config_B_S_T();
-	void DrawImGui_Config_B_S_C();
 	void DrawImGui_Config_B_S_R_T_C();
 
-	void Reset(ParticleType type);
+	void Reset();
 
 private:
 	// カメラ
@@ -64,25 +60,17 @@ private:
 
 	// 共通Config
 	ParticleConfig particleConfig_{};
-	// Physics 固有
-	PhysicsConfig physicsConfig_{};
 	// GoToTarget 固有
 	GoToTargetConfig goToTargetConfig_{};
 	// OnTrailConfig 固有
 	OnTrailConfig onTrailConfig_{};
-	// B_S 固有
-	B_S_Config b_S_Config_{};
-	// B_S_T 固有
-	B_S_T_Config b_S_T_Config_{};
-	// B_S_C 固有
-	B_S_C_Config b_S_C_Config_{};
 	// B_S_R_T_C 固有
 	B_S_R_T_C_Config b_S_R_T_C_Config_{};
 
 	// 上記Configを利用し描画するParticleが必要（編集中のParticleを描画するため）
 
 
-	ParticleType currentType_ = ParticleType::Physics;
+	ParticleType currentType_ = ParticleType::B_S_R_T_C;
 
 	// 編集しているParticle。ImGuiで編集している内容を反映させるためのParticle(ここには一つしかAddされない)
 	MultiParticle editingParticle_;

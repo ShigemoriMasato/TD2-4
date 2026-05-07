@@ -207,8 +207,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Enemy\EnemyHP.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Arrow.cpp" />
     <ClCompile Include="AppSource\Utils\AppUtils.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\B_S_Particle\B_S_Particle.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\B_S_C_Particle\B_S_C_Particle.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\B_S_R_T_C_Particle\B_S_R_T_C_Particle.cpp" />
     <ClCompile Include="Engine\Render\Buffer\BufferContainer.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\PlayData.cpp" />
@@ -290,7 +288,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Attack\GrenadeBullet.cpp" />
     <ClCompile Include="AppSource\GameObject\Weapon\Data\Gurepon.cpp" />
     <ClCompile Include="AppSource\UI\Game\GameFrame.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\PhysicsParticle\PhysicsParticle.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\GoToTargetParticle\GoToTargetParticle.cpp" />
     <ClCompile Include="Engine\Core\FrameCounter.cpp" />
     <ClCompile Include="AppSource\UI\Game\GaugeAttractEffect.cpp" />
@@ -392,8 +389,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Enemy\EnemyHP.h" />
     <ClInclude Include="AppSource\GameObject\Attack\Arrow.h" />
     <ClInclude Include="AppSource\Utils\AppUtils.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\B_S_Particle\B_S_Particle.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\B_S_C_Particle\B_S_C_Particle.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\B_S_R_T_C_Particle\B_S_R_T_C_Particle.h" />
     <ClInclude Include="Engine\Render\Buffer\BufferContainer.h" />
     <ClInclude Include="Engine\Assets\Audio\Data\PlayData.h" />
@@ -497,7 +492,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Attack\GrenadeBullet.h" />
     <ClInclude Include="AppSource\GameObject\Weapon\Data\Gurepon.h" />
     <ClInclude Include="AppSource\UI\Game\GameFrame.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\PhysicsParticle\PhysicsParticle.h" />
     <ClInclude Include="AppSource\GameObject\Effect\TrailOnParticle.h" />
     <ClInclude Include="Engine\Core\Command\Data\SHCmdQueue.h" />
     <ClInclude Include="Engine\Render\Renderer.h" />

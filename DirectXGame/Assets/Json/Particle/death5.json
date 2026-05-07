@@ -1,6 +1,7 @@
 {
     "cfg.emitInterval": 0.10000000149011612,
     "cfg.emitNum": 10,
+    "cfg.isBillboard": true,
     "cfg.lifeTime": 1.0,
     "cfg.modelPath": "Assets/.EngineResource/Model/Cube",
     "cfg.speed": 1.0,
@@ -12,7 +13,7 @@
         1.0
     ],
     "init.color.isRandomAcc": false,
-    "init.color.isRandomVal": false,
+    "init.color.isRandomVal": true,
     "init.color.isRandomVel": false,
     "init.color.randomRangeAccMax": [
         0.0,
@@ -27,13 +28,13 @@
         1.0
     ],
     "init.color.randomRangeValMax": [
-        0.0,
-        0.0,
-        0.0,
+        1.0,
+        0.4156862795352936,
+        0.1725490242242813,
         1.0
     ],
     "init.color.randomRangeValMin": [
-        0.0,
+        0.5215686559677124,
         0.0,
         0.0,
         1.0
@@ -187,14 +188,14 @@
         -1.0
     ],
     "init.translate.randomRangeVelMax": [
-        5.0,
+        8.0,
         30.0,
-        5.0
+        8.0
     ],
     "init.translate.randomRangeVelMin": [
-        -5.0,
-        30.0,
-        -5.0
+        -8.0,
+        20.0,
+        -8.0
     ],
     "init.translate.val": [
         0.0,

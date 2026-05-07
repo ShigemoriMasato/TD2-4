@@ -1,6 +1,7 @@
 {
     "cfg.emitInterval": 0.10000000149011612,
     "cfg.emitNum": 10,
+    "cfg.isBillboard": true,
     "cfg.lifeTime": 1.0,
     "cfg.modelPath": "Assets/.EngineResource/Model/Cube",
     "cfg.speed": 1.0,
