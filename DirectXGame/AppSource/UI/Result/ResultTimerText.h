@@ -21,6 +21,6 @@ private:
 	AnimationBundle<float> scaleAfterAnim_;
 	KeyManager* keyManager_;
 	float spriteWidth_ = 300.0f;
-	float spritePosX_ = 150.0f;
+	float spritePosX_ = 0.0f;
 	bool isTextRender_ = false;
 };

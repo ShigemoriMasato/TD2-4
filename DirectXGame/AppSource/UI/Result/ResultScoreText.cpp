@@ -10,7 +10,7 @@ void ResultScoreText::Initialize(DrawData& drawData, int killCount, KeyManager* 
 	text_->SetSize(1.5f);
 	std::wstring killCountWStr = std::format(L"Kill: {:d}", killCount);
 	text_->SetText(killCountWStr);
-	transform_.position = {450.0f, -320.0f, 0.0f};
+	transform_.position = {360.0f, -360.0f, 0.0f};
 
 	render_ = std::make_unique<RenderObject>("ResultTimer");
 	render_->Initialize();
@@ -20,8 +20,9 @@ void ResultScoreText::Initialize(DrawData& drawData, int killCount, KeyManager* 
 	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
 	render_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 
-	spriteTransform_.scale = {0.0f, 100.0f, 0.0f};
-	spriteTransform_.position = {spritePosX_, -320.0f, 0.0f};
+	spriteTransform_.scale = {0.0f, 80.0f, 0.0f};
+	spriteTransform_.position = {spritePosX_, transform_.position.y, 0.0f};
+	spritePosX_ = transform_.position.x - spriteWidth_;
 
 	keyManager_ = keyManager;
 }
@@ -30,6 +31,7 @@ void ResultScoreText::Update(Matrix4x4 vpMatrix, float deltaTime) {
 #ifdef USE_IMGUI
 	ImGui::Begin("ScoreText");
 	ImGui::DragFloat2("Kill Count Text Position", &transform_.position.x, 1.0f);
+	ImGui::DragFloat3("SpriteScale", &spriteTransform_.scale.x, 1.0f);
 	ImGui::End();
 #endif
 
@@ -60,6 +62,10 @@ void ResultScoreText::Update(Matrix4x4 vpMatrix, float deltaTime) {
 		float rightFixed = spritePosX_ + spriteWidth_;
 		spriteTransform_.position.x = rightFixed + (spriteWidth_ - scale * 0.5f);
 	}
+
+	spriteTransform_.position.y = transform_.position.y;
+	spriteTransform_.rotate = transform_.rotate;
+	spritePosX_ = transform_.position.x - spriteWidth_;
 
 	Matrix4x4 wvp = Matrix::MakeAffineMatrix(spriteTransform_.scale, spriteTransform_.rotate, spriteTransform_.position);
 	wvp *= vpMatrix;

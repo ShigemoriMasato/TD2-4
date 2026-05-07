@@ -12,7 +12,7 @@ void ResultTimerText::Initialize(SHEngine::DrawData& drawData, float clearTimer,
 	int seconds = static_cast<int>(clearTimer) % 60;
 	std::wstring timerWStr = std::format(L"Time: {:d}:{:02d}", minutes, seconds);
 	text_->SetText(timerWStr);
-	transform_.position = {450.0f, -450.0f, 0.0f};
+	transform_.position = {430.0f, -470.0f, 0.0f};
 
 	render_ = std::make_unique<RenderObject>("ResultTimer");
 	render_->Initialize();
@@ -22,19 +22,18 @@ void ResultTimerText::Initialize(SHEngine::DrawData& drawData, float clearTimer,
 	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
 	render_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 
-	spriteTransform_.scale = {0.0f, 100.0f, 0.0f};
-	spriteTransform_.position = {spritePosX_, -450.0f, 0.0f};
+	spriteTransform_.scale = {0.0f, 80.0f, 0.0f};
+	spriteTransform_.position = {spritePosX_, transform_.position.y, 0.0f};
+	spritePosX_ = transform_.position.x - spriteWidth_;
 
 	keyManager_ = keyManager;
 }
 
 void ResultTimerText::Update(Matrix4x4 vpMatrix, float deltaTime) {
 #ifdef USE_IMGUI
-	ImGui::Begin("ScoreText");
+	ImGui::Begin("TimerText");
 	ImGui::DragFloat2("Clear Time Text Position", &transform_.position.x, 1.0f);
 	ImGui::DragFloat3("SpriteScale", &spriteTransform_.scale.x, 1.0f);
-	ImGui::DragFloat3("SpritePosition", &spriteTransform_.position.x, 1.0f);
-	ImGui::DragFloat("SpritePosX", &spritePosX_, 1.0f);
 	ImGui::End();
 #endif
 
@@ -65,6 +64,10 @@ void ResultTimerText::Update(Matrix4x4 vpMatrix, float deltaTime) {
 		float rightFixed = spritePosX_ + spriteWidth_;
 		spriteTransform_.position.x = rightFixed + (spriteWidth_ - scale * 0.5f);
 	}
+
+	spriteTransform_.position.y = transform_.position.y;
+	spriteTransform_.rotate = transform_.rotate;
+	spritePosX_ = transform_.position.x - spriteWidth_;
 
 	Matrix4x4 wvp = Matrix::MakeAffineMatrix(spriteTransform_.scale, spriteTransform_.rotate, spriteTransform_.position);
 	wvp *= vpMatrix;
