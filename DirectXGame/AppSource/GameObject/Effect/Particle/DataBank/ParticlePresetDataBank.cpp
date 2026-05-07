@@ -40,8 +40,7 @@ void ParticlePresetDataBank::Clear()
 ParticleType ParticlePresetDataBank::GetTypeOf(const std::string& name)
 {
 	const auto& v = Get(name);
-	if (std::holds_alternative<OnTrailConfig>(v)) return ParticleType::OnTrail;
-	else if (std::holds_alternative<GoToTargetConfig>(v)) return ParticleType::GoToTarget;
+	if (std::holds_alternative<GoToTargetConfig>(v)) return ParticleType::GoToTarget;
 	else if (std::holds_alternative<B_S_R_T_C_Config>(v)) return ParticleType::B_S_R_T_C;
 	return ParticleType::None;
 }
@@ -130,31 +129,6 @@ void ParticlePresetDataBank::Save(const std::string& name, GoToTargetConfig& uni
 		json_.Add("move.isMoveToTarget", uniqueConfig.isMoveToTarget);
 		json_.Add("move.targetPos", uniqueConfig.TargetPos);
 		json_.Add("move.moveSpeed", uniqueConfig.moveSpeed);
-	}
-
-	json_.Save();
-
-	// 保存したらキャッシュも更新
-	Invalidate(name);
-}
-void ParticlePresetDataBank::Save(const std::string& name, OnTrailConfig& uniqueConfig)
-{
-	// nameに.jsonがついていたら外す
-	json_.Boot("Particle/" + removeJsonExtension(name));
-
-	// type
-	{
-		std::string type = ToString(ParticleType::OnTrail);
-		json_.Add("type", type);
-	}
-
-	// cfg
-	{
-		SaveConfig(json_, "cfg", uniqueConfig.cfg);
-	}
-
-	// type固有
-	{
 	}
 
 	json_.Save();
@@ -318,13 +292,6 @@ ParticlePresetVariant ParticlePresetDataBank::Load(const std::string& name)
 		catch (...) {}
 		try { p.moveSpeed = json_.Get<float>("move.moveSpeed"); }
 		catch (...) {}
-
-		return p;
-	}
-	else if (type == ParticleType::OnTrail)
-	{
-		OnTrailConfig p{};
-		p.cfg = LoadConfig(json_);
 
 		return p;
 	}

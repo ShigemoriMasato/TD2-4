@@ -21,14 +21,7 @@ int32_t MultiParticle::Add(const std::string& presetName)
 	std::unique_ptr<IParticle> particle;
 
 	// パーティクルタイプごとに生成
-	if (std::holds_alternative<OnTrailConfig>(presetVar))
-	{
-		const auto& preset = std::get<OnTrailConfig>(presetVar);
-		//particle = std::make_unique<OnTrailParticle>();
-		//particle->Initialize(textureManager_, modelManager_);
-		//particle->SetConfig(preset);
-	}
-	else if (std::holds_alternative<GoToTargetConfig>(presetVar))
+	if (std::holds_alternative<GoToTargetConfig>(presetVar))
 	{
 		const auto& preset = std::get<GoToTargetConfig>(presetVar);
 		particle = std::make_unique<GoToTargetParticle>();

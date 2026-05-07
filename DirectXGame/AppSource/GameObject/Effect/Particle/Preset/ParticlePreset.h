@@ -7,8 +7,6 @@ enum class ParticleType
 {
 	// ターゲットに向かって移動するやつ
 	GoToTarget,
-	// エミッターがトレイルなやつ
-	OnTrail,
 	// ビルボード可能・Scale/Rotate/Translate/ColorをPhysics操作可能
 	B_S_R_T_C,
 
@@ -19,7 +17,6 @@ inline const char* ToString(ParticleType t)
 {
 	switch (t)
 	{
-	case ParticleType::OnTrail: return "OnTrail";
 	case ParticleType::GoToTarget: return "GoToTarget";
 	case ParticleType::B_S_R_T_C: return "B_S_R_T_C";
 	default: return "Unknown";
@@ -29,7 +26,6 @@ inline const char* ToString(ParticleType t)
 inline bool FromString(const std::string& s, ParticleType& out)
 {
 	if (s == "GoToTarget") { out = ParticleType::GoToTarget; return true; }
-	else if (s == "OnTrail") { out = ParticleType::OnTrail; return true; }
 	else if (s == "B_S_R_T_C") { out = ParticleType::B_S_R_T_C; return true; }
 	return false;
 }
@@ -94,15 +90,6 @@ struct GoToTargetConfig
 
 #pragma endregion
 
-#pragma region OnTrailConfig
-
-struct OnTrailConfig
-{
-	ParticleConfig cfg{};
-};
-
-#pragma endregion
-
 #pragma region B_S_R_T_C_Config
 
 struct B_S_R_T_C_Config
@@ -118,7 +105,6 @@ struct B_S_R_T_C_Config
 #pragma endregion
 
 using ParticlePresetVariant = std::variant<
-	OnTrailConfig,
 	GoToTargetConfig,
 	B_S_R_T_C_Config
 >;

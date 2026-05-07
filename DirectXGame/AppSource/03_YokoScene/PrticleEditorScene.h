@@ -50,7 +50,6 @@ private:
 	void DrawImGui();
 	void DrawImGui_Config();
 	void DrawImGui_Config_GoToTarget();
-	void DrawImGui_Config_OnTrail();
 	void DrawImGui_Config_B_S_R_T_C();
 
 	void Reset();
@@ -65,8 +64,6 @@ private:
 	ParticleConfig particleConfig_{};
 	// GoToTarget 固有
 	GoToTargetConfig goToTargetConfig_{};
-	// OnTrailConfig 固有
-	OnTrailConfig onTrailConfig_{};
 	// B_S_R_T_C 固有
 	B_S_R_T_C_Config b_S_R_T_C_Config_{};
 

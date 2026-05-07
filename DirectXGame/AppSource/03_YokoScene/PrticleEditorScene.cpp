@@ -120,10 +120,6 @@ void PrticleEditorScene::Reset()
 	goToTargetConfig_ = GoToTargetConfig{};
 	goToTargetConfig_.cfg = particleConfig_;
 
-	// OnTrail
-	onTrailConfig_ = OnTrailConfig{};
-	onTrailConfig_.cfg = particleConfig_;
-
 	// B_S_R_T_C
 	b_S_R_T_C_Config_ = B_S_R_T_C_Config{};
 	b_S_R_T_C_Config_.cfg = particleConfig_;
@@ -218,12 +214,6 @@ void PrticleEditorScene::RebuildEditParticleByJson()
 		particleConfig_ = goToTargetConfig_.cfg;
 		currentType_ = ParticleType::GoToTarget;
 	}
-	else if (std::holds_alternative<OnTrailConfig>(presetVar))
-	{
-		onTrailConfig_ = std::get<OnTrailConfig>(presetVar);
-		particleConfig_ = onTrailConfig_.cfg;
-		currentType_ = ParticleType::OnTrail;
-	}
 	else if (std::holds_alternative<B_S_R_T_C_Config>(presetVar))
 	{
 		b_S_R_T_C_Config_ = std::get<B_S_R_T_C_Config>(presetVar);
@@ -244,11 +234,6 @@ void PrticleEditorScene::RebuildEditParticleByCurrentConfig()
 		goToTargetConfig_.cfg = particleConfig_;
 		editingParticle_.SetConfig(slot, goToTargetConfig_);
 	}
-	else if (currentType_ == ParticleType::OnTrail)
-	{
-		onTrailConfig_.cfg = particleConfig_;
-		editingParticle_.SetConfig(slot, onTrailConfig_);
-	}
 	else if (currentType_ == ParticleType::B_S_R_T_C)
 	{
 		b_S_R_T_C_Config_.cfg = particleConfig_;
@@ -265,11 +250,6 @@ void PrticleEditorScene::SaveData()
 	{
 		goToTargetConfig_.cfg = particleConfig_;
 		commonData_->particlePresetDataBank.Save(presetNameBuf_, goToTargetConfig_);
-	}
-	else if (currentType_ == ParticleType::OnTrail)
-	{
-		onTrailConfig_.cfg = particleConfig_;
-		commonData_->particlePresetDataBank.Save(presetNameBuf_, onTrailConfig_);
 	}
 	else if (currentType_ == ParticleType::B_S_R_T_C)
 	{
@@ -291,12 +271,6 @@ void PrticleEditorScene::LoadData()
 		currentType_ = ParticleType::GoToTarget;
 		goToTargetConfig_ = std::get<GoToTargetConfig>(var);
 		particleConfig_ = goToTargetConfig_.cfg;
-	}
-	else if (std::holds_alternative<OnTrailConfig>(var))
-	{
-		currentType_ = ParticleType::OnTrail;
-		onTrailConfig_ = std::get<OnTrailConfig>(var);
-		particleConfig_ = onTrailConfig_.cfg;
 	}
 	else if (std::holds_alternative<B_S_R_T_C_Config>(var))
 	{
@@ -401,7 +375,6 @@ void PrticleEditorScene::DrawImGui()
 		const char* items[] = 
 		{
 			"GoToTarget", 
-			"OnTrail",
 			"B_S_R_T_C"
 		};
 		if (ImGui::Combo("type", &t, items, IM_ARRAYSIZE(items)))
@@ -419,9 +392,6 @@ void PrticleEditorScene::DrawImGui()
 	{
 	case ParticleType::GoToTarget:
 		DrawImGui_Config_GoToTarget();
-		break;
-	case ParticleType::OnTrail:
-		DrawImGui_Config_OnTrail();
 		break;
 	case ParticleType::B_S_R_T_C:
 		DrawImGui_Config_B_S_R_T_C();
@@ -449,8 +419,6 @@ void PrticleEditorScene::DrawImGui()
 	ImGui::DragFloat3("scale", &worldTransform_.scale.x, 0.01f);
 
 	ImGui::End();
-
-
 
 #endif
 }
@@ -519,8 +487,6 @@ void PrticleEditorScene::DrawImGui_Config()
 #endif
 }
 void PrticleEditorScene::DrawImGui_Config_GoToTarget()
-{}
-void PrticleEditorScene::DrawImGui_Config_OnTrail()
 {}
 void PrticleEditorScene::DrawImGui_Config_B_S_R_T_C()
 {

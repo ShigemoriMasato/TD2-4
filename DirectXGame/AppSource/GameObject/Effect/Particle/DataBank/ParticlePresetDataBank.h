@@ -38,7 +38,6 @@ public:
 	/// 生成済みのConfigを Assets/Json/Particle/<name>.json として保存する
 	/// </summary>
 	void Save(const std::string& name, GoToTargetConfig& uniqueConfig);
-	void Save(const std::string& name, OnTrailConfig& uniqueConfig);
 	void Save(const std::string& name, B_S_R_T_C_Config& uniqueConfig);
 	void SaveConfig(JsonManager& json, const std::string& keyPrefix, const ParticleConfig& cfg);
 	void SaveParticleSRT(JsonManager& json, const std::string& keyPrefix, const ParticleSRT& srt);
