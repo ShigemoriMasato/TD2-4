@@ -40,18 +40,6 @@ void ResultScene::Initialize() {
 	orthoCamera_ = std::make_unique<Camera>();
 	orthoCamera_->SetProjectionMatrix(OrthographicDesc{});
 
-	clearTimeText_ = std::make_unique<Text>(64);
-	clearTimeText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
-	clearTimeText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
-	clearTimeText_->SetSize(1.5f);
-	clearTimeTextTransform_.position = {450.0f, -300.0f, 0.0f};
-
-	killCountText_ = std::make_unique<Text>(64);
-	killCountText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
-	killCountText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
-	killCountText_->SetSize(1.5f);
-	killCountTextTransform_.position = {450.0f, -400.0f, 0.0f};
-
 	retryText_ = std::make_unique<Text>(64);
 	retryText_->Initialize(textDrawData, "YDWbananaslipplus.otf", 64);
 	retryText_->SetText(L"リトライ");
@@ -66,15 +54,8 @@ void ResultScene::Initialize() {
 	toTitleText_->SetSize(2.0f);
 	toTitleTextTransform_.position = {720.0f, -630.0f, 0.0f};
 
-	float time = commonData_->clearTime;
-	int minutes = static_cast<int>(time) / 60;
-	int seconds = static_cast<int>(time) % 60;
-	std::wstring timerWStr = std::format(L"Time: {:d}:{:02d}", minutes, seconds);
-	clearTimeText_->SetText(timerWStr);
-
-	int killCount = commonData_->killCount;
-	std::wstring killCountWStr = std::format(L"Kill: {:d}", killCount);
-	killCountText_->SetText(killCountWStr);
+	uiManager_ = std::make_unique<ResultUIManager>();
+	uiManager_->Initialize(textDrawData, commonData_->killCount, commonData_->clearTime, commonData_->keyManager.get());
 
 	isWin_ = commonData_->isWin;
 
@@ -91,6 +72,7 @@ void ResultScene::Initialize() {
 
 std::unique_ptr<IScene> ResultScene::Update() {
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
+	auto key = commonData_->keyManager->GetKeyStates();
 
 	{
 		orthoCamera_->SetScale({1, -1, 1});
@@ -115,6 +97,8 @@ std::unique_ptr<IScene> ResultScene::Update() {
 		}
 	}
 
+	uiManager_->Update(orthoCamera_->GetVPMatrix(), deltaTime);
+
 	clearText_->SetTransform(clearTextTransform_);
 	clearText_->Update(orthoCamera_->GetVPMatrix());
 
@@ -122,12 +106,6 @@ std::unique_ptr<IScene> ResultScene::Update() {
 	gameOverText_->Update(orthoCamera_->GetVPMatrix());
 
 	sword_->Update(camera_->GetVPMatrix(), deltaTime);
-
-	clearTimeText_->SetTransform(clearTimeTextTransform_);
-	clearTimeText_->Update(orthoCamera_->GetVPMatrix());
-
-	killCountText_->SetTransform(killCountTextTransform_);
-	killCountText_->Update(orthoCamera_->GetVPMatrix());
 
 	retryText_->SetTransform(retryTextTransform_);
 	retryText_->Update(orthoCamera_->GetVPMatrix());
@@ -155,8 +133,6 @@ std::unique_ptr<IScene> ResultScene::Update() {
 
 		return nullptr;
 	}
-
-	auto key = commonData_->keyManager->GetKeyStates();
 
 	if(key[Key::Retry]){
 		selectedIndex_ = (selectedIndex_ - 1 + 2) % 2;
@@ -222,8 +198,7 @@ void ResultScene::Draw() {
 		gameOverText_->Draw(cmdObj);
 	}
 
-	clearTimeText_->Draw(cmdObj);
-	killCountText_->Draw(cmdObj);
+	uiManager_->Draw(cmdObj);
 	retryText_->Draw(cmdObj);
 	toTitleText_->Draw(cmdObj);
 
@@ -252,9 +227,6 @@ void ResultScene::Draw() {
 	ImGui::Begin("Text");
 	ImGui::DragFloat2("GameClear Text Position", &clearTextTransform_.position.x, 1.0f);
 	ImGui::DragFloat2("GameOver Text Position", &gameOverTextTransform_.position.x, 1.0f);
-
-	ImGui::DragFloat2("Clear Time Text Position", &clearTimeTextTransform_.position.x, 1.0f);
-	ImGui::DragFloat2("Kill Count Text Position", &killCountTextTransform_.position.x, 1.0f);
 
 	ImGui::DragFloat2("Retry Text Position", &retryTextTransform_.position.x, 1.0f);
 	ImGui::DragFloat2("ToTitle Text Position", &toTitleTextTransform_.position.x, 1.0f);

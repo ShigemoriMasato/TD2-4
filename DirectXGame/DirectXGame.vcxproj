@@ -333,6 +333,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Effect\ParticleOnTrail.cpp" />
     <ClCompile Include="AppSource\GameObject\Result\ResultSword.cpp" />
     <ClCompile Include="AppSource\UI\Game\ValueDeltaEffect.cpp" />
+    <ClCompile Include="AppSource\UI\Result\ResultUIManager.cpp" />
+    <ClCompile Include="AppSource\UI\Result\ResultScoreText.cpp" />
+    <ClCompile Include="AppSource\UI\Result\ResultTimerText.cpp" />
     <ClInclude Include="AppSource\02_ShigeScene\GameDisplayRange.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\DamagePopup.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\FastEnemy.h" />
@@ -512,6 +515,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Effect\LetterBox\LetterBox.h" />
     <ClInclude Include="AppSource\GameObject\Result\ResultSword.h" />
     <ClInclude Include="AppSource\UI\Game\ValueDeltaEffect.h" />
+    <ClInclude Include="AppSource\UI\Result\ResultUIManager.h" />
+    <ClInclude Include="AppSource\UI\Result\ResultScoreText.h" />
+    <ClInclude Include="AppSource\UI\Result\ResultTimerText.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
