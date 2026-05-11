@@ -19,3 +19,12 @@ void ResultUIManager::Draw(CmdObj* cmdObj) {
 	scoreText_->Draw(cmdObj);
 	timerText_->Draw(cmdObj);
 }
+
+void ResultUIManager::StartAnimation() {
+	if (isAnimation_)
+		return;
+
+	isAnimation_ = true;
+	scoreText_->StartAnimation();
+	timerText_->StartAnimation();
+}

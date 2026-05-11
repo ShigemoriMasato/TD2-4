@@ -1,7 +1,7 @@
 #pragma once
-#include <Render/Font/Text.h>
 #include "GameObject/EasingAnimation/AnimationBundle.h"
 #include <Common/KeyConfig/KeyManager.h>
+#include <Render/Font/Text.h>
 
 /// <summary>
 /// 倒した敵の数を表示するためのクラス
@@ -11,6 +11,7 @@ public:
 	void Initialize(SHEngine::DrawData& drawData, int killCount, KeyManager* keyManager);
 	void Update(Matrix4x4 vpMatrix, float deltaTime);
 	void Draw(CmdObj* cmdObj);
+	void StartAnimation();
 
 private:
 	std::unique_ptr<SHEngine::Text> text_;

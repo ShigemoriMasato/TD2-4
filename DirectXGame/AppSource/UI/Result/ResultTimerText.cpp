@@ -37,13 +37,6 @@ void ResultTimerText::Update(Matrix4x4 vpMatrix, float deltaTime) {
 	ImGui::End();
 #endif
 
-	auto key = keyManager_->GetKeyStates();
-
-	if (key[Key::Debug2]) {
-		scaleBeforeAnim_.anim.Start(0.0f, 300.0f, 0.2f, EaseType::EaseOutCubic);
-		isTextRender_ = false;
-	}
-
 	bool wasPlayingBefore = scaleBeforeAnim_.anim.GetIsActive();
 	bool playingBefore = scaleBeforeAnim_.anim.Update(deltaTime, scaleBeforeAnim_.temp);
 	bool playingAfter = scaleAfterAnim_.anim.Update(deltaTime, scaleAfterAnim_.temp);
@@ -84,4 +77,9 @@ void ResultTimerText::Draw(CmdObj* cmdObj) {
 		text_->Draw(cmdObj);
 	}
 	render_->Draw(cmdObj);
+}
+
+void ResultTimerText::StartAnimation() {
+	scaleBeforeAnim_.anim.Start(0.0f, 300.0f, 0.2f, EaseType::EaseOutCubic);
+	isTextRender_ = false;
 }

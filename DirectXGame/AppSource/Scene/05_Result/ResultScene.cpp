@@ -68,6 +68,7 @@ void ResultScene::Initialize() {
 
 	sword_ = std::make_unique<ResultSword>();
 	sword_->Initialize(modelManager_, drawDataManager_, textureManager_);
+	sword_->StartAnimation();
 }
 
 std::unique_ptr<IScene> ResultScene::Update() {
@@ -140,15 +141,10 @@ std::unique_ptr<IScene> ResultScene::Update() {
 	if(key[Key::ToTitle]){
 		selectedIndex_ = (selectedIndex_ + 1) % 2;
 	}
-
 	if (key[Key::Correct] && !isDeciding_) {
 		isDeciding_ = true;
 		float startSize = 2.0f;
 		decideScaleAnime_.anim.Start(startSize, startSize * 1.5f, 0.3f, EaseType::EaseOutBack);
-	}
-
-	if (key[Key::Debug1]) {
-		sword_->StartAnimation();
 	}
 
 	if (sword_->IsAnimationFinished() && !isPreFinished_) {
@@ -157,6 +153,7 @@ std::unique_ptr<IScene> ResultScene::Update() {
 			shakeTime_ = 0.0f;
 			cameraBasePos_ = camera_->GetPosition();
 			orthoCameraBasePos_ = orthoCamera_->GetPosition();
+			uiManager_->StartAnimation();
 		}
 	}
 

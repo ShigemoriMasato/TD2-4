@@ -11,6 +11,7 @@ public:
 	void Initialize(SHEngine::DrawData& drawData, float clearTimer, KeyManager* keyManager);
 	void Update(Matrix4x4 vpMatrix, float deltaTime);
 	void Draw(CmdObj* cmdObj);
+	void StartAnimation();
 
 private:
 	std::unique_ptr<SHEngine::Text> text_;

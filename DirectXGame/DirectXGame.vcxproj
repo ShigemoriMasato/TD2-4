@@ -207,6 +207,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Enemy\EnemyHP.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Arrow.cpp" />
     <ClCompile Include="AppSource\Utils\AppUtils.cpp" />
+    <ClCompile Include="AppSource\GameObject\Result\EnemyRainManager.cpp" />
     <ClCompile Include="Engine\Render\Buffer\BufferContainer.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\PlayData.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSPSOManager.cpp" />
@@ -392,6 +393,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Enemy\EnemyHP.h" />
     <ClInclude Include="AppSource\GameObject\Attack\Arrow.h" />
     <ClInclude Include="AppSource\Utils\AppUtils.h" />
+    <ClInclude Include="AppSource\GameObject\Result\EnemyRainManager.h" />
     <ClInclude Include="Engine\Render\Buffer\BufferContainer.h" />
     <ClInclude Include="Engine\Assets\Audio\Data\PlayData.h" />
     <ClInclude Include="Engine\Compute\PSO\CSPSOManager.h" />

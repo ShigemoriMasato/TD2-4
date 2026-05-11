@@ -10,8 +10,10 @@ public:
 	void Initialize(SHEngine::DrawData& drawData, int killCount, float clearTimer, KeyManager* keyManager);
 	void Update(Matrix4x4 vpMatrix, float deltaTime);
 	void Draw(CmdObj* cmdObj);
+	void StartAnimation();
 
 private:
 	std::unique_ptr<ResultScoreText> scoreText_;
 	std::unique_ptr<ResultTimerText> timerText_;
+	bool isAnimation_ = false;
 };
