@@ -173,6 +173,10 @@ void ShigeScene::Initialize() {
 
 	letterBox_ = std::make_unique<LetterBox>();
 	letterBox_->Initialize(modelManager_, drawDataManager_);
+
+	fadeManager_ = std::make_unique<FadeManager>();
+	fadeManager_->Initialize(modelManager_, drawDataManager_);
+	fadeManager_->StartFadeOut(false);
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -370,13 +374,19 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 				commonData_->isWin = false;
 				commonData_->clearTime = gameTimer_->GetTimer();
 				commonData_->killCount = enemyManager_->GetKillCount();
-				return std::make_unique<ResultScene>();
+ 				fadeManager_->StartFadeIn();
 			}
 		}
 	} else if (waveSystem_->End()) {
 		commonData_->isWin = true;
 		commonData_->clearTime = gameTimer_->GetTimer();
 		commonData_->killCount = enemyManager_->GetKillCount();
+		fadeManager_->StartFadeIn();
+	}
+
+	fadeManager_->Update(camera_->GetVPMatrix(), deltaTime);
+
+	if(fadeManager_->Finished()){
 		return std::make_unique<ResultScene>();
 	}
 
@@ -443,6 +453,8 @@ void ShigeScene::Draw() {
 	waveSystemUI_->Draw(cmdObj);
 
 	gameFrame_->Draw(cmdObj);
+
+	fadeManager_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 

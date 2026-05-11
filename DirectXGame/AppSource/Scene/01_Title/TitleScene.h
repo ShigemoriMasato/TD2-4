@@ -9,6 +9,7 @@
 #include <GameObject/Player/Controller/IController.h>
 #include <GameObject/Player/Controller/InputController.h>
 #include <memory>
+#include "GameObject/Fade/FadeManager.h"
 #include <02_ShigeScene/ShopScene.h>
 #include <Render/RenderObject.h>
 #include <Tool/Grid/Grid.h>
@@ -78,6 +79,8 @@ private:
 
 	Option::Select currentOptionSelect_ = Option::Select::Master;
 	std::unique_ptr<PlayData> bgm_ = nullptr;
+	
+	std::unique_ptr<FadeManager> fadeManager_;
 
 	MapInfo mapInfo_;
 private:// Shop

@@ -5,6 +5,7 @@
 #include "GameObject/EasingAnimation/AnimationBundle.h"
 #include "GameObject/Result/ResultSword.h"
 #include "UI/Result/ResultUIManager.h"
+#include "GameObject/Fade/FadeManager.h"
 
 class ResultScene : public IScene {
 public:
@@ -25,6 +26,7 @@ private:
 	std::unique_ptr<SHEngine::Text> retryText_;
 	std::unique_ptr<SHEngine::Text> toTitleText_;
 	std::unique_ptr<ResultUIManager> uiManager_;
+	std::unique_ptr<FadeManager> fadeManager_;
 
 	std::unique_ptr<ResultSword> sword_;
 

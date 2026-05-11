@@ -28,7 +28,6 @@ void Flash::Update(Matrix4x4 vpMatrix, float deltaTime) {
 
 	Matrix4x4 wvp = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 	Vector4 color = {1.0f, 1.0f, 1.0f, flashIntensity_};
-	int textureIndex = 0;
 
 	render_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
 	render_->CopyBufferData(1, &color, sizeof(Vector4));

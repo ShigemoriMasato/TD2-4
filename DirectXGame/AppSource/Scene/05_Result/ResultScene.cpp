@@ -70,6 +70,10 @@ void ResultScene::Initialize() {
 	sword_ = std::make_unique<ResultSword>();
 	sword_->Initialize(modelManager_, drawDataManager_, textureManager_);
 	sword_->StartAnimation();
+
+	fadeManager_ = std::make_unique<FadeManager>();
+	fadeManager_->Initialize(modelManager_, drawDataManager_);
+	fadeManager_->StartFadeOut(false);
 }
 
 std::unique_ptr<IScene> ResultScene::Update() {
@@ -126,14 +130,18 @@ std::unique_ptr<IScene> ResultScene::Update() {
 
 		// アニメーション終了後にシーン遷移
 		if (!playing) {
-			if (selectedIndex_ == 0) {
-				return std::make_unique<ShigeScene>();
-			} else {
-				return std::make_unique<TitleScene>();
-			}
+			fadeManager_->StartFadeIn();
 		}
+	}
 
-		return nullptr;
+	fadeManager_->Update(camera_->GetVPMatrix(), deltaTime);
+
+	if(fadeManager_->Finished()){
+		if (selectedIndex_ == 0) {
+			return std::make_unique<ShigeScene>();
+		} else {
+			return std::make_unique<TitleScene>();
+		}
 	}
 
 	if(key[Key::Retry]){
@@ -229,6 +237,8 @@ void ResultScene::Draw() {
 	toTitleText_->Draw(cmdObj);
 
 	sword_->Draw(cmdObj);
+
+	fadeManager_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 

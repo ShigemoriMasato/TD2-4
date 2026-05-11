@@ -34,6 +34,7 @@
 #include <UI/Game/SituationTelop.h>
 #include <GameObject/Effect/Flash/Flash.h>
 #include <GameObject/Effect/LetterBox/LetterBox.h>
+#include "GameObject/Fade/FadeManager.h"
 
 class ShigeScene : public IScene {
 public:
@@ -90,6 +91,7 @@ private:// System系
 
 	std::unique_ptr<Flash> flashEffect_;
 	std::unique_ptr<LetterBox> letterBox_;
+	std::unique_ptr<FadeManager> fadeManager_;
 
 	JsonManager jsonManager_;
 
