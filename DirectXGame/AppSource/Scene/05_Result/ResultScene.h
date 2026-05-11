@@ -2,8 +2,9 @@
 #include <Scene/IScene.h>
 #include <Render/Font/Text.h>
 #include <Render/PostEffect.h>
-#include <GameObject/EasingAnimation/AnimationBundle.h>
-#include <GameObject/Result/ResultSword.h>
+#include "GameObject/EasingAnimation/AnimationBundle.h"
+#include "GameObject/Result/ResultSword.h"
+#include "UI/Result/ResultUIManager.h"
 
 class ResultScene : public IScene {
 public:
@@ -21,10 +22,9 @@ private:
 private:
 	std::unique_ptr<SHEngine::Text> clearText_;
 	std::unique_ptr<SHEngine::Text> gameOverText_;
-	std::unique_ptr<SHEngine::Text> clearTimeText_;
-	std::unique_ptr<SHEngine::Text> killCountText_;
 	std::unique_ptr<SHEngine::Text> retryText_;
 	std::unique_ptr<SHEngine::Text> toTitleText_;
+	std::unique_ptr<ResultUIManager> uiManager_;
 
 	std::unique_ptr<ResultSword> sword_;
 
@@ -33,8 +33,6 @@ private:
 
 	Transform clearTextTransform_{};
 	Transform gameOverTextTransform_{};
-	Transform clearTimeTextTransform_{};
-	Transform killCountTextTransform_{};
 	Transform retryTextTransform_{};
 	Transform toTitleTextTransform_{};
 
@@ -51,4 +49,14 @@ private:
 	int selectedIndex_ = 0;
 	AnimationBundle<float> decideScaleAnime_;
 	bool isDeciding_ = false;
+
+	// カメラシェイク用
+	bool isCameraShaking_ = false;
+	float shakeTime_ = 0.0f;
+	float shakeDuration_ = 0.5f;
+	float shakeIntensity_ = 0.5f;
+	Vector3 cameraBasePos_;
+	Vector3 orthoCameraBasePos_;
+
+	bool isPreFinished_ = false;
 };
