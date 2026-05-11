@@ -83,6 +83,11 @@ namespace Player {
 		// ライトのパラメータSetter
 		void SetDirectionalLight(DirectionalLight dirLight) { dirLight_ = dirLight; }
 
+#ifdef USE_IMGUI
+		// ImGuiでのデバッグ表示
+		void DrawImGui();
+#endif // USE_IMGUI
+
 	private:
 		// プレイヤーの移動制限
 		void ClampPosition();

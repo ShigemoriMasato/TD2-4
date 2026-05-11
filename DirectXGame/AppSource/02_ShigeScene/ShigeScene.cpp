@@ -21,6 +21,8 @@ void ShigeScene::Initialize() {
 	gameCamera_ = std::make_unique<GameCamera>();
 	gameCamera_->Initialize();
 	gameCamera_->SetInput(input_);
+	gameCamera_->SetOffset({ 0.0f, 30.0f, -45.0f });
+	gameCamera_->Setrotation({ -0.5f, 0.0f, 0.0f });
 
 	camera_ = gameCamera_.get();
 
@@ -280,7 +282,10 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		Matrix4x4 wvp = Matrix::MakeScaleMatrix(targetMarkerTransform_.scale) * Matrix::MakeRotationMatrix(targetMarkerTransform_.rotate) *
 		                Matrix::MakeTranslationMatrix(targetMarkerTransform_.position) * camera_->GetVPMatrix();
 
+		Vector4 markerColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 		targetMarkerRender_->CopyBufferData(0, &wvp, sizeof(wvp));
+		targetMarkerRender_->CopyBufferData(1, &markerColor, sizeof(markerColor));
+		targetMarkerRender_->CopyBufferData(2, &targetMarkerTexIndex_, sizeof(targetMarkerTexIndex_));
 		targetMarkerRender_->CopyBufferData(3, &dirLight_, sizeof(DirectionalLight));
 	} else {
 		isTargetMarkerVisible_ = false;
@@ -492,6 +497,11 @@ void ShigeScene::Draw() {
 	ImGui::DragFloat("intensity", &dirLight_.intensity, 0.01f);
 	dirLight_.direction = dirLight_.direction.Normalize();
 	ImGui::End();
+
+	// プレイヤーのデバッグ情報を表示
+	if (player_) {
+		player_->DrawImGui();
+	}
 
 #endif // USE_IMGUI
 	engine_->DrawImGui();

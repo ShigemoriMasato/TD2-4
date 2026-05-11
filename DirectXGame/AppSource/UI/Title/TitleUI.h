@@ -7,12 +7,16 @@
 #include <memory>
 #include <array>
 
+
 struct CommonData;
 
 namespace Title {
 
 	/// UIモデルの種類
 	enum class Kinds {
+		Frame,
+		Frame2,
+		Frame3,
 		Logo,
 		Start,
 		Option,
@@ -63,16 +67,25 @@ public:
 	void SetRotation(Title::Kinds kind, const Vector3& rotation) { rotations_[static_cast<size_t>(kind)] = rotation; }
 	void SetScale(Title::Kinds kind, const Vector3& scale) { scales_[static_cast<size_t>(kind)] = scale; }
 
+	void SetFramePosition(const Vector3& position) { SetPosition(Title::Kinds::Frame, position); }
+	void SetFrame2Position(const Vector3& position) { SetPosition(Title::Kinds::Frame2, position); }
+	void SetFrame3Position(const Vector3& position) { SetPosition(Title::Kinds::Frame3, position); }
 	void SetLogoPosition(const Vector3& position) { SetPosition(Title::Kinds::Logo, position); }
 	void SetStartPosition(const Vector3& position) { SetPosition(Title::Kinds::Start, position); }
 	void SetOptionPosition(const Vector3& position) { SetPosition(Title::Kinds::Option, position); }
 	void SetQuitPosition(const Vector3& position) { SetPosition(Title::Kinds::Quit, position); }
 
+	void SetFrameRotation(const Vector3& rotation) { SetRotation(Title::Kinds::Frame, rotation); }
+	void SetFrame2Rotation(const Vector3& rotation) { SetRotation(Title::Kinds::Frame2, rotation); }
+	void SetFrame3Rotation(const Vector3& rotation) { SetRotation(Title::Kinds::Frame3, rotation); }
 	void SetLogoRotation(const Vector3& rotation) { SetRotation(Title::Kinds::Logo, rotation); }
 	void SetStartRotation(const Vector3& rotation) { SetRotation(Title::Kinds::Start, rotation); }
 	void SetOptionRotation(const Vector3& rotation) { SetRotation(Title::Kinds::Option, rotation); }
 	void SetQuitRotation(const Vector3& rotation) { SetRotation(Title::Kinds::Quit, rotation); }
 
+	void SetFrameScale(const Vector3& scale) { SetScale(Title::Kinds::Frame, scale); }
+	void SetFrame2Scale(const Vector3& scale) { SetScale(Title::Kinds::Frame2, scale); }
+	void SetFrame3Scale(const Vector3& scale) { SetScale(Title::Kinds::Frame3, scale); }
 	void SetLogoScale(const Vector3& scale) { SetScale(Title::Kinds::Logo, scale); }
 	void SetStartScale(const Vector3& scale) { SetScale(Title::Kinds::Start, scale); }
 	void SetOptionScale(const Vector3& scale) { SetScale(Title::Kinds::Option, scale); }
@@ -88,24 +101,33 @@ private:
 	
 	std::array<std::unique_ptr<SHEngine::RenderObject>, kUICount> renders_;
 	std::array<Vector3, kUICount> positions_{
+		Vector3{ 0.0f, 0.0f, 0.0f },     // Frame
+		Vector3{ 0.0f, 0.0f, -10.0f },     // Frame2
+		Vector3{ 0.0f, 0.0f, -20.0f },     // Frame3
 		Vector3{ 0.0f, -4.7f, 1.75f },   // Logo
-		Vector3{ 0.0f, -5.0f, -2.0f },   // Start
-		Vector3{ 0.0f, -5.75f, -2.0f },  // Option
-		Vector3{ 0.0f, -6.5f, -2.0f }   // Quit
+		Vector3{ 0.0f, 0.2f, 0.0f },   // Start
+		Vector3{ 0.0f, 0.2f, -10.0f },  // Option
+		Vector3{ 0.0f, 0.2f, -20.0f }    // Quit
 	};
 	std::array<Vector3, kUICount> rotations_{
-		Vector3{ 0.55f, 0.0f, 0.0f },   // Logo
-		Vector3{ 0.55f, 0.0f, 0.0f },   // Start
-		Vector3{ 0.55f, 0.0f, 0.0f },   // Option
-		Vector3{ 0.55f, 0.0f, 0.0f }    // Quit
+		Vector3{ 0.0f, 0.0f, 0.0f },   // Frame (90度 = π/2)
+		Vector3{ 0.0f, 0.0f, 0.0f },   // Frame2
+		Vector3{ 0.0f, 0.0f, 0.0f },   // Frame3
+		Vector3{ 0.55f, 0.0f, 0.0f },     // Logo
+		Vector3{ -0.5f, 0.0f, 0.0f },     // Start
+		Vector3{ -0.55f, 0.0f, 0.0f },     // Option
+		Vector3{ -0.55f, 0.0f, 0.0f }      // Quit
 	};
 	std::array<Vector3, kUICount> scales_{
-		Vector3{ 2.0f, 2.0f, 0.5f },   // Logo
-		Vector3{ 1.0f, 1.0f, 0.5f },   // Start
-		Vector3{ 1.0f, 1.0f, 0.5f },   // Option
-		Vector3{ 1.0f, 1.0f, 0.5f }    // Quit
+		Vector3{ 2.0f, 2.0f, 2.0f },    // Frame
+		Vector3{ 2.0f, 2.0f, 2.0f },    // Frame2
+		Vector3{ 2.0f, 2.0f, 2.0f },    // Frame3
+		Vector3{ 2.0f, 2.0f, 0.5f },    // Logo
+		Vector3{ 1.25f, 1.0f, 1.25f },    // Start
+		Vector3{ 1.25f, 1.0f, 1.25f },    // Option
+		Vector3{ 1.25f, 1.0f, 1.25f }     // Quit
 	};
-	std::array<int, kUICount> modelIDs_{ -1, -1, -1, -1 };
+	std::array<int, kUICount> modelIDs_{ -1, -1, -1, -1, -1, -1, -1 };
 
 	Title::Select currentSelect_ = Title::Select::Start;
 

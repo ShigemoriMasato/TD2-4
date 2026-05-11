@@ -324,3 +324,31 @@ float Base::GetParameter(const std::string& paramName) const {
 	logger_->warn("Parameter '{}' not found. Returning 0.", paramName);
 	return 0.0f; // パラメータが見つからない場合は0を返す
 }
+
+#ifdef USE_IMGUI
+void Base::DrawImGui() {
+	ImGui::Begin("Player Debug Info");
+
+	// 座標表示
+	ImGui::Text("Position:");
+	ImGui::Text("  X: %.2f", transform_.position.x);
+	ImGui::Text("  Y: %.2f", transform_.position.y);
+	ImGui::Text("  Z: %.2f", transform_.position.z);
+
+	ImGui::Separator();
+
+	// 回転表示
+	ImGui::Text("Rotation:");
+	ImGui::Text("  X: %.2f", transform_.rotate.x);
+	ImGui::Text("  Y: %.2f", transform_.rotate.y);
+	ImGui::Text("  Z: %.2f", transform_.rotate.z);
+
+	ImGui::Separator();
+
+	// HP表示
+	ImGui::Text("HP: %.1f / %.1f", currentHP_, maxHP_);
+	ImGui::ProgressBar(currentHP_ / maxHP_, ImVec2(0.0f, 0.0f));
+
+	ImGui::End();
+}
+#endif // USE_IMGUI
