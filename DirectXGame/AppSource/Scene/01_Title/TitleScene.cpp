@@ -137,6 +137,10 @@ void TitleScene::Initialize() {
 	postEffect_->Initialize(textureManager_, drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex), true);
 	postEffectConfig_.cmdObj = commonData_->cmdObject.get();
 	postEffectConfig_.origin = commonData_->display->GetDisplay();
+
+	// グリッドの初期化
+	grid_ = std::make_unique<Grid>();
+	grid_->Initialize(drawDataManager_);
 }
 
 std::unique_ptr<IScene> TitleScene::Update() {
@@ -208,6 +212,9 @@ std::unique_ptr<IScene> TitleScene::Update() {
 	yukaRender_->CopyBufferData(2, &yukaTexIndex_, sizeof(yukaTexIndex_));
 	yukaRender_->CopyBufferData(3, &dirLight_, sizeof(DirectionalLight));
 
+	// グリッドの更新
+	grid_->Update({ 0.0f, 0.0f, 0.0f }, gameCamera_->GetVPMatrix());
+
 	if (keys[Key::Correct]) {
 		switch (titleUI_->GetCurrentSelect()) {
 		case Title::Select::Start:
@@ -239,6 +246,9 @@ void TitleScene::Draw() {
 
 	// yukaの描画
 	yukaRender_->Draw(cmdObj);
+
+	// グリッドの描画
+	grid_->Draw(cmdObj);
 
 	// Playerの描画（displayに描画）
 	player_->Draw(cmdObj);
@@ -326,6 +336,11 @@ void TitleScene::Draw() {
 	map_->DrawDebugGUI();
 
 	display->DrawImGui();
+	
+	// プレイヤーのデバッグ情報を表示
+	if (player_) {
+		player_->DrawImGui();
+	}
 
 	ImGui::Begin("FPS");
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();

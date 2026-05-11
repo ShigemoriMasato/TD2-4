@@ -11,6 +11,7 @@
 #include <memory>
 #include <02_ShigeScene/ShopScene.h>
 #include <Render/RenderObject.h>
+#include <Tool/Grid/Grid.h>
 
 // ダミーコントローラー（タイトル画面用）
 class DummyController : public IController {
@@ -82,4 +83,7 @@ private:
 private:// Shop
 
 	std::unique_ptr<ShopScene> shopScene_;
+
+	// グリッド
+	std::unique_ptr<Grid> grid_;
 };

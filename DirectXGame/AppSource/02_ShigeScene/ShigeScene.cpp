@@ -498,6 +498,11 @@ void ShigeScene::Draw() {
 	dirLight_.direction = dirLight_.direction.Normalize();
 	ImGui::End();
 
+	// プレイヤーのデバッグ情報を表示
+	if (player_) {
+		player_->DrawImGui();
+	}
+
 #endif // USE_IMGUI
 	engine_->DrawImGui();
 
