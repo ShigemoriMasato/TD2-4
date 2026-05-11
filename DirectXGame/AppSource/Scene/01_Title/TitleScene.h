@@ -5,6 +5,7 @@
 #include <Camera/Camera.h>
 #include <GameObject/Map/Map.h>
 #include <memory>
+#include "GameObject/Fade/FadeManager.h"
 
 class TitleScene : public IScene {
 public:
@@ -43,5 +44,6 @@ private:
 
 	Option::Select currentOptionSelect_ = Option::Select::Master;
 	std::unique_ptr<PlayData> bgm_ = nullptr;
-
+	
+	std::unique_ptr<FadeManager> fadeManager_;
 };

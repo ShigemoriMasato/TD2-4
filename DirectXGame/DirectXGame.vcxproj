@@ -294,6 +294,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\UI\Game\GaugeAttractEffect.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Flash\Flash.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\LetterBox\LetterBox.cpp" />
+    <ClCompile Include="AppSource\GameObject\Fade\FadeManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Trail.cpp" />
@@ -520,6 +521,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\UI\Result\ResultUIManager.h" />
     <ClInclude Include="AppSource\UI\Result\ResultScoreText.h" />
     <ClInclude Include="AppSource\UI\Result\ResultTimerText.h" />
+    <ClInclude Include="AppSource\GameObject\Fade\FadeManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

@@ -44,6 +44,10 @@ void TitleScene::Initialize() {
 	postEffect_->Initialize(textureManager_, drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex), true);
 	postEffectConfig_.cmdObj = commonData_->cmdObject.get();
 	postEffectConfig_.origin = commonData_->display->GetDisplay();
+
+	fadeManager_ = std::make_unique<FadeManager>();
+	fadeManager_->Initialize(modelManager_, drawDataManager_);
+	fadeManager_->StartFadeOut(false);
 }
 
 std::unique_ptr<IScene> TitleScene::Update() {
@@ -56,10 +60,13 @@ std::unique_ptr<IScene> TitleScene::Update() {
 
 	map_->Update(camera_->GetVPMatrix(), deltaTime);
 
+	fadeManager_->Update(camera_->GetVPMatrix(), deltaTime);
+
 	if (keys[Key::Correct]) {
 		switch (titleUI_->GetCurrentSelect()) {
 		case Title::Select::Start:
-			return std::make_unique<ShigeScene>();
+			fadeManager_->StartFadeIn();
+			break;
 		case Title::Select::Option:
 			isOptionMode_ = true;
 			break;
@@ -69,7 +76,9 @@ std::unique_ptr<IScene> TitleScene::Update() {
 		}
 	}
 
-
+	if(fadeManager_->Finished()){
+		return std::make_unique<ShigeScene>();
+	}
 
 	return nullptr;
 }
@@ -87,6 +96,9 @@ void TitleScene::Draw() {
 
 	// TitleUIの描画（displayに描画）
 	titleUI_->Draw(cmdObj);
+
+	// フェードの描画
+	fadeManager_->Draw(cmdObj);
 
 	// ディスプレイへの描画終了
 	display->PostDraw(cmdObj);
