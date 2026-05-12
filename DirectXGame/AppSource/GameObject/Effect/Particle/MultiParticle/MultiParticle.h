@@ -33,6 +33,7 @@ public:
 	void SetConfig(const int32_t id, const ParticlePresetVariant& presetVar);
 	ParticlePresetVariant GetConfig(const int32_t id);
 
+    bool GetIsJustEmitted(const int32_t id) const;	
 
 	std::vector<Matrix4x4> GetParticleWorlds(const int32_t id);
 	size_t GetAliveCount(const int32_t id) const;
@@ -47,15 +48,5 @@ private:
 	void RegisterToDrawer();
 
 	int32_t nextId_ = -1;
-	//std::unordered_map<int32_t, std::unique_ptr<PhysicsParticle>> physicsCache_;
-	////std::unordered_map<int32_t, std::unique_ptr<OnTrailParticle>> onTrailCache_;
-	//std::unordered_map<int32_t, std::unique_ptr<GoToTargetParticle>> goToTargetCache_;
-	//std::unordered_map<int32_t, std::unique_ptr<B_S_Particle>> B_S_Cache_;
-	////std::unordered_map<int32_t, std::unique_ptr<BillboardScale2Particle>> B_S_T_Cache_;
-	//std::unordered_map<int32_t, std::unique_ptr<BillboardColorParticle>> B_C_Cache_;
-	//std::unordered_map<int32_t, std::unique_ptr<B_S_Particle>> B_S_R_T_Cache_;
-	//// 上のやつら全部Variantで行けるのでは？
-	//std::unordered_map<int32_t, ParticleInstanceVariant> instanceCache_;
-
 	std::unordered_map<int32_t, std::unique_ptr<IParticle>> instanceCache_;
 };

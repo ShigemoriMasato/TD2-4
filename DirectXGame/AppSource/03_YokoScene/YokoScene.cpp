@@ -20,13 +20,16 @@ namespace
 		ro->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
 		ro->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 		ro->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+		ro->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "DirectionalLight");
 
 		const auto drawData = drawDataManager->GetDrawData(modelData.drawDataIndex);
 		ro->SetDrawData(drawData);
 
-		const Vector4 color = { 1, 1, 1, 1 };
+		const Vector4 color = { 1,1,1,1 };
+		const DirectionalLight dirLight = { {1,1,1,1}, {0,-1,0}, 1.0f };
 		ro->CopyBufferData(1, &color, sizeof(Vector4));
 		ro->CopyBufferData(2, &textureIndex, sizeof(int));
+		ro->CopyBufferData(3, &dirLight, sizeof(DirectionalLight));
 
 		return ro;
 	}
@@ -61,7 +64,9 @@ void YokoScene::Initialize()
 
 	// パーティクル初期化
 	particles_.Initialize(textureManager_, modelManager_, commonData_);
-	particles_.Add("death6");
+	particles_.Add("death2");
+	particles_.Add("death2_2");
+	particles_.Add("death2_3");
 
 	// TrailOnParticle初期化
 	for (int i = 0; i < kTrailOnParticle; ++i)
@@ -123,9 +128,11 @@ std::unique_ptr<IScene> YokoScene::Update()
 	const Matrix4x4 world = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 	const Matrix4x4 wvp = world * vp;
 	const Vector4 color = { 1, 1, 1, 1 };
+	const DirectionalLight dirLight = { {1,1,1,1}, {0,-1,0}, 1.0f };
 	render_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
 	render_->CopyBufferData(1, &color, sizeof(Vector4));
 	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
+	render_->CopyBufferData(3, &dirLight, sizeof(DirectionalLight));
 
 	// TrailOnParticle更新
 	for (int i = 0; i < kTrailOnParticle; ++i)
@@ -162,6 +169,9 @@ void YokoScene::Draw()
 	display->PreDraw(cmdObj, true);
 
 	grid_->Draw(cmdObj);
+
+	render_->Draw(cmdObj);
+
 
 	// TrailOnParticle描画
 

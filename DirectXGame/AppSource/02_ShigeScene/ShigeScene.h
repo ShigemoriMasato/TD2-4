@@ -32,6 +32,7 @@
 #include <GameObject/Enemy/LevelSystemUI.h>
 #include <GameObject/Enemy/TackleEnemy.h>
 #include <UI/Game/SituationTelop.h>
+#include <GameObject/Enemy/EnemyEffect/EnemyEffectManager.h>
 #include <GameObject/Effect/Flash/Flash.h>
 #include <GameObject/Effect/LetterBox/LetterBox.h>
 #include "GameObject/Fade/FadeManager.h"
@@ -75,6 +76,7 @@ private:// System系
 
 	std::unique_ptr<Map> map_;
 	std::unique_ptr<EnemyManager> enemyManager_;
+	std::unique_ptr<EnemyEffect> enemyEffect_;
 
 	std::unique_ptr<WeaponDatabase> weaponDatabase_;
 	std::unique_ptr<AttackManager> attackManager_;

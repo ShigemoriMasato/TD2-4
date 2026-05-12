@@ -39,7 +39,7 @@ void TrailDrawer::Initialize(SHEngine::DrawDataManager* drawDataManager, const C
 	render_->SetDrawData(drawData);
 	render_->psoConfig_.vs = "Trail/SwordTrail.VS.hlsl";
 	render_->psoConfig_.ps = "Trail/SwordTrail.PS.hlsl";
-	render_->psoConfig_.blendID = SHEngine::PSO::BlendStateID::Add;
+	render_->psoConfig_.blendID = SHEngine::PSO::BlendStateID::Normal;
 	render_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Default;
 	render_->psoConfig_.rasterizerID = SHEngine::PSO::RasterizerID::CullNone;
 	render_->SetUseTexture(true);
