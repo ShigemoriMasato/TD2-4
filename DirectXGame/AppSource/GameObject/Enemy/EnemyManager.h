@@ -33,6 +33,7 @@ public:
 	void Clear();
 
 	void Kill(int id);
+	void ResetKillCount() { killCount = 0; }
 
 	const int GetKillCount() const { return killCount; }
 

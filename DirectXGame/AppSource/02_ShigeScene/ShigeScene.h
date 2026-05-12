@@ -35,6 +35,7 @@
 #include <GameObject/Effect/Flash/Flash.h>
 #include <GameObject/Effect/LetterBox/LetterBox.h>
 #include "GameObject/Fade/FadeManager.h"
+#include "UI/Game/KillCounter.h"
 
 class ShigeScene : public IScene {
 public:
@@ -139,4 +140,6 @@ private:// UI系
 	GameDisplayRange displayRange_ = {};
 
 	std::unique_ptr<PlayData> bgm_ = nullptr;
+
+	std::unique_ptr<KillCounter> killCounter_;
 };
