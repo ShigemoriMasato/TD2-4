@@ -66,7 +66,7 @@ void TitleScene::Initialize() {
 	player_ = std::make_unique<Player::Base>();
 	player_->Initialize(modelManager_, drawDataManager_, CharacterID::Warrior, shopScene_->GetItemManager());
 	// TitleSceneではPlayerの位置を調整（Mapと一緒に表示）
-	player_->SetPosition({0.0f, 0.0f, 0.0f});
+	player_->SetPosition({15.0f, 0.0f, -10.0f});
 	player_->SetRotate({0.0f, 0.0f, 0.0f});
 
 	player_->SetMapInfo(map_->GetMapInfo());
@@ -159,7 +159,26 @@ std::unique_ptr<IScene> TitleScene::Update() {
 	Vector3 cameraTargetPos = player_->GetTransform().position;
 	gameCamera_->Update(deltaTime, cameraTargetPos);
 
-	titleUI_->Update(gameCamera_->GetVPMatrix());
+	// Playerの位置に基づいてUI選択を更新
+	{
+		Vector3 playerPos = player_->GetTransform().position;
+		bool inRange = false;
+		if (std::abs(playerPos.x - 0.0f) <= 4.0f && std::abs(playerPos.z - 0.0f) <= 2.0f) {
+			titleUI_->SetCurrentSelect(Title::Select::Start);
+			inRange = true;
+		} else if (std::abs(playerPos.x - 0.0f) <= 4.0f && std::abs(playerPos.z - (-10.0f)) <= 2.0f) {
+			titleUI_->SetCurrentSelect(Title::Select::Option);
+			inRange = true;
+		} else if (std::abs(playerPos.x - 0.0f) <= 4.0f && std::abs(playerPos.z - (-20.0f)) <= 2.0f) {
+			titleUI_->SetCurrentSelect(Title::Select::Quit);
+			inRange = true;
+		}
+		titleUI_->SetPlayerInRange(inRange);
+	}
+
+	titleUI_->SetPlayer(player_.get());
+
+	titleUI_->Update(gameCamera_->GetVPMatrix(), deltaTime);
 	//titleUI_->UpdateSelection(keys[Key::Tr_Up], keys[Key::Tr_Down]);
 
 	// クリックでPlayerを移動させる処理

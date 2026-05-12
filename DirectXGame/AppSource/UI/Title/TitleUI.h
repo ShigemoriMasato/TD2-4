@@ -9,6 +9,7 @@
 
 
 struct CommonData;
+namespace Player { class Base; }
 
 namespace Title {
 
@@ -53,11 +54,14 @@ class TitleUI {
 public:
 
 	void Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, CommonData* commonData);
-	void Update(const Matrix4x4& vpMatrix);
+	void Update(const Matrix4x4& vpMatrix, float deltaTime);
 	void Draw(CmdObj* cmdObj);
 
 	void UpdateSelection(bool upPressed, bool downPressed);
 	Title::Select GetCurrentSelect() const { return currentSelect_; }
+	void SetCurrentSelect(Title::Select select) { currentSelect_ = select; }
+	void SetPlayerInRange(bool inRange) { playerInRange_ = inRange; }
+	void SetPlayer(Player::Base* player) { player_ = player; }
 
 #ifdef USE_IMGUI
 	void DrawImGui();
@@ -130,8 +134,19 @@ private:
 	std::array<int, kUICount> modelIDs_{ -1, -1, -1, -1, -1, -1, -1 };
 
 	Title::Select currentSelect_ = Title::Select::Start;
+	bool playerInRange_ = false;
 
 	SHEngine::DrawDataManager* drawDataManager_ = nullptr;
 	SHEngine::ModelManager* modelManager_ = nullptr;
 	CommonData* commonData_ = nullptr;
+	Player::Base* player_ = nullptr;
+
+	// Compass
+	std::unique_ptr<SHEngine::RenderObject> compassRender_;
+	int compassModelID_ = -1;
+	Vector3 compassOffset_{ 0.0f, 5.0f, 0.0f }; // Playerからの頭上オフセット
+	Vector3 compassRotation_{ -0.9f, 0.0f, 0.0f };
+	Vector3 compassScale_{ 0.75f, 1.0f, 0.75f };
+	float compassAnimTimer_ = 0.0f;
+	float compassAnimSpeed_ = 1.0f; // 1周にかかる秒数の逆数（大きいほど速い）
 };

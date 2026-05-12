@@ -2,7 +2,9 @@
 #include <../Engine/Assets/Audio/AudioManager.h>
 #include <Utility/Color.h>
 #include <Utility/MatrixFactory.h>
+#include <Utility/Easing.h>
 #include <Scene/CommonData.h>
+#include <GameObject/Player/Player.h>
 
 #ifdef USE_IMGUI
 #include <imgui/imgui.h>
@@ -41,6 +43,24 @@ void TitleUI::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::M
 	}
 
 	currentSelect_ = Title::Select::Start;
+
+	// Compassの初期化
+	compassModelID_ = modelManager_->LoadModel("Assets/Model/UI/Title/Compass");
+	compassRender_ = std::make_unique<SHEngine::RenderObject>("TitleUI_Compass");
+	compassRender_->Initialize();
+	{
+		auto model = modelManager_->GetNodeModelData(compassModelID_);
+		auto drawData = drawDataManager_->GetDrawData(model.drawDataIndex);
+		compassRender_->SetDrawData(drawData);
+		compassRender_->psoConfig_.vs = "Simple.VS.hlsl";
+		compassRender_->psoConfig_.ps = "TexColor.PS.hlsl";
+		compassRender_->psoConfig_.isSwapChain = false;
+		compassRender_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+		compassRender_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+		compassRender_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+		compassRender_->SetUseTexture(true);
+		compassRender_->instanceNum_ = 1;
+	}
 }
 
 void TitleUI::UpdateSelection(bool upPressed, bool downPressed) {
@@ -69,14 +89,14 @@ void TitleUI::UpdateSelection(bool upPressed, bool downPressed) {
 	}
 }
 
-void TitleUI::Update(const Matrix4x4& vpMatrix) {
+void TitleUI::Update(const Matrix4x4& vpMatrix, float deltaTime) {
 	int textureIndex = 0;
 
 	for (size_t i = 0; i < kUICount; ++i) {
 		Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
 
-		// 選択中の項目を赤色にする（Frame、Frame2、Frame3、Logoは除外）
-		if (i > 3) {
+		// 選択中の項目を赤色にする（Frame、Frame2、Frame3、Logoは除外、範囲内のときだけ）
+		if (playerInRange_ && i > 3) {
 			Title::Kinds kind = static_cast<Title::Kinds>(i);
 			Title::Select selectFromKind = static_cast<Title::Select>(static_cast<int>(kind) - 4);
 			if (selectFromKind == currentSelect_) {
@@ -92,11 +112,33 @@ void TitleUI::Update(const Matrix4x4& vpMatrix) {
 		renders_[i]->CopyBufferData(1, &color, sizeof(Vector4));
 		renders_[i]->CopyBufferData(2, &textureIndex, sizeof(int));
 	}
+
+	if (player_) {
+		// EasingでScaleを往復
+		compassAnimTimer_ += deltaTime * compassAnimSpeed_;
+		if (compassAnimTimer_ > 1.0f) { compassAnimTimer_ -= 1.0f; }
+		const Vector3 scaleA{ 0.75f, 1.0f, 0.75f };
+		const Vector3 scaleB{ 0.65f, 1.0f, 0.65f };
+		compassScale_ = lerp_RoundTrip<Vector3>(scaleA, scaleB, compassAnimTimer_, EaseType::EaseInOutSine, EaseType::EaseInOutSine);
+
+		Vector3 playerPos = player_->GetTransform().position;
+		Vector3 compassPos = playerPos + compassOffset_;
+		Matrix4x4 world = Matrix::MakeAffineMatrix(compassScale_, compassRotation_, compassPos);
+		Matrix4x4 wvp = world * vpMatrix;
+
+		compassRender_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
+		Vector4 compassColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+		compassRender_->CopyBufferData(1, &compassColor, sizeof(Vector4));
+		compassRender_->CopyBufferData(2, &textureIndex, sizeof(int));
+	}
 }
 
 void TitleUI::Draw(CmdObj* cmdObj) {
 	for (size_t i = 0; i < kUICount; ++i) {
 		renders_[i]->Draw(cmdObj);
+	}
+	if (player_) {
+		compassRender_->Draw(cmdObj);
 	}
 }
 
@@ -114,6 +156,14 @@ void TitleUI::DrawImGui() {
 			ImGui::DragFloat3("Scale", &scales_[i].x, 0.01f, 0.01f, 10.0f);
 			ImGui::TreePop();
 		}
+	}
+
+	ImGui::Separator();
+	if (ImGui::TreeNode("Compass")) {
+		ImGui::DragFloat3("Offset", &compassOffset_.x, 0.01f);
+		ImGui::DragFloat3("Rotation", &compassRotation_.x, 0.01f);
+		ImGui::DragFloat3("Scale", &compassScale_.x, 0.01f, 0.01f, 10.0f);
+		ImGui::TreePop();
 	}
 
 	ImGui::Separator();
