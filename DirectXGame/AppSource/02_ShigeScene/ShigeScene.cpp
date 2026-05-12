@@ -180,6 +180,9 @@ void ShigeScene::Initialize() {
 	fadeManager_ = std::make_unique<FadeManager>();
 	fadeManager_->Initialize(modelManager_, drawDataManager_);
 	fadeManager_->StartFadeOut(false);
+
+	killCounter_ = std::make_unique<KillCounter>();
+	killCounter_->Initialize(modelManager_, drawDataManager_, textureManager_);
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -392,8 +395,11 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	fadeManager_->Update(camera_->GetVPMatrix(), deltaTime);
 
 	if(fadeManager_->Finished()){
+		enemyManager_->ResetKillCount();
 		return std::make_unique<ResultScene>();
 	}
+
+	killCounter_->Update(deltaTime, orthoCamera_->GetVPMatrix(), enemyManager_->GetKillCount());
 
 	commonData_->weaponCount = weaponRenders_.size();
 	commonData_->enemyCount = enemyManager_->GetEnemies().size();
@@ -440,6 +446,8 @@ void ShigeScene::Draw() {
 	controllers_[0]->DrawImGui();
 
 	timerText_->Draw(cmdObj);
+
+	killCounter_->Draw(cmdObj);
 
 	enemySpawnGraphText_->Draw(cmdObj);
 
