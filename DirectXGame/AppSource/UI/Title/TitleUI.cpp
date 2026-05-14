@@ -16,10 +16,10 @@ void TitleUI::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::M
 	commonData_ = commonData;
 
 	// モデルパスの配列
-	const std::array<const char*, kUICount> modelPaths = {"Assets/Model/Frame", "Assets/Model/Frame", "Assets/Model/Frame", "Assets/Model/UI/Title/Logo", "Assets/Model/UI/Title/Start", "Assets/Model/UI/Title/Option", "Assets/Model/UI/Title/Quit"};
+	const std::array<const char*, kUICount> modelPaths = {"Assets/Model/Frame", "Assets/Model/Frame", "Assets/Model/Frame", "Assets/Model/UI/Title/Logo", "Assets/Model/UI/Title/Start", "Assets/Model/UI/Title/Option", "Assets/Model/UI/Title/Quit", "Assets/Model/UI/Title/Gauge", "Assets/Model/UI/Title/Gauge", "Assets/Model/UI/Title/Gauge"};
 
 	// デバッグ名の配列
-	const std::array<const char*, kUICount> debugNames = {"TitleUI_Frame", "TitleUI_Frame2", "TitleUI_Frame3", "TitleUI_Logo", "TitleUI_Start", "TitleUI_Option", "TitleUI_Quit"};
+	const std::array<const char*, kUICount> debugNames = {"TitleUI_Frame", "TitleUI_Frame2", "TitleUI_Frame3", "TitleUI_Logo", "TitleUI_Start", "TitleUI_Option", "TitleUI_Quit", "TitleUI_Gauge", "TitleUI_Gauge2", "TitleUI_Gauge3"};
 
 	// 各UIの初期化
 	for (size_t i = 0; i < kUICount; ++i) {
@@ -117,6 +117,41 @@ void TitleUI::UpdateSelection(bool upPressed, bool downPressed) {
 
 void TitleUI::Update(const Matrix4x4& vpMatrix, float deltaTime) {
 	int textureIndex = 0;
+
+	// Gaugeアニメーション更新（Frame1→Gauge, Frame2→Gauge2, Frame3→Gauge3）
+	for (int g = 0; g < 3; ++g) {
+		// 対応するFrameにPlayerがいるか判定
+		bool inThisFrame = playerInRange_ && (static_cast<int>(currentSelect_) == g);
+
+		if (inThisFrame) {
+			gaugeTimers_[g] = std::clamp(gaugeTimers_[g] + deltaTime, 0.0f, kGaugeAnimDuration_);
+
+			float t = gaugeTimers_[g] / kGaugeAnimDuration_;
+			float s = lerp<float>(0.0f, kGaugeMaxScale_, t, EaseType::EaseOutCirc);
+
+			size_t gaugeIndex = static_cast<size_t>(Title::Kinds::Gauge) + static_cast<size_t>(g);
+			kNowGaugeScale_ = s;
+			scales_[gaugeIndex].x = s;
+
+			if (scales_[gaugeIndex].x != 0.0f) {
+				scales_[gaugeIndex].y = 0.25f;
+				scales_[gaugeIndex].z = 0.25f;
+			}
+		} else {
+			gaugeTimers_[g] = std::clamp(gaugeTimers_[g] - deltaTime, 0.0f, kGaugeAnimBackDuration_);
+
+			float t = gaugeTimers_[g] / kGaugeAnimBackDuration_;
+			float s = lerp<float>(0.0f, kNowGaugeScale_, t, EaseType::Linear);
+
+			size_t gaugeIndex = static_cast<size_t>(Title::Kinds::Gauge) + static_cast<size_t>(g);
+			scales_[gaugeIndex].x = s;
+
+			if (scales_[gaugeIndex].x == 0.0f) {
+				scales_[gaugeIndex].y = 0.0f;
+				scales_[gaugeIndex].z = 0.0f;
+			}
+		}
+	}
 
 	for (size_t i = 0; i < kUICount; ++i) {
 		Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -235,7 +270,7 @@ void TitleUI::Draw(CmdObj* cmdObj) {
 void TitleUI::DrawImGui() {
 	ImGui::Begin("Title UI Settings");
 
-	static const char* uiNames[] = {"Frame", "Frame2", "Frame3", "Logo", "Start", "Option", "Quit"};
+	static const char* uiNames[] = {"Frame", "Frame2", "Frame3", "Logo", "Start", "Option", "Quit", "Gauge", "Gauge2", "Gauge3"};
 	static const char* selectNames[] = {"Start", "Option", "Quit"};
 
 	for (size_t i = 0; i < kUICount; ++i) {

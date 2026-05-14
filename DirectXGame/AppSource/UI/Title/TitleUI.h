@@ -22,6 +22,9 @@ namespace Title {
 		Start,
 		Option,
 		Quit,
+		Gauge,
+		Gauge2,
+		Gauge3,
 
 		Count,
 	};
@@ -107,32 +110,41 @@ private:
 	std::array<std::unique_ptr<SHEngine::RenderObject>, kUICount> renders_;
 	std::array<Vector3, kUICount> positions_{
 		Vector3{ 0.0f, 0.0f, 0.0f },     // Frame
-		Vector3{ 0.0f, 0.0f, -10.0f },     // Frame2
-		Vector3{ 0.0f, 0.0f, -20.0f },     // Frame3
+		Vector3{ 0.0f, 0.0f, -10.0f },   // Frame2
+		Vector3{ 0.0f, 0.0f, -20.0f },   // Frame3
 		Vector3{ 0.0f, -4.7f, 1.75f },   // Logo
-		Vector3{ 0.0f, 0.2f, 0.0f },   // Start
-		Vector3{ 0.0f, 0.2f, -10.0f },  // Option
-		Vector3{ 0.0f, 0.2f, -20.0f }    // Quit
+		Vector3{ 0.0f, 0.2f, 0.0f },     // Start
+		Vector3{ 0.0f, 0.2f, -10.0f },   // Option
+		Vector3{ 0.0f, 0.2f, -20.0f },   // Quit
+		Vector3{ -4.8f, 0.15f, 3.5f },     // Gauge
+		Vector3{ -4.8f, 0.15f, -6.5f },     // Gauge2
+		Vector3{ -4.8f, 0.15f, -16.5f }      // Gauge3
 	};
 	std::array<Vector3, kUICount> rotations_{
-		Vector3{ 0.0f, 0.0f, 0.0f },   // Frame (90度 = π/2)
-		Vector3{ 0.0f, 0.0f, 0.0f },   // Frame2
-		Vector3{ 0.0f, 0.0f, 0.0f },   // Frame3
-		Vector3{ 0.55f, 0.0f, 0.0f },     // Logo
-		Vector3{ -0.5f, 0.0f, 0.0f },     // Start
-		Vector3{ -0.55f, 0.0f, 0.0f },     // Option
-		Vector3{ -0.55f, 0.0f, 0.0f }      // Quit
+		Vector3{ 0.0f, 0.0f, 0.0f },    // Frame (90度 = π/2)
+		Vector3{ 0.0f, 0.0f, 0.0f },    // Frame2
+		Vector3{ 0.0f, 0.0f, 0.0f },    // Frame3
+		Vector3{ 0.55f, 0.0f, 0.0f },   // Logo
+		Vector3{ -0.55f, 0.0f, 0.0f },   // Start
+		Vector3{ -0.55f, 0.0f, 0.0f },  // Option
+		Vector3{ -0.55f, 0.0f, 0.0f },  // Quit
+		Vector3{ 0.0f, 0.0f, 0.0f },    // Gauge
+		Vector3{ 0.0f, 0.0f, 0.0f },    // Gauge2
+		Vector3{ 0.0f, 0.0f, 0.0f }     // Gauge3
 	};
 	std::array<Vector3, kUICount> scales_{
 		Vector3{ 2.0f, 2.0f, 2.0f },    // Frame
 		Vector3{ 2.0f, 2.0f, 2.0f },    // Frame2
 		Vector3{ 2.0f, 2.0f, 2.0f },    // Frame3
 		Vector3{ 2.0f, 2.0f, 0.5f },    // Logo
-		Vector3{ 1.25f, 1.0f, 1.25f },    // Start
-		Vector3{ 1.25f, 1.0f, 1.25f },    // Option
-		Vector3{ 1.25f, 1.0f, 1.25f }     // Quit
+		Vector3{ 1.25f, 1.0f, 1.25f },  // Start
+		Vector3{ 1.25f, 1.0f, 1.25f },  // Option
+		Vector3{ 1.25f, 1.0f, 1.25f },  // Quit
+		Vector3{ 1.0f, 0.25f, 0.25f },  // Gauge
+		Vector3{ 1.0f, 0.25f, 0.25f },  // Gauge2
+		Vector3{ 1.0f, 0.25f, 0.25f }   // Gauge3
 	};
-	std::array<int, kUICount> modelIDs_{ -1, -1, -1, -1, -1, -1, -1 };
+	std::array<int, kUICount> modelIDs_{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 
 	Title::Select currentSelect_ = Title::Select::Start;
 	bool playerInRange_ = false;
@@ -177,4 +189,11 @@ private:
 	float thumbsUpWaitTimer_ = -1.0f;     // 待機タイマー（-1=未開始）
 
 	bool thumbsUpEnd_ = false;
+
+	// Gaugeアニメーション
+	std::array<float, 3> gaugeTimers_{ 0.0f, 0.0f, 0.0f };
+	float kGaugeAnimDuration_ = 3.0f;
+	float kGaugeAnimBackDuration_ = 1.0f;
+	float kGaugeMaxScale_ = 4.8f;
+	float kNowGaugeScale_ = 0.0f;
 };

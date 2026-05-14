@@ -79,8 +79,15 @@ private:
 
 	Option::Select currentOptionSelect_ = Option::Select::Master;
 	std::unique_ptr<PlayData> bgm_ = nullptr;
-	
+
 	std::unique_ptr<FadeManager> fadeManager_;
+
+	// Frame1滞在タイマー
+	float frame1StayTimer_ = 0.0f;
+	static constexpr float kFrame1StayDuration_ = 3.0f;
+
+	// Frame3滞在タイマー
+	float frame3StayTimer_ = 0.0f;
 
 	MapInfo mapInfo_;
 private:// Shop

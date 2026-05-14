@@ -163,17 +163,41 @@ std::unique_ptr<IScene> TitleScene::Update() {
 	{
 		Vector3 playerPos = player_->GetTransform().position;
 		bool inRange = false;
+		bool inFrame1 = false;
+		bool inFrame3 = false;
 		if (std::abs(playerPos.x - 0.0f) <= 4.5f && std::abs(playerPos.z - 0.0f) <= 2.0f) {
 			titleUI_->SetCurrentSelect(Title::Select::Start);
 			inRange = true;
+			inFrame1 = true;
 		} else if (std::abs(playerPos.x - 0.0f) <= 4.5f && std::abs(playerPos.z - (-10.0f)) <= 2.0f) {
 			titleUI_->SetCurrentSelect(Title::Select::Option);
 			inRange = true;
 		} else if (std::abs(playerPos.x - 0.0f) <= 4.5f && std::abs(playerPos.z - (-20.0f)) <= 2.0f) {
 			titleUI_->SetCurrentSelect(Title::Select::Quit);
 			inRange = true;
+			inFrame3 = true;
 		}
 		titleUI_->SetPlayerInRange(inRange);
+
+		// Frame1滞在タイマー
+		if (inFrame1) {
+			frame1StayTimer_ += deltaTime;
+			if (frame1StayTimer_ >= kFrame1StayDuration_) {
+				fadeManager_->StartFadeIn();
+			}
+		} else {
+			frame1StayTimer_ = 0.0f;
+		}
+
+		// Frame3滞在タイマー
+		if (inFrame3) {
+			frame3StayTimer_ += deltaTime;
+			if (frame3StayTimer_ >= kFrame1StayDuration_) {
+				commonData_->shouldQuit = true;
+			}
+		} else {
+			frame3StayTimer_ = 0.0f;
+		}
 	}
 
 	titleUI_->SetPlayer(player_.get());
