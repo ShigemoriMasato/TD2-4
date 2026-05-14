@@ -1,10 +1,10 @@
 #include "ResultScene.h"
-#include <Scene/01_Title/TitleScene.h>
-#include <02_ShigeScene/ShigeScene.h>
-#include <Utility/Color.h>
-#include <imgui/imgui.h>
-#include <format>
 #include "GameObject/Random/Random.h"
+#include <02_ShigeScene/ShigeScene.h>
+#include <Scene/01_Title/TitleScene.h>
+#include <Utility/Color.h>
+#include <format>
+#include <imgui/imgui.h>
 
 using namespace SHEngine;
 
@@ -65,15 +65,21 @@ void ResultScene::Initialize() {
 	postEffectConfig_.cmdObj = commonData_->cmdObject.get();
 	postEffectConfig_.origin = commonData_->display->GetDisplay();
 
-	posAnime_.anim.Start(100.0f, -250.0f, 1.0f, EaseType::EaseOutBounce);
+	posAnime_.anim.Start(100.0f, -230.0f, 2.0f, EaseType::EaseOutBounce);
 
 	sword_ = std::make_unique<ResultSword>();
 	sword_->Initialize(modelManager_, drawDataManager_, textureManager_);
-	sword_->StartAnimation();
 
 	fadeManager_ = std::make_unique<FadeManager>();
 	fadeManager_->Initialize(modelManager_, drawDataManager_);
 	fadeManager_->StartFadeOut(false);
+
+	enemyRainManager_ = std::make_unique<EnemyRainManager>();
+	enemyRainManager_->Initilaize(modelManager_, drawDataManager_);
+
+	dirLight_.color = {1.0f, 1.0f, 1.0f, 1.0f};
+	dirLight_.direction = {0.0f, 1.0f, 0.0f};
+	dirLight_.intensity = 2.0f;
 }
 
 std::unique_ptr<IScene> ResultScene::Update() {
@@ -91,6 +97,7 @@ std::unique_ptr<IScene> ResultScene::Update() {
 	gameOverTextTransform_.position.y = posAnime_.temp;
 
 	if (!playing) {
+		uiManager_->StartAnimation();
 		pendingTime_ += engine_->GetDeltaTime();
 
 		if (pendingTime_ >= 0.5f) {
@@ -112,6 +119,7 @@ std::unique_ptr<IScene> ResultScene::Update() {
 	gameOverText_->Update(orthoCamera_->GetVPMatrix());
 
 	sword_->Update(camera_->GetVPMatrix(), deltaTime);
+	enemyRainManager_->Update(camera_->GetVPMatrix(), deltaTime, dirLight_);
 
 	retryText_->SetTransform(retryTextTransform_);
 	retryText_->Update(orthoCamera_->GetVPMatrix());
@@ -136,7 +144,7 @@ std::unique_ptr<IScene> ResultScene::Update() {
 
 	fadeManager_->Update(camera_->GetVPMatrix(), deltaTime);
 
-	if(fadeManager_->Finished()){
+	if (fadeManager_->Finished()) {
 		if (selectedIndex_ == 0) {
 			return std::make_unique<ShigeScene>();
 		} else {
@@ -144,16 +152,17 @@ std::unique_ptr<IScene> ResultScene::Update() {
 		}
 	}
 
-	if(key[Key::Retry]){
+	if (key[Key::Retry]) {
 		selectedIndex_ = (selectedIndex_ - 1 + 2) % 2;
 	}
-	if(key[Key::ToTitle]){
+	if (key[Key::ToTitle]) {
 		selectedIndex_ = (selectedIndex_ + 1) % 2;
 	}
 	if (key[Key::Correct] && !isDeciding_) {
 		isDeciding_ = true;
 		float startSize = 2.0f;
 		decideScaleAnime_.anim.Start(startSize, startSize * 1.5f, 0.3f, EaseType::EaseOutBack);
+		sword_->StartAnimation();
 	}
 
 	if (sword_->IsAnimationFinished() && !isPreFinished_) {
@@ -162,7 +171,6 @@ std::unique_ptr<IScene> ResultScene::Update() {
 			shakeTime_ = 0.0f;
 			cameraBasePos_ = camera_->GetPosition();
 			orthoCameraBasePos_ = orthoCamera_->GetPosition();
-			uiManager_->StartAnimation();
 		}
 	}
 
@@ -236,6 +244,7 @@ void ResultScene::Draw() {
 	retryText_->Draw(cmdObj);
 	toTitleText_->Draw(cmdObj);
 
+	enemyRainManager_->Draw(cmdObj);
 	sword_->Draw(cmdObj);
 
 	fadeManager_->Draw(cmdObj);
@@ -267,6 +276,14 @@ void ResultScene::Draw() {
 	ImGui::DragFloat2("Retry Text Position", &retryTextTransform_.position.x, 1.0f);
 	ImGui::DragFloat2("ToTitle Text Position", &toTitleTextTransform_.position.x, 1.0f);
 	ImGui::End();
+
+	ImGui::Begin("DirectionalLight");
+	ImGui::DragFloat3("direction", &dirLight_.direction.x, 0.01f);
+	ImGui::DragFloat("intensity", &dirLight_.intensity, 0.1f);
+	ImGui::ColorEdit4("Color", &dirLight_.color.x);
+	ImGui::End();
+
+	dirLight_.direction = dirLight_.direction.Normalize();
 #endif
 
 	engine_->DrawImGui();
