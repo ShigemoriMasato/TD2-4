@@ -69,7 +69,7 @@ void ParticleDrawer::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
 			batch.render->psoConfig_.ps = "Particle/Particle.PS.hlsl";
 			batch.render->psoConfig_.blendID = SHEngine::PSO::BlendStateID::Add;
 			batch.render->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Default;
-			batch.render->psoConfig_.rasterizerID = SHEngine::PSO::RasterizerID::Fill;
+			batch.render->psoConfig_.rasterizerID = SHEngine::PSO::RasterizerID::CullNone;
 			batch.render->SetUseTexture(true);
 
 			batch.render->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "VP");

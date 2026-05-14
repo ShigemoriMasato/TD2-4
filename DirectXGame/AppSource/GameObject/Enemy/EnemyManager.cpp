@@ -5,7 +5,6 @@
 #include "IEnemy.h"
 #include <GameObject/Map/Map.h>
 #include <Utility/ConvertString.h>
-#include <GameObject/Enemy/EnemyEffect/EnemyEffectManager.h>
 
 int EnemyManager::killCount = 0;
 
@@ -75,11 +74,8 @@ void EnemyManager::Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVp
 			damageQueue.push_back({ pos, damages });
 		}
 
-		if (!enemy->IsActive())
-		{
+		if (!enemy->IsActive()) {
 			toRemove.push_back(id);
-			Matrix4x4 effectMat = Matrix::MakeTranslationMatrix(enemy->GetPosition());
-			enemyEffect_->CreateDeathEffect1(effectMat);
 		}
 	}
 

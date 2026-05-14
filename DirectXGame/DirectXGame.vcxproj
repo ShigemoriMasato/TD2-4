@@ -209,7 +209,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Utils\AppUtils.cpp" />
     <ClCompile Include="AppSource\GameObject\Result\EnemyRainManager.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\B_S_R_T_C_Particle\B_S_R_T_C_Particle.cpp" />
-    <ClCompile Include="AppSource\GameObject\Enemy\EnemyEffect\EnemyEffectManager.cpp" />
     <ClCompile Include="Engine\Render\Buffer\BufferContainer.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\PlayData.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSPSOManager.cpp" />
@@ -296,7 +295,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Effect\Flash\Flash.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\LetterBox\LetterBox.cpp" />
     <ClCompile Include="AppSource\GameObject\Fade\FadeManager.cpp" />
-    <ClCompile Include="AppSource\UI\Game\KillCounter.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Trail.cpp" />
@@ -398,7 +396,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Utils\AppUtils.h" />
     <ClInclude Include="AppSource\GameObject\Result\EnemyRainManager.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\B_S_R_T_C_Particle\B_S_R_T_C_Particle.h" />
-    <ClInclude Include="AppSource\GameObject\Enemy\EnemyEffect\EnemyEffectManager.h" />
     <ClInclude Include="Engine\Render\Buffer\BufferContainer.h" />
     <ClInclude Include="Engine\Assets\Audio\Data\PlayData.h" />
     <ClInclude Include="Engine\Compute\PSO\CSPSOManager.h" />
@@ -525,7 +522,6 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\UI\Result\ResultScoreText.h" />
     <ClInclude Include="AppSource\UI\Result\ResultTimerText.h" />
     <ClInclude Include="AppSource\GameObject\Fade\FadeManager.h" />
-    <ClInclude Include="AppSource\UI\Game\KillCounter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

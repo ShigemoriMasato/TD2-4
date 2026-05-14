@@ -32,11 +32,9 @@
 #include <GameObject/Enemy/LevelSystemUI.h>
 #include <GameObject/Enemy/TackleEnemy.h>
 #include <UI/Game/SituationTelop.h>
-#include <GameObject/Enemy/EnemyEffect/EnemyEffectManager.h>
 #include <GameObject/Effect/Flash/Flash.h>
 #include <GameObject/Effect/LetterBox/LetterBox.h>
 #include "GameObject/Fade/FadeManager.h"
-#include "UI/Game/KillCounter.h"
 
 class ShigeScene : public IScene {
 public:
@@ -77,7 +75,6 @@ private:// System系
 
 	std::unique_ptr<Map> map_;
 	std::unique_ptr<EnemyManager> enemyManager_;
-	std::unique_ptr<EnemyEffect> enemyEffect_;
 
 	std::unique_ptr<WeaponDatabase> weaponDatabase_;
 	std::unique_ptr<AttackManager> attackManager_;
@@ -142,6 +139,4 @@ private:// UI系
 	GameDisplayRange displayRange_ = {};
 
 	std::unique_ptr<PlayData> bgm_ = nullptr;
-
-	std::unique_ptr<KillCounter> killCounter_;
 };

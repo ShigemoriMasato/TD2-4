@@ -204,7 +204,7 @@
     ],
     "init.translate.vel": [
         0.0,
-        8.0,
+        3.0,
         0.0
     ],
     "type": "B_S_R_T_C"

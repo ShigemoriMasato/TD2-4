@@ -4,7 +4,6 @@
 #include <Collision/Collider.h>
 #include <GameObject/DrawInfo.h>
 #include <Render/Font/Text.h>
-#include <GameObject/Effect/TrailOnParticle.h>
 
 class EnemyManager;
 class Map;
