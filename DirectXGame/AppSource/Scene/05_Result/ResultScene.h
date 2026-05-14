@@ -6,6 +6,7 @@
 #include "GameObject/Result/ResultSword.h"
 #include "UI/Result/ResultUIManager.h"
 #include "GameObject/Fade/FadeManager.h"
+#include "GameObject/Result/EnemyRainManager.h"
 
 class ResultScene : public IScene {
 public:
@@ -29,6 +30,7 @@ private:
 	std::unique_ptr<FadeManager> fadeManager_;
 
 	std::unique_ptr<ResultSword> sword_;
+	std::unique_ptr<EnemyRainManager> enemyRainManager_;
 
 	std::unique_ptr<Camera> camera_;
 	std::unique_ptr<Camera> orthoCamera_;
@@ -61,4 +63,6 @@ private:
 	Vector3 orthoCameraBasePos_;
 
 	bool isPreFinished_ = false;
+	
+	DirectionalLight dirLight_;
 };
