@@ -2,6 +2,7 @@
 #include "IEnemy.h"
 
 class Map;
+class EnemyEffect;
 
 enum class EnemyType {
 	Normal,
@@ -20,6 +21,7 @@ struct PendingEnemy {
 class EnemyManager {
 public:
 	void Initialize(Vector3* playerPos, Map* map, SHEngine::DrawData& plane, SHEngine::ModelManager* modelManager);
+	void SetEnemyEffect(EnemyEffect* enemyEffect) { enemyEffect_ = enemyEffect; }
 	void Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVpMatrix);
 	void Draw(CmdObj* cmdObj);
 	void DrawImGui();
@@ -33,6 +35,7 @@ public:
 	void Clear();
 
 	void Kill(int id);
+	void ResetKillCount() { killCount = 0; }
 
 	const int GetKillCount() const { return killCount; }
 
@@ -44,6 +47,7 @@ private:
 
 	Vector3* playerPos_ = nullptr;
 	Map* map_ = nullptr;
+	EnemyEffect* enemyEffect_;
 	std::map<int, std::unique_ptr<IEnemy>> enemies_;
 	std::vector<PendingEnemy> pendingEnemies_;
 

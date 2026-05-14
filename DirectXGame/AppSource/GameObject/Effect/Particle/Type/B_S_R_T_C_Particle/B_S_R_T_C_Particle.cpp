@@ -61,8 +61,10 @@ void B_S_R_T_C_Particle::Update(float dt)
 	const B_S_R_T_C_Config& uniqueConfig = std::get<B_S_R_T_C_Config>(config_);
 
 	// 一定時間ごとにパーティクルを発生させる
+	justEmitted_ = false;
 	if (isActive_ && (emitTimer_ >= uniqueConfig.cfg.emitInterval || emitTimer_ < 0.0f))
 	{
+		justEmitted_ = true;
 		emitTimer_ = 0.0f;
 
 		for (int32_t i = 0; i < uniqueConfig.cfg.emitNum; ++i)

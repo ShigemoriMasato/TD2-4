@@ -42,6 +42,9 @@ protected:
 	Vector3 cameraPos_ = { 0.0f,0.0f,0.0f };
 	ParticlePresetVariant config_;
 
+	// エミットした瞬間だけtrueになるフラグ
+	bool justEmitted_ = false;
+
 public:
 	IParticle() = default;
 	virtual ~IParticle() = default;
@@ -66,6 +69,8 @@ public:
 	void SetEnabled(bool isActive);
 	// カメラ位置セット
 	void SetCameraPos(const Vector3& cameraPos) { cameraPos_ = cameraPos; }
+
+	bool GetIsJustEmitted() const { return justEmitted_; }
 
 	// Drawer用
 	int GetModelHandle() const { return modelHandle_; }

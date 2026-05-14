@@ -86,6 +86,15 @@ ParticlePresetVariant MultiParticle::GetConfig(const int32_t id)
 	return {};
 }
 
+bool MultiParticle::GetIsJustEmitted(const int32_t id) const
+{
+	if (instanceCache_.count(id))
+	{
+		return instanceCache_.at(id)->GetIsJustEmitted();
+	}
+	return false;
+}
+
 void MultiParticle::Clear()
 {
 	for (auto& [name, particle] : instanceCache_)

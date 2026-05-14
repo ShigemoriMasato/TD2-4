@@ -48,8 +48,11 @@ void ShigeScene::Initialize() {
 	player_->SetMapInfo(map_->GetMapInfo());
 
 	SHEngine::DrawData planeDrawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
+	enemyEffect_ = std::make_unique<EnemyEffect>();
+	enemyEffect_->Initialize(textureManager_, modelManager_, commonData_);
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize(player_->GetPositionPtr(), map_.get(), planeDrawData, modelManager_);
+	enemyManager_->SetEnemyEffect(enemyEffect_.get());
 	IEnemy::SetModelManager(modelManager_);
 	IEnemy::SetDrawDataManager(drawDataManager_);
 
@@ -177,6 +180,9 @@ void ShigeScene::Initialize() {
 	fadeManager_ = std::make_unique<FadeManager>();
 	fadeManager_->Initialize(modelManager_, drawDataManager_);
 	fadeManager_->StartFadeOut(false);
+
+	killCounter_ = std::make_unique<KillCounter>();
+	killCounter_->Initialize(modelManager_, drawDataManager_, textureManager_);
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -315,6 +321,8 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	parameterRender_->Update(orthoCamera_->GetVPMatrix(), player_->GetParameters(), deltaTime, key);
 	map_->Update(camera_->GetVPMatrix());
 	enemyManager_->Update(deltaTime, camera_->GetVPMatrix(), orthoCamera_->GetVPMatrix());
+	enemyEffect_->SetCameraPos(camera_->GetPosition());
+	enemyEffect_->Update(deltaTime);
 	for (const auto& weapon : weapons_) {
 		weapon->Update(deltaTime);
 	}
@@ -387,8 +395,11 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	fadeManager_->Update(camera_->GetVPMatrix(), deltaTime);
 
 	if(fadeManager_->Finished()){
+		enemyManager_->ResetKillCount();
 		return std::make_unique<ResultScene>();
 	}
+
+	killCounter_->Update(deltaTime, orthoCamera_->GetVPMatrix(), enemyManager_->GetKillCount());
 
 	commonData_->weaponCount = weaponRenders_.size();
 	commonData_->enemyCount = enemyManager_->GetEnemies().size();
@@ -423,13 +434,20 @@ void ShigeScene::Draw() {
 		render->Draw(cmdObj);
 	}
 
-	commonData_->trailDrawer->Draw(cmdObj, camera_->GetVPMatrix());
-
 	enemyManager_->Draw(cmdObj);
+	//enemyEffect_->Draw();
+
+	// パーティクル描画
+	commonData_->particleDrawer->Draw(cmdObj, camera_->GetVPMatrix());
+
+	// トレイル描画
+	commonData_->trailDrawer->Draw(cmdObj, camera_->GetVPMatrix());
 
 	controllers_[0]->DrawImGui();
 
 	timerText_->Draw(cmdObj);
+
+	killCounter_->Draw(cmdObj);
 
 	enemySpawnGraphText_->Draw(cmdObj);
 
