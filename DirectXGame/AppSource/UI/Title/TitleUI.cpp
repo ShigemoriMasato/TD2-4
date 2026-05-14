@@ -61,6 +61,32 @@ void TitleUI::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::M
 		compassRender_->SetUseTexture(true);
 		compassRender_->instanceNum_ = 1;
 	}
+
+	// ThumbsUpの初期化
+	thumbsUpModelID_ = modelManager_->LoadModel("Assets/Model/UI/Title/thumbsUp");
+	thumbsUpRender_ = std::make_unique<SHEngine::RenderObject>("TitleUI_ThumbsUp");
+	thumbsUpRender_->Initialize();
+	{
+		auto model = modelManager_->GetNodeModelData(thumbsUpModelID_);
+		auto drawData = drawDataManager_->GetDrawData(model.drawDataIndex);
+		thumbsUpRender_->SetDrawData(drawData);
+		thumbsUpRender_->psoConfig_.vs = "Simple.VS.hlsl";
+		thumbsUpRender_->psoConfig_.ps = "TexColor.PS.hlsl";
+		thumbsUpRender_->psoConfig_.isSwapChain = false;
+		thumbsUpRender_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+		thumbsUpRender_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+		thumbsUpRender_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+		thumbsUpRender_->SetUseTexture(true);
+		thumbsUpRender_->instanceNum_ = 1;
+	}
+}
+
+void TitleUI::StartCompassExitAnimation() {
+	if (!compassExiting_) {
+		compassExiting_ = true;
+		compassExitTimer_ = 0.0f;
+		compassExitStartScale_ = compassScale_;
+	}
 }
 
 void TitleUI::UpdateSelection(bool upPressed, bool downPressed) {
@@ -114,12 +140,28 @@ void TitleUI::Update(const Matrix4x4& vpMatrix, float deltaTime) {
 	}
 
 	if (player_) {
-		// EasingでScaleを往復
-		compassAnimTimer_ += deltaTime * compassAnimSpeed_;
-		if (compassAnimTimer_ > 1.0f) { compassAnimTimer_ -= 1.0f; }
-		const Vector3 scaleA{ 0.75f, 1.0f, 0.75f };
-		const Vector3 scaleB{ 0.65f, 1.0f, 0.65f };
-		compassScale_ = lerp_RoundTrip<Vector3>(scaleA, scaleB, compassAnimTimer_, EaseType::EaseInOutSine, EaseType::EaseInOutSine);
+		Vector4 compassColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+		if (compassExiting_) {
+			// 退場アニメーション中：色を緑にしてScaleをイージングで0に
+			compassColor = { 0.0f, 1.0f, 0.0f, 1.0f };
+			compassExitTimer_ += deltaTime;
+			float t = std::clamp(compassExitTimer_ / compassExitDuration_, 0.0f, 1.0f);
+			compassScale_ = lerp<Vector3>(compassExitStartScale_, { 0.0f, 0.0f, 0.0f }, t, EaseType::EaseInBack);
+
+			// CompassのScaleが0になったらThumbsUpの登場アニメーションを開始
+			if (t >= 1.0f && !thumbsUpEntering_ && !thumbsUpEnd_) {
+				thumbsUpEntering_ = true;
+				thumbsUpEnterTimer_ = 0.0f;
+			}
+		} else {
+			// 通常のアニメーション（往復イージング）
+			compassAnimTimer_ += deltaTime * compassAnimSpeed_;
+			if (compassAnimTimer_ > 1.0f) { compassAnimTimer_ -= 1.0f; }
+			const Vector3 scaleA{ 0.75f, 1.0f, 0.75f };
+			const Vector3 scaleB{ 0.65f, 1.0f, 0.65f };
+			compassScale_ = lerp_RoundTrip<Vector3>(scaleA, scaleB, compassAnimTimer_, EaseType::EaseInOutSine, EaseType::EaseInOutSine);
+		}
 
 		Vector3 playerPos = player_->GetTransform().position;
 		Vector3 compassPos = playerPos + compassOffset_;
@@ -127,9 +169,52 @@ void TitleUI::Update(const Matrix4x4& vpMatrix, float deltaTime) {
 		Matrix4x4 wvp = world * vpMatrix;
 
 		compassRender_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
-		Vector4 compassColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 		compassRender_->CopyBufferData(1, &compassColor, sizeof(Vector4));
 		compassRender_->CopyBufferData(2, &textureIndex, sizeof(int));
+
+		// ThumbsUp: 登場アニメーション
+		if (thumbsUpEntering_ && !thumbsUpEnd_) {
+			thumbsUpEnterTimer_ += deltaTime;
+			float t = std::clamp(thumbsUpEnterTimer_ / thumbsUpEnterDuration_, 0.0f, 1.0f);
+			thumbsUpScale_ = lerp<Vector3>({ 0.0f, 0.0f, 0.0f }, { 1.5f, 1.5f, 1.5f }, t, EaseType::EaseOutBack);
+			thumbsUpRotation_.z = lerp<float>(0.9f, -0.2f, t, EaseType::EaseOutBack);
+
+			// 登場完了→待機タイマー開始
+			if (t >= 1.0f) {
+				//thumbsUpEntering_ = false;
+				thumbsUpWaitTimer_ = 0.0f;
+				thumbsUpExiting_ = true;
+			}
+		}
+		// ThumbsUp: 待機→退場へ移行
+		//else if (!thumbsUpExiting_ && thumbsUpWaitTimer_ >= 0.0f) {
+		//	thumbsUpWaitTimer_ += deltaTime;
+		//	if (thumbsUpWaitTimer_ >= thumbsUpWaitDuration_) {
+		//		thumbsUpExiting_ = true;
+		//		thumbsUpExitTimer_ = 0.0f;
+		//	}
+		//}
+
+		// ThumbsUp: 退場アニメーション
+		if (thumbsUpExiting_ && !thumbsUpEnd_) {
+			thumbsUpExitTimer_ += deltaTime;
+			float t = std::clamp(thumbsUpExitTimer_ / thumbsUpExitDuration_, 0.0f, 1.0f);
+			thumbsUpScale_ = lerp<Vector3>({ 1.5f, 1.5f, 1.5f }, { 0.0f, 0.0f, 0.0f }, t, EaseType::EaseInBack);
+			thumbsUpRotation_.z = lerp<float>(-0.2f, 0.9f, t, EaseType::EaseInBack);
+			if (t >= 0.9f) {
+				thumbsUpExiting_ = false;
+				thumbsUpEnd_ = true;
+			}
+		}
+
+		// ThumbsUp: Playerの頭上に表示
+		Vector3 thumbsUpPos = playerPos + thumbsUpOffset_;
+		Matrix4x4 thumbsUpWorld = Matrix::MakeAffineMatrix(thumbsUpScale_, thumbsUpRotation_, thumbsUpPos);
+		Matrix4x4 thumbsUpWvp = thumbsUpWorld * vpMatrix;
+		Vector4 thumbsUpColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+		thumbsUpRender_->CopyBufferData(0, &thumbsUpWvp, sizeof(Matrix4x4));
+		thumbsUpRender_->CopyBufferData(1, &thumbsUpColor, sizeof(Vector4));
+		thumbsUpRender_->CopyBufferData(2, &textureIndex, sizeof(int));
 	}
 }
 
@@ -139,6 +224,10 @@ void TitleUI::Draw(CmdObj* cmdObj) {
 	}
 	if (player_) {
 		compassRender_->Draw(cmdObj);
+		
+		if (!thumbsUpEnd_) {
+			thumbsUpRender_->Draw(cmdObj);
+		}
 	}
 }
 
@@ -163,6 +252,14 @@ void TitleUI::DrawImGui() {
 		ImGui::DragFloat3("Offset", &compassOffset_.x, 0.01f);
 		ImGui::DragFloat3("Rotation", &compassRotation_.x, 0.01f);
 		ImGui::DragFloat3("Scale", &compassScale_.x, 0.01f, 0.01f, 10.0f);
+		ImGui::TreePop();
+	}
+
+	ImGui::Separator();
+	if (ImGui::TreeNode("ThumbsUp")) {
+		ImGui::DragFloat3("Offset", &thumbsUpOffset_.x, 0.01f);
+		ImGui::DragFloat3("Rotation", &thumbsUpRotation_.x, 0.01f);
+		ImGui::DragFloat3("Scale", &thumbsUpScale_.x, 0.01f, 0.01f, 10.0f);
 		ImGui::TreePop();
 	}
 

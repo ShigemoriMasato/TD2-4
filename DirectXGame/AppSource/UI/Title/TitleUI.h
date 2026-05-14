@@ -62,6 +62,7 @@ public:
 	void SetCurrentSelect(Title::Select select) { currentSelect_ = select; }
 	void SetPlayerInRange(bool inRange) { playerInRange_ = inRange; }
 	void SetPlayer(Player::Base* player) { player_ = player; }
+	void StartCompassExitAnimation();
 
 #ifdef USE_IMGUI
 	void DrawImGui();
@@ -149,4 +150,31 @@ private:
 	Vector3 compassScale_{ 0.75f, 1.0f, 0.75f };
 	float compassAnimTimer_ = 0.0f;
 	float compassAnimSpeed_ = 1.0f; // 1周にかかる秒数の逆数（大きいほど速い）
+
+	// Compass退場アニメーション
+	bool compassExiting_ = false;
+	float compassExitTimer_ = 0.0f;
+	float compassExitDuration_ = 1.f; // 退場にかかる秒数
+	Vector3 compassExitStartScale_{ 0.75f, 1.0f, 0.75f };
+
+	// ThumbsUp
+	std::unique_ptr<SHEngine::RenderObject> thumbsUpRender_;
+	int thumbsUpModelID_ = -1;
+	Vector3 thumbsUpOffset_{ 0.0f, 6.0f, 0.0f }; // Playerからの頭上オフセット
+	Vector3 thumbsUpRotation_{ -0.9f, 0.0f, 0.9f }; // 初期回転（z=0.9）
+	Vector3 thumbsUpScale_{ 0.0f, 0.0f, 0.0f };   // 初期スケール（非表示）
+
+	// ThumbsUp登場アニメーション
+	bool thumbsUpEntering_ = false;
+	float thumbsUpEnterTimer_ = 0.0f;
+	float thumbsUpEnterDuration_ = 0.5f; // 登場にかかる秒数
+
+	// ThumbsUp退場アニメーション
+	bool thumbsUpExiting_ = false;
+	float thumbsUpExitTimer_ = 0.0f;
+	float thumbsUpExitDuration_ = 0.4f;  // 退場にかかる秒数
+	float thumbsUpWaitDuration_ = 0.8f;  // 登場完了後の待機時間
+	float thumbsUpWaitTimer_ = -1.0f;     // 待機タイマー（-1=未開始）
+
+	bool thumbsUpEnd_ = false;
 };

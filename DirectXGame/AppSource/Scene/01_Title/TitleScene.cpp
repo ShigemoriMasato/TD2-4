@@ -48,8 +48,8 @@ void TitleScene::Initialize() {
 		.maxX = 25.0f,
 		.minZ = -25.0f,
 		.maxZ = 25.0f,
-		.centerX = 0.0f,
-		.centerZ = 0.0f,	
+		.centerX = 15.0f,
+		.centerZ = -10.0f,	
 		.radius = 25.0f
 	};
 
@@ -118,11 +118,11 @@ void TitleScene::Initialize() {
 	yukaRender_->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "DirectionalLight");
 
 	yukaTexIndex_ = yukaModelData.materials[yukaModelData.materialIndex.front()].textureIndex;
-	Vector4 yukaColor = {1.0f, 1.0f, 1.0f, 1.0f};
+	Vector4 yukaColor = {1.0f, 0.0f, 0.0f, 1.0f};
 	yukaRender_->CopyBufferData(1, &yukaColor, sizeof(yukaColor));
 	yukaRender_->CopyBufferData(2, &yukaTexIndex_, sizeof(yukaTexIndex_));
 
-	yukaTransform_.position = {0.0f, 0.0f, 0.0f};
+	yukaTransform_.position = {15.0f, 0.0f, -10.0f};
 	yukaTransform_.rotate = {0.0f, 0.0f, 0.0f};
 	yukaTransform_.scale = {1.0f, 1.0f, 1.0f};
 
@@ -163,13 +163,13 @@ std::unique_ptr<IScene> TitleScene::Update() {
 	{
 		Vector3 playerPos = player_->GetTransform().position;
 		bool inRange = false;
-		if (std::abs(playerPos.x - 0.0f) <= 4.0f && std::abs(playerPos.z - 0.0f) <= 2.0f) {
+		if (std::abs(playerPos.x - 0.0f) <= 4.5f && std::abs(playerPos.z - 0.0f) <= 2.0f) {
 			titleUI_->SetCurrentSelect(Title::Select::Start);
 			inRange = true;
-		} else if (std::abs(playerPos.x - 0.0f) <= 4.0f && std::abs(playerPos.z - (-10.0f)) <= 2.0f) {
+		} else if (std::abs(playerPos.x - 0.0f) <= 4.5f && std::abs(playerPos.z - (-10.0f)) <= 2.0f) {
 			titleUI_->SetCurrentSelect(Title::Select::Option);
 			inRange = true;
-		} else if (std::abs(playerPos.x - 0.0f) <= 4.0f && std::abs(playerPos.z - (-20.0f)) <= 2.0f) {
+		} else if (std::abs(playerPos.x - 0.0f) <= 4.5f && std::abs(playerPos.z - (-20.0f)) <= 2.0f) {
 			titleUI_->SetCurrentSelect(Title::Select::Quit);
 			inRange = true;
 		}
@@ -179,21 +179,24 @@ std::unique_ptr<IScene> TitleScene::Update() {
 	titleUI_->SetPlayer(player_.get());
 
 	titleUI_->Update(gameCamera_->GetVPMatrix(), deltaTime);
-	//titleUI_->UpdateSelection(keys[Key::Tr_Up], keys[Key::Tr_Down]);
+	titleUI_->UpdateSelection(keys[Key::Tr_Up], keys[Key::Tr_Down]);
 
 	// クリックでPlayerを移動させる処理
-	//if (keys[Key::Target]) {
-	//	// マウスのカーソル座標を取得
-	//	Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
+	if (keys[Key::Target]) {
+		// マウスのカーソル座標を取得
+		Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
 
-	//	// ワールド座標に変換
-	//	Vector3 clickWorldPos = GetWorldCursor(gameCamera_.get(), cursorPos);
+		// ワールド座標に変換
+		Vector3 clickWorldPos = GetWorldCursor(gameCamera_.get(), cursorPos);
 
-	//	// マップ境界内に制限した座標を取得
-	//	Vector3 clampedPos = map_->ClampToBounds(clickWorldPos);
-	//	// Playerを指定のワールド座標へ移動させる
-	//	player_->GetController()->SetTargetPosition(clampedPos);
-	//}
+		// マップ境界内に制限した座標を取得
+		Vector3 clampedPos = map_->ClampToBounds(clickWorldPos);
+		// Playerを指定のワールド座標へ移動させる
+		player_->GetController()->SetTargetPosition(clampedPos);
+
+		// Compassの退場アニメーションを開始
+		titleUI_->StartCompassExitAnimation();
+	}
 
 	map_->Update(gameCamera_->GetVPMatrix(), deltaTime);
 
@@ -225,15 +228,17 @@ std::unique_ptr<IScene> TitleScene::Update() {
 		isTargetMarkerVisible_ = false;
 	}
 
-	// yukaの更新
-	Matrix4x4 yukaWvp = Matrix::MakeScaleMatrix(yukaTransform_.scale) * Matrix::MakeRotationMatrix(yukaTransform_.rotate) *
-						Matrix::MakeTranslationMatrix(yukaTransform_.position) * gameCamera_->GetVPMatrix();
+	{
+		// yukaの更新
+		Matrix4x4 yukaWvp = Matrix::MakeScaleMatrix(yukaTransform_.scale) * Matrix::MakeRotationMatrix(yukaTransform_.rotate) *
+			Matrix::MakeTranslationMatrix(yukaTransform_.position) * gameCamera_->GetVPMatrix();
 
-	Vector4 yukaColor = { 1.0f, 1.0f, 1.0f, 1.0f };
-	yukaRender_->CopyBufferData(0, &yukaWvp, sizeof(yukaWvp));
-	yukaRender_->CopyBufferData(1, &yukaColor, sizeof(yukaColor));
-	yukaRender_->CopyBufferData(2, &yukaTexIndex_, sizeof(yukaTexIndex_));
-	yukaRender_->CopyBufferData(3, &dirLight_, sizeof(DirectionalLight));
+		Vector4 yukaColor = { 1.0f, 0.0f, 0.0f, 1.0f };
+		yukaRender_->CopyBufferData(0, &yukaWvp, sizeof(yukaWvp));
+		yukaRender_->CopyBufferData(1, &yukaColor, sizeof(yukaColor));
+		yukaRender_->CopyBufferData(2, &yukaTexIndex_, sizeof(yukaTexIndex_));
+		yukaRender_->CopyBufferData(3, &dirLight_, sizeof(DirectionalLight));
+	}
 
 	// グリッドの更新
 	grid_->Update({ 0.0f, 0.0f, 0.0f }, gameCamera_->GetVPMatrix());
@@ -276,7 +281,7 @@ void TitleScene::Draw() {
 	yukaRender_->Draw(cmdObj);
 
 	// グリッドの描画
-	grid_->Draw(cmdObj);
+	//grid_->Draw(cmdObj);
 
 	// Playerの描画（displayに描画）
 	player_->Draw(cmdObj);
