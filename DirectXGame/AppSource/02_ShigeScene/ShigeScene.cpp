@@ -523,7 +523,7 @@ void ShigeScene::Draw() {
 
 void ShigeScene::MakeWeapon() {
 	for (const auto& piece : commonData_->pieces) {
-		// 作成済みかどうか確認
+		// 作成済みかどうか確認.
 		{
 			bool found = false;
 			for (const auto& weapon : weapons_) {

@@ -48,8 +48,8 @@ void TitleScene::Initialize() {
 		.maxX = 25.0f,
 		.minZ = -25.0f,
 		.maxZ = 25.0f,
-		.centerX = 0.0f,
-		.centerZ = 0.0f,	
+		.centerX = 15.0f,
+		.centerZ = -10.0f,	
 		.radius = 25.0f
 	};
 
@@ -66,7 +66,7 @@ void TitleScene::Initialize() {
 	player_ = std::make_unique<Player::Base>();
 	player_->Initialize(modelManager_, drawDataManager_, CharacterID::Warrior, shopScene_->GetItemManager());
 	// TitleSceneではPlayerの位置を調整（Mapと一緒に表示）
-	player_->SetPosition({0.0f, 0.0f, 0.0f});
+	player_->SetPosition({15.0f, 0.0f, -10.0f});
 	player_->SetRotate({0.0f, 0.0f, 0.0f});
 
 	player_->SetMapInfo(map_->GetMapInfo());
@@ -118,11 +118,11 @@ void TitleScene::Initialize() {
 	yukaRender_->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "DirectionalLight");
 
 	yukaTexIndex_ = yukaModelData.materials[yukaModelData.materialIndex.front()].textureIndex;
-	Vector4 yukaColor = {1.0f, 1.0f, 1.0f, 1.0f};
+	Vector4 yukaColor = {1.0f, 0.0f, 0.0f, 1.0f};
 	yukaRender_->CopyBufferData(1, &yukaColor, sizeof(yukaColor));
 	yukaRender_->CopyBufferData(2, &yukaTexIndex_, sizeof(yukaTexIndex_));
 
-	yukaTransform_.position = {0.0f, 0.0f, 0.0f};
+	yukaTransform_.position = {15.0f, 0.0f, -10.0f};
 	yukaTransform_.rotate = {0.0f, 0.0f, 0.0f};
 	yukaTransform_.scale = {1.0f, 1.0f, 1.0f};
 
@@ -159,22 +159,68 @@ std::unique_ptr<IScene> TitleScene::Update() {
 	Vector3 cameraTargetPos = player_->GetTransform().position;
 	gameCamera_->Update(deltaTime, cameraTargetPos);
 
-	titleUI_->Update(gameCamera_->GetVPMatrix());
-	//titleUI_->UpdateSelection(keys[Key::Tr_Up], keys[Key::Tr_Down]);
+	// Playerの位置に基づいてUI選択を更新
+	{
+		Vector3 playerPos = player_->GetTransform().position;
+		bool inRange = false;
+		bool inFrame1 = false;
+		bool inFrame3 = false;
+		if (std::abs(playerPos.x - 0.0f) <= 4.5f && std::abs(playerPos.z - 0.0f) <= 2.0f) {
+			titleUI_->SetCurrentSelect(Title::Select::Start);
+			inRange = true;
+			inFrame1 = true;
+		} else if (std::abs(playerPos.x - 0.0f) <= 4.5f && std::abs(playerPos.z - (-10.0f)) <= 2.0f) {
+			titleUI_->SetCurrentSelect(Title::Select::Option);
+			inRange = true;
+		} else if (std::abs(playerPos.x - 0.0f) <= 4.5f && std::abs(playerPos.z - (-20.0f)) <= 2.0f) {
+			titleUI_->SetCurrentSelect(Title::Select::Quit);
+			inRange = true;
+			inFrame3 = true;
+		}
+		titleUI_->SetPlayerInRange(inRange);
+
+		// Frame1滞在タイマー
+		if (inFrame1) {
+			frame1StayTimer_ += deltaTime;
+			if (frame1StayTimer_ >= kFrame1StayDuration_) {
+				fadeManager_->StartFadeIn();
+			}
+		} else {
+			frame1StayTimer_ = 0.0f;
+		}
+
+		// Frame3滞在タイマー
+		if (inFrame3) {
+			frame3StayTimer_ += deltaTime;
+			if (frame3StayTimer_ >= kFrame1StayDuration_) {
+				commonData_->shouldQuit = true;
+			}
+		} else {
+			frame3StayTimer_ = 0.0f;
+		}
+	}
+
+	titleUI_->SetPlayer(player_.get());
+
+	titleUI_->Update(gameCamera_->GetVPMatrix(), deltaTime);
+	titleUI_->UpdateSelection(keys[Key::Tr_Up], keys[Key::Tr_Down]);
 
 	// クリックでPlayerを移動させる処理
-	//if (keys[Key::Target]) {
-	//	// マウスのカーソル座標を取得
-	//	Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
+	if (keys[Key::Target]) {
+		// マウスのカーソル座標を取得
+		Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
 
-	//	// ワールド座標に変換
-	//	Vector3 clickWorldPos = GetWorldCursor(gameCamera_.get(), cursorPos);
+		// ワールド座標に変換
+		Vector3 clickWorldPos = GetWorldCursor(gameCamera_.get(), cursorPos);
 
-	//	// マップ境界内に制限した座標を取得
-	//	Vector3 clampedPos = map_->ClampToBounds(clickWorldPos);
-	//	// Playerを指定のワールド座標へ移動させる
-	//	player_->GetController()->SetTargetPosition(clampedPos);
-	//}
+		// マップ境界内に制限した座標を取得
+		Vector3 clampedPos = map_->ClampToBounds(clickWorldPos);
+		// Playerを指定のワールド座標へ移動させる
+		player_->GetController()->SetTargetPosition(clampedPos);
+
+		// Compassの退場アニメーションを開始
+		titleUI_->StartCompassExitAnimation();
+	}
 
 	map_->Update(gameCamera_->GetVPMatrix(), deltaTime);
 
@@ -206,15 +252,17 @@ std::unique_ptr<IScene> TitleScene::Update() {
 		isTargetMarkerVisible_ = false;
 	}
 
-	// yukaの更新
-	Matrix4x4 yukaWvp = Matrix::MakeScaleMatrix(yukaTransform_.scale) * Matrix::MakeRotationMatrix(yukaTransform_.rotate) *
-						Matrix::MakeTranslationMatrix(yukaTransform_.position) * gameCamera_->GetVPMatrix();
+	{
+		// yukaの更新
+		Matrix4x4 yukaWvp = Matrix::MakeScaleMatrix(yukaTransform_.scale) * Matrix::MakeRotationMatrix(yukaTransform_.rotate) *
+			Matrix::MakeTranslationMatrix(yukaTransform_.position) * gameCamera_->GetVPMatrix();
 
-	Vector4 yukaColor = { 1.0f, 1.0f, 1.0f, 1.0f };
-	yukaRender_->CopyBufferData(0, &yukaWvp, sizeof(yukaWvp));
-	yukaRender_->CopyBufferData(1, &yukaColor, sizeof(yukaColor));
-	yukaRender_->CopyBufferData(2, &yukaTexIndex_, sizeof(yukaTexIndex_));
-	yukaRender_->CopyBufferData(3, &dirLight_, sizeof(DirectionalLight));
+		Vector4 yukaColor = { 1.0f, 0.0f, 0.0f, 1.0f };
+		yukaRender_->CopyBufferData(0, &yukaWvp, sizeof(yukaWvp));
+		yukaRender_->CopyBufferData(1, &yukaColor, sizeof(yukaColor));
+		yukaRender_->CopyBufferData(2, &yukaTexIndex_, sizeof(yukaTexIndex_));
+		yukaRender_->CopyBufferData(3, &dirLight_, sizeof(DirectionalLight));
+	}
 
 	// グリッドの更新
 	grid_->Update({ 0.0f, 0.0f, 0.0f }, gameCamera_->GetVPMatrix());
@@ -257,7 +305,7 @@ void TitleScene::Draw() {
 	yukaRender_->Draw(cmdObj);
 
 	// グリッドの描画
-	grid_->Draw(cmdObj);
+	//grid_->Draw(cmdObj);
 
 	// Playerの描画（displayに描画）
 	player_->Draw(cmdObj);
