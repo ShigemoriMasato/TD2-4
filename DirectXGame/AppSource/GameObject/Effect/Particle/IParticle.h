@@ -66,6 +66,8 @@ public:
 	void SetEnabled(bool isActive);
 	// カメラ位置セット
 	void SetCameraPos(const Vector3& cameraPos) { cameraPos_ = cameraPos; }
+	// 発生した瞬間を取得
+	bool GetIsJustEmitted() const { return emitTimer_ == 0.0f; }
 
 	// Drawer用
 	int GetModelHandle() const { return modelHandle_; }

@@ -56,7 +56,7 @@ void EnemyEffect::Update(float dt)
 	//	++it;
 	//}
 
-	for (auto it = trailOnParticle_.begin(); it != trailOnParticle_.end(); )
+	for (auto it = trailOnParticle_.begin(); it != trailOnParticle_.end();)
 	{
 		// oneShotがtrue && ThisFrameで発生した
 		if (it->second.oneShot && it->second.trailOnParticle.GetParticle().GetIsJustEmitted(0))
