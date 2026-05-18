@@ -1,6 +1,7 @@
 #include "IWeaponRender.h"
 #include <Assets/Audio/AudioManager.h>
 #include <numbers>
+#include <cmath>
 
 using namespace SHEngine;
 
@@ -257,26 +258,35 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 		currentDir += rotOffsetAnim_.temp.y;
 	}
 
+	// インスタンス毎の小さなオフセットを加える（重なり防止)
+	float idf = static_cast<float>(id_);
+	const float twoPi = 2.0f * std::numbers::pi_v<float>;
+	float jitterSeed = std::fmod(idf * 0.783f, twoPi); // 疑似一意角度
+	float angleJitter = jitterSeed * 0.04f;            // 最大で ~0.25rad 程度の小ジッター
+	float radiusJitter = (std::fmod(idf, 3.0f) - 1.0f) * 0.12f; // -0.12, 0, +0.12 のパターン
+	float baseRadius = 4.0f + radiusJitter;
+	float baseHeight = 3.0f;
+
 	// プレイヤーの周りに武器が配置されるようにするための処理
-	transform_.position.x = std::cosf(currentDir) * 4.0f;
-	transform_.position.z = std::sinf(currentDir) * 4.0f;
-	transform_.position.y = 3.0f;
+	transform_.position.x = std::cosf(currentDir + angleJitter) * baseRadius;
+	transform_.position.z = std::sinf(currentDir + angleJitter) * baseRadius;
+	transform_.position.y = baseHeight;
 	transform_.position += playerPos;
 
 	// 回転はDirectionを向かせる
-	transform_.rotate = {currentDir - std::numbers::pi_v<float> / 2, 0.0f, -std::numbers::pi_v<float> / 2.0f};
+	transform_.rotate = {currentDir + angleJitter - std::numbers::pi_v<float> / 2, 0.0f, -std::numbers::pi_v<float> / 2.0f};
 
 	if (wData->type == WeaponType::Pistol || wData->type == WeaponType::ShotGun) {
 		// 元の補正を維持
-		transform_.rotate.x = currentDir - std::numbers::pi_v<float> / 2.0f;
+		transform_.rotate.x = currentDir + angleJitter - std::numbers::pi_v<float> / 2.0f;
 		transform_.rotate.y = 0.0f;
 		transform_.rotate.z = -std::numbers::pi_v<float> / 2.0f;
 	} else if (wData->type == WeaponType::Sword || wData->type == WeaponType::Axe || wData->type == WeaponType::Pickaxe) {
 		transform_.rotate.x = 0.0f;
-		transform_.rotate.y = -(currentDir - std::numbers::pi_v<float> / 2.0f);
+		transform_.rotate.y = -(currentDir + angleJitter - std::numbers::pi_v<float> / 2.0f);
 		transform_.rotate.z = 0.0f;
 	} else if (wData->type == WeaponType::Gurepon) {
-		transform_.rotate.x = -(currentDir - std::numbers::pi_v<float> / 2.0f);
+		transform_.rotate.x = -(currentDir + angleJitter - std::numbers::pi_v<float> / 2.0f);
 		transform_.rotate.y = 0.0f;
 		transform_.rotate.z = std::numbers::pi_v<float> / 2.0f;
 	}
