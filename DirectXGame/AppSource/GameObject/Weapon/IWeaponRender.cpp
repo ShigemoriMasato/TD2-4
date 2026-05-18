@@ -1,13 +1,13 @@
 #include "IWeaponRender.h"
 #include <Assets/Audio/AudioManager.h>
-#include <numbers>
 #include <cmath>
+#include <numbers>
 
 using namespace SHEngine;
 
 void IWeaponRender::Initialize(
-	SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, IWeapon* weapon, Item itemData, const std::string& trailname, CommonData& commonData)
-{
+    SHEngine::DrawDataManager* drawDataManager, SHEngine::ModelManager* modelManager, SHEngine::TextureManager* textureManager, IWeapon* weapon, Item itemData, const std::string& trailname,
+    CommonData& commonData) {
 	render_ = std::make_unique<RenderObject>();
 	weapon_ = weapon;
 
@@ -261,8 +261,8 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 	// インスタンス毎の小さなオフセットを加える（重なり防止)
 	float idf = static_cast<float>(id_);
 	const float twoPi = 2.0f * std::numbers::pi_v<float>;
-	float jitterSeed = std::fmod(idf * 0.783f, twoPi); // 疑似一意角度
-	float angleJitter = jitterSeed * 0.04f;            // 最大で ~0.25rad 程度の小ジッター
+	float jitterSeed = std::fmod(idf * 0.783f, twoPi);          // 疑似一意角度
+	float angleJitter = jitterSeed * 0.04f;                     // 最大で ~0.25rad 程度の小ジッター
 	float radiusJitter = (std::fmod(idf, 3.0f) - 1.0f) * 0.12f; // -0.12, 0, +0.12 のパターン
 	float baseRadius = 4.0f + radiusJitter;
 	float baseHeight = 3.0f;
@@ -311,14 +311,10 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 
 	wvp_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 
-  
-	if (rotOffsetAnim_.anim.GetIsActive() || posOffsetAnim_.anim.GetIsActive())
-	{
+	if (rotOffsetAnim_.anim.GetIsActive() || posOffsetAnim_.anim.GetIsActive()) {
 		trail_.SetModelWorld(wvp_);
 		trail_.Update(deltaTime);
-	}
-	else
-	{
+	} else {
 		trail_.Clear();
 	}
 

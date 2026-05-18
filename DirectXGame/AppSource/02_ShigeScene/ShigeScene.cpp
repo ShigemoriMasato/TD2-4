@@ -585,6 +585,7 @@ void ShigeScene::MakeWeapon() {
 			}
 			case WeaponType::Pickaxe: {
 				weapon = std::make_unique<Pickaxe>();
+				name = "Fist_Ribbon";
 				break;
 			}
 			case WeaponType::Shuriken: {
