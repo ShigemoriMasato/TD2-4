@@ -71,16 +71,16 @@ private:
 	int height_ = 10;
 
 	// 初期の空き領域
-	int emptyStartX_ = 2;
-	int emptyStartY_ = 6;
-	int emptyAreaWidth_ = 6;
-	int emptyAreaHeight_ = 6;
+	int emptyStartX_ = 1;
+	int emptyStartY_ = 1;
+	int emptyAreaWidth_ = 8;
+	int emptyAreaHeight_ = 10;
 
 	// 保留エリア（BackPackの下側)
 	int reserveStartX_ = 0;
 	int reserveStartY_ = 0;
-	int reserveAreaWidth_ = 10;
-	int reserveAreaHeight_ = 3;
+	int reserveAreaWidth_ = 0;
+	int reserveAreaHeight_ = 0;
 	
 	int pieceModelID_ = 0;
 

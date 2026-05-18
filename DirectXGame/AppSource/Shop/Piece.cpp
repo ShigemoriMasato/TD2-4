@@ -196,45 +196,9 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		info.scale = Vector3(0.5f, 0.1f, 0.5f);
 		info.modelIndex = pieceModelID;
 
-		if(currentIdx == ignores_.size()) {
-			// 使用中のチップは徐々に小さくする
-			info.scale *= deleteT;
-			//Yだけは常に0.1fにして、地面にめり込まないようにする
-			info.scale.y = 0.1f;
-		}
-
-		float t = 0.0f;
-		if (totalChips > 1) {
-			t = static_cast<float>(currentIdx) / (totalChips - 1);
-		}
-		uint32_t r = static_cast<uint32_t>(0.0f + t * (32.0f - 0.0f));
-		uint32_t g = static_cast<uint32_t>(255.0f + t * (32.0f - 255.0f));
-		uint32_t b = static_cast<uint32_t>(255.0f + t * (176.0f - 255.0f));
-		uint32_t a = 255;
-
-		info.color = (r << 24) | (g << 16) | (b << 8) | a;
-
-		if (isUsing_) {
-			uint32_t rU = 255; 
-			uint32_t gU = static_cast<uint32_t>(165.0f + t * (0.0f - 165.0f));
-			uint32_t bU = 0;
-			uint32_t aU = 255;
-			info.color = (rU << 24) | (gU << 16) | (bU << 8) | aU;
-		}
-		if (isReserved_) {
-			// 保留エリアに置かれている場合は灰色で表示
-			uint32_t rR = static_cast<uint32_t>(128.0f);
-			uint32_t gR = static_cast<uint32_t>(128.0f);
-			uint32_t bR = static_cast<uint32_t>(128.0f);
-			uint32_t aR = 255;
-			info.color = (rR << 24) | (gR << 16) | (bR << 8) | aR;
-		}
+		info.color = 0x4f4f4fff;
 		if (isPlaced_) {
 			info.color = 0x00ffffff; // シアン
-		}
-		// isHovered_を最後に判定して、ホバー時は必ず黄色にする
-		if (isHovered_) {
-			info.color = 0xffff00ff; // 黄色
 		}
 
 		drawInfos.push_back(info);
@@ -244,7 +208,7 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 	// アウトライン描画（各チップの境界に白い線を追加）
 	const float outlineThickness = 0.05f; // アウトラインの太さ
 	const float outlineHeight = 0.15f; // アウトラインの高さ（チップより少し高く）
-	const uint32_t outlineColor = 0xFFFFFFFF; // 白色
+	const uint32_t outlineColor = isHovered_ ? 0xffff00ff : 0xFFFFFFFF; // ホバー時は黄色、通常は白
 
 	for (const auto& chip : chips_) {
 		if (IsIgnored(chip)) {

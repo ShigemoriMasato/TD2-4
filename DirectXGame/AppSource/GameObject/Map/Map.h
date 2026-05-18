@@ -91,9 +91,37 @@ private:
 	std::unique_ptr<SHEngine::RenderObject> stageRender_;
 
 	// ステージのトランスフォーム
-	Vector3 stagePosition_ = { 24.0f, -1.5f, 24.0f };
+	Vector3 stagePosition_ = { 24.0f, -1.5f, 27.0f };
 	Vector3 stageRotation_ = { 0.0f, 0.0f, 0.0f };
 	Vector3 stageScale_ = { 5.0f, 5.0f, 5.0f };
+
+	// StageUnderモデルのモデルID
+	int stageUnderModelID_ = -1;
+
+	// StageUnderのテクスチャインデックス
+	int stageUnderTextureIndex_ = 0;
+
+	// StageUnderの描画用レンダーオブジェクト
+	std::unique_ptr<SHEngine::RenderObject> stageUnderRender_;
+
+	// StageUnderのトランスフォーム
+	Vector3 stageUnderPosition_ = { 24.0f, -76.5f, 27.0f };
+	Vector3 stageUnderRotation_ = { 0.0f, 0.0f, 0.0f };
+	Vector3 stageUnderScale_ = { 5.0f, 5.0f, 5.0f };
+
+	// StageFramerモデルのモデルID
+	int stageFramerModelID_ = -1;
+
+	// StageFramerのテクスチャインデックス
+	int stageFramerTextureIndex_ = 0;
+
+	// StageFramerの描画用レンダーオブジェクト
+	std::unique_ptr<SHEngine::RenderObject> stageFramerRender_;
+
+	// StageFramerのトランスフォーム
+	Vector3 stageFramerPosition_ = { 24.0f, -61.5f, 27.0f };
+	Vector3 stageFramerRotation_ = { 0.0f, 0.0f, 0.0f };
+	Vector3 stageFramerScale_ = { 5.0f, 5.0f, 5.0f };
 
 	// 自動回転用の変数
 	bool enableAutoRotation_ = false;

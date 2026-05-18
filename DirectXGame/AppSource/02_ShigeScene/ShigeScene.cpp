@@ -44,7 +44,7 @@ void ShigeScene::Initialize() {
 	player_->UpdateParameter(commonData_->pieces);
 
 	map_ = std::make_unique<Map>();
-	map_->Initialize(drawDataManager_, modelManager_, {}, "Assets/Model/Stage2");
+	map_->Initialize(drawDataManager_, modelManager_, {}, "Assets/Model/battleStage");
 	player_->SetMapInfo(map_->GetMapInfo());
 
 	enemyEffectManager_ = std::make_unique<EnemyEffect>();
@@ -263,9 +263,21 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 				Vector3 clickWorldPos = GetWorldCursor(camera_, originalScreenPos);
 
 				// マップ境界内に制限した座標を取得
-				Vector3 clampedPos = map_->ClampToBounds(clickWorldPos);
-				// Playerを指定のワールド座標へ移動させる（InputController使用時用）
-				player_->GetController()->SetTargetPosition(clampedPos);
+					Vector3 clampedPos = map_->ClampToBounds(clickWorldPos);
+					// Playerと同じXZ円形範囲内に制限する
+					{
+						const MapInfo& mapInfo = map_->GetMapInfo();
+						float dx = clampedPos.x - mapInfo.centerX;
+						float dz = clampedPos.z - mapInfo.centerZ;
+						float dist = std::sqrt(dx * dx + dz * dz);
+						if (dist > mapInfo.radius) {
+							float ratio = mapInfo.radius / dist;
+							clampedPos.x = mapInfo.centerX + dx * ratio;
+							clampedPos.z = mapInfo.centerZ + dz * ratio;
+						}
+					}
+					// Playerを指定のワールド座標へ移動させる（InputController使用時用）
+					player_->GetController()->SetTargetPosition(clampedPos);
 			}
 		}
 	}
