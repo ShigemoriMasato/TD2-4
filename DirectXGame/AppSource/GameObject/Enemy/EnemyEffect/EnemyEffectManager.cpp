@@ -96,10 +96,10 @@ void EnemyEffect::CreateDeathEffect1(const Matrix4x4& world)
 	// 死亡エフェクトの例
 	MultiParticleData particleData;
 	particleData.multiParticle.Initialize(textureManager_, modelManager_, commonData_);
-	//particleData.multiParticle.Add("death2");
-	//particleData.multiParticle.Add("death2_2");
-	//particleData.multiParticle.Add("death2_3");
-	particleData.multiParticle.Add("big.json");
+	particleData.multiParticle.Add("death2");
+	particleData.multiParticle.Add("death2_2");
+	particleData.multiParticle.Add("death2_3");
+	//particleData.multiParticle.Add("big.json");
 	particleData.multiParticle.SetModelWorld(world);
 	particleData.oneShot = true; // 一回の発生で削除する
 	multiParticles_.emplace(nextMultiParticleId_++, std::move(particleData));
