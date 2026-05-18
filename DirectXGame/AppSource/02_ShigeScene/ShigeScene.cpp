@@ -227,7 +227,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	Vector3 cameraTargetPos = player_->GetTransform().position + cameraTargetOffset_;
 
 	gameCamera_->Update(deltaTime, cameraTargetPos);
-	Vector3 cameraPos = {0.f, 0.f, 0.f};
+	Vector3 cameraPos = gameCamera_->GetPosition();
 	grid_->Update(cameraPos, camera_->GetVPMatrix());
 	auto key = commonData_->keyManager->GetKeyStates();
 
@@ -318,6 +318,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	map_->Update(camera_->GetVPMatrix());
 	enemyManager_->Update(deltaTime, camera_->GetVPMatrix(), orthoCamera_->GetVPMatrix());
 	enemyEffectManager_->Update(deltaTime);
+	enemyEffectManager_->SetCameraPos(cameraPos);
 	for (const auto& weapon : weapons_) {
 		weapon->Update(deltaTime);
 	}
@@ -426,10 +427,11 @@ void ShigeScene::Draw() {
 		render->Draw(cmdObj);
 	}
 
-	commonData_->trailDrawer->Draw(cmdObj, camera_->GetVPMatrix());
-
 	enemyManager_->Draw(cmdObj);
-	enemyEffectManager_->Draw();
+	//enemyEffectManager_->Draw();
+
+	commonData_->trailDrawer->Draw(cmdObj, camera_->GetVPMatrix());
+	commonData_->particleDrawer->Draw(cmdObj, camera_->GetVPMatrix());
 
 	controllers_[0]->DrawImGui();
 

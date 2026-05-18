@@ -39,22 +39,22 @@ void EnemyEffect::Update(float dt)
 	}
 
 	// Delete:oneShotがtrueの時は二回目の発生で削除する。
-	//for (auto it = multiParticles_.begin(); it != multiParticles_.end(); )
-	//{
-	//	// oneShotがtrue && ThisFrameで発生した
-	//	if (it->second.oneShot && it->second.multiParticle.GetIsJustEmitted(0))
-	//	{
-	//		// 2回目の発生で削除する
-	//		if (it->second.emittedOnce)
-	//		{
-	//			it = multiParticles_.erase(it);
-	//			continue;
-	//		}
-	//		// カウントを進める
-	//		it->second.emittedOnce = true;
-	//	}
-	//	++it;
-	//}
+	for (auto it = multiParticles_.begin(); it != multiParticles_.end(); )
+	{
+		// oneShotがtrue && ThisFrameで発生した
+		if (it->second.oneShot && it->second.multiParticle.GetIsJustEmitted(0))
+		{
+			// 2回目の発生で削除する
+			if (it->second.emittedOnce)
+			{
+				it = multiParticles_.erase(it);
+				continue;
+			}
+			// カウントを進める
+			it->second.emittedOnce = true;
+		}
+		++it;
+	}
 
 	for (auto it = trailOnParticle_.begin(); it != trailOnParticle_.end();)
 	{
@@ -96,10 +96,11 @@ void EnemyEffect::CreateDeathEffect1(const Matrix4x4& world)
 	// 死亡エフェクトの例
 	MultiParticleData particleData;
 	particleData.multiParticle.Initialize(textureManager_, modelManager_, commonData_);
-	particleData.multiParticle.Add("death2");
-	particleData.multiParticle.Add("death2_2");
-	particleData.multiParticle.Add("death2_3");
+	//particleData.multiParticle.Add("death2");
+	//particleData.multiParticle.Add("death2_2");
+	//particleData.multiParticle.Add("death2_3");
 	//particleData.multiParticle.Add("big.json");
+	particleData.multiParticle.Add("death5");
 	particleData.multiParticle.SetModelWorld(world);
 	particleData.oneShot = true; // 一回の発生で削除する
 	multiParticles_.emplace(nextMultiParticleId_++, std::move(particleData));
