@@ -20,53 +20,90 @@ void IRangedWeapon::Initialize(int weaponID, Player::Base* player) {
 	penetration_ = config_.penetration;
 	spreadAngle_ = config_.spreadAngle;
 	bulletNum_ = weaponData_->attackCount + player->GetParameter("AttackCount");
+
+	// 連続攻撃設定
+	attackNum_ = bulletNum_;
+	if (attackNum_ < 1.0f) {
+		attackNum_ = 1.0f;
+	}
+
+	// 発射間隔はクールダウンを発射回数で割る
+	attackRate_ = rate_ / attackNum_;
+
+	// 初期状態
+	rateTimer_ = 0.0f;
+	isAttacking_ = false;
+	attackCount_ = 0.0f;
 }
 
 void IRangedWeapon::Update(float deltaTime) {
-	rateTimer_ += deltaTime;
-
-	if (rateTimer_ < rate_) {
-		isAnimation_ = false;
-		return;
+	if (!isAttacking_) {
+		rateTimer_ += deltaTime;
+		if (rateTimer_ > rate_) {
+			isAttacking_ = true;
+			// 次の分岐で即発射されるよう大きめの値にしておく
+			rateTimer_ = 100.0f;
+		} else {
+			isAnimation_ = false;
+			return;
+		}
 	}
 
-	for (int i = 0; i < bulletNum_; ++i) {
-		if (!EnemyCheck()) {
-			break;
+	rateTimer_ += deltaTime;
+	if (rateTimer_ > attackRate_) {
+		rateTimer_ = 0.0f;
+
+		// ターゲットの有無に関わらず発射
+		EnemyCheck();
+
+		// 攻撃回数が最大に達したら攻撃終了
+		if (attackCount_ >= attackNum_) {
+			isAttacking_ = false;
+			attackCount_ = 0.0f;
+			rateTimer_ = 0.0f;
 		}
 	}
 }
 
 bool IRangedWeapon::EnemyCheck() {
 	auto enemies = enemyManager_->GetEnemies();
+	// 一番近くの敵を探す
+	float closestDistance = range_ * 2.0f * 10.0f;
+	IEnemy* closestEnemy = nullptr;
+	Vector3 pPos = player_->GetTransform().position;
 
-	// 近くに敵がいるかの判別
 	for (const auto& enemy : enemies) {
 		Vector3 ePos = enemy->GetPosition();
-		Vector3 pPos = player_->GetTransform().position;
-
 		float distance = (ePos - pPos).Length();
 
-		//一定距離内に敵がいた場合(少し射程に余裕を持たせる)
-		if (distance <= (range_ * 0.8f)) {
-
-			rateTimer_ = 0.0f;
-
-			if (shotIDRegister_) {
-				int id = enemy->GetID(); // 敵のIDを取得
-				shotEnemyIDs_.push_back(id); // 射撃した敵のIDを保存
-			}
-
-			Vector3 dir = (ePos - pPos).Normalize();
-			config_.position = pPos;
-			config_.direction = atan2f(dir.z, dir.x);
-
-			Shot(enemy);
-			return true;
+		if (closestDistance > distance) {
+			closestDistance = distance;
+			closestEnemy = enemy;
 		}
 	}
 
-	return false;
+	// 近い敵がいればID登録
+	if (closestEnemy && shotIDRegister_) {
+		int id = closestEnemy->GetID();
+		shotEnemyIDs_.push_back(id);
+	}
+
+	// 発射に必要な向き・位置を設定
+	if (closestEnemy) {
+		Vector3 ePos = closestEnemy->GetPosition();
+		Vector2 dir = Vector2(ePos.x - pPos.x, ePos.z - pPos.z).Normalize();
+		config_.direction = atan2f(dir.y, dir.x);
+	}
+	config_.position = pPos;
+
+	// 発射
+	Shot(closestEnemy);
+
+	// 発射したらアニメーション開始、タイマーはリセット
+	isAnimation_ = true;
+	rateTimer_ = 0.0f;
+
+	return true;
 }
 
 void IRangedWeapon::Shot(IEnemy* target) {
@@ -75,4 +112,7 @@ void IRangedWeapon::Shot(IEnemy* target) {
 	std::unique_ptr<Bullet> bullet = std::make_unique<Bullet>();
 	bullet->Initialize(config_);
 	attackManager_->AddObj(std::move(bullet));
+
+	// 発射回数を管理
+	attackCount_ += 1.0f;
 }

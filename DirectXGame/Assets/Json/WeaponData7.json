@@ -1,6 +1,6 @@
 {
     "attackCount": 0,
-    "attackSpeed": 1.0,
+    "attackSpeed": 2.0,
     "baseDamage": 14.0,
     "criticalChance": 0.5,
     "criticalMultiplier": 2.0,
