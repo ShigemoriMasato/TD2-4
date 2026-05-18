@@ -60,6 +60,8 @@ void B_S_R_T_C_Particle::Update(float dt)
 
 	const B_S_R_T_C_Config& uniqueConfig = std::get<B_S_R_T_C_Config>(config_);
 
+	emitTimer_ += dt;
+
 	// 一定時間ごとにパーティクルを発生させる
 	if (isActive_ && (emitTimer_ >= uniqueConfig.cfg.emitInterval || emitTimer_ < 0.0f))
 	{
@@ -103,8 +105,6 @@ void B_S_R_T_C_Particle::Update(float dt)
 			instances_.push_back({ s,r,t,0.0f, c });
 		}
 	}
-
-	emitTimer_ += dt;
 
 	// 年齢更新 & SRT更新 & 色更新
 	for (auto& instance : instances_)

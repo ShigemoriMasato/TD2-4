@@ -17,6 +17,8 @@ public:
 	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
 	void Trigger();
 
+	MultiParticle& GetParticle() { return particle; }
+
 private:
 	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
 	MultiParticle particle;
