@@ -109,6 +109,20 @@ private:
 	Vector3 stageUnderRotation_ = { 0.0f, 0.0f, 0.0f };
 	Vector3 stageUnderScale_ = { 5.0f, 5.0f, 5.0f };
 
+	// StageFramerモデルのモデルID
+	int stageFramerModelID_ = -1;
+
+	// StageFramerのテクスチャインデックス
+	int stageFramerTextureIndex_ = 0;
+
+	// StageFramerの描画用レンダーオブジェクト
+	std::unique_ptr<SHEngine::RenderObject> stageFramerRender_;
+
+	// StageFramerのトランスフォーム
+	Vector3 stageFramerPosition_ = { 24.0f, -61.5f, 27.0f };
+	Vector3 stageFramerRotation_ = { 0.0f, 0.0f, 0.0f };
+	Vector3 stageFramerScale_ = { 5.0f, 5.0f, 5.0f };
+
 	// 自動回転用の変数
 	bool enableAutoRotation_ = false;
 	float rotationTimer_ = 0.0f;

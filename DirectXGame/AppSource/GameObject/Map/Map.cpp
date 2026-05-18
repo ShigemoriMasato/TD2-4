@@ -101,6 +101,33 @@ void Map::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::Model
 		stageUnderRender_->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "Light");
 		stageUnderRender_->SetUseTexture(true);
 		stageUnderRender_->instanceNum_ = 1;
+
+		// StageFramerモデルの読み込み
+		stageFramerModelID_ = modelManager_->LoadModel("Assets/Model/StageFrame");
+
+		// StageFramerレンダーオブジェクトの初期化
+		stageFramerRender_ = std::make_unique<SHEngine::RenderObject>("Map_StageFramer");
+		stageFramerRender_->Initialize();
+
+		auto stageFramerModel = modelManager_->GetNodeModelData(stageFramerModelID_);
+		auto stageFramerDrawData = drawDataManager_->GetDrawData(stageFramerModel.drawDataIndex);
+		stageFramerRender_->SetDrawData(stageFramerDrawData);
+
+		if (!stageFramerModel.materials.empty() && !stageFramerModel.materialIndex.empty()) {
+			auto& material = stageFramerModel.materials[stageFramerModel.materialIndex.front()];
+			stageFramerTextureIndex_ = material.textureIndex;
+		}
+
+		stageFramerRender_->psoConfig_.vs = "Simple.VS.hlsl";
+		stageFramerRender_->psoConfig_.ps = "Game/Field.PS.hlsl";
+		stageFramerRender_->psoConfig_.isSwapChain = false;
+
+		stageFramerRender_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+		stageFramerRender_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+		stageFramerRender_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+		stageFramerRender_->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "Light");
+		stageFramerRender_->SetUseTexture(true);
+		stageFramerRender_->instanceNum_ = 1;
 	}
 }
 
@@ -204,6 +231,18 @@ void Map::Update(const Matrix4x4& vpMatrix, float deltaTime) {
 		stageUnderRender_->CopyBufferData(2, &stageUnderTextureIndex_, sizeof(stageUnderTextureIndex_));
 		stageUnderRender_->CopyBufferData(3, &dirLight_, sizeof(dirLight_));
 	}
+
+	// StageFramerの更新
+	if (stageFramerRender_) {
+		Matrix4x4 world = Matrix::MakeAffineMatrix(stageFramerScale_, stageFramerRotation_, stageFramerPosition_);
+		Matrix4x4 wvp = world * vpMatrix;
+		Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
+
+		stageFramerRender_->CopyBufferData(0, &wvp, sizeof(wvp));
+		stageFramerRender_->CopyBufferData(1, &color, sizeof(color));
+		stageFramerRender_->CopyBufferData(2, &stageFramerTextureIndex_, sizeof(stageFramerTextureIndex_));
+		stageFramerRender_->CopyBufferData(3, &dirLight_, sizeof(dirLight_));
+	}
 }
 
 void Map::Draw(CmdObj* cmdObj) {
@@ -217,6 +256,10 @@ void Map::Draw(CmdObj* cmdObj) {
 
 	if (stageUnderRender_) {
 		stageUnderRender_->Draw(cmdObj);
+	}
+
+	if (stageFramerRender_) {
+		stageFramerRender_->Draw(cmdObj);
 	}
 }
 
@@ -247,6 +290,13 @@ void Map::DrawDebugGUI() {
 		ImGui::DragFloat3("Position##Under", &stageUnderPosition_.x, 0.1f);
 		ImGui::DragFloat3("Rotation##Under", &stageUnderRotation_.x, 0.01f);
 		ImGui::DragFloat3("Scale##Under", &stageUnderScale_.x, 0.01f);
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("StageFramer Transform")) {
+		ImGui::DragFloat3("Position##Framer", &stageFramerPosition_.x, 0.1f);
+		ImGui::DragFloat3("Rotation##Framer", &stageFramerRotation_.x, 0.01f);
+		ImGui::DragFloat3("Scale##Framer", &stageFramerScale_.x, 0.01f);
 		ImGui::TreePop();
 	}
 
