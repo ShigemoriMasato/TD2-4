@@ -12,7 +12,7 @@ public:
 	~LevelSystemUI();
 
     void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager);
-	void Update(const LevelSystem& levelSystem, Matrix4x4 vpMatrix);
+	void Update(const LevelSystem& levelSystem, Matrix4x4 vpMatrix, float deltaTime);
     void Draw(CmdObj* cmdObj);
     void DrawImGui();
 
@@ -36,4 +36,7 @@ private:
 
 	BinaryManager binaryManager_;
 	std::string saveFilePath_ = "LevelSystemUI.bin";
+
+	float frequency_ = 2.0f;
+	float amplitude_ = 0.2f;
 };

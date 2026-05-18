@@ -26,8 +26,11 @@ protected:
 
 	//あまりにも長いと当たらないので、0.5f固定にして、スピードで調整すること
 	const float lifeTime_ = 0.5f;
-
 	float rateTimer_ = 0.0f;
+	float attackRate_ = 0.0f;    // 連続攻撃の間隔
+	float attackNum_ = 0.0f;     // 連続攻撃回数
+	float attackCount_ = 0.0f;   // 現在の発射回数
+	bool isAttacking_ = false;
 
 private:
 

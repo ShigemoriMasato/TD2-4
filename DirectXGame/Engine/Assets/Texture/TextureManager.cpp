@@ -12,18 +12,18 @@ SHEngine::TextureManager::~TextureManager() {
 
 void TextureManager::Initialize(DXDevice* device, Command::Manager* manager) {
 	device_ = device;
-	cmdObject_ = manager->CreateCommandObject(Command::Type::Texture, 0, 1);
+	cmdObject_ = manager->CreateCommandObject(Command::Type::Texture, 1);
 	srvManager_ = device->GetSRVManager();
 	manager_ = manager;
 
 	cmdObject_->WaitForGPUIdle();
 	cmdObject_->ResetCommandList();
 
+	logger_ = getLogger("Engine");
+
 	LoadTexture("Assets/.EngineResource/Texture/white1x1.png");
 	LoadTexture("Assets/.EngineResource/Texture/uvChecker.png");
 	errorTextureHandle_ = LoadTexture("Assets/.EngineResource/Texture/error.png");
-
-	logger_ = getLogger("Engine");
 }
 
 void TextureManager::AllTextureClear() {
@@ -171,7 +171,7 @@ void TextureManager::UploadResources() {
 	}
 
 	//実行
-	manager_->Execute(Command::Type::Texture, 0, { cmdObject_.get() });
+	manager_->Execute(Command::Type::Texture, { cmdObject_.get() });
 
 	//コマンドリストをリセット
 	cmdObject_->ResetCommandList();

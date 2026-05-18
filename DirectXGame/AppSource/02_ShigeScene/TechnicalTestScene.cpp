@@ -6,8 +6,8 @@ void TechnicalTestScene::Initialize() {
 	debugCamera_ = std::make_unique<DebugCamera>();
 	debugCamera_->Initialize(input_);
 
-	computeCmdObj_ = engine_->CreateCommandObject(Command::Type::Compute, 0, 3);
-	particleCmdObj_ = engine_->CreateCommandObject(Command::Type::Direct, 0, 3);
+	computeCmdObj_ = engine_->CreateCommandObject(Command::Type::Compute, 3);
+	particleCmdObj_ = engine_->CreateCommandObject(Command::Type::Direct, 3);
 
 	constexpr uint32_t kParticleCount = 10000000;
 	constexpr uint32_t kThreadGroupSize = 1024;
@@ -92,12 +92,12 @@ void TechnicalTestScene::Draw() {
 	engine_->WaitFence(particleLastFence_, Command::Type::Compute);
 	particleEmit_->Execute(computeCmdObj);
 	particleUpdate_->Execute(computeCmdObj);
-	engine_->ExecuteCommand(Command::Type::Compute, 0, { computeCmdObj });
+	engine_->ExecuteCommand(Command::Type::Compute, { computeCmdObj });
 
 	display->PreDraw(particleCmdObj, true);
 
 	renderer_->Draw(particleCmdObj);
-	particleLastFence_ = engine_->ExecuteCommand(Command::Type::Direct, 0, { particleCmdObj });
+	particleLastFence_ = engine_->ExecuteCommand(Command::Type::Direct, { particleCmdObj });
 
 	display->PostDraw(cmdObj);
 

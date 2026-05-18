@@ -48,7 +48,7 @@ void LevelSystemUI::Initialize(SHEngine::ModelManager* modelManager, SHEngine::D
 	Load();
 }
 
-void LevelSystemUI::Update(const LevelSystem& levelSystem, Matrix4x4 vpMatrix) {
+void LevelSystemUI::Update(const LevelSystem& levelSystem, Matrix4x4 vpMatrix, float deltaTime) {
 	auto vertices = levelSystem.GetWaveVertices();
 	std::vector<Vector2> points;
 	points.reserve(vertices.size());
@@ -62,6 +62,12 @@ void LevelSystemUI::Update(const LevelSystem& levelSystem, Matrix4x4 vpMatrix) {
 
 	render_->CopyBufferData(0, vertices_.data(), sizeof(Vector2) * vertices_.size());
 	render_->CopyBufferData(1, &wvpMatrix_, sizeof(Matrix4x4));
+
+	// 左右に回すアニメーション
+	static float t = 0.0f;
+	float baseRotZ = std::numbers::pi_v<float> / 2.0f;
+	t += deltaTime;
+	cpTransform_.rotate.z = baseRotZ + std ::sinf(t * frequency_) * amplitude_;
 
 	cpPoint = levelSystem.GetCurrentPoint();
 	cpwvpMatrix_ = Matrix::MakeAffineMatrix(cpTransform_.scale, cpTransform_.rotate, { cpPoint.x, cpPoint.y, 0.0f }) *

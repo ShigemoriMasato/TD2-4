@@ -5,12 +5,14 @@
 #include "IEnemy.h"
 #include <GameObject/Map/Map.h>
 #include <Utility/ConvertString.h>
+#include <GameObject/Enemy/EnemyEffect/EnemyEffectManager.h>
 
 int EnemyManager::killCount = 0;
 
-void EnemyManager::Initialize(Vector3* playerPos, Map* map, SHEngine::DrawData& plane, SHEngine::ModelManager* modelManager) {
+void EnemyManager::Initialize(Vector3* playerPos, Map* map, SHEngine::DrawData& plane, SHEngine::ModelManager* modelManager, EnemyEffect* enemyEffect) {
 	playerPos_ = playerPos;
 	map_ = map;
+	enemyEffectManager_ = enemyEffect;
 	enemies_.clear();
 	pendingEnemies_.clear();
 
@@ -75,6 +77,11 @@ void EnemyManager::Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVp
 		}
 
 		if (!enemy->IsActive()) {
+			Vector3 enemyPos = enemy->GetPosition();
+			Vector3 scale = { 1.0f, 1.0f, 1.0f };
+			Vector3 rotate = { 0.0f, 0.0f, 0.0f };
+			Matrix4x4 enemyWorldMatrix = Matrix::MakeAffineMatrix(scale, rotate, enemyPos);
+			enemyEffectManager_->CreateDeathEffect1(enemyWorldMatrix);
 			toRemove.push_back(id);
 		}
 	}

@@ -47,9 +47,12 @@ void ShigeScene::Initialize() {
 	map_->Initialize(drawDataManager_, modelManager_, {}, "Assets/Model/battleStage");
 	player_->SetMapInfo(map_->GetMapInfo());
 
+	enemyEffectManager_ = std::make_unique<EnemyEffect>();
+	enemyEffectManager_->Initialize(textureManager_, modelManager_, commonData_);
+
 	SHEngine::DrawData planeDrawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
 	enemyManager_ = std::make_unique<EnemyManager>();
-	enemyManager_->Initialize(player_->GetPositionPtr(), map_.get(), planeDrawData, modelManager_);
+	enemyManager_->Initialize(player_->GetPositionPtr(), map_.get(), planeDrawData, modelManager_, enemyEffectManager_.get());
 	IEnemy::SetModelManager(modelManager_);
 	IEnemy::SetDrawDataManager(drawDataManager_);
 
@@ -195,7 +198,6 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	gameFrame_->Update();
 
 	gameDisplay_->Update();
-
 	Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
 	bool inDisplayRange = false;
 	if (cursorPos.x >= displayRange_.left && cursorPos.x <= displayRange_.right && cursorPos.y >= displayRange_.top && cursorPos.y <= displayRange_.bottom) {
@@ -225,7 +227,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	Vector3 cameraTargetPos = player_->GetTransform().position + cameraTargetOffset_;
 
 	gameCamera_->Update(deltaTime, cameraTargetPos);
-	Vector3 cameraPos = {0.f, 0.f, 0.f};
+	Vector3 cameraPos = gameCamera_->GetPosition();
 	grid_->Update(cameraPos, camera_->GetVPMatrix());
 	auto key = commonData_->keyManager->GetKeyStates();
 
@@ -327,6 +329,8 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	parameterRender_->Update(orthoCamera_->GetVPMatrix(), player_->GetParameters(), deltaTime, key);
 	map_->Update(camera_->GetVPMatrix());
 	enemyManager_->Update(deltaTime, camera_->GetVPMatrix(), orthoCamera_->GetVPMatrix());
+	enemyEffectManager_->Update(deltaTime);
+	enemyEffectManager_->SetCameraPos(cameraPos);
 	for (const auto& weapon : weapons_) {
 		weapon->Update(deltaTime);
 	}
@@ -361,7 +365,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	}
 
 	waveSystem_->Update(deltaTime);
-	waveSystemUI_->Update(*waveSystem_, orthoCamera_->GetVPMatrix());
+	waveSystemUI_->Update(*waveSystem_, orthoCamera_->GetVPMatrix(), deltaTime);
 
 	if (key[Key::Debug1] || gameTimer_->IsEnd()) {
 	}
@@ -435,9 +439,11 @@ void ShigeScene::Draw() {
 		render->Draw(cmdObj);
 	}
 
-	commonData_->trailDrawer->Draw(cmdObj, camera_->GetVPMatrix());
-
 	enemyManager_->Draw(cmdObj);
+	//enemyEffectManager_->Draw();
+
+	commonData_->trailDrawer->Draw(cmdObj, camera_->GetVPMatrix());
+	commonData_->particleDrawer->Draw(cmdObj, camera_->GetVPMatrix());
 
 	controllers_[0]->DrawImGui();
 
@@ -597,6 +603,7 @@ void ShigeScene::MakeWeapon() {
 			}
 			case WeaponType::Pickaxe: {
 				weapon = std::make_unique<Pickaxe>();
+				name = "Fist_Ribbon";
 				break;
 			}
 			case WeaponType::Shuriken: {

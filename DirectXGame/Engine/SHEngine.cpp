@@ -54,14 +54,14 @@ void Engine::Initialize(HINSTANCE hInstance) {
 	psoEditor_->Initialize(device_.get());
 
 	csPsoManager_ = std::make_unique<PSO::CSPSOManager>();
-	csPsoManager_->Initialize(device_.get());
+	csPsoManager_->Initialize(device_.get(), psoEditor_->GetSamplers());
 
 	Screen::IDisplay::SetDevice(device_.get());
 	RenderObject::StaticInitialize(device_.get(), psoEditor_.get());
 	Renderer::SetPSOEditor(psoEditor_.get(), device_->GetSRVManager()->GetStartPtr());
 	GPUBuffer::SetDevice(device_.get());
 	Text::SetFontLoader(fontLoader_.get());
-	ComputeObject::StaticInitialize(csPsoManager_.get());
+	ComputeObject::StaticInitialize(csPsoManager_.get(), device_->GetSRVManager()->GetStartPtr());
 	AudioManager::GetInstance()->Initialize();
 
 	fpsObserver_ = std::make_unique<FPSObserver>();
@@ -80,7 +80,6 @@ bool Engine::IsLoop() {
 }
 
 void Engine::BeginFrame() {
-	frameCounter_.Update();
 	input_->Update();
 	fpsObserver_->TimeAdjustment();
 	AudioManager::GetInstance()->Update();
@@ -97,11 +96,12 @@ void Engine::PostDraw() {
 		imguiDrew_ = true;
 	}
 
+	frameCounter_.Update();
 }
 
-void SHEngine::Engine::WaitFence(Command::WaitFence& waitFence, Command::Type type, int index) {
+void SHEngine::Engine::WaitFence(Command::WaitFence& waitFence, Command::Type type) {
 	if(waitFence.fence && waitFence.value) {
-		cmdManager_->WaitFence(waitFence, type, index);
+		cmdManager_->WaitFence(waitFence, type);
 	}
 }
 

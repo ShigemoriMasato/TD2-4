@@ -2,6 +2,7 @@
 #include "IEnemy.h"
 
 class Map;
+class EnemyEffect;
 
 enum class EnemyType {
 	Normal,
@@ -19,7 +20,7 @@ struct PendingEnemy {
 
 class EnemyManager {
 public:
-	void Initialize(Vector3* playerPos, Map* map, SHEngine::DrawData& plane, SHEngine::ModelManager* modelManager);
+	void Initialize(Vector3* playerPos, Map* map, SHEngine::DrawData& plane, SHEngine::ModelManager* modelManager, EnemyEffect* enemyEffect);
 	void Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVpMatrix);
 	void Draw(CmdObj* cmdObj);
 	void DrawImGui();
@@ -41,6 +42,8 @@ private:
 	void CreateDamageText(std::vector<std::pair<Vector3, std::vector<int>>>);
 
 	SHEngine::ModelManager* modelManager_ = nullptr;
+
+	EnemyEffect* enemyEffectManager_ = nullptr;
 
 	Vector3* playerPos_ = nullptr;
 	Map* map_ = nullptr;
