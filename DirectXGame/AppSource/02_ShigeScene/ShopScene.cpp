@@ -340,7 +340,7 @@ void ShopScene::InitializeRerollBar() {
 
 	rerollText_ = std::make_unique<SHEngine::Text>();
 	rerollText_->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
-	rerollText_->SetText(L"リロール");
+	rerollText_->SetText(L"武器購入回数");
 
 	// 操作説明テキストの初期化
 	controlText_ = std::make_unique<SHEngine::Text>();
@@ -353,9 +353,9 @@ void ShopScene::InitializeRerollBar() {
 	easyPlaceText_->SetText(L"自動配置");
 
 	// 武器安置所テキストの初期化
-	weaponStorageText_ = std::make_unique<SHEngine::Text>();
-	weaponStorageText_->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
-	weaponStorageText_->SetText(L"武器安置所");
+	//weaponStorageText_ = std::make_unique<SHEngine::Text>();
+	//weaponStorageText_->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
+	//weaponStorageText_->SetText(L"武器安置所");
 
 	// マウスボタンスプライトの初期化
 	mouseLeftTextureIndex_ = textureManager_->LoadTexture("Assets/Texture/UI/mouse_left.png");
@@ -422,7 +422,7 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 	rerollBarBG_.render->CopyBufferData(1, &bgColor, sizeof(Vector4));
 
 	// テキストの更新
-	std::wstring text = L"リロール : " + std::to_wstring(rerollCount_);
+	std::wstring text = L"武器購入回数 : " + std::to_wstring(rerollCount_);
 	rerollText_->SetText(text.c_str());
 
 	rerollText_->SetColor(rerollTextColor_);
@@ -446,9 +446,9 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 	easyPlaceText_->Update(vpMatrix);
 
 	// 武器安置所テキストの更新
-	weaponStorageText_->SetColor(weaponStorageTextColor_);
-	weaponStorageText_->SetTransform(weaponStorageTextTransform_);
-	weaponStorageText_->Update(vpMatrix);
+	//weaponStorageText_->SetColor(weaponStorageTextColor_);
+	//weaponStorageText_->SetTransform(weaponStorageTextTransform_);
+	//weaponStorageText_->Update(vpMatrix);
 
 	// マウスボタンスプライトの更新
 	// マウスの状態を取得
@@ -514,7 +514,7 @@ void ShopScene::DrawRerollBar(CmdObj* cmdObj) {
 	rerollText_->Draw(cmdObj);
 	controlText_->Draw(cmdObj);
 	easyPlaceText_->Draw(cmdObj);
-	weaponStorageText_->Draw(cmdObj);
+	//weaponStorageText_->Draw(cmdObj);
 
 	// マウススプライト描画
 	mouseLeftSprite_->Draw(cmdObj);

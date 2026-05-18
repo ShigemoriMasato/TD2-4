@@ -120,7 +120,7 @@ std::vector<DrawInfo> BackPack::GetSlotDrawInfos() const {
 
 			switch (slots_[i][j]) {
 				case Slot::Locked:
-					info.color = 0x555555FF; // グレー
+					info.color = 0x0f0f0fFF; // グレー
 					break;
 				case Slot::Empty:
 					if (isReserveArea) {

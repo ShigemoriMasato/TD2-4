@@ -65,14 +65,42 @@ void Map::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::Model
 		}
 
 		stageRender_->psoConfig_.vs = "Simple.VS.hlsl";
-		stageRender_->psoConfig_.ps = "TexColor.PS.hlsl";
+		stageRender_->psoConfig_.ps = "Game/Field.PS.hlsl";
 		stageRender_->psoConfig_.isSwapChain = false;
 
 		stageRender_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
 		stageRender_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 		stageRender_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+		stageRender_->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "Light");
 		stageRender_->SetUseTexture(true);
 		stageRender_->instanceNum_ = 1;
+
+		// StageUnderモデルの読み込み
+		stageUnderModelID_ = modelManager_->LoadModel("Assets/Model/StageUnder");
+
+		// StageUnderレンダーオブジェクトの初期化
+		stageUnderRender_ = std::make_unique<SHEngine::RenderObject>("Map_StageUnder");
+		stageUnderRender_->Initialize();
+
+		auto stageUnderModel = modelManager_->GetNodeModelData(stageUnderModelID_);
+		auto stageUnderDrawData = drawDataManager_->GetDrawData(stageUnderModel.drawDataIndex);
+		stageUnderRender_->SetDrawData(stageUnderDrawData);
+
+		if (!stageUnderModel.materials.empty() && !stageUnderModel.materialIndex.empty()) {
+			auto& material = stageUnderModel.materials[stageUnderModel.materialIndex.front()];
+			stageUnderTextureIndex_ = material.textureIndex;
+		}
+
+		stageUnderRender_->psoConfig_.vs = "Simple.VS.hlsl";
+		stageUnderRender_->psoConfig_.ps = "Game/Field.PS.hlsl";
+		stageUnderRender_->psoConfig_.isSwapChain = false;
+
+		stageUnderRender_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+		stageUnderRender_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+		stageUnderRender_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+		stageUnderRender_->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "Light");
+		stageUnderRender_->SetUseTexture(true);
+		stageUnderRender_->instanceNum_ = 1;
 	}
 }
 
@@ -162,6 +190,19 @@ void Map::Update(const Matrix4x4& vpMatrix, float deltaTime) {
 		stageRender_->CopyBufferData(0, &wvp, sizeof(wvp));
 		stageRender_->CopyBufferData(1, &color, sizeof(color));
 		stageRender_->CopyBufferData(2, &stageTextureIndex_, sizeof(stageTextureIndex_));
+		stageRender_->CopyBufferData(3, &dirLight_, sizeof(dirLight_));
+	}
+
+	// StageUnderの更新
+	if (stageUnderRender_) {
+		Matrix4x4 world = Matrix::MakeAffineMatrix(stageUnderScale_, stageUnderRotation_, stageUnderPosition_);
+		Matrix4x4 wvp = world * vpMatrix;
+		Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
+
+		stageUnderRender_->CopyBufferData(0, &wvp, sizeof(wvp));
+		stageUnderRender_->CopyBufferData(1, &color, sizeof(color));
+		stageUnderRender_->CopyBufferData(2, &stageUnderTextureIndex_, sizeof(stageUnderTextureIndex_));
+		stageUnderRender_->CopyBufferData(3, &dirLight_, sizeof(dirLight_));
 	}
 }
 
@@ -172,6 +213,10 @@ void Map::Draw(CmdObj* cmdObj) {
 
 	if (stageRender_) {
 		stageRender_->Draw(cmdObj);
+	}
+
+	if (stageUnderRender_) {
+		stageUnderRender_->Draw(cmdObj);
 	}
 }
 
@@ -195,6 +240,20 @@ void Map::DrawDebugGUI() {
 		ImGui::DragFloat3("Position", &stagePosition_.x, 0.1f);
 		ImGui::DragFloat3("Rotation", &stageRotation_.x, 0.01f);
 		ImGui::DragFloat3("Scale", &stageScale_.x, 0.01f);
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("StageUnder Transform")) {
+		ImGui::DragFloat3("Position##Under", &stageUnderPosition_.x, 0.1f);
+		ImGui::DragFloat3("Rotation##Under", &stageUnderRotation_.x, 0.01f);
+		ImGui::DragFloat3("Scale##Under", &stageUnderScale_.x, 0.01f);
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("Directional Light")) {
+		ImGui::ColorEdit4("Color", &dirLight_.color.x);
+		ImGui::DragFloat3("Direction", &dirLight_.direction.x, 0.01f);
+		ImGui::DragFloat("Intensity", &dirLight_.intensity, 0.01f, 0.0f, 10.0f);
 		ImGui::TreePop();
 	}
 

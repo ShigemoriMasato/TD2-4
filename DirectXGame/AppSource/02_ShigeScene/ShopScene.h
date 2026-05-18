@@ -81,8 +81,8 @@ private:
 	// リロールバー用変数
 	RerollBar rerollBarFill_;  // 前面（進行状況）
 	RerollBar rerollBarBG_;    // 背景
-	Vector2 rerollBarSize_ = { 950.0f, 50.0f };
-	Vector2 rerollBarPos_ = { 530.0f, -230.0f };
+	Vector2 rerollBarSize_ = { 850.0f, 50.0f };
+	Vector2 rerollBarPos_ = { 480.0f, -230.0f };
 	
 	// リロールテキスト用変数
 	std::unique_ptr<SHEngine::Text> rerollText_ = nullptr;
