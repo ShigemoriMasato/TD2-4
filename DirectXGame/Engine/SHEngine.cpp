@@ -80,11 +80,9 @@ bool Engine::IsLoop() {
 }
 
 void Engine::BeginFrame() {
-	frameCounter_.Update();
 	input_->Update();
 	fpsObserver_->TimeAdjustment();
 	AudioManager::GetInstance()->Update();
-	textureManager_->UploadResources();
 	if (imGuiWrapper_) {
 		imGuiWrapper_->NewFrame();
 		imguiDrew_ = false;
@@ -98,11 +96,12 @@ void Engine::PostDraw() {
 		imguiDrew_ = true;
 	}
 
+	frameCounter_.Update();
 }
 
-void SHEngine::Engine::WaitFence(Command::WaitFence& waitFence, Command::Type type, int index) {
+void SHEngine::Engine::WaitFence(Command::WaitFence& waitFence, Command::Type type) {
 	if(waitFence.fence && waitFence.value) {
-		cmdManager_->WaitFence(waitFence, type, index);
+		cmdManager_->WaitFence(waitFence, type);
 	}
 }
 
