@@ -154,8 +154,7 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 					piece->SetShakeOffset(shakeX, shakeZ);
 					if (rightClickHoldTimer_ >= kRightClickDeleteTime_) {
 						piece->ResetShakeOffset();
-						piece->Remove(backPack);
-						pieceManager_->RemovePiece(piece);
+						pieceManager_->RemovePieceWithEffect(piece, backPack);
 						rightClickTarget_ = nullptr;
 						rightClickHoldTimer_ = 0.0f;
 						break;

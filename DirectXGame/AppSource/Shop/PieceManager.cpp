@@ -45,6 +45,8 @@ void PieceManager::RefreshShopPieces(std::vector<std::unique_ptr<Piece>> shopPie
 
 	shopPieces_ = std::move(shopPieces);
 	for (const auto& piece : shopPieces_) {
+		// ショップには常に縦向きで並ぶ
+		piece->ResetDirection();
 		allPieces_.push_back(piece.get());
 	}
 }
@@ -61,9 +63,9 @@ void PieceManager::MoveShopToHold(Piece* piece, BackPack* backPack) {
 	}
 
 	if (isFromShop) {
-		// 残りのショップピースの位置を記録する
+		// 残りのショップピースの位置とweaponIDを記録する
 		for (const auto& remainingPiece : shopPieces_) {
-			pendingBreakPositions_.push_back(remainingPiece->GetPosition());
+			pendingBreakPositions_.push_back({ remainingPiece->GetPosition(), remainingPiece->GetItem().weaponID, remainingPiece->IsVertical() });
 		}
 
 		// Remove remaining pieces from allPieces_
@@ -105,6 +107,12 @@ Piece* PieceManager::FindMergeTarget(Piece* piece) {
 		}
 	}
 	return nullptr;
+}
+
+void PieceManager::RemovePieceWithEffect(Piece* piece, BackPack* backPack) {
+	pendingDeletePositions_.push_back({ piece->GetPosition(), piece->GetItem().weaponID, piece->IsVertical() });
+	piece->Remove(backPack);
+	RemovePiece(piece);
 }
 
 void PieceManager::RemovePiece(Piece* piece) {

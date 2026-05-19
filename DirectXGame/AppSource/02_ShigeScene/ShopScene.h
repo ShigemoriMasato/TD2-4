@@ -2,6 +2,7 @@
 #include <Scene/IScene.h>
 #include <GameObject/Item/ItemManager.h>
 #include <GameObject/Weapon/WeaponManager.h>
+#include <GameObject/Weapon/WeaponData.h>
 #include <GameObject/Weapon/WeaponDebugger.h>
 #include <Collision/ColliderManager.h>
 #include <Camera/DebugCamera.h>
@@ -148,4 +149,7 @@ private:
 	std::unique_ptr<ParticleDrawer> shopParticleDrawer_;
 	std::unordered_map<int, MultiParticleData> breakParticles_;
 	int nextBreakParticleId_ = 0;
+
+	// 武器種ごとのパーティクル発生位置Offset
+	std::unordered_map<WeaponType, Vector3> weaponBreakParticleOffsets_;
 };

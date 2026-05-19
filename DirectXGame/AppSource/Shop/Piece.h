@@ -60,6 +60,8 @@ public:
 	void RotateRight();
 	void RotateLeft();
 	Direction GetDirection() const { return direction_; }
+	bool IsVertical() const { return direction_ == Direction::Up || direction_ == Direction::Down; }
+	void ResetDirection() { direction_ = Direction::Up; }
 
 	// 保留状態の管理
 	void SetReserved(bool reserved) { isReserved_ = reserved; }
