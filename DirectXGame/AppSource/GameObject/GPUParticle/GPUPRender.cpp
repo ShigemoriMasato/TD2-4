@@ -4,4 +4,5 @@ GPUP::RenderBufferData GPUP::Render::Initialize(uint32_t num, const SHEngine::Dr
 	render_ = std::make_unique<SHEngine::Renderer>(dd);
 	container_ = std::make_unique<SHEngine::BufferContainer>();
 
+	return {};
 }
