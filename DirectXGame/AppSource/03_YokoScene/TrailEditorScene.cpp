@@ -136,7 +136,7 @@ void TrailEditorScene::Reset(TrailType type)
 	std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
 	strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.texturePath.c_str(), _TRUNCATE);
 
-	trailConfig_ = Trail::Config{};
+	trailConfig_ = TrailConfig{};
 
 	// ribbon
 	ribbonPreset_ = RibbonTrailConfig{};

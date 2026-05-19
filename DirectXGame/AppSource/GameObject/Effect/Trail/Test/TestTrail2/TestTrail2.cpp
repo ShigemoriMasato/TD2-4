@@ -25,7 +25,7 @@ namespace
 
 void TestTrail2::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager)
 {
-	Trail::Config cfg{};
+	TrailConfig cfg{};
 	cfg.maxSegments = 32;
 	cfg.lifeTime = 0.35f;
 	cfg.minDistance = 0.03f;

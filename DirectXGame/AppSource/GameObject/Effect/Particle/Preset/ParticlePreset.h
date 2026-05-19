@@ -62,7 +62,6 @@ struct ParticleSRTfloat4
 
 
 
-
 struct ParticleConfig
 {
 	float lifeTime = 1.0f;
@@ -77,8 +76,6 @@ struct ParticleConfig
 	std::string modelPath = "Assets/.EngineResource/Model/Cube";
 };
 
-#pragma region GoToTargetConfig
-
 struct GoToTargetConfig
 {
 	ParticleConfig cfg{};
@@ -87,10 +84,6 @@ struct GoToTargetConfig
 	Vector3 TargetPos = { 0.0f, 0.0f, 0.0f };
 	float moveSpeed = 1.0f;
 };
-
-#pragma endregion
-
-#pragma region B_S_R_T_C_Config
 
 struct B_S_R_T_C_Config
 {
@@ -102,7 +95,6 @@ struct B_S_R_T_C_Config
 	ParticleSRTfloat4 color;
 };
 
-#pragma endregion
 
 using ParticlePresetVariant = std::variant<
 	GoToTargetConfig,

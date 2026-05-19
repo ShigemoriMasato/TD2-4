@@ -22,7 +22,6 @@ struct TrailVertex
 {
     float4 position;
     float2 uv;
-    float3 normal;
     float4 color;
     uint textureIndex;
 };
@@ -33,8 +32,7 @@ StructuredBuffer<TrailVertex> gVertices : register(t0);
 VSOutput main(VSInput input, uint vertexID : SV_VertexID)
 {
     VSOutput o;
-
-    // inputなんてねえよ知らねえよ。実際のデータはSRVから読むえ知らないえ。
+    
     TrailVertex ver = gVertices[vertexID];
 
     o.position = mul(ver.position, vp);

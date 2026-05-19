@@ -12,6 +12,7 @@ class IParticle
 public:
 	static constexpr uint32_t kMaxParticles_ = 4096;
 
+	// GPUに渡す情報
 	struct InstanceGpu
 	{
 		Matrix4x4 world{ Matrix4x4::Identity() };
@@ -31,6 +32,7 @@ private:
 	// GPU転送用
 	std::vector<InstanceGpu> gpuInstances_;
 
+	// リソースハンドル
 	int modelHandle_ = -1;
 	int textureHandle_ = -1;
 
@@ -48,6 +50,7 @@ public:
 
 	void Initialize(SHEngine::TextureManager* textureManager, SHEngine::ModelManager* modelManager);
 	virtual void Update(float dt) = 0;
+	void pushInstance(const Matrix4x4& world, const Vector4& color = { 1,1,1,1 });
 
 	ParticlePresetVariant& GetUniqueConfig() { return config_; }
 
@@ -78,5 +81,4 @@ public:
 	std::vector<Matrix4x4> GetParticleWorlds() const;
 	size_t GetAliveCount() const { return aliveCount_; }
 
-	void pushInstance(const Matrix4x4& world, const Vector4& color = { 1,1,1,1 });
 };

@@ -60,7 +60,7 @@ void TestTrail4::Initialize(
 
 
 	// ---- Trail（剣軌跡用）----
-	Trail::Config cfg{};
+	TrailConfig cfg{};
 	cfg.maxSegments = 48;
 	cfg.lifeTime = 0.25f;
 	cfg.minDistance = 0.01f;

@@ -28,29 +28,46 @@ private:
 
 private:
 	void BuildModelList();
+	std::vector<std::string> modelList_;
+	void BuildTextureList();
+	std::vector<std::string> textureList_;
 	void BuildJsonList();
+	std::vector<std::string> jsonList_;
 
 	void SelectModel(int index);
 
+
+	// 描画トレイルのみ再生成
+	void RebuildDrawTrail();
+	bool requestRebuildDrawingTrail_ = false;
+	// 編集トレイルのみ再生成(Jsonのプリセットから再生成)
+	void RebuildEditTrailByJson();
+	bool requestRebuildEditingTrailByJson_ = false;
+	// 編集トレイルのみ再生成(CurrentEditorConfigから再生成)
+	void RebuildEditTrailByCurrentConfig();
+	bool requestRebuildEditingTrailByCurrentConfig_ = false;
+
 	void RebuildTrail();
 
-	void SaveTrailData();
-	void LoadTrailData();
+	void SaveData();
+	void LoadData();
 
 	void DrawImGui();
-	void DrawConfigUI_();
-	void DrawRibbonUI_();
-	void DrawShockwaveUI_();
+	void DrawImGui_Config();
+	void DrawImGui_Config_Ribbon();
+	void DrawImGui_Config_Shockwave();
 
 	void UpdateRenders(const Matrix4x4& vpMatrix);
 
-	void Reset(TrailType type);
+	void Reset();
 
 private:
 	// カメラ
 	std::unique_ptr<DebugCamera> camera_;
 	// ワールドgrid
 	std::unique_ptr<Grid> grid_;
+
+	// 共通Config
 
 
 	int selectedModelIndex_ = -1;
@@ -69,7 +86,7 @@ private:
 
 
 	// 共通Config
-	Trail::Config trailConfig_{};
+	TrailConfig trailConfig_{};
 	// Ribbon 固有
 	RibbonTrailConfig ribbonPreset_{};
 	// Shock 固有
@@ -88,5 +105,4 @@ private:
 	// ImGuiがstringを許容しないばかりに生まれてしまった産廃
 	char presetNameBuf_[256]{ "trail_01" };
 	char texturePathBuf_[256]{};
-	std::vector<std::string> JsonList_;
 };

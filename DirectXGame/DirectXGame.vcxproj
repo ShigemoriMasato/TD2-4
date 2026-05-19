@@ -300,7 +300,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\GPUParticle\GPUPRender.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
-    <ClCompile Include="AppSource\GameObject\Effect\Trail\Trail.cpp" />
+    <ClCompile Include="AppSource\GameObject\Effect\Trail\ITrail.cpp" />
     <ClCompile Include="AppSource\03_YokoScene\YokoScene.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Test\TestTrail1\TestTrail1.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\Test\TestTrail2\TestTrail2.cpp" />
@@ -469,7 +469,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Weapon\Data\IRangedWeapon.h" />
     <ClInclude Include="AppSource\GameObject\Attack\Swing.h" />
     <ClInclude Include="AppSource\Camera\GameCamera.h" />
-    <ClInclude Include="AppSource\GameObject\Effect\Trail\Trail.h" />
+    <ClInclude Include="AppSource\GameObject\Effect\Trail\ITrail.h" />
     <ClInclude Include="AppSource\03_YokoScene\YokoScene.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\Test\TestTrail1\TestTrail1.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Trail\Test\TestTrail2\TestTrail2.h" />

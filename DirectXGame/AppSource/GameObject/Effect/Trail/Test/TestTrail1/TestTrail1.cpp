@@ -3,7 +3,7 @@
 void TestTrail1::Initialize(SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager)
 {
 	// トレイル初期化
-	Trail::Config cfg{};
+	TrailConfig cfg{};
 	cfg.maxSegments = 32;
 	cfg.lifeTime = 0.25f;
 	cfg.minDistance = 0.0f;
