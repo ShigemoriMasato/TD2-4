@@ -88,6 +88,20 @@ void ShopScene::Initialize() {
 	// ショップ専用ParticleDrawer
 	shopParticleDrawer_ = std::make_unique<ParticleDrawer>();
 	shopParticleDrawer_->Initialize(drawDataManager_, modelManager_);
+
+	// 武器種ごとのパーティクル発生位置Offsetの初期値
+	weaponBreakParticleOffsets_ = {
+		{ WeaponType::Pistol,   { 1.0f, 0.0f, 1.5f } },
+		{ WeaponType::Sword,    { 0.5f, 0.0f, 2.0f } },
+		{ WeaponType::ShotGun,  { 1.5f, 0.0f, 1.0f } },
+		{ WeaponType::Spear,    { 0.5f, 0.0f, 2.5f } },
+		{ WeaponType::Axe,      { 1.0f, 0.0f, 2.0f } },
+		{ WeaponType::Fist,     { 1.0f, 0.0f, 1.0f } },
+		{ WeaponType::Bow,      { 1.5f, 0.0f, 1.0f } },
+		{ WeaponType::Gurepon,  { 1.0f, 0.0f, 2.0f } },
+		{ WeaponType::Pickaxe,  { 1.5f, 0.0f, 1.5f } },
+		{ WeaponType::Shuriken, { 1.0f, 0.0f, 1.0f } },
+	};
 }
 
 std::unique_ptr<IScene> ShopScene::Update() {
@@ -120,6 +134,25 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	ImGui::DragFloat3("Pos", &effectEndPos_.x, 1.0f);
 	ImGui::DragFloat3("Control1", &control1_.x, 0.1f);
 	ImGui::DragFloat3("Control2", &control2_.x, 0.1f);
+	ImGui::End();
+
+	// 武器種ごとのパーティクルオフセット調整
+	ImGui::Begin("Weapon Break Particle Offsets");
+	static const std::pair<WeaponType, const char*> weaponNames[] = {
+		{ WeaponType::Pistol,   "Pistol"   },
+		{ WeaponType::Sword,    "Sword"    },
+		{ WeaponType::ShotGun,  "ShotGun"  },
+		{ WeaponType::Spear,    "Spear"    },
+		{ WeaponType::Axe,      "Axe"      },
+		{ WeaponType::Fist,     "Fist"     },
+		{ WeaponType::Bow,      "Bow"      },
+		{ WeaponType::Gurepon,  "Gurepon"  },
+		{ WeaponType::Pickaxe,  "Pickaxe"  },
+		{ WeaponType::Shuriken, "Shuriken" },
+	};
+	for (auto& [type, name] : weaponNames) {
+		ImGui::DragFloat3(name, &weaponBreakParticleOffsets_[type].x, 0.1f);
+	}
 	ImGui::End();
 
 	itemManager_->DrawImGui();
@@ -197,12 +230,56 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	// pieceBreakエフェクトの生成
 	{
 		auto breakPositions = pieceManager_->TakeBreakPositions();
-		for (const auto& pos : breakPositions) {
+		for (const auto& info : breakPositions) {
+			// 武器種ごとのオフセットを取得
+			Vector3 offset = { 0.0f, 0.0f, 0.0f };
+			if (info.weaponID != -1) {
+				WeaponData* wData = weaponManager_->GetWeapon(info.weaponID);
+				if (wData) {
+					auto it = weaponBreakParticleOffsets_.find(wData->type);
+					if (it != weaponBreakParticleOffsets_.end()) {
+						offset = it->second;
+						// 横向きの時はXとZを入れ替える
+						if (!info.isVertical) {
+							std::swap(offset.x, offset.z);
+						}
+					}
+				}
+			}
 			MultiParticleData data;
 			data.multiParticle.Initialize(textureManager_, modelManager_, commonData_);
 			data.multiParticle.SetDrawer(shopParticleDrawer_.get());
 			data.multiParticle.Add("pieceBreak.json");
-			Matrix4x4 world = Matrix::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, pos);
+			Matrix4x4 world = Matrix::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, info.position + offset);
+			data.multiParticle.SetModelWorld(world);
+			data.oneShot = true;
+			breakParticles_.emplace(nextBreakParticleId_++, std::move(data));
+		}
+	}
+
+	// 右クリック削除エフェクトの生成
+	{
+		auto deletePositions = pieceManager_->TakeDeletePositions();
+		for (const auto& info : deletePositions) {
+			Vector3 offset = { 0.0f, 0.0f, 0.0f };
+			if (info.weaponID != -1) {
+				WeaponData* wData = weaponManager_->GetWeapon(info.weaponID);
+				if (wData) {
+					auto it = weaponBreakParticleOffsets_.find(wData->type);
+					if (it != weaponBreakParticleOffsets_.end()) {
+						offset = it->second;
+						// 横向きの時はXとZを入れ替える
+						if (!info.isVertical) {
+							std::swap(offset.x, offset.z);
+						}
+					}
+				}
+			}
+			MultiParticleData data;
+			data.multiParticle.Initialize(textureManager_, modelManager_, commonData_);
+			data.multiParticle.SetDrawer(shopParticleDrawer_.get());
+			data.multiParticle.Add("pieceBreak.json");
+			Matrix4x4 world = Matrix::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, info.position + offset);
 			data.multiParticle.SetModelWorld(world);
 			data.oneShot = true;
 			breakParticles_.emplace(nextBreakParticleId_++, std::move(data));
@@ -263,6 +340,23 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	if (shopCursor_->GetIsEffect()) {
 		// ワールド座標を取得
 		Vector3 worldPutPos = shopCursor_->GetPutPos();
+
+		// 武器種ごとのオフセットを加算
+		int putWeaponID = shopCursor_->GetPutWeaponID();
+		if (putWeaponID != -1) {
+			WeaponData* wData = weaponManager_->GetWeapon(putWeaponID);
+			if (wData) {
+				auto it = weaponBreakParticleOffsets_.find(wData->type);
+				if (it != weaponBreakParticleOffsets_.end()) {
+					Vector3 offset = it->second;
+					// 横向きの時はXとZを入れ替える
+					if (!shopCursor_->GetPutIsVertical()) {
+						std::swap(offset.x, offset.z);
+					}
+					worldPutPos += offset;
+				}
+			}
+		}
 
 		// ビュープロジェクション行列の計算
 		Matrix4x4 viewProj = debugCamera_->GetVPMatrix();

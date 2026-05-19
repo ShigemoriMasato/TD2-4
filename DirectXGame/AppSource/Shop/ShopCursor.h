@@ -16,6 +16,8 @@ public:
 
 	bool GetIsEffect() const { return isEffect_; }
 	Vector3 GetPutPos() const { return putPos_; }
+	int GetPutWeaponID() const { return putWeaponID_; }
+	bool GetPutIsVertical() const { return putIsVertical_; }
 	void SetVPMatrix(Matrix4x4 vpMatrix) { vpMatrix_ = vpMatrix; }
 
 private:
@@ -30,6 +32,8 @@ private:
 
 	bool isEffect_ = false;
 	Vector3 putPos_;
+	int putWeaponID_ = -1;
+	bool putIsVertical_ = false;
 	Matrix4x4 vpMatrix_;
 
 	// BackPack内ピースの右クリック長押し削除用

@@ -64,6 +64,8 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 				// ゲージに吸われるエフェクトの発火
 				isEffect_ = true;
 				putPos_ = heldPiece_->GetPosition();
+				putWeaponID_ = heldPiece_->GetItem().weaponID;
+				putIsVertical_ = heldPiece_->IsVertical();
 
 			} else if (Piece* mergeTarget = pieceManager_->FindMergeTarget(heldPiece_)) {
 				// 同種・同レアリティのピースに重ねた → マージ
@@ -75,6 +77,8 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 
 					isEffect_ = true;
 					putPos_ = heldPiece_->GetPosition();
+					putWeaponID_ = heldPiece_->GetItem().weaponID;
+					putIsVertical_ = heldPiece_->IsVertical();
 				} else {
 					// マージ後も置けない場合は元の場所に戻す
 					heldPiece_->SetRarity(static_cast<WeaponRarity>(static_cast<int>(heldPiece_->GetRarity()) - 1));
@@ -154,8 +158,7 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 					piece->SetShakeOffset(shakeX, shakeZ);
 					if (rightClickHoldTimer_ >= kRightClickDeleteTime_) {
 						piece->ResetShakeOffset();
-						piece->Remove(backPack);
-						pieceManager_->RemovePiece(piece);
+						pieceManager_->RemovePieceWithEffect(piece, backPack);
 						rightClickTarget_ = nullptr;
 						rightClickHoldTimer_ = 0.0f;
 						break;
@@ -181,11 +184,13 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 					if (piece->AutoPlace(backPack)) {
 						// 配置成功：何もしない（既にPutが呼ばれている）
 
-						// ゲージに吸われるエフェクトの発火
-						isEffect_ = true;
-						putPos_ = piece->GetPosition();
-						
-					} else {
+							// ゲージに吸われるエフェクトの発火
+							isEffect_ = true;
+							putPos_ = piece->GetPosition();
+							putWeaponID_ = piece->GetItem().weaponID;
+							putIsVertical_ = piece->IsVertical();
+
+						} else {
 						// 配置失敗：元の位置と回転に戻す
 						// 回転を元に戻す
 						while (piece->GetDirection() != originalDir) {
@@ -199,10 +204,12 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 						// 保留エリアにある場合、通常エリアに移動
 						piece->MoveToNormal(backPack);
 
-						// ゲージに吸われるエフェクトの発火
-						isEffect_ = true;
-						putPos_ = piece->GetPosition();
-					} else {
+							// ゲージに吸われるエフェクトの発火
+							isEffect_ = true;
+							putPos_ = piece->GetPosition();
+							putWeaponID_ = piece->GetItem().weaponID;
+							putIsVertical_ = piece->IsVertical();
+						} else {
 						// 通常エリアにある場合、保留エリアに移動
 						piece->MoveToReserve(backPack);
 					}

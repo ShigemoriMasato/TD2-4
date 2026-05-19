@@ -6,6 +6,12 @@
 class PieceManager {
 public:
 
+	struct BreakEffectInfo {
+		Vector3 position;
+		int weaponID;
+		bool isVertical;
+	};
+
 	void Initialize();
 
 	void UpdateItemInfo(ItemManager* itemManager);
@@ -19,6 +25,15 @@ public:
 
 	//削除
 	void RemovePiece(Piece* piece);
+	// 削除 + パーティクル用に位置を記録
+	void RemovePieceWithEffect(Piece* piece, BackPack* backPack);
+
+	// 右クリック削除時のパーティクル位置を取得してクリアする
+	std::vector<BreakEffectInfo> TakeDeletePositions() {
+		std::vector<BreakEffectInfo> result = std::move(pendingDeletePositions_);
+		pendingDeletePositions_.clear();
+		return result;
+	}
 
 	// 場にあるピースを全て取得する。当たり判定用
 	std::vector<Piece*> GetAllPieces();
@@ -26,9 +41,9 @@ public:
 	// ショップにあるピースの数を取得
 	size_t GetShopPieceCount() const { return shopPieces_.size(); }
 
-	// 消えたショップピースの位置を取得してクリアする
-	std::vector<Vector3> TakeBreakPositions() {
-		std::vector<Vector3> result = std::move(pendingBreakPositions_);
+	// 消えたショップピースの位置とweaponIDを取得してクリアする
+	std::vector<BreakEffectInfo> TakeBreakPositions() {
+		std::vector<BreakEffectInfo> result = std::move(pendingBreakPositions_);
 		pendingBreakPositions_.clear();
 		return result;
 	}
@@ -41,7 +56,8 @@ public:
 
 private:
 
-	std::vector<Vector3> pendingBreakPositions_;
+	std::vector<BreakEffectInfo> pendingBreakPositions_;
+	std::vector<BreakEffectInfo> pendingDeletePositions_;
 
 	std::vector<std::unique_ptr<Piece>> shopPieces_;
 	std::vector<std::unique_ptr<Piece>> holdPieces_;
