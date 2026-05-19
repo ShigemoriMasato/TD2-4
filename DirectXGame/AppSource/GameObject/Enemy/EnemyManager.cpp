@@ -78,6 +78,7 @@ void EnemyManager::Update(float deltaTime, Matrix4x4 vpMatrix, Matrix4x4 orthoVp
 
 		if (!enemy->IsActive()) {
 			Vector3 enemyPos = enemy->GetPosition();
+			enemyPos.y -= 1.0f;
 			Vector3 scale = { 1.0f, 1.0f, 1.0f };
 			Vector3 rotate = { 0.0f, 0.0f, 0.0f };
 			Matrix4x4 enemyWorldMatrix = Matrix::MakeAffineMatrix(scale, rotate, enemyPos);

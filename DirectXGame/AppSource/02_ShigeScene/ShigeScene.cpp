@@ -440,7 +440,7 @@ void ShigeScene::Draw() {
 	}
 
 	enemyManager_->Draw(cmdObj);
-	//enemyEffectManager_->Draw();
+	enemyEffectManager_->Draw();
 
 	commonData_->trailDrawer->Draw(cmdObj, camera_->GetVPMatrix());
 	commonData_->particleDrawer->Draw(cmdObj, camera_->GetVPMatrix());

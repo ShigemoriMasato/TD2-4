@@ -39,39 +39,39 @@ void EnemyEffect::Update(float dt)
 	}
 
 	// Delete:oneShotがtrueの時は二回目の発生で削除する。
-	for (auto it = multiParticles_.begin(); it != multiParticles_.end(); )
-	{
-		// oneShotがtrue && ThisFrameで発生した
-		if (it->second.oneShot && it->second.multiParticle.GetIsJustEmitted(0))
-		{
-			// 2回目の発生で削除する
-			if (it->second.emittedOnce)
-			{
-				it = multiParticles_.erase(it);
-				continue;
-			}
-			// カウントを進める
-			it->second.emittedOnce = true;
-		}
-		++it;
-	}
+	//for (auto it = multiParticles_.begin(); it != multiParticles_.end(); )
+	//{
+	//	// oneShotがtrue && ThisFrameで発生した
+	//	if (it->second.oneShot && it->second.multiParticle.GetIsJustEmitted(0))
+	//	{
+	//		// 2回目の発生で削除する
+	//		if (it->second.emittedOnce)
+	//		{
+	//			it = multiParticles_.erase(it);
+	//			continue;
+	//		}
+	//		// カウントを進める
+	//		it->second.emittedOnce = true;
+	//	}
+	//	++it;
+	//}
 
-	for (auto it = trailOnParticle_.begin(); it != trailOnParticle_.end();)
-	{
-		// oneShotがtrue && ThisFrameで発生した
-		if (it->second.oneShot && it->second.trailOnParticle.GetParticle().GetIsJustEmitted(0))
-		{
-			// 2回目の発生で削除する
-			if (it->second.emittedOnce)
-			{
-				it = trailOnParticle_.erase(it);
-				continue;
-			}
-			// カウントを進める
-			it->second.emittedOnce = true;
-		}
-		++it;
-	}
+	//for (auto it = trailOnParticle_.begin(); it != trailOnParticle_.end();)
+	//{
+	//	// oneShotがtrue && ThisFrameで発生した
+	//	if (it->second.oneShot && it->second.trailOnParticle.GetParticle().GetIsJustEmitted(0))
+	//	{
+	//		// 2回目の発生で削除する
+	//		if (it->second.emittedOnce)
+	//		{
+	//			it = trailOnParticle_.erase(it);
+	//			continue;
+	//		}
+	//		// カウントを進める
+	//		it->second.emittedOnce = true;
+	//	}
+	//	++it;
+	//}
 }
 
 void EnemyEffect::Draw()
