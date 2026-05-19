@@ -50,3 +50,10 @@ struct ConstantScanline {
 	float lineWidth = 0.002f;				// 走査線の幅
 	float time = 0.0f;						// 時間パラメータ（アニメーション用）
 };
+
+struct Vignette{
+	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};// カラー
+	float intensity = 0.0f;                  // 減光の強さ (0.0 ~ 1.0)
+	float radius = 0.0f;                     // 明るさが保たれる半径 (0.0 ~ 1.0)
+	float softness = 0.0f;                   // グラデーションの滑らかさ (0.0 ~ 1.0)
+};
