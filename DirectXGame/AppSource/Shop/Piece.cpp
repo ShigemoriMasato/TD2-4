@@ -203,7 +203,7 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		}
 		DrawInfo info;
 		auto slotPos = GetChipPos(chip);
-		info.position = { (float)slotPos.first + 0.5f, 0.0f, (float)slotPos.second + 0.5f };
+		info.position = { (float)slotPos.first + 0.5f + shakeOffsetX_, 0.0f, (float)slotPos.second + 0.5f + shakeOffsetZ_ };
 		info.scale = Vector3(0.5f, 0.1f, 0.5f);
 		info.modelIndex = pieceModelID;
 
@@ -244,7 +244,7 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 			// 隣接位置にチップがない場合、その辺にアウトラインを描画
 			if (chipSet.find(neighbor) == chipSet.end()) {
 				DrawInfo outlineInfo;
-				outlineInfo.position = { (float)slotPos.first + 0.5f, 0.0f, (float)slotPos.second + 0.5f };
+				outlineInfo.position = { (float)slotPos.first + 0.5f + shakeOffsetX_, 0.0f, (float)slotPos.second + 0.5f + shakeOffsetZ_ };
 				outlineInfo.modelIndex = pieceModelID;
 				outlineInfo.color = outlineColor;
 
@@ -283,7 +283,7 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		info.position = Vector3(-info.position.z, info.position.y, info.position.x);
 		break;
 	}
-	info.position += Vector3(0.5f, 0.0f, 0.5f) + position_;
+	info.position += Vector3(0.5f + shakeOffsetX_, 0.0f, 0.5f + shakeOffsetZ_) + position_;
 
 	float scaleLerpT = 0.0f;
 	if (deleteTime_ > 0.0f) {

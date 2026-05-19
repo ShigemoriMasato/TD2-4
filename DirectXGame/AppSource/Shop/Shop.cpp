@@ -8,7 +8,7 @@ namespace {
 	// レアリティを重み付きランダムで選択する
 	WeaponRarity RollRarity(std::mt19937& rng) {
 		// Common:50% Uncommon:30% Rare:15% Epic:4% Legend:1%
-		std::discrete_distribution<int> dist({ 80, 15, 5, 0, 0 });
+		std::discrete_distribution<int> dist({ 90, 10, 0, 0, 0 });
 		return static_cast<WeaponRarity>(dist(rng));
 	}
 }

@@ -188,7 +188,7 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	}
 
 	shopCursor_->Update(debugCamera_.get());
-	shopCursor_->EditPiece(backPack_.get());
+	shopCursor_->EditPiece(backPack_.get(), deltaTime_);
 
 	colliderManager_->CollisionCheckAll();
 

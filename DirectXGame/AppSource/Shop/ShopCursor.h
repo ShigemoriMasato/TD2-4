@@ -10,7 +10,7 @@ public:
 	void Initialize(KeyManager* keyManager, PieceManager* pieceManager);
 
 	void Update(Camera* camera);
-	void EditPiece(BackPack* backPack);
+	void EditPiece(BackPack* backPack, float deltaTime);
 
 	bool HasHeldPiece() const { return heldPiece_ != nullptr; }
 
@@ -31,4 +31,9 @@ private:
 	bool isEffect_ = false;
 	Vector3 putPos_;
 	Matrix4x4 vpMatrix_;
+
+	// BackPack内ピースの右クリック長押し削除用
+	Piece* rightClickTarget_ = nullptr;
+	float rightClickHoldTimer_ = 0.0f;
+	static constexpr float kRightClickDeleteTime_ = 1.0f;
 };

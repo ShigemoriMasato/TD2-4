@@ -1,4 +1,5 @@
 #include "ShopCursor.h"
+#include <cmath>
 #include <Common/KeyConfig/WorldCursor.h>
 #include <Utils/AppUtils.h>
 #include <GameObject/Weapon/WeaponData.h>
@@ -20,7 +21,7 @@ void ShopCursor::Update(Camera* camera) {
 	worldPos_.y -= 0.5f;
 }
 
-void ShopCursor::EditPiece(BackPack* backPack) {
+void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 	auto pieces = pieceManager_->GetAllPieces();
 	auto keys = keyManager_->GetKeyStates();
 
@@ -135,6 +136,37 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 
 			if (keys[Key::Use]) {
 				piece->Use();
+			}
+
+			// 右クリック長押し（AutoPlace）によるBackPack削除タイマー処理
+			if (!pieceManager_->IsShopPiece(piece)) {
+				if (keys[Key::AutoPlace]) {
+					if (rightClickTarget_ != piece) {
+						rightClickTarget_ = piece;
+						rightClickHoldTimer_ = 0.0f;
+					}
+					rightClickHoldTimer_ += deltaTime;
+					// sin/cos波でX・Z両軸シェイク（時間とともに振幅増大）
+					float progress = rightClickHoldTimer_ / kRightClickDeleteTime_;
+					float amplitude = 0.05f + 0.15f * progress;
+					float shakeX = std::sin(rightClickHoldTimer_ * 30.0f) * amplitude;
+					float shakeZ = std::cos(rightClickHoldTimer_ * 30.0f) * amplitude;
+					piece->SetShakeOffset(shakeX, shakeZ);
+					if (rightClickHoldTimer_ >= kRightClickDeleteTime_) {
+						piece->ResetShakeOffset();
+						piece->Remove(backPack);
+						pieceManager_->RemovePiece(piece);
+						rightClickTarget_ = nullptr;
+						rightClickHoldTimer_ = 0.0f;
+						break;
+					}
+				} else {
+					if (rightClickTarget_ == piece) {
+						piece->ResetShakeOffset();
+						rightClickTarget_ = nullptr;
+						rightClickHoldTimer_ = 0.0f;
+					}
+				}
 			}
 
 			// 右クリック（AutoPlace）の処理

@@ -68,6 +68,10 @@ public:
 	// 持たれている状態の管理
 	void SetHeld(bool held) { isHeld_ = held; }
 	bool IsHeld() const { return isHeld_; }
+
+	// 右クリック長押しシェイク
+	void SetShakeOffset(float offsetX, float offsetZ) { shakeOffsetX_ = offsetX; shakeOffsetZ_ = offsetZ; }
+	void ResetShakeOffset() { shakeOffsetX_ = 0.0f; shakeOffsetZ_ = 0.0f; }
 	
 public:
 	static inline float hoverSizeX = 0.5f;
@@ -103,6 +107,9 @@ private:
 	bool isActive_ = true;
 	bool isReserved_ = false; // 保留エリアに置かれているか
 	bool isHeld_ = false; // 左クリックで持たれているか
+
+	float shakeOffsetX_ = 0.0f; // 右クリック長押し中のシェイクオフセット（X軸）
+	float shakeOffsetZ_ = 0.0f; // 右クリック長押し中のシェイクオフセット（Z軸）
 
 	float useTimer_ = 0.0f;
 
