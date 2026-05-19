@@ -341,6 +341,23 @@ std::unique_ptr<IScene> ShopScene::Update() {
 		// ワールド座標を取得
 		Vector3 worldPutPos = shopCursor_->GetPutPos();
 
+		// 武器種ごとのオフセットを加算
+		int putWeaponID = shopCursor_->GetPutWeaponID();
+		if (putWeaponID != -1) {
+			WeaponData* wData = weaponManager_->GetWeapon(putWeaponID);
+			if (wData) {
+				auto it = weaponBreakParticleOffsets_.find(wData->type);
+				if (it != weaponBreakParticleOffsets_.end()) {
+					Vector3 offset = it->second;
+					// 横向きの時はXとZを入れ替える
+					if (!shopCursor_->GetPutIsVertical()) {
+						std::swap(offset.x, offset.z);
+					}
+					worldPutPos += offset;
+				}
+			}
+		}
+
 		// ビュープロジェクション行列の計算
 		Matrix4x4 viewProj = debugCamera_->GetVPMatrix();
 
