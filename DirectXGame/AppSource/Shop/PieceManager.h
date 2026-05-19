@@ -14,8 +14,8 @@ public:
 	// ショップのピースを更新する。ショップのピースは別のクラスで抽選したものを引数で渡す
 	void RefreshShopPieces(std::vector<std::unique_ptr<Piece>> shopPieces);
 
-	//ShopからHoldに移動させる
-	void MoveShopToHold(Piece* piece);
+	//ShopからHoldに移動させる（マージ判定付き）
+	void MoveShopToHold(Piece* piece, BackPack* backPack);
 
 	//削除
 	void RemovePiece(Piece* piece);
@@ -25,6 +25,9 @@ public:
 
 	// ショップにあるピースの数を取得
 	size_t GetShopPieceCount() const { return shopPieces_.size(); }
+
+	// マージ対象を探す：同様のアイテムID・同レアリティでチップが1つ以上重なるピースを返す
+	Piece* FindMergeTarget(Piece* piece);
 
 	// ピースがショップエリアにあるかを判定
 	bool IsShopPiece(Piece* piece) const;

@@ -1,6 +1,7 @@
 #include "ShopCursor.h"
 #include <Common/KeyConfig/WorldCursor.h>
 #include <Utils/AppUtils.h>
+#include <GameObject/Weapon/WeaponData.h>
 
 void ShopCursor::Initialize(KeyManager* keyManager, PieceManager* pieceManager) {
 	keyManager_ = keyManager;
@@ -63,6 +64,30 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 				isEffect_ = true;
 				putPos_ = heldPiece_->GetPosition();
 
+			} else if (Piece* mergeTarget = pieceManager_->FindMergeTarget(heldPiece_)) {
+				// 同種・同レアリティのピースに重ねた → マージ
+				mergeTarget->Remove(backPack);
+				pieceManager_->RemovePiece(mergeTarget);
+				heldPiece_->SetRarity(static_cast<WeaponRarity>(static_cast<int>(heldPiece_->GetRarity()) + 1));
+				if (heldPiece_->CanPut(backPack)) {
+					heldPiece_->Put(backPack);
+
+					isEffect_ = true;
+					putPos_ = heldPiece_->GetPosition();
+				} else {
+					// マージ後も置けない場合は元の場所に戻す
+					heldPiece_->SetRarity(static_cast<WeaponRarity>(static_cast<int>(heldPiece_->GetRarity()) - 1));
+					auto currentDir = heldPiece_->GetDirection();
+					while (currentDir != preHeldPieceDir_) {
+						heldPiece_->RotateRight();
+						currentDir = heldPiece_->GetDirection();
+					}
+					heldPiece_->SetPosition(preHeldPiecePos_);
+					heldPiece_->SetReserved(wasReserved);
+					if (heldPiece_->CanPut(backPack)) {
+						heldPiece_->Put(backPack);
+					}
+				}
 			} else {
 				// 元の場所に戻す
 				auto currentDir = heldPiece_->GetDirection();

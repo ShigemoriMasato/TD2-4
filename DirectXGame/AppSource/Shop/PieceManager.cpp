@@ -49,7 +49,7 @@ void PieceManager::RefreshShopPieces(std::vector<std::unique_ptr<Piece>> shopPie
 	}
 }
 
-void PieceManager::MoveShopToHold(Piece* piece) {
+void PieceManager::MoveShopToHold(Piece* piece, BackPack* backPack) {
 	bool isFromShop = false;
 	for (size_t i = 0; i < shopPieces_.size(); ++i) {
 		if (shopPieces_[i].get() == piece) {
@@ -79,6 +79,27 @@ void PieceManager::MoveShopToHold(Piece* piece) {
 		// Clear the remaining shop pieces
 		shopPieces_.clear();
 	}
+}
+
+Piece* PieceManager::FindMergeTarget(Piece* piece) {
+	if (piece->GetRarity() >= WeaponRarity::Legend) {
+		return nullptr;
+	}
+	auto heldChips = piece->GetChipPositions();
+	for (const auto& holdPiece : holdPieces_) {
+		Piece* other = holdPiece.get();
+		if (other == piece) continue;
+		if (other->GetItem().id != piece->GetItem().id) continue;
+		if (other->GetRarity() != piece->GetRarity()) continue;
+		// チップが1つでも重なっていればマージ対象
+		auto otherChips = other->GetChipPositions();
+		for (const auto& hc : heldChips) {
+			for (const auto& oc : otherChips) {
+				if (hc == oc) return other;
+			}
+		}
+	}
+	return nullptr;
 }
 
 void PieceManager::RemovePiece(Piece* piece) {

@@ -1,5 +1,6 @@
 #pragma once
 #include <GameObject/Item/Item.h>
+#include <GameObject/Weapon/WeaponData.h>
 #include "BackPack.h"
 
 class PieceManager;
@@ -47,6 +48,14 @@ public:
 	Item GetItem() const { return itemData_; }
 	int GetRank() const { return rank_; }
 	bool IsActive() const { return isActive_; }
+
+	// レアリティ
+	void SetRarity(WeaponRarity rarity) { rarity_ = rarity; }
+	WeaponRarity GetRarity() const { return rarity_; }
+	static uint32_t GetRarityColor(WeaponRarity rarity);
+
+	// 現在のチップのワールド上のグリッド座標を取得（無視チップを除く）
+	std::vector<std::pair<int,int>> GetChipPositions() const;
 
 	void RotateRight();
 	void RotateLeft();
@@ -98,4 +107,6 @@ private:
 	float useTimer_ = 0.0f;
 
 	float deleteTime_ = 3600.0f; // 使用してから消えるまでの時間
+
+	WeaponRarity rarity_ = WeaponRarity::Common; // レアリティ
 };
