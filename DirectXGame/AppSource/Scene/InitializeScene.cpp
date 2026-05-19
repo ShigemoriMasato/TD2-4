@@ -175,7 +175,6 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	commonData_->cmdObject->ResetCommandList();
 
 	return std::make_unique<ShigeScene>();
-	return std::make_unique<TitleScene>();
 	return std::make_unique<PrticleEditorScene>();
 	return std::make_unique<TitleScene>();
 	return std::make_unique<YokoScene>();

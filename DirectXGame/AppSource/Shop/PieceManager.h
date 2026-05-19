@@ -26,6 +26,13 @@ public:
 	// ショップにあるピースの数を取得
 	size_t GetShopPieceCount() const { return shopPieces_.size(); }
 
+	// 消えたショップピースの位置を取得してクリアする
+	std::vector<Vector3> TakeBreakPositions() {
+		std::vector<Vector3> result = std::move(pendingBreakPositions_);
+		pendingBreakPositions_.clear();
+		return result;
+	}
+
 	// マージ対象を探す：同様のアイテムID・同レアリティでチップが1つ以上重なるピースを返す
 	Piece* FindMergeTarget(Piece* piece);
 
@@ -33,6 +40,8 @@ public:
 	bool IsShopPiece(Piece* piece) const;
 
 private:
+
+	std::vector<Vector3> pendingBreakPositions_;
 
 	std::vector<std::unique_ptr<Piece>> shopPieces_;
 	std::vector<std::unique_ptr<Piece>> holdPieces_;

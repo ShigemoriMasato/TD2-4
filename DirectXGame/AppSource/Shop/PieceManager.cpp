@@ -61,6 +61,11 @@ void PieceManager::MoveShopToHold(Piece* piece, BackPack* backPack) {
 	}
 
 	if (isFromShop) {
+		// 残りのショップピースの位置を記録する
+		for (const auto& remainingPiece : shopPieces_) {
+			pendingBreakPositions_.push_back(remainingPiece->GetPosition());
+		}
+
 		// Remove remaining pieces from allPieces_
 		for (auto it = allPieces_.begin(); it != allPieces_.end(); ) {
 			bool isShopPiece = false;

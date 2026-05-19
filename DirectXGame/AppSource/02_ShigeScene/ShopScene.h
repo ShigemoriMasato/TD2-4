@@ -19,6 +19,8 @@
 #include <UI/Game/SituationGauge.h>
 #include <UI/Game/GaugeAttractEffect.h>
 #include <UI/Game/ValueDeltaEffect.h>
+#include <GameObject/Enemy/EnemyEffect/EnemyEffectManager.h>
+#include <GameObject/Effect/Particle/Drawer/ParticleDrawer.h>
 
 class ShopScene : public IScene {
 public:
@@ -122,7 +124,7 @@ private:
 
 	int rerollCount_ = 3; // リロール可能な回数
 	bool pendingReroll_ = false; // リロール待機フラグ
-	float rerollIntervalTime_ = 1.0f; // 補充インターバル時間（秒）
+	float rerollIntervalTime_ = 1.5f; // 補充インターバル時間（秒）
 	float rerollIntervalTimer_ = 0.0f; // 補充インターバルタイマー
 
 	GameDisplayRange displayRange_;
@@ -141,4 +143,9 @@ private:
 	std::vector<std::unique_ptr<ValueDeltaEffect>> valueEffects_;
 	SHEngine::DrawData textDrawData_{};
 	Vector3 valueEfectPos_ = {1000.0f, -200.0f, 0.0f};
+
+	// pieceBreakパーティクル
+	std::unique_ptr<ParticleDrawer> shopParticleDrawer_;
+	std::unordered_map<int, MultiParticleData> breakParticles_;
+	int nextBreakParticleId_ = 0;
 };
