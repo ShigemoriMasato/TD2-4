@@ -340,6 +340,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\UI\Result\ResultUIManager.cpp" />
     <ClCompile Include="AppSource\UI\Result\ResultScoreText.cpp" />
     <ClCompile Include="AppSource\UI\Result\ResultTimerText.cpp" />
+    <ClCompile Include="AppSource\WeaponEdit\WeaponEditScene.cpp" />
+    <ClCompile Include="AppSource\WeaponEdit\WeaponRender.cpp" />
+    <ClCompile Include="AppSource\WeaponEdit\Weapon.cpp" />
     <ClInclude Include="AppSource\02_ShigeScene\GameDisplayRange.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\DamagePopup.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\FastEnemy.h" />
@@ -526,6 +529,9 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Fade\FadeManager.h" />
     <ClInclude Include="AppSource\GameObject\GPUParticle\GPUParticle.h" />
     <ClInclude Include="AppSource\GameObject\GPUParticle\GPUPRender.h" />
+    <ClInclude Include="AppSource\WeaponEdit\WeaponEditScene.h" />
+    <ClInclude Include="AppSource\WeaponEdit\WeaponRender.h" />
+    <ClInclude Include="AppSource\WeaponEdit\Weapon.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />
