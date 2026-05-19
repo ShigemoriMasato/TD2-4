@@ -84,6 +84,10 @@ void ShopScene::Initialize() {
 	// 有利不利ゲージ
 	situationGauge_ = std::make_unique<SituationGauge>();
 	situationGauge_->Initialize(modelManager_, drawDataManager_, textureManager_);
+
+	// ショップ専用ParticleDrawer
+	shopParticleDrawer_ = std::make_unique<ParticleDrawer>();
+	shopParticleDrawer_->Initialize(drawDataManager_, modelManager_);
 }
 
 std::unique_ptr<IScene> ShopScene::Update() {
@@ -188,9 +192,44 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	}
 
 	shopCursor_->Update(debugCamera_.get());
-	shopCursor_->EditPiece(backPack_.get());
+	shopCursor_->EditPiece(backPack_.get(), deltaTime_);
+
+	// pieceBreakエフェクトの生成
+	{
+		auto breakPositions = pieceManager_->TakeBreakPositions();
+		for (const auto& pos : breakPositions) {
+			MultiParticleData data;
+			data.multiParticle.Initialize(textureManager_, modelManager_, commonData_);
+			data.multiParticle.SetDrawer(shopParticleDrawer_.get());
+			data.multiParticle.Add("pieceBreak.json");
+			Matrix4x4 world = Matrix::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, pos);
+			data.multiParticle.SetModelWorld(world);
+			data.oneShot = true;
+			breakParticles_.emplace(nextBreakParticleId_++, std::move(data));
+		}
+	}
+
+	// pieceBreakエフェクトの更新
+	for (auto& [key, data] : breakParticles_) {
+		data.multiParticle.Update(deltaTime_);
+	}
+	for (auto it = breakParticles_.begin(); it != breakParticles_.end(); ) {
+		auto& data = it->second;
+		// 初回発火を検知したらエミッターを止める
+		if (!data.emittedOnce && data.multiParticle.GetIsJustEmitted(0)) {
+			data.emittedOnce = true;
+			data.multiParticle.SetEmittingFlag(0, false);
+		}
+		// 発火済みで全パーティクルが死んだら削除
+		if (data.emittedOnce && data.multiParticle.GetAliveCount(0) == 0) {
+			it = breakParticles_.erase(it);
+			continue;
+		}
+		++it;
+	}
 
 	colliderManager_->CollisionCheckAll();
+
 
 	//DrawInfo集め
 	{
@@ -287,6 +326,12 @@ void ShopScene::DrawReady() {
 	for (auto& effect : valueEffects_) {
 		effect->Draw(cmdObj);
 	}
+
+	// pieceBreakパーティクルの描画（ショップのレンダーターゲット内でショップカメラで描画）
+	for (auto& [key, data] : breakParticles_) {
+		data.multiParticle.Draw();
+	}
+	shopParticleDrawer_->Draw(cmdObj, debugCamera_->GetVPMatrix());
 
 	shopDisplay_->ToPresent();
 }

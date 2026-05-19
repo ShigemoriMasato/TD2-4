@@ -1,5 +1,6 @@
 #pragma once
 #include <GameObject/Item/Item.h>
+#include <GameObject/Weapon/WeaponData.h>
 #include "BackPack.h"
 
 class PieceManager;
@@ -48,6 +49,14 @@ public:
 	int GetRank() const { return rank_; }
 	bool IsActive() const { return isActive_; }
 
+	// レアリティ
+	void SetRarity(WeaponRarity rarity) { rarity_ = rarity; }
+	WeaponRarity GetRarity() const { return rarity_; }
+	static uint32_t GetRarityColor(WeaponRarity rarity);
+
+	// 現在のチップのワールド上のグリッド座標を取得（無視チップを除く）
+	std::vector<std::pair<int,int>> GetChipPositions() const;
+
 	void RotateRight();
 	void RotateLeft();
 	Direction GetDirection() const { return direction_; }
@@ -59,6 +68,10 @@ public:
 	// 持たれている状態の管理
 	void SetHeld(bool held) { isHeld_ = held; }
 	bool IsHeld() const { return isHeld_; }
+
+	// 右クリック長押しシェイク
+	void SetShakeOffset(float offsetX, float offsetZ) { shakeOffsetX_ = offsetX; shakeOffsetZ_ = offsetZ; }
+	void ResetShakeOffset() { shakeOffsetX_ = 0.0f; shakeOffsetZ_ = 0.0f; }
 	
 public:
 	static inline float hoverSizeX = 0.5f;
@@ -95,7 +108,12 @@ private:
 	bool isReserved_ = false; // 保留エリアに置かれているか
 	bool isHeld_ = false; // 左クリックで持たれているか
 
+	float shakeOffsetX_ = 0.0f; // 右クリック長押し中のシェイクオフセット（X軸）
+	float shakeOffsetZ_ = 0.0f; // 右クリック長押し中のシェイクオフセット（Z軸）
+
 	float useTimer_ = 0.0f;
 
 	float deleteTime_ = 3600.0f; // 使用してから消えるまでの時間
+
+	WeaponRarity rarity_ = WeaponRarity::Common; // レアリティ
 };

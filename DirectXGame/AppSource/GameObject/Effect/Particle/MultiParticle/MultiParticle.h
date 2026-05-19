@@ -31,6 +31,8 @@ public:
 	void SetEmittingFlag(const int32_t id, bool flag);
 	// configをセット
 	void SetConfig(const int32_t id, const ParticlePresetVariant& presetVar);
+	// Drawerを上書きする（シーン固有のDrawerを使いたい場合に使う）
+	void SetDrawer(ParticleDrawer* drawer) { drawer_ = drawer; }
 	ParticlePresetVariant GetConfig(const int32_t id);
 	// 生成された瞬間を取得
 	bool GetIsJustEmitted(const int32_t id);

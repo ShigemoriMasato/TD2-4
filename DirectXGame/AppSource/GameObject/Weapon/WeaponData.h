@@ -5,6 +5,7 @@ enum class WeaponRarity : int {
 	Uncommon = 1, // アンコモン
 	Rare = 2,     // レア
 	Epic = 3,     // エピック
+	Legend = 4,   // レジェンド
 };
 
 enum class WeaponType : int {

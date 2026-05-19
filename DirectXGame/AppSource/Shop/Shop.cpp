@@ -2,6 +2,16 @@
 #ifdef USE_IMGUI
 #include <imgui/imgui.h>
 #endif
+#include <GameObject/Weapon/WeaponData.h>
+
+namespace {
+	// レアリティを重み付きランダムで選択する
+	WeaponRarity RollRarity(std::mt19937& rng) {
+		// Common:50% Uncommon:30% Rare:15% Epic:4% Legend:1%
+		std::discrete_distribution<int> dist({ 90, 10, 0, 0, 0 });
+		return static_cast<WeaponRarity>(dist(rng));
+	}
+}
 
 void Shop::Initialize(ItemManager* itemManager) {
 	itemManager_ = itemManager;
@@ -26,6 +36,7 @@ std::vector<std::unique_ptr<Piece>> Shop::RefreshShopPieces() {
 		const Item& item = itemManager_->GetItem(itemIndex);
 		auto piece = std::make_unique<Piece>();
 		piece->Initialize(item, 0);
+		piece->SetRarity(RollRarity(randomEngine_));
 
 		//初期位置(適当)
 		piece->SetPosition(startPos_ + interval_ * static_cast<float>(i));

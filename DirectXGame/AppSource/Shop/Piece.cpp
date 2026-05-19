@@ -4,6 +4,17 @@
 #include <../Engine/Assets/Audio/AudioManager.h>
 #include <set>
 
+uint32_t Piece::GetRarityColor(WeaponRarity rarity) {
+	switch (rarity) {
+	case WeaponRarity::Common:   return 0x808080ff; // 灰
+	case WeaponRarity::Uncommon: return 0x00cc44ff; // 緑
+	case WeaponRarity::Rare:     return 0x2277ffff; // 青
+	case WeaponRarity::Epic:     return 0x9933ffff; // 紫
+	case WeaponRarity::Legend:   return 0xff8800ff; // 橙
+	default:                     return 0x808080ff;
+	}
+}
+
 void Piece::Initialize(const Item& item, int rank) {
 	itemData_ = item;
 	rank_ = rank;
@@ -87,7 +98,7 @@ bool Piece::Put(BackPack* backPack) {
 		backPack->SetSlot(slot, Slot::Rank1);
 	}
 
-	pieceManager_->MoveShopToHold(this);
+	pieceManager_->MoveShopToHold(this, backPack);
 
 	// 保留エリアに置かれたかをチェック
 	bool inReserveArea = true;
@@ -192,11 +203,11 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		}
 		DrawInfo info;
 		auto slotPos = GetChipPos(chip);
-		info.position = { (float)slotPos.first + 0.5f, 0.0f, (float)slotPos.second + 0.5f };
+		info.position = { (float)slotPos.first + 0.5f + shakeOffsetX_, 0.0f, (float)slotPos.second + 0.5f + shakeOffsetZ_ };
 		info.scale = Vector3(0.5f, 0.1f, 0.5f);
 		info.modelIndex = pieceModelID;
 
-		info.color = 0x4f4f4fff;
+		info.color = GetRarityColor(rarity_);
 		if (isPlaced_) {
 			info.color = 0x00ffffff; // シアン
 		}
@@ -233,7 +244,7 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 			// 隣接位置にチップがない場合、その辺にアウトラインを描画
 			if (chipSet.find(neighbor) == chipSet.end()) {
 				DrawInfo outlineInfo;
-				outlineInfo.position = { (float)slotPos.first + 0.5f, 0.0f, (float)slotPos.second + 0.5f };
+				outlineInfo.position = { (float)slotPos.first + 0.5f + shakeOffsetX_, 0.0f, (float)slotPos.second + 0.5f + shakeOffsetZ_ };
 				outlineInfo.modelIndex = pieceModelID;
 				outlineInfo.color = outlineColor;
 
@@ -272,7 +283,7 @@ std::vector<DrawInfo> Piece::GetDrawInfos() const {
 		info.position = Vector3(-info.position.z, info.position.y, info.position.x);
 		break;
 	}
-	info.position += Vector3(0.5f, 0.0f, 0.5f) + position_;
+	info.position += Vector3(0.5f + shakeOffsetX_, 0.0f, 0.5f + shakeOffsetZ_) + position_;
 
 	float scaleLerpT = 0.0f;
 	if (deleteTime_ > 0.0f) {
@@ -293,6 +304,16 @@ void Piece::RotateRight() {
 
 void Piece::RotateLeft() {
 	direction_ = static_cast<Direction>((static_cast<int>(direction_) + 3) % 4);
+}
+
+std::vector<std::pair<int,int>> Piece::GetChipPositions() const {
+	std::vector<std::pair<int,int>> result;
+	for (const auto& chip : chips_) {
+		if (!IsIgnored(chip)) {
+			result.push_back(GetChipPos(chip));
+		}
+	}
+	return result;
 }
 
 bool Piece::IsIgnored(const std::pair<int, int>& chip) const {
