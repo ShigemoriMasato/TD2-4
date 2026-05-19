@@ -119,6 +119,11 @@ private:// System系
 
 	bool isPlayerDead_ = false;
 
+	Vignette vignette_;
+	AnimationBundle<float> vignetteIntensityAnim_;
+	float vinetteIntensity_ = 0.2f;
+	float vinetteActiveHP_ = 100.0f;
+
 private:// Shop
 
 	std::unique_ptr<ShopScene> shopScene_;

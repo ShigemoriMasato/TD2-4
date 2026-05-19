@@ -46,6 +46,7 @@ void PostEffect::Initialize(SHEngine::TextureManager* textureManager, SHEngine::
 		createPostEffectObject(PostEffectJob::GridTransition, "GridTransition");
 		createPostEffectObject(PostEffectJob::SlowMotion, "SlowMotion");
 		createPostEffectObject(PostEffectJob::HeavyBlur, "Blur");
+		createPostEffectObject(PostEffectJob::Vignette, "Vignette");
 
 		//PostEffect用Displayの初期化
 		intermediateDisplay_ = std::make_unique<SHEngine::Screen::MultiDisplay>();
