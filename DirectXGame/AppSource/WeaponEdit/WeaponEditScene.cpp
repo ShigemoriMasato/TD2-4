@@ -3,7 +3,7 @@
 WeaponEditScene::WeaponEditScene() {
 #ifdef USE_IMGUI
 	auto& io = ImGui::GetIO();
-	io.IniFilename = "Assets/ImGui/WeaponEdit.ini"
+	io.IniFilename = "Assets/ImGui/WeaponEdit.ini";
 #endif
 }
 

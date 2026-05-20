@@ -27,7 +27,6 @@ void Weapon::Update(float deltaTime) {
 
 	for (size_t i = 0; i < data_.attackAnimation.size(); ++i) {
 		if (timer_ < data_.attackAnimation[i].time) {
-
 			break;
 		}
 	}
@@ -44,4 +43,5 @@ void Weapon::DataSetting() {
 	int handle = modelManager_->LoadModel(data_.modelFilePath);
 	auto& data = modelManager_->GetNodeModelData(handle);
 	renderData_.modelData = data;
+	renderData_.drawData = drawDataManager_->GetDrawData(data.drawDataIndex);
 }

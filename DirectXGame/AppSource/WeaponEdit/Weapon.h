@@ -5,6 +5,22 @@
 class Weapon {
 public:
 
+	//特殊なキー。攻撃地点とプレイヤーの位置は動的に変わるため、固定の値を入れておく
+	struct UniqueKey {
+		static inline const Matrix4x4 player = {
+			0, 0, 0, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 0
+		};
+		static inline const Matrix4x4 aim = {
+			1, 1, 1, 1,
+			1, 1, 1, 1,
+			1, 1, 1, 1,
+			1, 1, 1, 1
+		};
+	};
+
 	struct Key {
 		float time;
 		std::vector<Matrix4x4> matrices;
@@ -19,9 +35,12 @@ public:
 	struct RenderData {
 		Matrix4x4 world;
 		NodeModelData modelData;
+		SHEngine::DrawData drawData;
 	};
 
-	static void SetModelManager(SHEngine::ModelManager* modelManager) { modelManager_ = modelManager; }
+	static void SetModelManager(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager) {
+		modelManager_ = modelManager, drawDataManager_ = drawDataManager;
+	}
 
 	Weapon(std::string dataFilePath);
 	void Update(float deltaTime);
@@ -38,19 +57,6 @@ public:
 
 private:
 
-	static inline const Matrix4x4 playerKey_ = {
-		0, 0, 0, 0,
-		0, 0, 0, 0,
-		0, 0, 0, 0,
-		0, 0, 0, 0
-	};
-	static inline const Matrix4x4 aimKey_ = {
-		1, 1, 1, 1,
-		1, 1, 1, 1,
-		1, 1, 1, 1,
-		1, 1, 1, 1
-	};
-
 	void DataSetting();
 
 	float timer_ = 0.0f;
@@ -63,5 +69,6 @@ private:
 	static inline Matrix4x4 playerMatrix_;
 	static inline BinaryManager binManager_;
 	static inline SHEngine::ModelManager* modelManager_ = nullptr;
+	static inline SHEngine::DrawDataManager* drawDataManager_ = nullptr;
 
 };

@@ -6,32 +6,18 @@ WeaponImGui::WeaponImGui(SHEngine::Engine* engine) : engine_(engine) {
 
 	BinaryManager binManager;
 
-	for (const auto& fileName : allFiles) {
-		auto& data = files_[fileName];
+	Load();
+	RefreshModelPaths();
+}
 
-		data.modelFilePath = binManager.Reverse<std::string>();
-		data.regularMatrix = binManager.Reverse<Matrix4x4>();
-		int keyCount = binManager.Reverse<int>();
-		for (int i = 0; i < keyCount; ++i) {
-			Weapon::Key key;
-			key.time = binManager.Reverse<float>();
-			int matrixCount = binManager.Reverse<int>();
-			for (int j = 0; j < matrixCount; ++j) {
-				key.matrices.push_back(binManager.Reverse<Matrix4x4>());
-			}
-			data.attackAnimation.push_back(key);
-		}
-	}
-
-	RefleshModelPaths();
+WeaponImGui::~WeaponImGui() {
+	Save();
 }
 
 void WeaponImGui::Update() {
 #ifdef USE_IMGUI
 
-	ImGui::Begin("Weapon Edit");
-
-	if (ImGui::TreeNode("File Select")) {
+	if (ImGui::Begin("File Select")) {
 
 		{
 			static char fileName[256] = "";
@@ -41,7 +27,7 @@ void WeaponImGui::Update() {
 					auto& popup = popupMessages_.emplace_back();
 					popup.title = "Error";
 					popup.message = "そのファイルは既に存在しています";
-				} else {
+				} else if(fileName[0] != '\0') {
 					files_[fileName] = {};
 					currentFilePath_ = fileName;
 				}
@@ -68,7 +54,7 @@ void WeaponImGui::Update() {
 			currentFilePath_ = fileNames[currentItem];
 		}
 
-		ImGui::TreePop();
+		ImGui::End();
 	}
 
 	if (currentFilePath_.empty()) {
@@ -76,8 +62,17 @@ void WeaponImGui::Update() {
 		return;
 	}
 
-	if (ImGui::TreeNode("Model")) {
-		ImGui::Text("Assets/Models/Item/Weapon/にモデルファイルを入れるとここに表示されます");
+	if (ImGui::Begin("Model")) {
+		//モデルを探すパスの変更
+		static char currentModelPath[256];
+		std::memcpy(currentModelPath, weaponModelPath_.c_str(), 256);
+		ImGui::InputText("Search", currentModelPath, 256);
+		weaponModelPath_ = currentModelPath;
+
+		if (ImGui::Button("Refresh")) {
+			RefreshModelPaths();
+		}
+
 		if (!modelPaths_.empty()) {
 			std::vector<const char*> modelFileNames;
 			modelFileNames.reserve(modelPaths_.size());
@@ -99,11 +94,17 @@ void WeaponImGui::Update() {
 			files_[currentFilePath_].modelFilePath = modelFileNames[currentItem];
 		}
 
-		ImGui::TreePop();
+		ImGui::End();
+	}
+	
+	if (ImGui::Begin("IdleMatrix")) {
+
+		
+
+		ImGui::End();
 	}
 
-	ImGui::End();
-
+	/*************   PopUp Message   *************/
 
 	for (int i = 0; i < int(popupMessages_.size()); ++i) {
 		ImGui::SetNextWindowFocus();
@@ -130,10 +131,71 @@ Weapon::Data WeaponImGui::GetData() const {
 	return files_.at(currentFilePath_);
 }
 
-void WeaponImGui::RefleshModelPaths() {
+void WeaponImGui::RefreshModelPaths() {
 	modelPaths_.clear();
-	auto allFiles = SearchDirectoryNames("Assets/Models/Item/Weapon/");
+	auto allFiles = SearchDirectoryNames(modelPath_ + weaponModelPath_);
 	for (const auto& fileName : allFiles) {
 		modelPaths_.push_back(fileName);
+	}
+}
+
+void WeaponImGui::Save() {
+	BinaryManager binManager;
+
+	int fileCount = int(files_.size());
+	binManager.Register(&fileCount);
+
+	for (const auto& [filePath, data] : files_) {
+		std::string path = itemSavePath_ + filePath + extension_;
+		binManager.Register(&path);
+
+		BinaryManager itemBin;
+		itemBin.Register(&data.modelFilePath);
+		itemBin.Register(&data.regularMatrix);
+		int keyCount = int(data.attackAnimation.size());
+		itemBin.Register(&keyCount);
+		for (const auto& key : data.attackAnimation) {
+			itemBin.Register(&key.time);
+			int matrixCount = int(key.matrices.size());
+			itemBin.Register(&matrixCount);
+			for (const auto& matrix : key.matrices) {
+				itemBin.Register(&matrix);
+			}
+		}
+		itemBin.Write(itemSavePath_ + filePath + extension_);
+	}
+
+	binManager.Write(saveFile_);
+}
+
+void WeaponImGui::Load() {
+	BinaryManager binManager;
+	BinaryManager itemBin;
+
+	if (!binManager.Boot(saveFile_)) {
+		return;
+	}
+
+	int fileCount = binManager.Reverse<int>();
+
+	for (int i = 0; i < fileCount; ++i) {
+		std::string filePath = binManager.Reverse<std::string>();
+		if (!itemBin.Boot(filePath)) {
+			continue;
+		}
+		Weapon::Data data;
+		data.modelFilePath = itemBin.Reverse<std::string>();
+		data.regularMatrix = itemBin.Reverse<Matrix4x4>();
+		int keyCount = itemBin.Reverse<int>();
+		for (int j = 0; j < keyCount; ++j) {
+			Weapon::Key key;
+			key.time = itemBin.Reverse<float>();
+			int matrixCount = itemBin.Reverse<int>();
+			for (int k = 0; k < matrixCount; ++k) {
+				key.matrices.push_back(itemBin.Reverse<Matrix4x4>());
+			}
+			data.attackAnimation.push_back(key);
+		}
+		files_[filePath] = data;
 	}
 }

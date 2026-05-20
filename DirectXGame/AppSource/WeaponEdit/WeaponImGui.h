@@ -6,13 +6,17 @@ class WeaponImGui {
 public:
 
 	WeaponImGui(SHEngine::Engine* engine);
+	~WeaponImGui();
 
 	void Update();
 	Weapon::Data GetData() const;
 
 private:
 
-	void RefleshModelPaths();
+	void RefreshModelPaths();
+
+	void Save();
+	void Load();
 
 	struct PopupMessage {
 		std::string title;
@@ -28,4 +32,10 @@ private:
 
 	std::string currentFilePath_;
 
+	const std::string modelPath_ = "Assets/Model/";
+	std::string weaponModelPath_ = "Item/Weapon/";
+
+	const std::string itemSavePath_ = "Weapons/";
+	const std::string extension_ = ".bin";
+	const std::string saveFile_ = "WeapoonEditorData.bin";
 };
