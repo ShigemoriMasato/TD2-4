@@ -18,6 +18,7 @@ public:
 	Vector3 GetPutPos() const { return putPos_; }
 	int GetPutWeaponID() const { return putWeaponID_; }
 	bool GetPutIsVertical() const { return putIsVertical_; }
+	Piece::Direction GetPutDirection() const { return putDirection_; }
 	void SetVPMatrix(Matrix4x4 vpMatrix) { vpMatrix_ = vpMatrix; }
 
 private:
@@ -34,6 +35,7 @@ private:
 	Vector3 putPos_;
 	int putWeaponID_ = -1;
 	bool putIsVertical_ = false;
+	Piece::Direction putDirection_ = Piece::Direction::Up;
 	Matrix4x4 vpMatrix_;
 
 	// BackPack内ピースの右クリック長押し削除用

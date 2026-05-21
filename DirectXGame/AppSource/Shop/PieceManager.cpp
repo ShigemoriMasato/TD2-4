@@ -65,7 +65,7 @@ void PieceManager::MoveShopToHold(Piece* piece, BackPack* backPack) {
 	if (isFromShop) {
 		// 残りのショップピースの位置とweaponIDを記録する
 		for (const auto& remainingPiece : shopPieces_) {
-			pendingBreakPositions_.push_back({ remainingPiece->GetPosition(), remainingPiece->GetItem().weaponID, remainingPiece->IsVertical() });
+			pendingBreakPositions_.push_back({ remainingPiece->GetPosition(), remainingPiece->GetItem().weaponID, remainingPiece->GetDirection() });
 		}
 
 		// Remove remaining pieces from allPieces_
@@ -110,7 +110,7 @@ Piece* PieceManager::FindMergeTarget(Piece* piece) {
 }
 
 void PieceManager::RemovePieceWithEffect(Piece* piece, BackPack* backPack) {
-	pendingDeletePositions_.push_back({ piece->GetPosition(), piece->GetItem().weaponID, piece->IsVertical() });
+	pendingDeletePositions_.push_back({ piece->GetPosition(), piece->GetItem().weaponID, piece->GetDirection() });
 	piece->Remove(backPack);
 	RemovePiece(piece);
 }

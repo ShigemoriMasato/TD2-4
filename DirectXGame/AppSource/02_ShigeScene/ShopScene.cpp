@@ -93,7 +93,7 @@ void ShopScene::Initialize() {
 	weaponBreakParticleOffsets_ = {
 		{ WeaponType::Pistol,   { 1.0f, 0.0f, 1.5f } },
 		{ WeaponType::Sword,    { 0.5f, 0.0f, 2.0f } },
-		{ WeaponType::ShotGun,  { 1.5f, 0.0f, 1.0f } },
+		{ WeaponType::ShotGun,  { 1.0f, 0.0f, 2.0f } },
 		{ WeaponType::Spear,    { 0.5f, 0.0f, 2.5f } },
 		{ WeaponType::Axe,      { 1.0f, 0.0f, 2.0f } },
 		{ WeaponType::Fist,     { 1.0f, 0.0f, 1.0f } },
@@ -238,10 +238,21 @@ std::unique_ptr<IScene> ShopScene::Update() {
 				if (wData) {
 					auto it = weaponBreakParticleOffsets_.find(wData->type);
 					if (it != weaponBreakParticleOffsets_.end()) {
-						offset = it->second;
-						// 横向きの時はXとZを入れ替える
-						if (!info.isVertical) {
-							std::swap(offset.x, offset.z);
+						WeaponType type = it->first;
+						Vector3 base = it->second;
+						switch (info.direction) {
+						case Piece::Direction::Up:
+							offset = base;
+							break;
+						case Piece::Direction::Right:
+							offset = base + Vector3(0.0f, 0.0f, 0.0f);
+							break;
+						case Piece::Direction::Down:
+							offset = base + Vector3(0.0f, 0.0f, 0.0f);
+							break;
+						case Piece::Direction::Left:
+							offset = base + Vector3(0.0f, 0.0f, 0.0f);
+							break;
 						}
 					}
 				}
@@ -267,11 +278,123 @@ std::unique_ptr<IScene> ShopScene::Update() {
 				if (wData) {
 					auto it = weaponBreakParticleOffsets_.find(wData->type);
 					if (it != weaponBreakParticleOffsets_.end()) {
-						offset = it->second;
-						// 横向きの時はXとZを入れ替える
-						if (!info.isVertical) {
-							std::swap(offset.x, offset.z);
+						WeaponType type = it->first;
+						Vector3 base = it->second;
+						
+						switch (shopCursor_->GetPutDirection()) {
+						case Piece::Direction::Up:
+							offset = base + Vector3(0.0f, 0.0f, 0.0f);
+							break;
+						case Piece::Direction::Right:
+
+							switch (type) {
+							case WeaponType::Pistol:
+								offset = base + Vector3(0.5f, 0.0f, -1.0f);
+								break;
+							case WeaponType::Sword:
+								offset = base + Vector3(1.5f, 0.0f, -1.5f);
+								break;
+							case WeaponType::ShotGun:
+								offset = base + Vector3(0.5f, 0.0f, -2.0f);
+								break;
+							case WeaponType::Spear:
+								offset = base + Vector3(2.0f, 0.0f, -1.5f);
+								break;
+							case WeaponType::Axe:
+								offset = base + Vector3(1.0f, 0.0f, -2.0f);
+								break;
+							case WeaponType::Fist:
+								offset = base + Vector3(0.0f, 0.0f, -1.0f);
+								break;
+							case WeaponType::Bow:
+								offset = base + Vector3(-0.5f, 0.0f, -1.5f);
+								break;
+							case WeaponType::Gurepon:
+								offset = base + Vector3(1.0f, 0.0f, -2.0f);
+								break;
+							case WeaponType::Pickaxe:
+								offset = base + Vector3(0.0f, 0.0f, -1.5f);
+								break;
+							case WeaponType::Shuriken:
+								offset = base + Vector3(0.0f, 0.0f, -1.0f);
+								break;
+							}
+
+							break;
+						case Piece::Direction::Down:
+
+							switch (type) {
+							case WeaponType::Pistol:
+								offset = base + Vector3(-1.0f, 0.0f, -1.0f);
+								break;
+							case WeaponType::Sword:
+								offset = base + Vector3(0.0f, 0.0f, -2.5f);
+								break;
+							case WeaponType::ShotGun:
+								offset = base + Vector3(-1.0f, 0.0f, -2.5f);
+								break;
+							case WeaponType::Spear:
+								offset = base + Vector3(0.0f, 0.0f, -3.5f);
+								break;
+							case WeaponType::Axe:
+								offset = base + Vector3(-1.0f, 0.0f, -3.0f);
+								break;
+							case WeaponType::Fist:
+								offset = base + Vector3(-1.0f, 0.0f, -1.0f);
+								break;
+							case WeaponType::Bow:
+								offset = base + Vector3(-2.0f, 0.0f, -0.5f);
+								break;
+							case WeaponType::Gurepon:
+								offset = base + Vector3(-1.0f, 0.0f, -3.0f);
+								break;
+							case WeaponType::Pickaxe:
+								offset = base + Vector3(-1.5f, 0.0f, -1.5f);
+								break;
+							case WeaponType::Shuriken:
+								offset = base + Vector3(-1.0f, 0.0f, -1.0f);
+								break;
+							}
+
+							break;
+						case Piece::Direction::Left:
+
+							switch (type) {
+							case WeaponType::Pistol:
+								offset = base + Vector3(-1.5f, 0.0f, 0.0f);
+								break;
+							case WeaponType::Sword:
+								offset = base + Vector3(-1.5f, 0.0f, -1.5f);
+								break;
+							case WeaponType::ShotGun:
+								offset = base + Vector3(-1.5f, 0.0f, -1.0f);
+								break;
+							case WeaponType::Spear:
+								offset = base + Vector3(-2.0f, 0.0f, -1.5f);
+								break;
+							case WeaponType::Axe:
+								offset = base + Vector3(-2.0f, 0.0f, -1.0f);
+								break;
+							case WeaponType::Fist:
+								offset = base + Vector3(-1.0f, 0.0f, 0.0f);
+								break;
+							case WeaponType::Bow:
+								offset = base + Vector3(-1.5f, 0.0f, 1.0f);
+								break;
+							case WeaponType::Gurepon:
+								offset = base + Vector3(-2.0f, 0.0f, -1.0f);
+								break;
+							case WeaponType::Pickaxe:
+								offset = base + Vector3(-1.5f, 0.0f, 0.0f);
+								break;
+							case WeaponType::Shuriken:
+								offset = base + Vector3(-1.0f, 0.0f, 0.0f);
+								break;
+							}
+
+							break;
 						}
+
 					}
 				}
 			}
@@ -349,10 +472,122 @@ std::unique_ptr<IScene> ShopScene::Update() {
 				auto it = weaponBreakParticleOffsets_.find(wData->type);
 				if (it != weaponBreakParticleOffsets_.end()) {
 					Vector3 offset = it->second;
-					// 横向きの時はXとZを入れ替える
-					if (!shopCursor_->GetPutIsVertical()) {
-						std::swap(offset.x, offset.z);
+					WeaponType type = it->first;
+
+					switch (shopCursor_->GetPutDirection()) {
+					case Piece::Direction::Up:
+						offset += Vector3(0.0f, 0.0f, 0.0f);
+						break;
+					case Piece::Direction::Right:
+						
+						switch (type){
+						case WeaponType::Pistol:
+							offset += Vector3(0.5f, 0.0f, -1.0f);
+							break;
+						case WeaponType::Sword:
+							offset += Vector3(1.5f, 0.0f, -1.5f);
+							break;
+						case WeaponType::ShotGun:
+							offset += Vector3(0.5f, 0.0f, -2.0f);
+							break;
+						case WeaponType::Spear:
+							offset += Vector3(2.0f, 0.0f, -1.5f);
+							break;
+						case WeaponType::Axe:
+							offset += Vector3(1.0f, 0.0f, -2.0f);
+							break;
+						case WeaponType::Fist:
+							offset += Vector3(0.0f, 0.0f, -1.0f);
+							break;
+						case WeaponType::Bow:
+							offset += Vector3(-0.5f, 0.0f, -1.5f);
+							break;
+						case WeaponType::Gurepon:
+							offset += Vector3(1.0f, 0.0f, -2.0f);
+							break;
+						case WeaponType::Pickaxe:
+							offset += Vector3(0.0f, 0.0f, -1.5f);
+							break;
+						case WeaponType::Shuriken:
+							offset += Vector3(0.0f, 0.0f, -1.0f);
+							break;
+						}
+
+						break;
+					case Piece::Direction::Down:
+						
+						switch (type) {
+						case WeaponType::Pistol:
+							offset += Vector3(-1.0f, 0.0f, -1.0f);
+							break;
+						case WeaponType::Sword:
+							offset += Vector3(0.0f, 0.0f, -2.5f);
+							break;
+						case WeaponType::ShotGun:
+							offset += Vector3(-1.0f, 0.0f, -2.5f);
+							break;
+						case WeaponType::Spear:
+							offset += Vector3(0.0f, 0.0f, -3.5f);
+							break;
+						case WeaponType::Axe:
+							offset += Vector3(-1.0f, 0.0f, -3.0f);
+							break;
+						case WeaponType::Fist:
+							offset += Vector3(-1.0f, 0.0f, -1.0f);
+							break;
+						case WeaponType::Bow:
+							offset += Vector3(-2.0f, 0.0f, -0.5f);
+							break;
+						case WeaponType::Gurepon:
+							offset += Vector3(-1.0f, 0.0f, -3.0f);
+							break;
+						case WeaponType::Pickaxe:
+							offset += Vector3(-1.5f, 0.0f, -1.5f);
+							break;
+						case WeaponType::Shuriken:
+							offset += Vector3(-1.0f, 0.0f, -1.0f);
+							break;
+						}
+
+						break;
+					case Piece::Direction::Left:
+						
+						switch (type) {
+						case WeaponType::Pistol:
+							offset += Vector3(-1.5f, 0.0f, 0.0f);
+							break;
+						case WeaponType::Sword:
+							offset += Vector3(-1.5f, 0.0f, -1.5f);
+							break;
+						case WeaponType::ShotGun:
+							offset += Vector3(-1.5f, 0.0f, -1.0f);
+							break;
+						case WeaponType::Spear:
+							offset += Vector3(-2.0f, 0.0f, -1.5f);
+							break;
+						case WeaponType::Axe:
+							offset += Vector3(-2.0f, 0.0f, -1.0f);
+							break;
+						case WeaponType::Fist:
+							offset += Vector3(-1.0f, 0.0f, 0.0f);
+							break;
+						case WeaponType::Bow:
+							offset += Vector3(-1.5f, 0.0f, 1.0f);
+							break;
+						case WeaponType::Gurepon:
+							offset += Vector3(-2.0f, 0.0f, -1.0f);
+							break;
+						case WeaponType::Pickaxe:
+							offset += Vector3(-1.5f, 0.0f, 0.0f);
+							break;
+						case WeaponType::Shuriken:
+							offset += Vector3(-1.0f, 0.0f, 0.0f);
+							break;
+						}
+
+						break;
 					}
+
 					worldPutPos += offset;
 				}
 			}
