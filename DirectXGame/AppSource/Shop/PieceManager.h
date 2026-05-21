@@ -9,7 +9,7 @@ public:
 	struct BreakEffectInfo {
 		Vector3 position;
 		int weaponID;
-		bool isVertical;
+		Piece::Direction direction;
 	};
 
 	void Initialize();
