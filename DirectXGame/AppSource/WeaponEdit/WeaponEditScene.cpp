@@ -16,10 +16,17 @@ WeaponEditScene::~WeaponEditScene() {
 
 void WeaponEditScene::Initialize() {
 	weaponImGui_ = std::make_unique<WeaponImGui>(engine_);
+	weaponRender_ = std::make_unique<WeaponRender>(engine_);
 }
 
 std::unique_ptr<IScene> WeaponEditScene::Update() {
 	weaponImGui_->Update();
+
+	if (weaponImGui_->IsDataChanged()) {
+		weaponRender_->DeleteRenderer(currentRenderID_);
+		currentRenderID_ = weaponRender_->AddRenderData();
+	}
+
 	return nullptr;
 }
 
@@ -32,7 +39,7 @@ void WeaponEditScene::Draw() {
 
 	display->PostDraw(cmdObj);
 
-
+	display->DrawImGui();
 
 	cmdObj->SetRenderTarget(window);
 

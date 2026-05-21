@@ -21,7 +21,10 @@ Weapon::Weapon(std::string dataFilePath) {
 
 void Weapon::Update(float deltaTime) {
 	if (timer_ > animationTime_) {
+		floatTimer_ += deltaTime;
 		renderData_.world = data_.regularMatrix;
+		float floatingY = std::sin(floatTimer_ * 2.0f) * 0.1f;
+		renderData_.world.m[3][1] += floatingY;
 		return;
 	}
 

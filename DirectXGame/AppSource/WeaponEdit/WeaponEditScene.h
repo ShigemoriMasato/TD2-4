@@ -1,6 +1,7 @@
 #pragma once
 #include <Scene/IScene.h>
 #include "WeaponImGui.h"
+#include "WeaponRender.h"
 
 class WeaponEditScene : public IScene {
 public:
@@ -15,5 +16,9 @@ public:
 private:
 
 	std::unique_ptr<WeaponImGui> weaponImGui_;
+
+	std::unique_ptr<WeaponRender> weaponRender_;
+
+	int currentRenderID_ = -1;
 
 };

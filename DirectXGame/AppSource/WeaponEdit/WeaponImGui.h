@@ -11,6 +11,8 @@ public:
 	void Update();
 	Weapon::Data GetData() const;
 
+	bool IsDataChanged() const { return isDataChanged_; }
+
 private:
 
 	void RefreshModelPaths();
@@ -25,6 +27,8 @@ private:
 	std::vector<PopupMessage> popupMessages_;
 
 	SHEngine::Engine* engine_;
+
+	bool isDataChanged_ = false;
 
 	//ファイルたち
 	std::unordered_map<std::string, Weapon::Data> files_;

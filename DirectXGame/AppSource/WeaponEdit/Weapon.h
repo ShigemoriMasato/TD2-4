@@ -1,24 +1,15 @@
 #pragma once
 #include <Tool/Binary/BinaryManager.h>
 #include <Assets/Model/ModelManager.h>
+#include <cfloat>
 
 class Weapon {
 public:
 
 	//特殊なキー。攻撃地点とプレイヤーの位置は動的に変わるため、固定の値を入れておく
 	struct UniqueKey {
-		static inline const Matrix4x4 player = {
-			0, 0, 0, 0,
-			0, 0, 0, 0,
-			0, 0, 0, 0,
-			0, 0, 0, 0
-		};
-		static inline const Matrix4x4 aim = {
-			1, 1, 1, 1,
-			1, 1, 1, 1,
-			1, 1, 1, 1,
-			1, 1, 1, 1
-		};
+		Vector4 playerAnchor = { FLT_MAX, 0.0f, 0.0f, 0.0f };	//この値が入っていた場合、Playerの情報を代入する
+		Vector4 focusAnchor = { 0.0f, FLT_MAX, 0.0f, 0.0f };	//この値が入っていた場合、攻撃地点の情報を代入する
 	};
 
 	struct Key {
@@ -44,22 +35,23 @@ public:
 
 	Weapon(std::string dataFilePath);
 	void Update(float deltaTime);
-	void Boot() { timer_ = 0.0f; };
+	void Boot() { timer_ = 0.0f; floatTimer_ = 0.0f; };
 
 	static void SetPlayerMatrix(const Matrix4x4& playerMatrix) { playerMatrix_ = playerMatrix; }
 
 	//攻撃する時に狙う位置をセットする
 	void SetAimMatrix(const Matrix4x4& aimMatrix) { aimMatrix_ = aimMatrix; }
 	void SetTimer(float timer) { timer_ = timer; }
-	void SetWeaponData(const Data& data) { data_ = data; }
+	void SetWeaponData(const Data& data) { data_ = data; DataSetting(); }
 
-	RenderData GetRenderData(RenderData& renderData) const { renderData = renderData_; }
+	RenderData GetRenderData() const { return renderData_; }
 
 private:
 
 	void DataSetting();
 
-	float timer_ = 0.0f;
+	float timer_ = 10000000.0f;
+	float floatTimer_ = 0.0f;
 	float animationTime_ = 0.0f;
 	Data data_;
 	RenderData renderData_;

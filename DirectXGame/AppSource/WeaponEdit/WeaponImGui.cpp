@@ -15,6 +15,8 @@ WeaponImGui::~WeaponImGui() {
 }
 
 void WeaponImGui::Update() {
+	isDataChanged_ = false;
+
 #ifdef USE_IMGUI
 
 	if (ImGui::Begin("File Select")) {
@@ -43,7 +45,16 @@ void WeaponImGui::Update() {
 			for (const auto& [fileName, _] : files_) {
 				fileNames.push_back(fileName.c_str());
 			}
-			ImGui::ListBox("Select File", &currentItem, fileNames.data(), int(fileNames.size()), 4);
+
+			if (ImGui::ListBox("Select File", &currentItem, fileNames.data(), int(fileNames.size()), 4)) {
+				auto& data = files_[currentFilePath_];
+				auto mm = engine_->GetModelManager();
+				auto modelData = mm->GetNodeModelData(mm->LoadModel(data.modelFilePath));
+				auto ddm = engine_->GetDrawDataManager();
+				renderData_.modelData = modelData;
+				renderData_.drawData = ddm->GetDrawData(ddm->CreateDrawData());
+				isDataChanged_ = true;
+			}
 
 			if (ImGui::Button("Delete")) {
 				files_.erase(currentFilePath_);
