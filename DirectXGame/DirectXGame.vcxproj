@@ -341,6 +341,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\UI\Result\ResultUIManager.cpp" />
     <ClCompile Include="AppSource\UI\Result\ResultScoreText.cpp" />
     <ClCompile Include="AppSource\UI\Result\ResultTimerText.cpp" />
+    <ClCompile Include="AppSource\UI\Game\Pause\PauseMenu.cpp" />
     <ClInclude Include="AppSource\02_ShigeScene\GameDisplayRange.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\DamagePopup.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\EnemyEffect\EnemyEffectManager.h" />
@@ -528,6 +529,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\GameObject\Fade\FadeManager.h" />
     <ClInclude Include="AppSource\GameObject\GPUParticle\GPUParticle.h" />
     <ClInclude Include="AppSource\GameObject\GPUParticle\GPUPRender.h" />
+    <ClInclude Include="AppSource\UI\Game\Pause\PauseMenu.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

@@ -184,17 +184,60 @@ void ShigeScene::Initialize() {
 	vignette_.radius = 0.6f;
 	vignette_.softness = 0.2f;
 	vignette_.color = {1.0f, 0.0f, 0.0f, 1.0f};
+
+	// ポーズメニュー
+	pauseMenu_ = std::make_unique<PauseMenu>();
+	pauseMenu_->Initialize(modelManager_, drawDataManager_, textureManager_);
+
+	// コールバック登録
+	pauseMenu_->SetAction(0, [this]() {
+		// Resume
+		isPause_ = false;
+	});
+
+	pauseMenu_->SetAction(1, [this]() -> void {
+		// ToTitle
+		fadeManager_->StartFadeIn([]() { return std::make_unique<TitleScene>(); });
+	});
+
+	pauseMenu_->SetAction(2, [this]() {
+		// Weapons
+		fadeManager_->StartFadeIn([]() { return std::make_unique<ResultScene>(); });
+	});
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
+	auto key = commonData_->keyManager->GetKeyStates();
+	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 
+	if(key[Key::Debug3]){
+		isPause_ = !isPause_;
+	}
+
+	// ポーズメニュー更新
+	pauseMenu_->Update(orthoCamera_->GetVPMatrix(), deltaTime, key);
+
+	// フェード更新
+	fadeManager_->Update(camera_->GetVPMatrix(), deltaTime);
+
+	// シーン切り替え
+	if (auto next = fadeManager_->TakeNextScene()) {
+		return next;
+	}
+
+#ifdef _DEBUG
 	if (input_->GetKeyState(DIK_TAB) && !input_->GetPreKeyState(DIK_TAB)) {
 		return std::make_unique<TitleScene>();
+	}
+#endif
+
+	// ポーズフラグが立っていれば更新処理をスルー
+	if(isPause_){
+		return 0;
 	}
 
 	MakeWeapon();
 
-	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 	shopScene_->SetDeltaTime(deltaTime);
 	shopScene_->Update();
 
@@ -233,7 +276,6 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	gameCamera_->Update(deltaTime, cameraTargetPos);
 	Vector3 cameraPos = gameCamera_->GetPosition();
 	grid_->Update(cameraPos, camera_->GetVPMatrix());
-	auto key = commonData_->keyManager->GetKeyStates();
 
 	gameTimer_->Update(deltaTime);
 	waveSystem_->Update(deltaTime);
@@ -403,20 +445,14 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 				commonData_->isWin = false;
 				commonData_->clearTime = gameTimer_->GetTimer();
 				commonData_->killCount = enemyManager_->GetKillCount();
-				fadeManager_->StartFadeIn();
+				fadeManager_->StartFadeIn([]() { return std::make_unique<ResultScene>(); });
 			}
 		}
 	} else if (waveSystem_->End()) {
 		commonData_->isWin = true;
 		commonData_->clearTime = gameTimer_->GetTimer();
 		commonData_->killCount = enemyManager_->GetKillCount();
-		fadeManager_->StartFadeIn();
-	}
-
-	fadeManager_->Update(camera_->GetVPMatrix(), deltaTime);
-
-	if (fadeManager_->Finished()) {
-		return std::make_unique<ResultScene>();
+		fadeManager_->StartFadeIn([]() { return std::make_unique<ResultScene>(); });
 	}
 
 	commonData_->weaponCount = weaponRenders_.size();
@@ -484,6 +520,10 @@ void ShigeScene::Draw() {
 	waveSystemUI_->Draw(cmdObj);
 
 	gameFrame_->Draw(cmdObj);
+
+	if(isPause_) {
+		pauseMenu_->Draw(cmdObj);
+	}
 
 	fadeManager_->Draw(cmdObj);
 

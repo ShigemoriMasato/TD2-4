@@ -3,6 +3,7 @@
 #include <Render/RenderObject.h>
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
+#include <Scene/IScene.h>
 
 class FadeManager {
 public:
@@ -14,13 +15,16 @@ public:
 	void StartFadeOut(bool notifyFinish = true);
 
 	// フェードイン開始
-	void StartFadeIn(bool notifyFinish = true);
+	void StartFadeIn(std::function<std::unique_ptr<IScene>()> nextScene, bool notifyFinish = true);
 
 	// フェードの更新
 	void UpdateFade(float deltaTime);
 
 	// フェードが終了したかどうか
 	bool Finished() { return isFinished_; }
+
+	// シーンを受け取る
+	std::unique_ptr<IScene> TakeNextScene();
 
 private:
 	enum class FadeState {
@@ -37,4 +41,7 @@ private:
 	FadeState state_ = FadeState::Idle;
 	bool isFinished_ = false;
 	bool notifyFinish_ = false;
+
+	// 遷移先シーン
+	std::function<std::unique_ptr<IScene>()> nextScene_ = nullptr;
 };

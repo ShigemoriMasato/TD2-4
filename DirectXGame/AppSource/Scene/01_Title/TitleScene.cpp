@@ -183,7 +183,7 @@ std::unique_ptr<IScene> TitleScene::Update() {
 		if (inFrame1) {
 			frame1StayTimer_ += deltaTime;
 			if (frame1StayTimer_ >= kFrame1StayDuration_) {
-				fadeManager_->StartFadeIn();
+				fadeManager_->StartFadeIn([]() { return std::make_unique<ShigeScene>(); });
 			}
 		} else {
 			frame1StayTimer_ = 0.0f;
@@ -272,7 +272,7 @@ std::unique_ptr<IScene> TitleScene::Update() {
 	if (keys[Key::Correct]) {
 		switch (titleUI_->GetCurrentSelect()) {
 		case Title::Select::Start:
-			fadeManager_->StartFadeIn();
+			fadeManager_->StartFadeIn([]() { return std::make_unique<ShigeScene>(); });
 			break;
 		case Title::Select::Option:
 			isOptionMode_ = true;
@@ -283,8 +283,8 @@ std::unique_ptr<IScene> TitleScene::Update() {
 		}
 	}
 
-	if(fadeManager_->Finished()){
-		return std::make_unique<ShigeScene>();
+	if (auto next = fadeManager_->TakeNextScene()) {
+		return next;
 	}
 
 	return nullptr;

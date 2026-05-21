@@ -36,6 +36,7 @@
 #include <GameObject/Effect/LetterBox/LetterBox.h>
 #include <GameObject/Enemy/EnemyEffect/EnemyEffectManager.h>
 #include "GameObject/Fade/FadeManager.h"
+#include "UI/Game/Pause/PauseMenu.h"
 
 class ShigeScene : public IScene {
 public:
@@ -123,6 +124,10 @@ private:// System系
 	AnimationBundle<float> vignetteIntensityAnim_;
 	float vinetteIntensity_ = 0.2f;
 	float vinetteActiveHP_ = 100.0f;
+
+	// ポーズ
+	bool isPause_ = false;
+	std::unique_ptr<PauseMenu> pauseMenu_;
 
 private:// Shop
 

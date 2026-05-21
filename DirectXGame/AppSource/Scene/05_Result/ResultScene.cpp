@@ -138,18 +138,18 @@ std::unique_ptr<IScene> ResultScene::Update() {
 
 		// アニメーション終了後にシーン遷移
 		if (!playing) {
-			fadeManager_->StartFadeIn();
+			if (selectedIndex_ == 0) {
+				fadeManager_->StartFadeIn([]() { return std::make_unique<ShigeScene>(); });
+			} else {
+				fadeManager_->StartFadeIn([]() { return std::make_unique<TitleScene>(); });
+			}
 		}
 	}
 
 	fadeManager_->Update(camera_->GetVPMatrix(), deltaTime);
 
-	if (fadeManager_->Finished()) {
-		if (selectedIndex_ == 0) {
-			return std::make_unique<ShigeScene>();
-		} else {
-			return std::make_unique<TitleScene>();
-		}
+	if (auto next = fadeManager_->TakeNextScene()) {
+		return next;
 	}
 
 	if (key[Key::Retry]) {
