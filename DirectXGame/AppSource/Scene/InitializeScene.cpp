@@ -6,6 +6,7 @@
 #include <03_YokoScene/YokoScene.h>
 #include <03_YokoScene/TrailEditorScene.h>
 #include <03_YokoScene/PrticleEditorScene.h>
+#include <WeaponEdit/WeaponEditScene.h>
 
 #include <Scene/01_Title/TitleScene.h>
 #include <Scene/05_Result/ResultScene.h>

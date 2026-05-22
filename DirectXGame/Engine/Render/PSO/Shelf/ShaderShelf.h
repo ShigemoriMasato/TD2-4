@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <array>
 #include <list>
+#include <Tool/Binary/BinaryManager.h>
 
 namespace SHEngine {
 
@@ -21,13 +22,6 @@ namespace SHEngine {
 
 			ShaderShelf(DXDevice* device);
 			~ShaderShelf();
-
-			/**
-			 * @brief 全シェーダーのコンパイル
-			 *
-			 * Assets/Shaderフォルダ内の全HLSLファイルを検索し、コンパイルして登録する。
-			 */
-			void CompileAllShader();
 
 			/**
 			 * @brief 指定タイプの全シェーダーのバイトコードリストを取得
@@ -77,6 +71,9 @@ namespace SHEngine {
 
 			/// @brief シェーダータイプ別のバイトコードマップ(名前->Bytecode)
 			std::array<std::unordered_map<std::string, D3D12_SHADER_BYTECODE>, static_cast<size_t>(ShaderType::Count)> shaderBytecodes_;
+
+			BinaryManager binManager_;
+			const std::string saveFile_ = "UsedShaders.bin";
 		};
 
 	}// namespace PSO

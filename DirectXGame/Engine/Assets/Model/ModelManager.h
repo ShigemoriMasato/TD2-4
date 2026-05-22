@@ -6,6 +6,7 @@
 #include <assimp/scene.h>
 #include <Tool/Logger/Logger.h>
 #include <Render/DrawDataManager.h>
+#include <Tool/binary/BinaryManager.h>
 
 #include "ModelData.h"
 
@@ -24,10 +25,10 @@ namespace SHEngine {
 	class ModelManager {
 	public:
 
-		/// @brief デフォルトコンストラクタ
-		ModelManager() = default;
+		/// @brief コンストラクタ
+		ModelManager();
 		/// @brief デストラクタ
-		~ModelManager() = default;
+		~ModelManager();
 
 		/**
 		 * @brief モデルマネージャーを初期化
@@ -122,6 +123,11 @@ namespace SHEngine {
 
 		/// @brief ロガー
 		Logger logger_;
+
+	private://読み込んだオブジェクトの取得
+
+		BinaryManager binaryManager_;
+		const std::string saveFile_ = "UsedModels.bin";
 
 	};
 

@@ -13,44 +13,32 @@ ShaderShelf::ShaderShelf(DXDevice* device) {
 
 	compileVersions_[0] = L"vs_6_0"; // Vertex Shader
 	compileVersions_[1] = L"ps_6_0"; // Pixel Shader
+
+	if (!binManager_.Boot(saveFile_)) {
+		return;
+	}
+
+	for (int i = 0; i < static_cast<int>(ShaderType::Count); ++i) {
+		int shaderCount = binManager_.Reverse<int>();
+		for (int j = 0; j < shaderCount; ++j) {
+			std::string name = binManager_.Reverse<std::string>();
+			GetShaderBytecode(static_cast<ShaderType>(i), name);
+		}
+	}
 }
 
 ShaderShelf::~ShaderShelf() {
+	binManager_.Boot(saveFile_);
 
-}
-
-void ShaderShelf::CompileAllShader() {
-
-	std::vector<std::string> shaderNames;
-
-	//shaderNameBufferを削除するためのスコープ
-	{
-		std::vector<std::string> shaderNameBuffer = SearchFiles(basePath_, ".hlsl");
-		for (const auto& name : shaderNameBuffer) {
-			shaderNames.push_back(name);
+	for (int i = 0; i < static_cast<int>(ShaderType::Count); ++i) {
+		int shaderCount = int(shaderBytecodes_[i].size());
+		binManager_.Register(&shaderCount);
+		for (const auto& [name, bytecode] : shaderBytecodes_[i]) {
+			binManager_.Register(&name);
 		}
 	}
 
-	for (const auto& sn : shaderNames) {
-		if (sn.find(".hlsli") != std::string::npos) {
-			continue;
-		}
-		//VertexShaderだったら
-		else if (sn.find("VS") != std::string::npos) {
-			RegisterShaderByteCode(sn, ShaderType::VERTEX_SHADER);
-		}
-		//PixelShaderだったら
-		else if (sn.find("PS") != std::string::npos) {
-			RegisterShaderByteCode(sn, ShaderType::PIXEL_SHADER);
-		}
-		//これ以降も同じように追加する
-
-
-		// 登録してない、または名前が間違っているShaderは見つかり次第エラーを出す
-		else {
-			throw std::runtime_error("Unknown shader type: " + sn);
-		}
-	}
+	binManager_.Write(saveFile_);
 }
 
 std::list<D3D12_SHADER_BYTECODE> ShaderShelf::GetShaderBytecodes(ShaderType shaderType) {

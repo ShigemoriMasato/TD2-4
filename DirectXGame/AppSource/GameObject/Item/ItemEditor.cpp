@@ -19,13 +19,13 @@ namespace {
 	ImU32 ColLerp(ImU32 begin, ImU32 end, float ratio) {
 		u32 r1 = (begin >> 24) & 0xFF;
 		u32 g1 = (begin >> 16) & 0xFF;
-		u32 b1 = (begin >>  8) & 0xFF;
-		u32 a1 = (begin >>  0) & 0xFF;
+		u32 b1 = (begin >> 8) & 0xFF;
+		u32 a1 = (begin >> 0) & 0xFF;
 
 		u32 r2 = (end >> 24) & 0xFF;
 		u32 g2 = (end >> 16) & 0xFF;
-		u32 b2 = (end >>  8) & 0xFF;
-		u32 a2 = (end >>  0) & 0xFF;
+		u32 b2 = (end >> 8) & 0xFF;
+		u32 a2 = (end >> 0) & 0xFF;
 
 		u32 r = (u32)(r1 + (r2 - r1) * ratio) & 0xFF;
 		u32 g = (u32)(g1 + (g2 - g1) * ratio) & 0xFF;
@@ -216,7 +216,7 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 
 #pragma endregion
 
-#pragma region mapData（2Dタイル形状）編集
+#pragma region mapData(2Dタイル形状)編集
 
 		if (ImGui::TreeNode("----------------Shape---------------")) {
 			if (ImGui::Button("左上詰め")) {
@@ -310,7 +310,7 @@ void ItemEditor::Draw(ItemManager& itemManager) {
 					const ImVec2 p1(p0.x + cellSize_, p0.y + cellSize_);
 
 					int index = -1;
-					for(int i = 0; i < (int)currentItem.mapData.size(); ++i) {
+					for (int i = 0; i < (int)currentItem.mapData.size(); ++i) {
 						if (currentItem.mapData[i].first == x && currentItem.mapData[i].second == ((gridH_ - 1) - y)) {
 							index = i + 1;
 							break;
