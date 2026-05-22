@@ -1,10 +1,7 @@
 #include "WeaponRender.h"
 
 WeaponRender::WeaponRender(SHEngine::Engine* engine) {
-	auto ddm = engine->GetDrawDataManager();
-	auto dummyDrawData = ddm->GetDrawData(0);
-
-	container_ = std::make_unique<SHEngine::BufferContainer>(dummyDrawData);
+	container_ = std::make_unique<SHEngine::BufferContainer>();
 	dirLightBuffer_ = container_->Create(BufferType::SRV, sizeof(DirectionalLight), maxNum_);
 	pointLightBuffer_ = container_->Create(BufferType::SRV, sizeof(PointLight), maxNum_);
 	lightNumBuffer_ = container_->Create(BufferType::CBV, sizeof(LightNumData));
@@ -18,8 +15,18 @@ int WeaponRender::AddRenderData(const Weapon::RenderData& renderData) {
 }
 
 void WeaponRender::DeleteRenderer(int id) {
+	if (!renderers_.contains(id)) {
+		return;
+	}
+
 	renderers_.erase(id);
 	gpuBuffers_.erase(id);
+}
+
+void WeaponRender::Draw(CmdObj* cmdObj) {
+	for (const auto& [id, renderer] : renderers_) {
+		renderer->Draw(cmdObj);
+	}
 }
 
 //==============================================================================================================

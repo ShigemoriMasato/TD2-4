@@ -17,7 +17,7 @@ private:
 
 	void RefreshModelPaths();
 
-	void Save();
+	void Save() const;
 	void Load();
 
 	struct PopupMessage {
@@ -39,7 +39,5 @@ private:
 	const std::string modelPath_ = "Assets/Model/";
 	std::string weaponModelPath_ = "Item/Weapon/";
 
-	const std::string itemSavePath_ = "Weapons/";
-	const std::string extension_ = ".bin";
 	const std::string saveFile_ = "WeapoonEditorData.bin";
 };

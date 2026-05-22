@@ -1,7 +1,7 @@
 #include "PlayerAI.h"
 #include "GameObject/Distance.h"
 #include "GameObject/Random/Random.h"
-#include <../externals/imgui/imgui.h>
+#include <imgui/imgui.h>
 #include <algorithm>
 
 Vector3 PlayerAI::ComputeMoveDirection(const Vector3& playerPos, const std::vector<IEnemy*>& enemies, const MapInfo& mapInfo, float deltaTime) {

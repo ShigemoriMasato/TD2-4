@@ -12,6 +12,8 @@ public:
 	int AddRenderData(const Weapon::RenderData& renderData);
 	void DeleteRenderer(int id);
 
+	void Draw(CmdObj* cmdObj);
+
 	SHEngine::GPUBuffer* GetDirLightBuffer() const { return dirLightBuffer_; }
 	SHEngine::GPUBuffer* GetPointLightBuffer() const { return pointLightBuffer_; }
 	SHEngine::GPUBuffer* GetLightNumBuffer() const { return lightNumBuffer_; }

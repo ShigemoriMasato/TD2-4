@@ -46,15 +46,7 @@ void WeaponImGui::Update() {
 				fileNames.push_back(fileName.c_str());
 			}
 
-			if (ImGui::ListBox("Select File", &currentItem, fileNames.data(), int(fileNames.size()), 4)) {
-				auto& data = files_[currentFilePath_];
-				auto mm = engine_->GetModelManager();
-				auto modelData = mm->GetNodeModelData(mm->LoadModel(data.modelFilePath));
-				auto ddm = engine_->GetDrawDataManager();
-				renderData_.modelData = modelData;
-				renderData_.drawData = ddm->GetDrawData(ddm->CreateDrawData());
-				isDataChanged_ = true;
-			}
+			ImGui::ListBox("Select File", &currentItem, fileNames.data(), int(fileNames.size()), 4);
 
 			if (ImGui::Button("Delete")) {
 				files_.erase(currentFilePath_);
@@ -69,7 +61,6 @@ void WeaponImGui::Update() {
 	}
 
 	if (currentFilePath_.empty()) {
-		ImGui::End();
 		return;
 	}
 
@@ -150,30 +141,14 @@ void WeaponImGui::RefreshModelPaths() {
 	}
 }
 
-void WeaponImGui::Save() {
+void WeaponImGui::Save() const {
 	BinaryManager binManager;
 
 	int fileCount = int(files_.size());
 	binManager.Register(&fileCount);
 
 	for (const auto& [filePath, data] : files_) {
-		std::string path = itemSavePath_ + filePath + extension_;
-		binManager.Register(&path);
-
-		BinaryManager itemBin;
-		itemBin.Register(&data.modelFilePath);
-		itemBin.Register(&data.regularMatrix);
-		int keyCount = int(data.attackAnimation.size());
-		itemBin.Register(&keyCount);
-		for (const auto& key : data.attackAnimation) {
-			itemBin.Register(&key.time);
-			int matrixCount = int(key.matrices.size());
-			itemBin.Register(&matrixCount);
-			for (const auto& matrix : key.matrices) {
-				itemBin.Register(&matrix);
-			}
-		}
-		itemBin.Write(itemSavePath_ + filePath + extension_);
+		files_.at(filePath).Save(filePath);
 	}
 
 	binManager.Write(saveFile_);
@@ -191,22 +166,6 @@ void WeaponImGui::Load() {
 
 	for (int i = 0; i < fileCount; ++i) {
 		std::string filePath = binManager.Reverse<std::string>();
-		if (!itemBin.Boot(filePath)) {
-			continue;
-		}
-		Weapon::Data data;
-		data.modelFilePath = itemBin.Reverse<std::string>();
-		data.regularMatrix = itemBin.Reverse<Matrix4x4>();
-		int keyCount = itemBin.Reverse<int>();
-		for (int j = 0; j < keyCount; ++j) {
-			Weapon::Key key;
-			key.time = itemBin.Reverse<float>();
-			int matrixCount = itemBin.Reverse<int>();
-			for (int k = 0; k < matrixCount; ++k) {
-				key.matrices.push_back(itemBin.Reverse<Matrix4x4>());
-			}
-			data.attackAnimation.push_back(key);
-		}
-		files_[filePath] = data;
+		files_[filePath].Load(filePath);
 	}
 }

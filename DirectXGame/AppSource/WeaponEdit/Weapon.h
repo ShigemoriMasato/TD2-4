@@ -14,13 +14,16 @@ public:
 
 	struct Key {
 		float time;
-		std::vector<Matrix4x4> matrices;
+		std::vector<Transform> data;
 	};
 
 	struct Data {
 		std::string modelFilePath;
-		Matrix4x4 regularMatrix;
-		std::vector<Key> attackAnimation;
+		std::vector<Transform> regularKey;	//通常時の位置
+		std::vector<Key> attackAnimation;	//攻撃時のアニメーション
+
+		void Load(const std::string& filePath);
+		void Save(const std::string& filePath) const;
 	};
 
 	struct RenderData {
@@ -33,7 +36,7 @@ public:
 		modelManager_ = modelManager, drawDataManager_ = drawDataManager;
 	}
 
-	Weapon(std::string dataFilePath);
+	Weapon();
 	void Update(float deltaTime);
 	void Boot() { timer_ = 0.0f; floatTimer_ = 0.0f; };
 
@@ -42,6 +45,7 @@ public:
 	//攻撃する時に狙う位置をセットする
 	void SetAimMatrix(const Matrix4x4& aimMatrix) { aimMatrix_ = aimMatrix; }
 	void SetTimer(float timer) { timer_ = timer; }
+	void SetWeaponData(const std::string& dataFilePath);
 	void SetWeaponData(const Data& data) { data_ = data; DataSetting(); }
 
 	RenderData GetRenderData() const { return renderData_; }

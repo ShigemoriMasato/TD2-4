@@ -17,8 +17,11 @@ private:
 
 	std::unique_ptr<WeaponImGui> weaponImGui_;
 
+	std::unique_ptr<Weapon> weapon_;
 	std::unique_ptr<WeaponRender> weaponRender_;
 
 	int currentRenderID_ = -1;
+
+	bool isStop_ = false;
 
 };

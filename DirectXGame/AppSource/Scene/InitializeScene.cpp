@@ -175,7 +175,7 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	//更新処理
 	commonData_->cmdObject->ResetCommandList();
 
-	return std::make_unique<WeaponEditScene>();
+	//return std::make_unique<WeaponEditScene>();
 	return std::make_unique<TitleScene>();
 	return std::make_unique<PrticleEditorScene>();
 	return std::make_unique<YokoScene>();
