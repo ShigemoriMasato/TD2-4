@@ -275,6 +275,19 @@ Vector3 Map::ClampToBounds(const Vector3& position) const {
 	return clamped;
 }
 
+Vector3 Map::ClampToCircularBounds(const Vector3& position) const {
+	Vector3 clamped = position;
+	float dx = clamped.x - mapInfo_.centerX;
+	float dz = clamped.z - mapInfo_.centerZ;
+	float dist = std::sqrt(dx * dx + dz * dz);
+	if (dist > mapInfo_.radius && dist > 0.0f) {
+		float ratio = mapInfo_.radius / dist;
+		clamped.x = mapInfo_.centerX + dx * ratio;
+		clamped.z = mapInfo_.centerZ + dz * ratio;
+	}
+	return clamped;
+}
+
 void Map::DrawDebugGUI() {
 #ifdef USE_IMGUI
 	ImGui::Begin("Map Debug");

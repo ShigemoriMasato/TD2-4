@@ -145,6 +145,10 @@ void TitleScene::Initialize() {
 	// グリッドの初期化
 	grid_ = std::make_unique<Grid>();
 	grid_->Initialize(drawDataManager_);
+
+	SHEngine::DrawData planeDrawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
+	gameFrame_ = std::make_unique<GameFrame>();
+	gameFrame_->Initialize(planeDrawData, textureManager_->LoadTexture("TitleFrame.png"));
 }
 
 std::unique_ptr<IScene> TitleScene::Update() {
@@ -213,8 +217,8 @@ std::unique_ptr<IScene> TitleScene::Update() {
 		// ワールド座標に変換
 		Vector3 clickWorldPos = GetWorldCursor(gameCamera_.get(), cursorPos);
 
-		// マップ境界内に制限した座標を取得
-		Vector3 clampedPos = map_->ClampToBounds(clickWorldPos);
+		// マップ円形範囲内に制限した座標を取得（Playerの移動範囲に合わせる）
+		Vector3 clampedPos = map_->ClampToCircularBounds(clickWorldPos);
 		// Playerを指定のワールド座標へ移動させる
 		player_->GetController()->SetTargetPosition(clampedPos);
 
@@ -269,6 +273,8 @@ std::unique_ptr<IScene> TitleScene::Update() {
 
 	fadeManager_->Update(camera_->GetVPMatrix(), deltaTime);
 
+	gameFrame_->Update();
+
 	if (keys[Key::Correct]) {
 		switch (titleUI_->GetCurrentSelect()) {
 		case Title::Select::Start:
@@ -320,6 +326,9 @@ void TitleScene::Draw() {
 
 	// フェードの描画
 	fadeManager_->Draw(cmdObj);
+
+	// フレームの描画
+	gameFrame_->Draw(cmdObj);
 
 	// ディスプレイへの描画終了
 	display->PostDraw(cmdObj);
