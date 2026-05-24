@@ -2,6 +2,7 @@
 #include <Scene/IScene.h>
 #include <UI/Title/TitleUI.h>
 #include <Render/PostEffect.h>
+#include <UI/Game/GameFrame.h>
 #include <Camera/Camera.h>
 #include <Camera/GameCamera.h>
 #include <GameObject/Map/Map.h>
@@ -96,4 +97,6 @@ private:// Shop
 
 	// グリッド
 	std::unique_ptr<Grid> grid_;
+
+	std::unique_ptr<GameFrame> gameFrame_;
 };

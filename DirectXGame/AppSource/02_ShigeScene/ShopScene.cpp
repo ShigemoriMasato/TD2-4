@@ -643,7 +643,7 @@ void ShopScene::DrawReady() {
 	weaponDebugger_->Draw();
 	//parameterRender_->Draw(cmdObj);
 	//debugObj_->Draw(cmdObj);
-	situationGauge_->Draw(cmdObj);
+	//situationGauge_->Draw(cmdObj);
 
 	for (auto& effect : attractEffects_) {
 		effect->Draw(cmdObj);
@@ -653,7 +653,7 @@ void ShopScene::DrawReady() {
 	DrawRerollBar(cmdObj);
 
 	for (auto& effect : valueEffects_) {
-		effect->Draw(cmdObj);
+		//effect->Draw(cmdObj);
 	}
 
 	// pieceBreakパーティクルの描画（ショップのレンダーターゲット内でショップカメラで描画）
@@ -886,11 +886,11 @@ void ShopScene::DrawRerollBar(CmdObj* cmdObj) {
 
 	// テキスト描画
 	rerollText_->Draw(cmdObj);
-	controlText_->Draw(cmdObj);
-	easyPlaceText_->Draw(cmdObj);
+	//controlText_->Draw(cmdObj);
+	//easyPlaceText_->Draw(cmdObj);
 	//weaponStorageText_->Draw(cmdObj);
 
 	// マウススプライト描画
-	mouseLeftSprite_->Draw(cmdObj);
-	mouseRightSprite_->Draw(cmdObj);
+	//mouseLeftSprite_->Draw(cmdObj);
+	//mouseRightSprite_->Draw(cmdObj);
 }

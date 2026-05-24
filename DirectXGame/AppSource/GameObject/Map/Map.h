@@ -34,6 +34,9 @@ public:
 
 	// @brief 座標をマップの境界内に制限する
 	Vector3 ClampToBounds(const Vector3& position) const;
+
+	// @brief 座標をマップの円形範囲内に制限する
+	Vector3 ClampToCircularBounds(const Vector3& position) const;
 	
 	const MapInfo& GetMapInfo() const { return mapInfo_; }
 
