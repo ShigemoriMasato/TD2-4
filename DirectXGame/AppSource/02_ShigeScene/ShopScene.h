@@ -84,12 +84,12 @@ private:
 	// リロールバー用変数
 	RerollBar rerollBarFill_;  // 前面（進行状況）
 	RerollBar rerollBarBG_;    // 背景
-	Vector2 rerollBarSize_ = { 850.0f, 50.0f };
-	Vector2 rerollBarPos_ = { 480.0f, -230.0f };
+	Vector2 rerollBarSize_ = { 950.0f, 50.0f };
+	Vector2 rerollBarPos_ = { 615.0f, -275.0f };
 	
 	// リロールテキスト用変数
 	std::unique_ptr<SHEngine::Text> rerollText_ = nullptr;
-	Transform rerollTextTransform_ = { {3.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {70.0f, -245.0f, 0.0f} };
+	Transform rerollTextTransform_ = { {3.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {180.0f, -290.0f, 0.0f} };
 	Vector4 rerollTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// 操作説明テキスト用変数
@@ -117,7 +117,7 @@ private:
 	int mouseLeftActiveTextureIndex_ = -1;
 	int mouseRightActiveTextureIndex_ = -1;
 
-	Vector3 cameraCenter_ = { -7.0f, -40.0f, -6.5f };
+	Vector3 cameraCenter_ = { -5.0f, -32.0f, -6.5f };
 	Vector3 cameraSpherical_ = { 20.0f, 0.0f, -1.570f };
 	Vector2 cameraPerspectiveSize_ = { 352.0f, 624.0f };
 	
