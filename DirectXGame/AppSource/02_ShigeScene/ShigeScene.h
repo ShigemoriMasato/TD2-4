@@ -129,6 +129,11 @@ private:// System系
 	bool isPause_ = false;
 	std::unique_ptr<PauseMenu> pauseMenu_;
 
+	// マウスカーソルスプライト
+	std::unique_ptr<SHEngine::RenderObject> mouseCursorSprite_ = nullptr;
+	int mouseCursorTextureIndex_ = -1;
+	Transform mouseCursorTransform_ = { {32.0f, 32.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
+
 private:// Shop
 
 	std::unique_ptr<ShopScene> shopScene_;

@@ -9,7 +9,7 @@
 #include <imgui/imgui.h>
 #include <numbers>
 #include <windows.h>
-
+#include "fontPath.h"
 ShigeScene::~ShigeScene() { bgm_->Stop(); }
 
 void ShigeScene::Initialize() {
@@ -131,14 +131,14 @@ void ShigeScene::Initialize() {
 	postEffectConfig_.jobs_ = static_cast<uint32_t>(PostEffectJob::Vignette);
 
 	timerText_ = std::make_unique<SHEngine::Text>(64);
-	timerText_->Initialize(planeDrawData, "YDWbananaslipplus.otf", 64);
+	timerText_->Initialize(planeDrawData, fontPath_, 64);
 	timerText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 
 	timerTextTransform_.position = {550.0f, -85.0f, 0.0f}; // Top center or so // default
 	timerTextTransform_.scale = {2.0f, 2.0f, 1.0f};
 
 	enemySpawnGraphText_ = std::make_unique<SHEngine::Text>(64);
-	enemySpawnGraphText_->Initialize(planeDrawData, "YDWbananaslipplus.otf", 64);
+	enemySpawnGraphText_->Initialize(planeDrawData, fontPath_, 64);
 	enemySpawnGraphText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 
 	// 1280x720の画面内座標系での正しい範囲に修正
@@ -204,6 +204,18 @@ void ShigeScene::Initialize() {
 		// Weapons
 		fadeManager_->StartFadeIn([]() { return std::make_unique<ResultScene>(); });
 	});
+
+	// マウスカーソルスプライトの初期化
+	mouseCursorTextureIndex_ = textureManager_->LoadTexture("Assets/Texture/UI/mouse.png");
+	mouseCursorSprite_ = std::make_unique<SHEngine::RenderObject>("MouseCursorSprite");
+	mouseCursorSprite_->Initialize();
+	mouseCursorSprite_->SetDrawData(planeDrawData);
+	mouseCursorSprite_->psoConfig_.vs = "Simple.VS.hlsl";
+	mouseCursorSprite_->psoConfig_.ps = "PostEffect/Simple.PS.hlsl";
+	mouseCursorSprite_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+	mouseCursorSprite_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	mouseCursorSprite_->SetUseTexture(true);
+	mouseCursorSprite_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Transparent;
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -368,6 +380,16 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	timerText_->Update(orthoCamera_->GetVPMatrix());
 	timerText_->SetTransform(timerTextTransform_);
 
+	// マウスカーソルスプライトの更新
+	{
+		Vector2 cursorPos = input_->GetCursorPos();
+		mouseCursorTransform_.position = {cursorPos.x, cursorPos.y * -1.0f, 0.0f};
+		Matrix4x4 wvp = Matrix::MakeAffineMatrix(mouseCursorTransform_.scale, mouseCursorTransform_.rotate, mouseCursorTransform_.position);
+		wvp *= orthoCamera_->GetVPMatrix();
+		mouseCursorSprite_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
+		mouseCursorSprite_->CopyBufferData(1, &mouseCursorTextureIndex_, sizeof(int));
+	}
+
 	enemySpawnGraphText_->Update(orthoCamera_->GetVPMatrix());
 	enemySpawnGraphText_->SetTransform(enemySpawnGraphTextTransform_);
 	enemySpawnGraphText_->SetText(L"5分間生き残れ！");
@@ -524,6 +546,8 @@ void ShigeScene::Draw() {
 	if(isPause_) {
 		pauseMenu_->Draw(cmdObj);
 	}
+
+	mouseCursorSprite_->Draw(cmdObj);
 
 	fadeManager_->Draw(cmdObj);
 

@@ -26,6 +26,8 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 	auto keys = keyManager_->GetKeyStates();
 
 	isEffect_ = false;
+	hoveredShopPiece_ = nullptr;
+	hoveredBackPackPiece_ = nullptr;
 
 	//持っているピースがあるなら
 	if (heldPiece_) {
@@ -126,6 +128,13 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 	//持っているピースがないなら、ホバーしているピースを探す
 	for (auto& piece : pieces) {
 		if (piece->IsHovered(worldPos_, backPack)) {
+
+			// ショップピースならhover状態を記録
+			if (pieceManager_->IsShopPiece(piece)) {
+				hoveredShopPiece_ = piece;
+			} else {
+				hoveredBackPackPiece_ = piece;
+			}
 
 			if (keys[Key::Hold]) {
 				heldPiece_ = piece;
