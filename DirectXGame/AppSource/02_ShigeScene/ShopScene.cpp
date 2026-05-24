@@ -136,6 +136,18 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	ImGui::DragFloat3("Control2", &control2_.x, 0.1f);
 	ImGui::End();
 
+	ImGui::Begin("Hover Text Settings");
+	ImGui::Text("--- Hold Hover Text ---");
+	ImGui::DragFloat3("Hold Scale", &holdHoverTextTransform_.scale.x, 0.1f);
+	ImGui::DragFloat2("Hold Offset", &holdHoverTextOffset_.x, 1.0f);
+	ImGui::ColorEdit4("Hold Color", &holdHoverTextColor_.x);
+	ImGui::Separator();
+	ImGui::Text("--- Place Hover Text ---");
+	ImGui::DragFloat3("Place Scale", &placeHoverTextTransform_.scale.x, 0.1f);
+	ImGui::DragFloat2("Place Offset", &placeHoverTextOffset_.x, 1.0f);
+	ImGui::ColorEdit4("Place Color", &placeHoverTextColor_.x);
+	ImGui::End();
+
 	// 武器種ごとのパーティクルオフセット調整
 	ImGui::Begin("Weapon Break Particle Offsets");
 	static const std::pair<WeaponType, const char*> weaponNames[] = {
@@ -713,22 +725,32 @@ void ShopScene::InitializeRerollBar() {
 	textDrawData_ = drawDataManager_->GetDrawData(planeModelData.drawDataIndex);
 
 	rerollText_ = std::make_unique<SHEngine::Text>();
-	rerollText_->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
+	rerollText_->Initialize(textDrawData_, fontPath_, 64);
 	rerollText_->SetText(L"武器購入回数");
 
 	// 操作説明テキストの初期化
 	controlText_ = std::make_unique<SHEngine::Text>();
-	controlText_->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
+	controlText_->Initialize(textDrawData_, fontPath_, 64);
 	controlText_->SetText(L"持つ 離す");
 
 	// ラクラク配置テキストの初期化
 	easyPlaceText_ = std::make_unique<SHEngine::Text>();
-	easyPlaceText_->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
+	easyPlaceText_->Initialize(textDrawData_, fontPath_, 64);
 	easyPlaceText_->SetText(L"自動配置");
+
+	// ホバー時「持つ」テキストの初期化
+	holdHoverText_ = std::make_unique<SHEngine::Text>();
+	holdHoverText_->Initialize(textDrawData_, fontPath_, 64);
+	holdHoverText_->SetText(L"持つ");
+
+	// ホバー時「設置」テキストの初期化
+	placeHoverText_ = std::make_unique<SHEngine::Text>();
+	placeHoverText_->Initialize(textDrawData_, fontPath_, 64);
+	placeHoverText_->SetText(L"設置");
 
 	// 武器安置所テキストの初期化
 	//weaponStorageText_ = std::make_unique<SHEngine::Text>();
-	//weaponStorageText_->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
+	//weaponStorageText_->Initialize(textDrawData_, fontPath_, 64);
 	//weaponStorageText_->SetText(L"武器安置所");
 
 	// マウスボタンスプライトの初期化
@@ -819,6 +841,42 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 	easyPlaceText_->SetTransform(easyPlaceTextTransform_);
 	easyPlaceText_->Update(vpMatrix);
 
+	// ホバー時「持つ」「設置」／持ち中「離す」「回転」／BackPack内ホバー「持つ」「削除(長押し)」テキストの更新
+	bool showHoverText = shopCursor_->HasHeldPiece()
+					  || (shopCursor_->IsHoveringShopPiece()    && !shopCursor_->HasHeldPiece())
+					  || (shopCursor_->IsHoveringBackPackPiece() && !shopCursor_->HasHeldPiece());
+	if (showHoverText) {
+		Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
+		// ShopDisplay は leftTop=(48,48), size=(352,624) でスクリーンに表示される。
+		// world_x = (screen_x - 48) * (1280 / 352)
+		// world_y = -(screen_y - 48) * (720 / 624)
+		float baseWorldX = (cursorPos.x - 48.0f) * (1280.0f / 352.0f);
+		float baseWorldY = -(cursorPos.y - 48.0f) * (720.0f / 624.0f);
+
+		if (shopCursor_->HasHeldPiece()) {
+			holdHoverText_->SetText(L"離す");
+			placeHoverText_->SetText(L"回転");
+		} else if (shopCursor_->IsHoveringBackPackPiece()) {
+			holdHoverText_->SetText(L"持つ");
+			placeHoverText_->SetText(L"削除(長押し)");
+		} else {
+			holdHoverText_->SetText(L"持つ");
+			placeHoverText_->SetText(L"設置");
+		}
+
+		holdHoverTextTransform_.position = { baseWorldX + holdHoverTextOffset_.x, baseWorldY + holdHoverTextOffset_.y, 0.0f };
+		holdHoverText_->SetColor(holdHoverTextColor_);
+		holdHoverText_->SetTransform(holdHoverTextTransform_);
+		holdHoverText_->Update(vpMatrix);
+
+		placeHoverTextTransform_.position = { baseWorldX + placeHoverTextOffset_.x, baseWorldY + placeHoverTextOffset_.y, 0.0f };
+		placeHoverText_->SetColor(placeHoverTextColor_);
+		placeHoverText_->SetTransform(placeHoverTextTransform_);
+		placeHoverText_->Update(vpMatrix);
+	}
+
+
+
 	// 武器安置所テキストの更新
 	//weaponStorageText_->SetColor(weaponStorageTextColor_);
 	//weaponStorageText_->SetTransform(weaponStorageTextTransform_);
@@ -889,6 +947,14 @@ void ShopScene::DrawRerollBar(CmdObj* cmdObj) {
 	//controlText_->Draw(cmdObj);
 	//easyPlaceText_->Draw(cmdObj);
 	//weaponStorageText_->Draw(cmdObj);
+
+	// ショップ／BackPack ピースホバー時・持ち中テキスト描画
+	if (shopCursor_->HasHeldPiece()
+	 || (shopCursor_->IsHoveringShopPiece()    && !shopCursor_->HasHeldPiece())
+	 || (shopCursor_->IsHoveringBackPackPiece() && !shopCursor_->HasHeldPiece())) {
+		holdHoverText_->Draw(cmdObj);
+		placeHoverText_->Draw(cmdObj);
+	}
 
 	// マウススプライト描画
 	//mouseLeftSprite_->Draw(cmdObj);
