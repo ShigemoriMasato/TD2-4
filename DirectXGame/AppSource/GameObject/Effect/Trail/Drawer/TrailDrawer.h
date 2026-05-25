@@ -1,17 +1,19 @@
 #pragma once
 #include <Render/RenderObject.h>
 #include <Render/DrawDataManager.h>
+#include <GameObject/Effect/Trail/ITrail.h>
 #include <Utility/Matrix.h>
 #include <vector>
+#include <Tool/Logger/Logger.h>
 
-class Trail;
+class ITrail;
 
 class TrailDrawer final
 {
 public:
 	struct Config
 	{
-		int maxTrails = 512;			// そのシーン内の最大トレイル数
+		int maxTrails = 128;			// そのシーン内の最大トレイル数
 		int maxSegmentsPerTrail = 32;	// 全トレイルの最大分割数がmaxSegmentsPerTrailになる
 	};
 
@@ -21,7 +23,7 @@ public:
 	void SetConfig(const Config& cfg);
 
 	void Clear();
-	void Register(Trail* trail);
+	void Register(ITrail* trail);
 
 	// シーン内トレイルをすべて描画
 	void Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix);
@@ -29,9 +31,8 @@ public:
 private:
 	struct BatchVertex
 	{
-		Vector4 position;
+		Vector4 position = Vector4(0, 0, 0, 1);
 		Vector2 uv;
-		Vector3 normal;
 		Vector4 color;
 		uint32_t textureIndex;
 	};
@@ -48,7 +49,7 @@ private:
 	Config config_{};
 
 	// シーン内のトレイルリスト。
-	std::vector<Trail*> trails_;
+	std::vector<ITrail*> trails_;
 
 	// trails_に入っているすべてのトレイルの頂点をまとめる配列。サイズは config_.maxTrails * config_.maxSegmentsPerTrail * 2（base/tipの2点分）で固定。activeVertexCount_までが有効。
 	std::vector<BatchVertex> batchVertices_;
@@ -60,6 +61,9 @@ private:
 
 	// draw data
 	int drawDataIndex_ = -1;
+
+	// ログ
+	Logger logger_;
 
 	// 描画オブジェクト
 	std::unique_ptr<SHEngine::RenderObject> render_;

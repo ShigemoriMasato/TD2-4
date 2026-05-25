@@ -31,7 +31,7 @@ TrailType TrailPresetDataBank::GetTypeOf(const std::string& name)
 }
 
 // Save
-void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg, RibbonTrailConfig& ribbonPreset)
+void TrailPresetDataBank::Save(const std::string& name, const TrailConfig& cfg, RibbonTrailConfig& ribbonPreset)
 {
 	// nameに.jsonがついていたら外す
 	std::string baseName = name;
@@ -67,7 +67,7 @@ void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg
 
 	json_.Save();
 }
-void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg, ShockwaveRingConfig& shockPreset)
+void TrailPresetDataBank::Save(const std::string& name, const TrailConfig& cfg, ShockwaveRingConfig& shockPreset)
 {
 	// nameに.jsonがついていたら外す
 	std::string baseName = name;
@@ -108,9 +108,9 @@ void TrailPresetDataBank::Save(const std::string& name, const Trail::Config& cfg
 }
 
 // Load
-Trail::Config TrailPresetDataBank::LoadConfig(JsonManager& json)
+TrailConfig TrailPresetDataBank::LoadConfig(JsonManager& json)
 {
-	Trail::Config cfg{};
+	TrailConfig cfg{};
 
 	try { cfg.maxSegments = json.Get<int>("cfg.maxSegments"); }
 	catch (...) {}

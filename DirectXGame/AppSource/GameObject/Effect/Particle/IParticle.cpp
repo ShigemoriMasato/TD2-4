@@ -16,6 +16,9 @@ void IParticle::Clear()
 	aliveCount_ = 0;
 	// GPUに送るようの情報を初期化(重い)
 	std::fill(gpuInstances_.begin(), gpuInstances_.end(), InstanceGpu{});
+
+	// アクティブ数リセット
+	aliveCount_ = 0;
 }
 
 void IParticle::SetEnabled(bool isActive)

@@ -38,8 +38,8 @@ public:
 	/// <summary>
 	/// 生成済みのConfigを Assets/Json/Trail/<name>.json として保存する
 	/// </summary>
-	void Save(const std::string& name, const Trail::Config& cfg, RibbonTrailConfig& ribbonPreset);
-	void Save(const std::string& name, const Trail::Config& cfg, ShockwaveRingConfig& shockPreset);
+	void Save(const std::string& name, const TrailConfig& cfg, RibbonTrailConfig& ribbonPreset);
+	void Save(const std::string& name, const TrailConfig& cfg, ShockwaveRingConfig& shockPreset);
 
 	/// <summary>
 	/// Assets/Json/Trail/<name>.json からプリセットを読み込む
@@ -47,7 +47,7 @@ public:
 	/// <param name="name">例："Fountain_01" → Assets/Json/Trail/Fountain_01.json</param>
 	/// <returns></returns>
 	TrailPresetVariant Load(const std::string& name);
-	Trail::Config LoadConfig(JsonManager& json);
+	TrailConfig LoadConfig(JsonManager& json);
 
 private:
 	// 読み込みにのみ使用

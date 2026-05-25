@@ -28,23 +28,36 @@ private:
 
 private:
 	void BuildModelList();
+	std::vector<std::string> modelList_;
+	void BuildTextureList();
+	std::vector<std::string> textureList_;
 	void BuildJsonList();
+	std::vector<std::string> JsonList_;
 
 	void SelectModel(int index);
 
-	void RebuildTrail();
 
-	void SaveTrailData();
-	void LoadTrailData();
+	// 描画トレイルのみ再生成
+	void RebuildDrawTrail();
+	bool requestRebuildDrawingTrail_ = false;
+	// 編集トレイルのみ再生成(Jsonのプリセットから再生成)
+	void RebuildEditTrailByJson();
+	bool requestRebuildEditingTrailByJson_ = false;
+	// 編集トレイルのみ再生成(CurrentEditorConfigから再生成)
+	void RebuildEditTrailByCurrentConfig();
+	bool requestRebuildEditingTrailByCurrentConfig_ = false;
+
+	void SaveData();
+	void LoadData();
 
 	void DrawImGui();
-	void DrawConfigUI_();
-	void DrawRibbonUI_();
-	void DrawShockwaveUI_();
+	void DrawImGui_Config();
+	void DrawImGui_Config_Ribbon();
+	void DrawImGui_Config_Shockwave();
 
 	void UpdateRenders(const Matrix4x4& vpMatrix);
 
-	void Reset(TrailType type);
+	void Reset();
 
 private:
 	// カメラ
@@ -52,8 +65,23 @@ private:
 	// ワールドgrid
 	std::unique_ptr<Grid> grid_;
 
+	// 共通Config
+	TrailConfig trailConfig_{};
+	// Ribbon 固有
+	RibbonTrailConfig ribbonPreset_{};
+	// Shock 固有
+	ShockwaveRingConfig shockPreset_{};
 
-	int selectedModelIndex_ = -1;
+	TrailType currentType_ = TrailType::RibbonTrail;
+
+	// 編集しているTrail。ImGuiで編集している内容を反映させるためのTrail(ここには一つしかAddされない)
+	MultiTrail editingTrail_;
+	// 描画しているTrail。複数のプリセットをAddして描画するためのTrail(activeTrailNameList_のプリセットをAddする)
+	MultiTrail drawingTrail_;
+	// 描画しているTrailのプリセット名リスト
+	std::vector<std::string> activeTrailNameList_;
+
+	int selectedModelIndex_ = 1;
 
 	// モデル描画データ
 	std::vector<std::unique_ptr<DrawDataUnit>> modelDataList_;
@@ -67,26 +95,6 @@ private:
 	Vector3 markerPos[2];
 	bool isMarkerDraw_ = true;
 
-
-	// 共通Config
-	Trail::Config trailConfig_{};
-	// Ribbon 固有
-	RibbonTrailConfig ribbonPreset_{};
-	// Shock 固有
-	ShockwaveRingConfig shockPreset_{};
-	// 上記Configを利用し描画するTrailが必要（編集中のトレイルを描画するため）
-	Trail editingTrail_;
-
-
-	TrailType currentType_ = TrailType::RibbonTrail;
-
-	// Trail
-	MultiTrail trail_;
-	std::vector<std::string> activeTrailNameList_;
-	bool requestRebuildTrail_ = false;
-
 	// ImGuiがstringを許容しないばかりに生まれてしまった産廃
 	char presetNameBuf_[256]{ "trail_01" };
-	char texturePathBuf_[256]{};
-	std::vector<std::string> JsonList_;
 };

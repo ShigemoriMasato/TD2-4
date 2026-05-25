@@ -420,6 +420,12 @@ void PrticleEditorScene::DrawImGui()
 
 	ImGui::End();
 
+	ImGui::Begin("FPS");
+	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
+	ImGui::Text("DeltaTime: %.3f ms", deltaTime * 1000.0f);
+	ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
+	ImGui::End();
+
 #endif
 }
 

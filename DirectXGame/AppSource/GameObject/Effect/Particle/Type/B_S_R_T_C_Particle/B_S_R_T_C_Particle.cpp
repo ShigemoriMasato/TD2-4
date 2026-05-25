@@ -53,10 +53,10 @@ void B_S_R_T_C_Particle::SetConfig(const ParticlePresetVariant& config)
 
 void B_S_R_T_C_Particle::Update(float dt)
 {
-	Clear();
-
 	// 「いま生きてる粒が無い」かつ「emitも止まってる」なら何もしない
 	if (!isActive_ && instances_.empty()) return;
+
+	Clear();
 
 	const B_S_R_T_C_Config& uniqueConfig = std::get<B_S_R_T_C_Config>(config_);
 
