@@ -1,35 +1,24 @@
 #pragma once
-#include <GameObject/Effect/Trail/Trail.h>
+#include <GameObject/Effect/Trail/ITrail.h>
 #include <GameObject/Effect/Trail/Preset/TrailPreset.h>
 
-class ShockwaveRingTrail
+class ShockwaveRingTrail : public ITrail
 {
 public:
-	void Initialize(SHEngine::TextureManager* textureManager, const ShockwaveRingConfig& preset);
-	void Update(float dt);
-
-	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
-	void Trigger(const Vector3& center);
-	void Stop();
-
-	void Clear() { trail_.Clear(); }
-
-	bool IsActive() const { return active_; }
-
-	Trail& GetTrail() { return trail_; }
-	const Trail& GetTrail() const { return trail_; }
+	void SetConfig(const TrailPresetVariant& config) override;
+	void Update(float dt) override;
 
 private:
-	static Vector3 NormalizeSafe(const Vector3& v);
-	static Vector3 Cross(const Vector3& a, const Vector3& b);
-	static float Hash01(int i);
+	// samples_の情報からuvや色を計算してgpuVertices_にセットする
+	void RebuildVertices();
 
-private:
-	Trail trail_;
-	ShockwaveRingConfig preset_{};
-	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
+	struct Sample
+	{
+		Vector3 base;
+		Vector3 tip;
+		float age = 0.0f; // 秒
+		float u = 0.0f;   // 0..1（長さ方向）
+	};
 
-	bool active_ = false;
-	float time_ = 0.0f;
-	Vector3 position_{};
+	std::deque<Sample> samples_;
 };

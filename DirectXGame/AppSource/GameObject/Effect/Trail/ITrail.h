@@ -16,7 +16,7 @@ public:
 
 	struct GpuVertex
 	{
-		Vector4 position;
+		Vector4 position{ 0, 0, 0, 1 };
 		Vector2 uv;
 		Vector4 color;
 		uint32_t textureIndex = 0;
@@ -26,8 +26,6 @@ private:
 	// 外部
 	SHEngine::TextureManager* textureManager_ = nullptr;
 
-	// 履歴
-	int activeVertexCount_ = 0;
 
 protected:
 
@@ -41,6 +39,8 @@ protected:
 	// リソースハンドル
 	int textureHandle_ = -1;
 
+	// 履歴
+	int activeVertexCount_ = 0;
 
 public:
 	ITrail() = default;
@@ -61,11 +61,12 @@ public:
 	// 追従行列セット
 	void SetModelWorld(const Matrix4x4& modelWorld) { modelWorld_ = modelWorld; }
 	// アクティブフラグセット
-	void SetEnabled(bool isActive);
+	void SetIsActive(bool isActive) { isActive_ = isActive; }
 
 
 	// Drawer用
 	int GetTextureHandle() const { return textureHandle_; }
+	bool GetIsActive() const { return isActive_; }
 
 	const std::vector<GpuVertex>& GetGpuVertices() const { return gpuVertices_; }
 	int GetActiveVertexCount() const { return activeVertexCount_; }

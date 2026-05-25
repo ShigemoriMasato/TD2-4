@@ -7,6 +7,7 @@
 #include "03_YokoScene/YokoScene.h"
 #include <Utility/DataStructures.h>
 #include "PrticleEditorScene.h"
+#include <Utility/SearchFile.h>
 
 using namespace SHEngine;
 
@@ -103,10 +104,12 @@ void TrailEditorScene::Initialize()
 	grid_->Initialize(drawDataManager_);
 
 	// 編集データ初期化
-	Reset(TrailType::RibbonTrail);
+	Reset();
 
 	// "Assets/Model"以下のモデルをリストアップしてmodelDataList_作成
 	BuildModelList();
+	// "Assets/Texture"以下のテクスチャをリストアップしてTextureList_作成
+	BuildTextureList();
 	// "Assets/Json/Trail"以下のjsonをリストアップしてJsonList_作成
 	BuildJsonList();
 
@@ -125,17 +128,13 @@ void TrailEditorScene::Initialize()
 	// 初期モデルを選択
 	SelectModel(0);
 
-	RebuildTrail();
+	snprintf(presetNameBuf_, sizeof(presetNameBuf_), "%s", JsonList_[0].c_str());
+	RebuildEditTrailByJson();
 }
 
 // 編集データ初期化
-void TrailEditorScene::Reset(TrailType type)
+void TrailEditorScene::Reset()
 {
-	currentType_ = type;
-
-	std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
-	strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.texturePath.c_str(), _TRUNCATE);
-
 	trailConfig_ = TrailConfig{};
 
 	// ribbon
@@ -150,8 +149,15 @@ void TrailEditorScene::Reset(TrailType type)
 // "Assets/Model/"以下のモデルをリストアップしてmodelDataList_作成。武器追従トレイルにしか使わない機能だから簡易的でよい
 void TrailEditorScene::BuildModelList()
 {
-	//const char* kWeaponDir = "Assets/Model/Item/Weapon";
+	modelList_.clear();
+
 	const char* kFilePath = "Assets/Model";
+	auto modelFileNames = SearchDirectoryPathsAddChild(kFilePath);
+	modelList_ = modelFileNames;
+	std::sort(modelList_.begin(), modelList_.end());
+	return;
+
+
 	std::error_code ec;
 	if (!std::filesystem::exists(kFilePath, ec))
 	{
@@ -163,25 +169,29 @@ void TrailEditorScene::BuildModelList()
 		// is_directory() = それがフォルダかファイルか
 		if (!entry.is_directory()) continue;
 
-		// 子フォルダがある場合はスキップ
-		bool hasChildDir = false;
-		for (const auto& c : std::filesystem::directory_iterator(entry.path()))
-		{
-			if (c.is_directory()) { hasChildDir = true; break; }
-		}
-		if (hasChildDir) continue;
-
-		// ここまで来たentryは最下層のフォルダ
-		auto data = std::make_unique<DrawDataUnit>();
-		data->modelPath = entry.path().generic_string();
-		data->name = entry.path().filename().generic_string();
-		data->modelIndex = modelManager_->LoadModel(data->modelPath);
-		modelDataList_.push_back(std::move(data));
+		modelList_.push_back(entry.path().filename().generic_string());
 	}
+	std::sort(modelList_.begin(), modelList_.end());
+}
+// "Assets/Texture/"以下のテクスチャをリストアップしてTextureList_作成。
+void TrailEditorScene::BuildTextureList()
+{
+	textureList_.clear();
+
+	const char* kFilePath = "Assets/Texture";
+
+	//シゲモリ制===========================
+	auto textureFileNames = SearchFilePathsAddChild(kFilePath, ".png");
+	textureList_ = textureFileNames;
+	std::sort(textureList_.begin(), textureList_.end());
+	return;
+	//=====================================
 }
 // "Assets/Json/Trail"以下のjsonをリストアップしてJsonList_作成
 void TrailEditorScene::BuildJsonList()
 {
+	JsonList_.clear();
+
 	const char* kFilePath = "Assets/Json/Trail";
 	std::error_code ec;
 	if (!std::filesystem::exists(kFilePath, ec))
@@ -196,59 +206,86 @@ void TrailEditorScene::BuildJsonList()
 
 		JsonList_.push_back(entry.path().filename().generic_string());
 	}
+	std::sort(JsonList_.begin(), JsonList_.end());
 }
 
 
-// 選択モデルを変更
-void TrailEditorScene::SelectModel(int index)
-{
-	if (index < 0 || index >= int(modelDataList_.size())) return;
-	selectedModelIndex_ = index;
-	auto modelData = modelManager_->GetNodeModelData(modelDataList_[index]->modelIndex);
-	const auto drawData = drawDataManager_->GetDrawData(modelData.drawDataIndex);
-	modelRender_->SetDrawData(drawData);
-	modelDataList_[index]->textureIndex = modelData.materials[modelData.materialIndex.front()].textureIndex;
-}
 
-// Trailの再構築
-void TrailEditorScene::RebuildTrail()
+// 描画トレイルのみ再生成
+void TrailEditorScene::RebuildDrawTrail()
 {
-	commonData_->trailDrawer->Clear();
-
-	trail_.Clear();
-	trail_.Initialize(textureManager_, commonData_);
+	drawingTrail_.Clear();
+	drawingTrail_.Initialize(textureManager_, commonData_);
 	for (const auto& name : activeTrailNameList_)
 	{
-		trail_.Add(name);
+		drawingTrail_.Add(name);
 	}
-
+}
+// 編集トレイルのみ再生成。Jsonの内容で再構築
+void TrailEditorScene::RebuildEditTrailByJson()
+{
 	editingTrail_.Clear();
-	editingTrail_.Initialize(textureManager_);
-	editingTrail_.SetConfig(trailConfig_);
-	commonData_->trailDrawer->Register(&editingTrail_);
+	editingTrail_.Initialize(textureManager_, commonData_);
+	// 編集プリセットを一つだけ追加する
+	if (presetNameBuf_[0] == '\0') return;
+	int32_t slot = editingTrail_.Add(presetNameBuf_);
+	// 追加したプリセットのConfigをセット
+	TrailPresetVariant presetVar = editingTrail_.GetConfig(slot);
+	if (std::holds_alternative<RibbonTrailConfig>(presetVar))
+	{
+		ribbonPreset_ = std::get<RibbonTrailConfig>(presetVar);
+		trailConfig_ = ribbonPreset_.cfg;
+		currentType_ = TrailType::RibbonTrail;
+	}
+	else if (std::holds_alternative<ShockwaveRingConfig>(presetVar))
+	{
+
+	}
+}
+// 編集トレイルのみ再生成。現在のConfigで再構築
+void TrailEditorScene::RebuildEditTrailByCurrentConfig()
+{
+	editingTrail_.Clear();
+	editingTrail_.Initialize(textureManager_, commonData_);
+	if (presetNameBuf_[0] == '\0') return;
+	int32_t slot = editingTrail_.Add(presetNameBuf_);
+
+	if (currentType_ == TrailType::RibbonTrail)
+	{
+		ribbonPreset_.cfg = trailConfig_;
+		editingTrail_.SetConfig(slot, ribbonPreset_);
+	}
+	else if (currentType_ == TrailType::ShockwaveRing)
+	{
+		shockPreset_.cfg = trailConfig_;
+		editingTrail_.SetConfig(slot, shockPreset_);
+	}
 }
 
+
 // データ保存
-void TrailEditorScene::SaveTrailData()
+void TrailEditorScene::SaveData()
 {
 	if (presetNameBuf_[0] == '\0') return;
 
 	if (currentType_ == TrailType::RibbonTrail)
 	{
+		ribbonPreset_.cfg = trailConfig_;
 		commonData_->trailPresetDataBank.Save(presetNameBuf_, trailConfig_, ribbonPreset_);
 	}
 	else if (currentType_ == TrailType::ShockwaveRing)
 	{
+		shockPreset_.cfg = trailConfig_;
 		commonData_->trailPresetDataBank.Save(presetNameBuf_, trailConfig_, shockPreset_);
 	}
 }
+
 // データ読み込み
-void TrailEditorScene::LoadTrailData()
+void TrailEditorScene::LoadData()
 {
 	if (presetNameBuf_[0] == '\0') return;
 
 	TrailPresetVariant var{};
-
 	var = commonData_->trailPresetDataBank.Get(presetNameBuf_);
 
 	if (std::holds_alternative<RibbonTrailConfig>(var))
@@ -256,20 +293,26 @@ void TrailEditorScene::LoadTrailData()
 		currentType_ = TrailType::RibbonTrail;
 		ribbonPreset_ = std::get<RibbonTrailConfig>(var);
 		trailConfig_ = ribbonPreset_.cfg;
-		std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
-		strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.texturePath.c_str(), _TRUNCATE);
-
 	}
 	else if (std::holds_alternative<ShockwaveRingConfig>(var))
 	{
 		currentType_ = TrailType::ShockwaveRing;
 		shockPreset_ = std::get<ShockwaveRingConfig>(var);
 		trailConfig_ = shockPreset_.cfg;
-		std::memset(texturePathBuf_, 0, sizeof(texturePathBuf_));
-		strncpy_s(texturePathBuf_, sizeof(texturePathBuf_), trailConfig_.texturePath.c_str(), _TRUNCATE);
 	}
+}
 
-	requestRebuildTrail_ = true;
+
+
+// 選択モデルを変更
+void TrailEditorScene::SelectModel(int index)
+{
+	if (index < 0 || index >= int(modelList_.size())) return;
+	selectedModelIndex_ = index;
+	int modelIndex = modelManager_->LoadModel("Assets/Model/" + modelList_[index]);
+	auto modelData = modelManager_->GetNodeModelData(modelIndex);
+	const auto drawData = drawDataManager_->GetDrawData(modelData.drawDataIndex);
+	modelRender_->SetDrawData(drawData);
 }
 
 
@@ -303,7 +346,7 @@ void TrailEditorScene::DrawImGui()
 				if (ImGui::SmallButton("削除"))
 				{
 					activeTrailNameList_.erase(activeTrailNameList_.begin() + i);
-					requestRebuildTrail_ = true;
+					requestRebuildDrawingTrail_ = true;
 				}
 				ImGui::EndGroup();
 				ImGui::PopID();
@@ -321,13 +364,13 @@ void TrailEditorScene::DrawImGui()
 	{
 		if (ImGui::BeginListBox("##sihpo;dj", ImVec2(-FLT_MIN - 100, 100)))
 		{
-			for (int i = 0; i < (int)modelDataList_.size(); ++i)
+			for (int i = 0; i < (int)modelList_.size(); ++i)
 			{
 				const bool selected = (i == selectedModelIndex_);
-				if (ImGui::Selectable(modelDataList_[i]->name.c_str(), selected))
+				if (ImGui::Selectable(modelList_[i].c_str(), selected))
 				{
 					SelectModel(i);
-					requestRebuildTrail_ = true;
+					requestRebuildDrawingTrail_ = true;
 				}
 			}
 			ImGui::EndListBox();
@@ -335,6 +378,7 @@ void TrailEditorScene::DrawImGui()
 
 		ImGui::TreePop();
 	}
+
 	// トレイル選択
 	if (ImGui::TreeNode("表示・編集トレイル選択"))
 	{
@@ -356,7 +400,7 @@ void TrailEditorScene::DrawImGui()
 				if (ImGui::SmallButton("編集"))
 				{
 					strncpy_s(presetNameBuf_, sizeof(presetNameBuf_), JsonList_[i].c_str(), _TRUNCATE);
-					LoadTrailData();
+					requestRebuildEditingTrailByJson_ = true;
 				}
 
 				ImGui::SameLine();
@@ -364,17 +408,10 @@ void TrailEditorScene::DrawImGui()
 				if (ImGui::SmallButton("描画"))
 				{
 					activeTrailNameList_.push_back(JsonList_[i]);
-					requestRebuildTrail_ = true;
+					requestRebuildDrawingTrail_ = true;
 				}
 
 				ImGui::EndGroup();
-
-				// 単押し処理（Selectable）
-				if (selected)
-				{
-					activeTrailNameList_.push_back(JsonList_[i]);
-					requestRebuildTrail_ = true;
-				}
 
 				ImGui::PopID();
 			}
@@ -386,18 +423,29 @@ void TrailEditorScene::DrawImGui()
 	}
 
 	ImGui::SeparatorText("共通Config");
-
-	DrawConfigUI_();
+	DrawImGui_Config();
 
 	ImGui::SeparatorText("固有Config");
-
-	DrawRibbonUI_();
+	switch (currentType_)
+	{
+	case TrailType::RibbonTrail:
+		DrawImGui_Config_Ribbon();
+		break;
+	case TrailType::ShockwaveRing:
+		DrawImGui_Config_Shockwave();
+		break;
+	case TrailType::None:
+		break;
+	default:
+		break;
+	}
 
 	ImGui::Separator();
 
 	if (ImGui::Button("Save"))
 	{
-		SaveTrailData();
+		SaveData();
+		BuildJsonList();
 	}
 	ImGui::Checkbox("モデル描画", &isModelDraw_);
 	ImGui::Checkbox("マーカー描画", &isMarkerDraw_);
@@ -410,8 +458,6 @@ void TrailEditorScene::DrawImGui()
 	ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
 	ImGui::End();
 
-
-
 	ImGui::Begin("modelTransform");
 	ImGui::DragFloat3("position", &modelTransform_.position.x, 0.01f);
 	ImGui::DragFloat3("rotate", &modelTransform_.rotate.x, 0.01f);
@@ -420,47 +466,59 @@ void TrailEditorScene::DrawImGui()
 
 #endif
 }
-void TrailEditorScene::DrawConfigUI_()
+void TrailEditorScene::DrawImGui_Config()
 {
 #ifdef USE_IMGUI
 
-	requestRebuildTrail_ |= ImGui::DragInt("cfg.maxSegments", &trailConfig_.maxSegments, 1.0f, 1, 512);
-	requestRebuildTrail_ |= ImGui::DragFloat("cfg.lifeTime", &trailConfig_.lifeTime, 0.01f, 0.001f, 10.0f);
-	requestRebuildTrail_ |= ImGui::DragFloat("cfg.minDistance", &trailConfig_.minDistance, 0.001f, 0.0f, 10.0f);
+	requestRebuildEditingTrailByCurrentConfig_ |= ImGui::DragInt("cfg.maxSegments", &trailConfig_.maxSegments, 1.0f, 1, 512);
+	requestRebuildEditingTrailByCurrentConfig_ |= ImGui::DragFloat("cfg.lifeTime", &trailConfig_.lifeTime, 0.01f, 0.001f, 10.0f);
+	requestRebuildEditingTrailByCurrentConfig_ |= ImGui::DragFloat("cfg.minDistance", &trailConfig_.minDistance, 0.001f, 0.0f, 10.0f);
+	requestRebuildEditingTrailByCurrentConfig_ |= ImGui::ColorEdit4("cfg.color", &trailConfig_.color.x);
 
-	if (ImGui::InputText("cfg.texturePath", texturePathBuf_, sizeof(texturePathBuf_)))
+	ImGui::Text("cfg.texturePath %s", trailConfig_.texturePath.c_str());
+	if (ImGui::TreeNode("テクスチャ選択"))
 	{
-		trailConfig_.texturePath = texturePathBuf_;
-		requestRebuildTrail_ = true;
+		if (ImGui::BeginListBox("##sihpo;dj", ImVec2(-FLT_MIN - 100, 100)))
+		{
+			for (int i = 0; i < (int)textureList_.size(); ++i)
+			{
+				if (ImGui::Selectable(textureList_[i].c_str(), false))
+				{
+					// texturePathBuf_に選択したテクスチャのパスをセット
+					trailConfig_.texturePath = textureList_[i];
+					requestRebuildEditingTrailByCurrentConfig_ = true;
+				}
+			}
+			ImGui::EndListBox();
+		}
+		ImGui::TreePop();
 	}
 
-	requestRebuildTrail_ |= ImGui::ColorEdit4("cfg.color", &trailConfig_.color.x);
 
 #endif
 }
-
-void TrailEditorScene::DrawRibbonUI_()
+void TrailEditorScene::DrawImGui_Config_Ribbon()
 {
 #ifdef USE_IMGUI
 
 	ImGui::SeparatorText("リボン型");
-	requestRebuildTrail_ |= ImGui::DragFloat3("ribbon.originLocal", &ribbonPreset_.originLocal.x, 0.01f);
-	requestRebuildTrail_ |= ImGui::DragFloat3("ribbon.tipLocal", &ribbonPreset_.tipLocal.x, 0.01f);
+	requestRebuildEditingTrailByCurrentConfig_ |= ImGui::DragFloat3("ribbon.originLocal", &ribbonPreset_.originLocal.x, 0.01f);
+	requestRebuildEditingTrailByCurrentConfig_ |= ImGui::DragFloat3("ribbon.tipLocal", &ribbonPreset_.tipLocal.x, 0.01f);
 
 #endif
 }
-void TrailEditorScene::DrawShockwaveUI_()
+void TrailEditorScene::DrawImGui_Config_Shockwave()
 {
 #ifdef USE_IMGUI
 
 	ImGui::SeparatorText("Shockwave Ring");
-	requestRebuildTrail_ |= ImGui::DragInt("shock.segments", &shockPreset_.segments, 1.0f, 3, 512);
-	requestRebuildTrail_ |= ImGui::DragFloat("shock.duration", &shockPreset_.duration, 0.01f, 0.01f, 10.0f);
-	requestRebuildTrail_ |= ImGui::DragFloat("shock.radiusStart", &shockPreset_.radiusStart, 0.01f, 0.0f, 100.0f);
-	requestRebuildTrail_ |= ImGui::DragFloat("shock.radiusEnd", &shockPreset_.radiusEnd, 0.01f, 0.0f, 100.0f);
-	requestRebuildTrail_ |= ImGui::DragFloat("shock.thickness", &shockPreset_.thickness, 0.01f, 0.0f, 100.0f);
-	requestRebuildTrail_ |= ImGui::DragFloat("shock.noiseAmp", &shockPreset_.noiseAmp, 0.01f, 0.0f, 100.0f);
-	requestRebuildTrail_ |= ImGui::DragFloat("shock.noiseFreq", &shockPreset_.noiseFreq, 0.01f, 0.0f, 100.0f);
+	requestRebuildEditingTrailByCurrentConfig_ |= ImGui::DragInt("shock.segments", &shockPreset_.segments, 1.0f, 3, 512);
+	requestRebuildEditingTrailByCurrentConfig_ |= ImGui::DragFloat("shock.duration", &shockPreset_.duration, 0.01f, 0.01f, 10.0f);
+	requestRebuildEditingTrailByCurrentConfig_ |= ImGui::DragFloat("shock.radiusStart", &shockPreset_.radiusStart, 0.01f, 0.0f, 100.0f);
+	requestRebuildEditingTrailByCurrentConfig_ |= ImGui::DragFloat("shock.radiusEnd", &shockPreset_.radiusEnd, 0.01f, 0.0f, 100.0f);
+	requestRebuildEditingTrailByCurrentConfig_ |= ImGui::DragFloat("shock.thickness", &shockPreset_.thickness, 0.01f, 0.0f, 100.0f);
+	requestRebuildEditingTrailByCurrentConfig_ |= ImGui::DragFloat("shock.noiseAmp", &shockPreset_.noiseAmp, 0.01f, 0.0f, 100.0f);
+	requestRebuildEditingTrailByCurrentConfig_ |= ImGui::DragFloat("shock.noiseFreq", &shockPreset_.noiseFreq, 0.01f, 0.0f, 100.0f);
 
 #endif
 }
@@ -468,7 +526,7 @@ void TrailEditorScene::DrawShockwaveUI_()
 
 void TrailEditorScene::UpdateRenders(const Matrix4x4& vpMatrix)
 {
-	if (selectedModelIndex_ < 0) return;
+	//if (selectedModelIndex_ < 0) return;
 
 	modelTransform_.rotate.x += 0.05f;
 	modelTransform_.rotate.y += 0.02f;
@@ -478,11 +536,13 @@ void TrailEditorScene::UpdateRenders(const Matrix4x4& vpMatrix)
 	{
 		const Matrix4x4 wvp = modelWorld_ * vpMatrix;
 		const Vector4 color = { 1,1,1,1 };
+		const int texIndex = 10;
 		const DirectionalLight dirLight = { {1,1,1,1}, {0,-1,0}, 1.0f };
 
 		modelRender_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
 		modelRender_->CopyBufferData(1, &color, sizeof(Vector4));
-		modelRender_->CopyBufferData(2, &modelDataList_[selectedModelIndex_]->textureIndex, sizeof(int));
+		//modelRender_->CopyBufferData(2, &modelDataList_[selectedModelIndex_]->textureIndex, sizeof(int));
+		modelRender_->CopyBufferData(2, &texIndex, sizeof(int));
 		modelRender_->CopyBufferData(3, &dirLight, sizeof(DirectionalLight));
 	}
 
@@ -521,20 +581,30 @@ std::unique_ptr<IScene> TrailEditorScene::Update()
 	grid_->Update(Vector3(0.0f, 0.0f, 0.0f), vp);
 
 	// トレイル再生成
-	if (requestRebuildTrail_)
+	if (requestRebuildDrawingTrail_)
 	{
-		requestRebuildTrail_ = false;
-		RebuildTrail();
+		requestRebuildDrawingTrail_ = false;
+		RebuildDrawTrail();
+	}
+	if (requestRebuildEditingTrailByJson_)
+	{
+		requestRebuildEditingTrailByJson_ = false;
+		RebuildEditTrailByJson();
+	}
+	if (requestRebuildEditingTrailByCurrentConfig_)
+	{
+		requestRebuildEditingTrailByCurrentConfig_ = false;
+		RebuildEditTrailByCurrentConfig();
 	}
 
 	// モデル・マーカー更新
 	UpdateRenders(vp);
 
 	// Trail更新
-	trail_.SetModelWorld(modelWorld_);
-	trail_.Update(dt);
-	editingTrail_.PushSegment(markerPos[0], markerPos[1]);
+	editingTrail_.SetModelWorld(modelWorld_);
 	editingTrail_.Update(dt);
+	drawingTrail_.SetModelWorld(modelWorld_);
+	drawingTrail_.Update(dt);
 
 	// Zキーで切り替え
 	if (input_->GetKeyState(DIK_Z) && !input_->GetPreKeyState(DIK_Z))
@@ -553,11 +623,11 @@ void TrailEditorScene::Draw()
 	auto display = commonData_->display.get();
 	auto cmdObj = commonData_->cmdObject.get();
 
-	display->PreDraw(cmdObj, true);
+	cmdObj->SetRenderTarget(display->GetDisplay());
 
 	grid_->Draw(cmdObj);
 
-	if (isModelDraw_)modelRender_->Draw(cmdObj);
+	//if (isModelDraw_)modelRender_->Draw(cmdObj);
 
 	if (isMarkerDraw_)
 	{
@@ -567,14 +637,14 @@ void TrailEditorScene::Draw()
 		}
 	}
 
-	trail_.Draw();
-	//editingTrail_.Draw();
+	drawingTrail_.Draw();
+	editingTrail_.Draw();
 
 	commonData_->trailDrawer->Draw(cmdObj, camera_->GetVPMatrix());
 
 	display->PostDraw(cmdObj);
 
-	window->PreDraw(cmdObj);
+	cmdObj->SetRenderTarget(window->GetCurrentDisplay());
 
 #ifdef USE_IMGUI
 	DrawImGui();

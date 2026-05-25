@@ -38,10 +38,10 @@ void ParticleOnTrail::Update(float dt)
 
 	size_t max = std::min(worlds.size(), static_cast<size_t>(30));
 
-	for (size_t i = 0; i < max; ++i)
-	{
-		trails.SetModelWorld(int32_t(i), worlds[i]);
-	}
+	//for (size_t i = 0; i < max; ++i)
+	//{
+	//	trails.SetModelWorld(int32_t(i), worlds[i]);
+	//}
 
 	trails.Update(dt);
 

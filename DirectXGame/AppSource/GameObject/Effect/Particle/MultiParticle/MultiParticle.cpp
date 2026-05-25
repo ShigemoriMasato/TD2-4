@@ -63,34 +63,34 @@ void MultiParticle::SetModelWorld(const Matrix4x4& modelWorld)
 
 void MultiParticle::SetEmittingFlag(const int32_t id, bool flag)
 {
-	if (instanceCache_.count(id))
+	if (instanceCache_.find(id) != instanceCache_.end())
 	{
-		instanceCache_.at(id)->SetEnabled(flag);
+		instanceCache_[id]->SetEnabled(flag);
 	}
 }
 
 void MultiParticle::SetConfig(const int32_t id, const ParticlePresetVariant& presetVar)
 {
-	if (instanceCache_.count(id))
+	if (instanceCache_.find(id) != instanceCache_.end())
 	{
-		instanceCache_.at(id)->SetConfig(presetVar);
+		instanceCache_[id]->SetConfig(presetVar);
 	}
 }
 
 ParticlePresetVariant MultiParticle::GetConfig(const int32_t id)
 {
-	if (instanceCache_.count(id))
+	if (instanceCache_.find(id) != instanceCache_.end())
 	{
-		return instanceCache_.at(id)->GetUniqueConfig();
+		return instanceCache_[id]->GetUniqueConfig();
 	}
 	return {};
 }
 
 bool MultiParticle::GetIsJustEmitted(const int32_t id)
 {
-	if (instanceCache_.count(id))
+	if (instanceCache_.find(id) != instanceCache_.end())
 	{
-		return instanceCache_.at(id)->GetIsJustEmitted();
+		return instanceCache_[id]->GetIsJustEmitted();
 	}
 	return false;
 }

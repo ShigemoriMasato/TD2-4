@@ -1,22 +1,12 @@
 #include "MultiTrail.h"
-#include <GameObject/Effect/Trail/Drawer/TrailDrawer.h>
-#include <Scene/CommonData.h>
 #include <stdexcept>
+#include <Scene/CommonData.h>
+#include <GameObject/Effect/Trail/ITrail.h>
+#include <GameObject/Effect/Trail/Preset/TrailPreset.h>
+#include <GameObject/Effect/Trail/Drawer/TrailDrawer.h>
 
-
-void MultiTrail::Initialize(SHEngine::TextureManager* textureManager, CommonData* commonData)
-{
-	textureManager_ = textureManager;
-	presetData_ = &commonData->trailPresetDataBank;
-	drawer_ = commonData->trailDrawer.get();
-
-	nextId_ = -1;
-
-	ribbonTrailCache_.clear();
-	shockwaveRingTrailCache_.clear();
-	perTrailModelWorld_.clear();
-}
-
+#include <GameObject/Effect/Trail/Type/RibbonTrail/RibbonTrail.h>
+#include <GameObject/Effect/Trail/Type/ShockwaveRingTrail/ShockwaveRingTrail.h>
 
 int32_t MultiTrail::Add(const std::string& presetName)
 {
@@ -27,74 +17,91 @@ int32_t MultiTrail::Add(const std::string& presetName)
 
 	nextId_++;
 
+	std::unique_ptr<ITrail> trail;
+
 	// トレイルタイプごとに生成
 	if (std::holds_alternative<RibbonTrailConfig>(presetVar))
 	{
 		const auto& preset = std::get<RibbonTrailConfig>(presetVar);
-		auto trail = std::make_unique<RibbonTrail>();
-		trail->Initialize(textureManager_, preset);
-		ribbonTrailCache_[nextId_] = std::move(trail);
+		trail = std::make_unique<RibbonTrail>();
+		trail->Initialize(textureManager_);
+		trail->SetConfig(preset);
 	}
 	else if (std::holds_alternative<ShockwaveRingConfig>(presetVar))
 	{
 		const auto& preset = std::get<ShockwaveRingConfig>(presetVar);
-		auto trail = std::make_unique<ShockwaveRingTrail>();
-		trail->Initialize(textureManager_, preset);
-		shockwaveRingTrailCache_[nextId_] = std::move(trail);
+		trail = std::make_unique<ShockwaveRingTrail>();
+		trail->Initialize(textureManager_);
+		trail->SetConfig(preset);
 	}
+	else
+	{
+		throw std::runtime_error("Invalid trail preset type");
+	}
+
+	trailCache_[nextId_] = std::move(trail);
 
 	return nextId_;
 }
 
+void MultiTrail::SetModelWorld(const Matrix4x4& modelWorld)
+{
+	for (auto& [id, trail] : trailCache_)
+	{
+		trail->SetModelWorld(modelWorld);
+	}
+}
+
 void MultiTrail::SetEmittingFlag(const int32_t id, bool flag)
 {
-	if (ribbonTrailCache_.count(id))
+	if (trailCache_.find(id) != trailCache_.end())
 	{
-		ribbonTrailCache_.at(id)->SetEnabled(flag);
+		trailCache_[id]->SetIsActive(flag);
 	}
-	else if (shockwaveRingTrailCache_.count(id))
-	{
+}
 
+void MultiTrail::SetConfig(const int32_t id, const TrailPresetVariant& presetVar)
+{
+	if (trailCache_.find(id) != trailCache_.end())
+	{
+		trailCache_[id]->SetConfig(presetVar);
+	}	
+}
+
+TrailPresetVariant MultiTrail::GetConfig(const int32_t id)
+{
+	if (trailCache_.find(id) != trailCache_.end())
+	{
+		return trailCache_[id]->GetUniqueConfig();
 	}
+	return {};
 }
 
 void MultiTrail::Clear()
 {
-	for (auto& [id, trail] : ribbonTrailCache_)
-	{
-		trail->Clear();
-	}
-
-	for (auto& [id, trail] : shockwaveRingTrailCache_)
+	for (auto& [id, trail] : trailCache_)
 	{
 		trail->Clear();
 	}
 }
 
-void MultiTrail::SetModelWorld(int32_t id, const Matrix4x4& modelWorld)
+
+void MultiTrail::Initialize(SHEngine::TextureManager* textureManager, CommonData* commonData)
 {
-	perTrailModelWorld_[id] = modelWorld;
+	textureManager_ = textureManager;
+	presetData_ = &commonData->trailPresetDataBank;
+	drawer_ = commonData->trailDrawer.get();
+
+	nextId_ = -1;
+
+	trailCache_.clear();
 }
+
 
 void MultiTrail::Update(float dt)
 {
-	for (auto& [id, trail] : ribbonTrailCache_)
+	for (auto& [id, trail] : trailCache_)
 	{
-		Matrix4x4 world = modelWorld_;
-		auto pit = perTrailModelWorld_.find(id);
-		if (pit != perTrailModelWorld_.end()) world = world * pit->second;
-
-		trail->SetModelWorld(world);
-		trail->Update(dt);
-	}
-
-	for (auto& [id, trail] : shockwaveRingTrailCache_)
-	{
-		Matrix4x4 world = modelWorld_;
-		auto pit = perTrailModelWorld_.find(id);
-		if (pit != perTrailModelWorld_.end()) world = world * pit->second;
-
-		trail->SetModelWorld(world);
 		trail->Update(dt);
 	}
 }
@@ -106,12 +113,8 @@ void MultiTrail::Draw()
 
 void MultiTrail::RegisterToDrawer()
 {
-	for (auto& [id, t] : ribbonTrailCache_)
+	for (auto& [id, trail] : trailCache_)
 	{
-		drawer_->Register(&t->GetTrail());
-	}
-	for (auto& [id, t] : shockwaveRingTrailCache_)
-	{
-		drawer_->Register(&t->GetTrail());
+		drawer_->Register(trail.get());
 	}
 }

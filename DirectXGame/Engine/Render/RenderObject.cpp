@@ -149,13 +149,11 @@ void RenderObject::Draw(Command::Object* cmdObject) {
 	if (vbv_.size() == 0) {
 		logger_->error("=========== Draw || No vertex buffer set ===========");
 		logger_->error("  RenderObject: {}", debugName_);
-		assert(false && "RenderObject::Draw: No vertex buffer set");
 		return;
 	}
 	if (ibv_.BufferLocation == 0) {
 		logger_->error("=========== Draw || No index buffer set ===========");
 		logger_->error("  RenderObject: {}", debugName_);
-		assert(false && "RenderObject::Draw: No index buffer set");
 		return;
 	}
 

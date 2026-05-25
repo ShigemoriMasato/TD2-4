@@ -1,93 +1,226 @@
 #include "ShockwaveRingTrail.h"
-#include <cmath>
 #include <algorithm>
-#include <numbers>
 
-void ShockwaveRingTrail::Initialize(SHEngine::TextureManager* textureManager, const ShockwaveRingConfig& preset)
+namespace
 {
-	preset_ = preset;
-	trail_.Initialize(textureManager);
-	trail_.SetConfig(preset_.cfg);
-	trail_.Clear();
-
-	active_ = false;
-	time_ = 0.0f;
-	position_ = { 0.0f, 1.0f, 0.0f };
+	// 2点間の距離
+	float DistanceVec3Sq(const Vector3& a, const Vector3& b)
+	{
+		const float dx = a.x - b.x;
+		const float dy = a.y - b.y;
+		const float dz = a.z - b.z;
+		return dx * dx + dy * dy + dz * dz;
+	}
+	float DistanceVec3(const Vector3& a, const Vector3& b)
+	{
+		return sqrtf(DistanceVec3Sq(a, b));
+	}
 }
 
-void ShockwaveRingTrail::Trigger(const Vector3& position)
+void ShockwaveRingTrail::SetConfig(const TrailPresetVariant& config)
 {
-	position_ = position;
+	config_ = config;
+	const RibbonTrailConfig& uniqueConfig = std::get<RibbonTrailConfig>(config_);
+	SetTexture(uniqueConfig.cfg.texturePath);
 
-	active_ = true;
-	time_ = 0.0f;
-	trail_.Clear();
-}
-
-void ShockwaveRingTrail::Stop()
-{
-	active_ = false;
-	time_ = 0.0f;
-	trail_.Clear();
-}
-
-Vector3 ShockwaveRingTrail::Cross(const Vector3& a, const Vector3& b)
-{
-	return Vector3(
-		a.y * b.z - a.z * b.y,
-		a.z * b.x - a.x * b.z,
-		a.x * b.y - a.y * b.x
-	);
-}
-
-float ShockwaveRingTrail::Hash01(int i)
-{
-	float x = std::sin((float)i * 12.9898f) * 43758.5453f;
-	return x - std::floor(x);
+	// (i0, i1, i2).(i2, i1, i3) の順で入れるGPUに渡す方。
+	gpuVertices_.clear();
+	gpuVertices_.reserve((uniqueConfig.cfg.maxSegments + 1) * 2);
 }
 
 void ShockwaveRingTrail::Update(float dt)
 {
-	if (!active_) return;
+	// 「いま生きてる粒が無い」かつ「emitも止まってる」なら何もしない
+	if (!isActive_ && samples_.empty()) return;
 
-	time_ += dt;
+	Clear();
 
-	// 毎フレーム作り直す（TestTrail3方式）
-	trail_.Clear();
+	const RibbonTrailConfig& uniqueConfig = std::get<RibbonTrailConfig>(config_);
 
-	const float t = std::clamp(time_ / preset_.duration, 0.0f, 1.0f);
-	const float tt = t * t * (3.0f - 2.0f * t);
-	const float radius = preset_.radiusStart + (preset_.radiusEnd - preset_.radiusStart) * tt;
 
-	const int seg = std::max(3, preset_.segments);
-	const float twoPi = std::numbers::pi_v<float> *2.0f;
-
-	for (int i = 0; i < seg; ++i)
+	if (isActive_)
 	{
-		const float a = (float)i / (float)seg * twoPi;
-		const float s = std::sin(a);
-		const float c = std::cos(a);
+		// 現在のbase/tip位置を計算
+		const Vector3 base = uniqueConfig.originLocal * modelWorld_;
+		const Vector3 tip = uniqueConfig.tipLocal * modelWorld_;
 
-		const float noise = (preset_.noiseAmp <= 0.0f) ? 0.0f : (Hash01(i) * 2.0f - 1.0f) * preset_.noiseAmp;
-		const float r = std::max(0.0f, radius + noise);
+		// 1フレーム前のbase/tip位置を取得
+		const Vector3 preBase = samples_.empty() ? base : samples_.back().base;
+		const Vector3 preTip = samples_.empty() ? tip : samples_.back().tip;
 
-		const Vector3 pos = position_ + Vector3(c * r, 0.0f, s * r);
+		// 面以上である
+		if (!samples_.empty())
+		{
+			const float db = DistanceVec3Sq(base, preBase);
+			const float dt = DistanceVec3Sq(tip, preTip);
+			// 最小距離以上動いてないならreturn
+			if (std::max(db, dt) < uniqueConfig.cfg.minDistance * uniqueConfig.cfg.minDistance)
+			{
+				return;
+			}
+		}
 
-		Vector3 widthDir = Vector3(-s, c, 0.0f).Normalize() * (preset_.thickness * 0.5f);
-
-		Vector3 baseWS = pos - widthDir * (preset_.thickness * 0.5f);
-		Vector3 tipWS = pos + widthDir * (preset_.thickness * 0.5f);
-
-		baseWS = baseWS * modelWorld_;
-		tipWS = tipWS * modelWorld_;
-
-		trail_.PushSegment(baseWS, tipWS);
+		// 新しいサンプルを追加
+		Sample s;
+		s.base = base;
+		s.tip = tip;
+		s.age = 0.0f;
+		samples_.push_back(s);
 	}
 
-	trail_.Update(dt);
-
-	if (time_ >= preset_.duration)
+	// 年齢更新
+	for (auto& s : samples_)
 	{
-		Stop();
+		s.age += dt;
+	}
+
+	// 寿命切れ削除
+	samples_.erase(
+		std::remove_if(samples_.begin(), samples_.end(),
+			[&uniqueConfig](const Sample& s)
+			{
+				return s.age >= uniqueConfig.cfg.lifeTime;
+			}),
+		samples_.end());
+
+	// 最大サンプル数 = maxSegments + 1
+	const int maxSamples = uniqueConfig.cfg.maxSegments + 1;
+	while (int(samples_.size()) > maxSamples)
+	{
+		// オーバーしてたら古いものから削除
+		samples_.pop_front();
+	}
+}
+
+/// インデックス描画なしver
+//void ShockwaveRingTrail::RebuildVertices()
+//{
+//	// サンプルが2未満(面未満)なら何もしない
+//	if (samples_.size() < 2)
+//	{
+//		//activeVertexCount_ = 0;
+//		return;
+//	}
+//
+//	const RibbonTrailConfig& uniqueConfig = std::get<RibbonTrailConfig>(config_);
+//
+//
+//	// 順番に頂点を入れるための配列。サンプル数*2の頂点が必要。
+//	const size_t stripCount = samples_.size() * 2;
+//	std::vector<GpuVertex> vertices(stripCount);
+//	gpuVertices_.clear();
+//
+//	// uv計算 
+//	// サンプル数最大の時に後続サンプルが1になるように0..1に割り当てる。
+//	// 例：maxSegments=4のとき、サンプル数が5なら u=0,0.25,0.5,0.75,1 になるようにする。
+//	// 例：maxSegments=4のとき、サンプル数が3なら u=0,0.25,0.5 になるようにする。
+//	// サンプル数がすくない時にテクスチャがｷﾞｭってならないようにするための工夫。
+//	// 
+//	// 色計算
+//	// 年齢でフェードさせる。古いほど透明になる。
+//	// 例：lifeTime=1.0fのとき、age=0.50fならアルファは0.50fになる。
+//	// 例：lifeTime=1.0fのとき、age=0.75fならアルファは0.25fになる。
+//	// 
+//	// 座標設定
+//	// サンプルのbase/tip位置をそのまま頂点位置にする。
+//
+//	const int maxSamples = uniqueConfig.cfg.maxSegments + 1; // 最大サンプル数
+//	for (size_t i = 0; i < samples_.size(); ++i)
+//	{
+//		// サンプル[i]取得
+//		const auto& s = samples_[i];
+//
+//		// u計算
+//		float u = float(i) / (maxSamples - 1);
+//		vertices[i * 2 + 0].uv = { u, 0.0f };
+//		vertices[i * 2 + 1].uv = { u, 1.0f };
+//
+//		// 色計算
+//		const float t = std::clamp(1.0f - (s.age / uniqueConfig.cfg.lifeTime), 0.0f, 1.0f);
+//		const float colorA = uniqueConfig.cfg.color.w * t;
+//		vertices[i * 2 + 0].colorA = colorA;
+//		vertices[i * 2 + 1].colorA = colorA;
+//
+//		// 座標設定
+//		vertices[i * 2 + 0].position = Vector4(s.base, 1.0f);
+//		vertices[i * 2 + 1].position = Vector4(s.tip, 1.0f);
+//	}
+//
+//
+//	size_t dst = 0;
+//	for (size_t i = 0; i < samples_.size() - 1; ++i)
+//	{
+//		const GpuVertex& i0 = vertices[i * 2 + 0];
+//		const GpuVertex& i1 = vertices[i * 2 + 1];
+//		const GpuVertex& i2 = vertices[i * 2 + 2];
+//		const GpuVertex& i3 = vertices[i * 2 + 3];
+//
+//		// 三角形1 (i0, i1, i2)
+//		gpuVertices_[dst++] = i0;
+//		gpuVertices_[dst++] = i1;
+//		gpuVertices_[dst++] = i2;
+//
+//		// 三角形2 (i2, i1, i3)
+//		gpuVertices_[dst++] = i2;
+//		gpuVertices_[dst++] = i1;
+//		gpuVertices_[dst++] = i3;
+//	}
+//}
+
+// インデックス描画ver
+void ShockwaveRingTrail::RebuildVertices()
+{
+	// サンプルが2未満(面未満)なら何もしない
+	if (samples_.size() < 2)
+	{
+		//activeVertexCount_ = 0;
+		return;
+	}
+
+	const RibbonTrailConfig& uniqueConfig = std::get<RibbonTrailConfig>(config_);
+
+
+	// 順番に頂点を入れるための配列。サンプル数*2の頂点が必要。
+	const size_t stripCount = samples_.size() * 2;
+	gpuVertices_.clear();
+
+	// uv計算 
+	// サンプル数最大の時に後続サンプルが1になるように0..1に割り当てる。
+	// 例：maxSegments=4のとき、サンプル数が5なら u=0,0.25,0.5,0.75,1 になるようにする。
+	// 例：maxSegments=4のとき、サンプル数が3なら u=0,0.25,0.5 になるようにする。
+	// サンプル数がすくない時にテクスチャがｷﾞｭってならないようにするための工夫。
+	// 
+	// 色計算
+	// 年齢でフェードさせる。古いほど透明になる。
+	// 例：lifeTime=1.0fのとき、age=0.50fならアルファは0.50fになる。
+	// 例：lifeTime=1.0fのとき、age=0.75fならアルファは0.25fになる。
+	// 
+	// 座標設定
+	// サンプルのbase/tip位置をそのまま頂点位置にする。
+
+	const int maxSamples = uniqueConfig.cfg.maxSegments + 1; // 最大サンプル数
+	for (size_t i = 0; i < samples_.size(); ++i)
+	{
+		// サンプル[i]取得
+		const auto& s = samples_[i];
+
+		// u計算
+		float u = float(i) / (maxSamples - 1);
+		gpuVertices_[i * 2 + 0].uv = { u, 0.0f };
+		gpuVertices_[i * 2 + 1].uv = { u, 1.0f };
+
+		// 色計算
+		const float t = std::clamp(1.0f - (s.age / uniqueConfig.cfg.lifeTime), 0.0f, 1.0f);
+		const float colorA = uniqueConfig.cfg.color.w * t;
+		gpuVertices_[i * 2 + 0].color = Vector4(uniqueConfig.cfg.color.x, uniqueConfig.cfg.color.y, uniqueConfig.cfg.color.z, colorA);
+		gpuVertices_[i * 2 + 1].color = Vector4(uniqueConfig.cfg.color.x, uniqueConfig.cfg.color.y, uniqueConfig.cfg.color.z, colorA);
+
+		// 座標設定
+		gpuVertices_[i * 2 + 0].position = Vector4(s.base, 1.0f);
+		gpuVertices_[i * 2 + 1].position = Vector4(s.tip, 1.0f);
+
+		// テクスチャインデックス設定
+		gpuVertices_[i * 2 + 0].textureIndex = uint32_t(textureHandle_);
+		gpuVertices_[i * 2 + 1].textureIndex = uint32_t(textureHandle_);
 	}
 }

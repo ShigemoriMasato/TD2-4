@@ -1,5 +1,5 @@
 #include "TrailDrawer.h"
-#include <GameObject/Effect/Trail/Trail.h>
+#include <GameObject/Effect/Trail/ITrail.h>
 #include <algorithm>
 
 void TrailDrawer::Initialize(SHEngine::DrawDataManager* drawDataManager, const Config& cfg)
@@ -45,13 +45,9 @@ void TrailDrawer::Initialize(SHEngine::DrawDataManager* drawDataManager, const C
 	render_->SetUseTexture(true);
 
 	// VS: t0 頂点配列
-	// VS: b0 viewProjection行列
-	// PS: b0 色
-	// PS: b1 テクスチャインデック
+	// VS: b0 VPBuffer
 	render_->CreateSRV(sizeof(BatchVertex), uint32_t(maxVertexCountTotal_), ShaderType::VERTEX_SHADER, "TrailBatchVertices");
 	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "VP");
-	render_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
-	render_->CreateCBV(sizeof(uint32_t), ShaderType::PIXEL_SHADER, "TextureIndex");
 }
 
 void TrailDrawer::SetConfig(const Config& cfg)
@@ -66,9 +62,8 @@ void TrailDrawer::Clear()
 	trails_.clear();
 }
 
-void TrailDrawer::Register(Trail* trail)
+void TrailDrawer::Register(ITrail* trail)
 {
-	if (!trail) return;
 	trails_.push_back(trail);
 }
 
@@ -106,35 +101,48 @@ void TrailDrawer::BuildIndexBuffer()
 
 void TrailDrawer::BuildVertices()
 {
-	// 頂点配列初期化
-	std::memset(batchVertices_.data(), 0, sizeof(BatchVertex) * batchVertices_.size());
-
 	const int perTrail = maxVertexCountPerTrail_;
 	const int maxTrails = config_.maxTrails;
 
 	int slot = 0;
-	for (Trail* t : trails_)
+	for (ITrail* t : trails_)
 	{
 		// 無効化されているトレイルはcontinue
-		if (!t || !t->IsEmitting()) continue;
+		if (!t || !t->GetIsActive()) continue;
 		// config_.maxTrailsを超えた時はBreak
 		if (slot >= maxTrails) break;
 
 		// そのトレイルの頂点数取得。0以上maxVertexCountPerTrail_未満にclamp
 		const int vcount = std::clamp(t->GetActiveVertexCount(), 0, perTrail);
+		const int dstBase = slot * perTrail;
 		if (vcount > 0)
 		{
 			const auto& src = t->GetGpuVertices();
-			const int dstBase = slot * perTrail;
 
 			if (dstBase + vcount > maxVertexCountTotal_)
 			{
 				assert(false);
 				break;
 			}
-
+			//// BuildVertices() 内、memcpy の直前に追加
+			//for (int j = 0; j < vcount; ++j)
+			//{
+			//	if (src[j].position.w == 0.0f)
+			//	{
+			//		// ログ出力（エンジンのログ関数に合わせて）
+			//		logger_->error("TrailDrawer: found w==0 in trail slot {} vertex {} (id?)", slot, j);
+			//		// 一時的に修正して続行する（デバッグ用）
+			//		// const_cast を使うのは一時的なデバッグのみ推奨
+			//		// const_cast<GpuVertex&>(src[j]).position.w = 1.0f;
+			//	}
+			//}
 			std::memcpy(&batchVertices_[dstBase], src.data(), static_cast<size_t>(vcount) * sizeof(BatchVertex));
 		}
+
+		//for (int i = dstBase + vcount; i < dstBase + perTrail; ++i)
+		//{
+		//	batchVertices_[i].position.w = 1.0f;
+		//}
 
 		// 残りはゼロ -> PSでclipされる前提
 		++slot;
@@ -148,16 +156,10 @@ void TrailDrawer::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
 
 	BuildVertices();
 
+	// VS: t0 頂点配列
 	render_->CopyBufferData(0, batchVertices_.data(), sizeof(BatchVertex) * batchVertices_.size());
+	// VS: b0 VPBuffer
 	render_->CopyBufferData(1, &vpMatrix, sizeof(Matrix4x4));
-
-	// PSのcolorは頂点色で制御するので白固定
-	const Vector4 white = { 1,1,1,1 };
-	render_->CopyBufferData(2, &white, sizeof(Vector4));
-
-	const uint32_t textureIndex = 0; // 今はテクスチャ1個固定の前提
-	render_->CopyBufferData(3, &textureIndex, sizeof(uint32_t));
-
 
 	render_->instanceNum_ = 1;
 	render_->Draw(cmdObj);

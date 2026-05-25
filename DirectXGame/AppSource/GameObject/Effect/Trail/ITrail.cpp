@@ -14,21 +14,12 @@ void ITrail::Initialize(SHEngine::TextureManager* textureManager)
 
 void ITrail::Clear()
 {
-	// 履歴クリア
-	segments_.clear();
-
 	// GPUに送るようの頂点情報を初期化
 	std::fill(gpuVertices_.begin(), gpuVertices_.end(), GpuVertex{});
 
 	// アクティブ頂点数リセット
 	activeVertexCount_ = 0;
 }
-
-void ITrail::SetEnabled(bool isActive)
-{
-	isActive_ = isActive;
-}
-
 
 
 //void Trail::SetConfig(const Config& config)

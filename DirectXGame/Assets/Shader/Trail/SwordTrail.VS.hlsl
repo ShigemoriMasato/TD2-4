@@ -26,7 +26,6 @@ struct TrailVertex
     uint textureIndex;
 };
 
-// (i0, i1, i2).(i2, i1, i3) の順で入れなければ殺す
 StructuredBuffer<TrailVertex> gVertices : register(t0);
 
 VSOutput main(VSInput input, uint vertexID : SV_VertexID)
