@@ -25,17 +25,24 @@ private:
 	void CreateText(const std::wstring& key, SHEngine::DrawData& drawData, const std::string& font, int fontSize, const std::string& name, const std::wstring& text);
 
 private:
+	// Resume,ToTitle,Weapons
 	std::unordered_map<std::wstring, std::unique_ptr<SHEngine::Text>> texts_;
 	std::unordered_map<std::wstring, Transform> transforms_;
 	std::unordered_map<int, std::function<void()>> actions_;
+
+	// 背景
 	std::unique_ptr<SHEngine::RenderObject> backgroundRender_;
 	Transform backgroundTransform_;
 	Matrix4x4 backgroundWVP_;
 
+	// メニュー画面表記
+	std::unique_ptr<SHEngine::Text> menuText_;
+	Transform menuTextTransform_;
+
 	std::vector<TextInitInfo> infos_ = {
-	    {L"Resume",  "ResumeText",  L"Resume" },
-        {L"ToTitle", "ToTitleText", L"ToTitle"},
-        {L"Weapons", "WeaponsText", L"Weapons"}
+	    {L"Resume",  "ResumeText",  L"再開" },
+        {L"ToTitle", "ToTitleText", L"タイトルへ"},
+        {L"Weapons", "WeaponsText", L"武器図鑑"}
     };
 
 	// テキストのサイズ
