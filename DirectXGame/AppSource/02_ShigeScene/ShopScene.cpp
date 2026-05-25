@@ -614,7 +614,7 @@ std::unique_ptr<IScene> ShopScene::Update() {
 
 		// エフェクトの生成&追加
 		auto newEffect = std::make_unique<GaugeAttractEffect>();
-		newEffect->Initialize(screenStartPos, effectEndPos_, drawDataManager_, modelManager_, textureManager_, control1_, control2_);
+		newEffect->Initialize(drawDataManager_, modelManager_, textureManager_, screenStartPos);
 		attractEffects_.push_back(std::move(newEffect));
 	}
 
