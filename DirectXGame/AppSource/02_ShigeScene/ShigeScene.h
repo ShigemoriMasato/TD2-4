@@ -70,6 +70,13 @@ private:// System系
 	bool isTargetMarkerVisible_ = false;
 	float targetMarkerAnimTimer_ = 0.0f;
 
+	std::unique_ptr<SHEngine::RenderObject> moveingRender_;
+	std::unique_ptr<SHEngine::RenderObject> autoMoveingRender_;
+	int moveingTexIndex_ = 0;
+	int autoMoveingTexIndex_ = 0;
+	Transform moveingIndicatorOffset_ = {{1.0f, 1.0f, 1.0f}, {-1.11f, 0.0f, 0.0f}, {0.0f, 5.25f, 0.0f}};
+	float moveingIndicatorAnimTimer_ = 0.0f;
+
 	std::vector<std::unique_ptr<IWeapon>> weapons_;
 	std::vector<std::unique_ptr<IWeaponRender>> weaponRenders_;
 	std::vector<std::pair<int, std::unique_ptr<IWeaponRender>>> wrDeleting_;

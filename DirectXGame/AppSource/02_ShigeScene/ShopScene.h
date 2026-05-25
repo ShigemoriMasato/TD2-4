@@ -95,29 +95,29 @@ private:
 
 	// 操作説明テキスト用変数
 	std::unique_ptr<SHEngine::Text> controlText_ = nullptr;
-	Transform controlTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {190.0f, -315.0f, 0.0f} };
+	Transform controlTextTransform_ = { {2.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {190.0f, -315.0f, 0.0f} };
 	Vector4 controlTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// ホバー時「持つ」テキスト用変数
 	std::unique_ptr<SHEngine::Text> holdHoverText_ = nullptr;
-	Transform holdHoverTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
+	Transform holdHoverTextTransform_ = { {2.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 	Vector4 holdHoverTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 	Vector2 holdHoverTextOffset_ = { -150.0f, 15.0f };
 
 	// ホバー時「設置」テキスト用変数
 	std::unique_ptr<SHEngine::Text> placeHoverText_ = nullptr;
-	Transform placeHoverTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
+	Transform placeHoverTextTransform_ = { {2.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 	Vector4 placeHoverTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 	Vector2 placeHoverTextOffset_ = { 50.0f, 15.0f };
 
 	// ラクラク配置テキスト用変数
 	std::unique_ptr<SHEngine::Text> easyPlaceText_ = nullptr;
-	Transform easyPlaceTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {610.0f, -315.0f, 0.0f} };
+	Transform easyPlaceTextTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {610.0f, -315.0f, 0.0f} };
 	Vector4 easyPlaceTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// 武器安置所テキスト用変数
 	std::unique_ptr<SHEngine::Text> weaponStorageText_ = nullptr;
-	Transform weaponStorageTextTransform_ = { {3.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {65.0f, -612.0f, 0.0f} };
+	Transform weaponStorageTextTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {65.0f, -612.0f, 0.0f} };
 	Vector4 weaponStorageTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// マウスボタンスプライト用変数
