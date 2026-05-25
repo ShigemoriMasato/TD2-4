@@ -438,3 +438,4 @@ FodyWeavers.xsd
 *.ini
 # 自分のプロジェクトのフィルター(ビルド時に成型するため)
 DirectXGame.vcxproj.filters
+DirectXGame/externals/header/
