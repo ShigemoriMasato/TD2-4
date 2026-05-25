@@ -6,7 +6,20 @@
 
 using namespace SHEngine;
 
+SHEngine::TextureManager::TextureManager() {
+}
+
 SHEngine::TextureManager::~TextureManager() {
+	binaryManager_.Boot(saveFile_);
+	int textureNum = int(loadedTexturePaths_.size());
+	binaryManager_.Register(&textureNum);
+
+	for (const auto& [filePath, handle] : loadedTexturePaths_) {
+		binaryManager_.Register(&filePath);
+	}
+
+	binaryManager_.Write(saveFile_);
+
 	cmdObject_->WaitForGPUIdle();
 }
 
@@ -24,6 +37,14 @@ void TextureManager::Initialize(DXDevice* device, Command::Manager* manager) {
 	LoadTexture("Assets/.EngineResource/Texture/white1x1.png");
 	LoadTexture("Assets/.EngineResource/Texture/uvChecker.png");
 	errorTextureHandle_ = LoadTexture("Assets/.EngineResource/Texture/error.png");
+
+	if (binaryManager_.Boot(saveFile_)) {
+		int textureNum = binaryManager_.Reverse<int>();
+		for (int i = 0; i < textureNum; ++i) {
+			std::string filePath = binaryManager_.Reverse<std::string>();
+			LoadTexture(filePath);
+		}
+	}
 }
 
 void TextureManager::AllTextureClear() {

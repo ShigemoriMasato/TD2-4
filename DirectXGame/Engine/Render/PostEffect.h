@@ -13,6 +13,7 @@ enum class PostEffectJob : uint32_t {
 	GridTransition = 1 << 5,
 	SlowMotion = 1 << 6,
 	HeavyBlur = 1 << 7,
+	Vignette = 1 << 8,
 };
 
 uint32_t operator|(PostEffectJob a, PostEffectJob b);

@@ -10,12 +10,18 @@ public:
 	void Initialize(KeyManager* keyManager, PieceManager* pieceManager);
 
 	void Update(Camera* camera);
-	void EditPiece(BackPack* backPack);
+	void EditPiece(BackPack* backPack, float deltaTime);
 
 	bool HasHeldPiece() const { return heldPiece_ != nullptr; }
 
+	bool IsHoveringShopPiece() const { return hoveredShopPiece_ != nullptr; }
+	bool IsHoveringBackPackPiece() const { return hoveredBackPackPiece_ != nullptr; }
+
 	bool GetIsEffect() const { return isEffect_; }
 	Vector3 GetPutPos() const { return putPos_; }
+	int GetPutWeaponID() const { return putWeaponID_; }
+	bool GetPutIsVertical() const { return putIsVertical_; }
+	Piece::Direction GetPutDirection() const { return putDirection_; }
 	void SetVPMatrix(Matrix4x4 vpMatrix) { vpMatrix_ = vpMatrix; }
 
 private:
@@ -30,5 +36,18 @@ private:
 
 	bool isEffect_ = false;
 	Vector3 putPos_;
+	int putWeaponID_ = -1;
+	bool putIsVertical_ = false;
+	Piece::Direction putDirection_ = Piece::Direction::Up;
 	Matrix4x4 vpMatrix_;
+
+	// ショップピースのホバー状態
+	Piece* hoveredShopPiece_ = nullptr;
+	// BackPackピースのホバー状態
+	Piece* hoveredBackPackPiece_ = nullptr;
+
+	// BackPack内ピースの右クリック長押し削除用
+	Piece* rightClickTarget_ = nullptr;
+	float rightClickHoldTimer_ = 0.0f;
+	static constexpr float kRightClickDeleteTime_ = 1.0f;
 };

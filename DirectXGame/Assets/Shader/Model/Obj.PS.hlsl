@@ -79,14 +79,12 @@ cbuffer Material : register(b0)
 {
     float4 materialColor;
     int textureIndex;
-    int3 padding;
 };
 
 cbuffer LightCount : register(b1)
 {
     int dirLightCount;
     int pointLightCount;
-    int2 padding2;
 };
 
 StructuredBuffer<DirectionalLight> dirLights : register(t0);

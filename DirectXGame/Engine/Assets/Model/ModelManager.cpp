@@ -28,6 +28,28 @@ namespace {
 	}
 }
 
+SHEngine::ModelManager::ModelManager() {
+	if (binaryManager_.Boot(saveFile_)) {
+		int modelNum = binaryManager_.Reverse<int>();
+		for (int i = 0; i < modelNum; ++i) {
+			std::string filePath = binaryManager_.Reverse<std::string>();
+			modelFilePaths_[filePath] = i;
+		}
+	}
+}
+
+SHEngine::ModelManager::~ModelManager() {
+	binaryManager_.Boot(saveFile_);
+
+	int modelNum = int(modelFilePaths_.size());
+	binaryManager_.Register(&modelNum);
+	for (const auto& [filePath, id] : modelFilePaths_) {
+		binaryManager_.Register(&filePath);
+	}
+
+	binaryManager_.Write(saveFile_);
+}
+
 void ModelManager::Initialize(TextureManager* textureManager, DrawDataManager* drawDataManager) {
 	modelFilePaths_.clear();
 	nodeModelDatas_.clear();

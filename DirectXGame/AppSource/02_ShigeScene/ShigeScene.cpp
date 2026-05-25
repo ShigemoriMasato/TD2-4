@@ -9,10 +9,8 @@
 #include <imgui/imgui.h>
 #include <numbers>
 #include <windows.h>
-
-ShigeScene::~ShigeScene() {
-	bgm_->Stop();
-}
+#include "fontPath.h"
+ShigeScene::~ShigeScene() { bgm_->Stop(); }
 
 void ShigeScene::Initialize() {
 	debugCamera_ = std::make_unique<DebugCamera>();
@@ -21,8 +19,8 @@ void ShigeScene::Initialize() {
 	gameCamera_ = std::make_unique<GameCamera>();
 	gameCamera_->Initialize();
 	gameCamera_->SetInput(input_);
-	gameCamera_->SetOffset({ 0.0f, 30.0f, -45.0f });
-	gameCamera_->Setrotation({ -0.5f, 0.0f, 0.0f });
+	gameCamera_->SetOffset({0.0f, 30.0f, -45.0f});
+	gameCamera_->Setrotation({-0.5f, 0.0f, 0.0f});
 
 	camera_ = gameCamera_.get();
 
@@ -125,21 +123,22 @@ void ShigeScene::Initialize() {
 	gameDisplay_->SetTransform({450.0f, 256.0f}, {784.0f, 416.0f});
 
 	postEffect_ = std::make_unique<PostEffect>();
-	//Post Effect Draw Data
+	// Post Effect Draw Data
 	auto pedd = drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex);
-	postEffect_->Initialize(textureManager_, pedd, true);
+	postEffect_->Initialize(textureManager_, pedd);
 	postEffectConfig_.cmdObj = commonData_->cmdObject.get();
 	postEffectConfig_.origin = commonData_->display->GetDisplay();
+	postEffectConfig_.jobs_ = static_cast<uint32_t>(PostEffectJob::Vignette);
 
 	timerText_ = std::make_unique<SHEngine::Text>(64);
-	timerText_->Initialize(planeDrawData, "YDWbananaslipplus.otf", 64);
+	timerText_->Initialize(planeDrawData, fontPath_, 64);
 	timerText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 
 	timerTextTransform_.position = {550.0f, -85.0f, 0.0f}; // Top center or so // default
 	timerTextTransform_.scale = {2.0f, 2.0f, 1.0f};
 
 	enemySpawnGraphText_ = std::make_unique<SHEngine::Text>(64);
-	enemySpawnGraphText_->Initialize(planeDrawData, "YDWbananaslipplus.otf", 64);
+	enemySpawnGraphText_->Initialize(planeDrawData, fontPath_, 64);
 	enemySpawnGraphText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 
 	// 1280x720の画面内座標系での正しい範囲に修正
@@ -158,7 +157,7 @@ void ShigeScene::Initialize() {
 	//
 	// #endif // DEBUG
 
-	bgmVolume_ = commonData_->bgmVolume* commonData_->masterVolume;
+	bgmVolume_ = commonData_->bgmVolume * commonData_->masterVolume;
 	seVolume_ = commonData_->seVolume * commonData_->masterVolume;
 
 	// BGM
@@ -180,17 +179,77 @@ void ShigeScene::Initialize() {
 	fadeManager_ = std::make_unique<FadeManager>();
 	fadeManager_->Initialize(modelManager_, drawDataManager_);
 	fadeManager_->StartFadeOut(false);
+
+	vignette_.intensity = 0.0f;
+	vignette_.radius = 0.6f;
+	vignette_.softness = 0.2f;
+	vignette_.color = {1.0f, 0.0f, 0.0f, 1.0f};
+
+	// ポーズメニュー
+	pauseMenu_ = std::make_unique<PauseMenu>();
+	pauseMenu_->Initialize(modelManager_, drawDataManager_, textureManager_);
+
+	// コールバック登録
+	pauseMenu_->SetAction(0, [this]() {
+		// Resume
+		isPause_ = false;
+	});
+
+	pauseMenu_->SetAction(1, [this]() -> void {
+		// ToTitle
+		fadeManager_->StartFadeIn([]() { return std::make_unique<TitleScene>(); });
+	});
+
+	pauseMenu_->SetAction(2, [this]() {
+		// Weapons
+		fadeManager_->StartFadeIn([]() { return std::make_unique<ResultScene>(); });
+	});
+
+	// マウスカーソルスプライトの初期化
+	mouseCursorTextureIndex_ = textureManager_->LoadTexture("Assets/Texture/UI/mouse.png");
+	mouseCursorSprite_ = std::make_unique<SHEngine::RenderObject>("MouseCursorSprite");
+	mouseCursorSprite_->Initialize();
+	mouseCursorSprite_->SetDrawData(planeDrawData);
+	mouseCursorSprite_->psoConfig_.vs = "Simple.VS.hlsl";
+	mouseCursorSprite_->psoConfig_.ps = "PostEffect/Simple.PS.hlsl";
+	mouseCursorSprite_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+	mouseCursorSprite_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	mouseCursorSprite_->SetUseTexture(true);
+	mouseCursorSprite_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Transparent;
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
+	auto key = commonData_->keyManager->GetKeyStates();
+	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 
+	if(key[Key::Debug3]){
+		isPause_ = !isPause_;
+	}
+
+	// ポーズメニュー更新
+	pauseMenu_->Update(orthoCamera_->GetVPMatrix(), deltaTime, key);
+
+	// フェード更新
+	fadeManager_->Update(camera_->GetVPMatrix(), deltaTime);
+
+	// シーン切り替え
+	if (auto next = fadeManager_->TakeNextScene()) {
+		return next;
+	}
+
+#ifdef _DEBUG
 	if (input_->GetKeyState(DIK_TAB) && !input_->GetPreKeyState(DIK_TAB)) {
 		return std::make_unique<TitleScene>();
+	}
+#endif
+
+	// ポーズフラグが立っていれば更新処理をスルー
+	if(isPause_){
+		return 0;
 	}
 
 	MakeWeapon();
 
-	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 	shopScene_->SetDeltaTime(deltaTime);
 	shopScene_->Update();
 
@@ -229,7 +288,6 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	gameCamera_->Update(deltaTime, cameraTargetPos);
 	Vector3 cameraPos = gameCamera_->GetPosition();
 	grid_->Update(cameraPos, camera_->GetVPMatrix());
-	auto key = commonData_->keyManager->GetKeyStates();
 
 	gameTimer_->Update(deltaTime);
 	waveSystem_->Update(deltaTime);
@@ -263,21 +321,21 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 				Vector3 clickWorldPos = GetWorldCursor(camera_, originalScreenPos);
 
 				// マップ境界内に制限した座標を取得
-					Vector3 clampedPos = map_->ClampToBounds(clickWorldPos);
-					// Playerと同じXZ円形範囲内に制限する
-					{
-						const MapInfo& mapInfo = map_->GetMapInfo();
-						float dx = clampedPos.x - mapInfo.centerX;
-						float dz = clampedPos.z - mapInfo.centerZ;
-						float dist = std::sqrt(dx * dx + dz * dz);
-						if (dist > mapInfo.radius) {
-							float ratio = mapInfo.radius / dist;
-							clampedPos.x = mapInfo.centerX + dx * ratio;
-							clampedPos.z = mapInfo.centerZ + dz * ratio;
-						}
+				Vector3 clampedPos = map_->ClampToBounds(clickWorldPos);
+				// Playerと同じXZ円形範囲内に制限する
+				{
+					const MapInfo& mapInfo = map_->GetMapInfo();
+					float dx = clampedPos.x - mapInfo.centerX;
+					float dz = clampedPos.z - mapInfo.centerZ;
+					float dist = std::sqrt(dx * dx + dz * dz);
+					if (dist > mapInfo.radius) {
+						float ratio = mapInfo.radius / dist;
+						clampedPos.x = mapInfo.centerX + dx * ratio;
+						clampedPos.z = mapInfo.centerZ + dz * ratio;
 					}
-					// Playerを指定のワールド座標へ移動させる（InputController使用時用）
-					player_->GetController()->SetTargetPosition(clampedPos);
+				}
+				// Playerを指定のワールド座標へ移動させる（InputController使用時用）
+				player_->GetController()->SetTargetPosition(clampedPos);
 			}
 		}
 	}
@@ -300,7 +358,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		Matrix4x4 wvp = Matrix::MakeScaleMatrix(targetMarkerTransform_.scale) * Matrix::MakeRotationMatrix(targetMarkerTransform_.rotate) *
 		                Matrix::MakeTranslationMatrix(targetMarkerTransform_.position) * camera_->GetVPMatrix();
 
-		Vector4 markerColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+		Vector4 markerColor = {1.0f, 1.0f, 1.0f, 1.0f};
 		targetMarkerRender_->CopyBufferData(0, &wvp, sizeof(wvp));
 		targetMarkerRender_->CopyBufferData(1, &markerColor, sizeof(markerColor));
 		targetMarkerRender_->CopyBufferData(2, &targetMarkerTexIndex_, sizeof(targetMarkerTexIndex_));
@@ -321,6 +379,16 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	timerText_->Update(orthoCamera_->GetVPMatrix());
 	timerText_->SetTransform(timerTextTransform_);
+
+	// マウスカーソルスプライトの更新
+	{
+		Vector2 cursorPos = input_->GetCursorPos();
+		mouseCursorTransform_.position = {cursorPos.x, cursorPos.y * -1.0f, 0.0f};
+		Matrix4x4 wvp = Matrix::MakeAffineMatrix(mouseCursorTransform_.scale, mouseCursorTransform_.rotate, mouseCursorTransform_.position);
+		wvp *= orthoCamera_->GetVPMatrix();
+		mouseCursorSprite_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
+		mouseCursorSprite_->CopyBufferData(1, &mouseCursorTextureIndex_, sizeof(int));
+	}
 
 	enemySpawnGraphText_->Update(orthoCamera_->GetVPMatrix());
 	enemySpawnGraphText_->SetTransform(enemySpawnGraphTextTransform_);
@@ -373,6 +441,15 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	flashEffect_->Update(orthoCamera_->GetVPMatrix(), deltaTime);
 	letterBox_->Update(orthoCamera_->GetVPMatrix(), deltaTime);
 
+	// Vignette
+	if (player_->GetCurrentHP() <= vinetteActiveHP_ && vignette_.intensity == 0.0f) {
+		vignetteIntensityAnim_.anim.Start(0.0f, vinetteIntensity_, 0.5f, EaseType::EaseOutCubic);
+	} else if (player_->GetCurrentHP() > vinetteActiveHP_ && vignette_.intensity == vinetteIntensity_) {
+		vignetteIntensityAnim_.anim.Start(vinetteIntensity_, 0.0f, 0.5f, EaseType::EaseOutCubic);
+	}
+	vignetteIntensityAnim_.anim.Update(deltaTime, vignetteIntensityAnim_.temp);
+	vignette_.intensity = vignetteIntensityAnim_.temp;
+
 	if (player_->GetCurrentHP() <= 0) {
 		if (!flashEffect_->GetIsActive() && !isPlayerDead_) {
 			flashEffect_->Trigger();
@@ -390,20 +467,14 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 				commonData_->isWin = false;
 				commonData_->clearTime = gameTimer_->GetTimer();
 				commonData_->killCount = enemyManager_->GetKillCount();
- 				fadeManager_->StartFadeIn();
+				fadeManager_->StartFadeIn([]() { return std::make_unique<ResultScene>(); });
 			}
 		}
 	} else if (waveSystem_->End()) {
 		commonData_->isWin = true;
 		commonData_->clearTime = gameTimer_->GetTimer();
 		commonData_->killCount = enemyManager_->GetKillCount();
-		fadeManager_->StartFadeIn();
-	}
-
-	fadeManager_->Update(camera_->GetVPMatrix(), deltaTime);
-
-	if(fadeManager_->Finished()){
-		return std::make_unique<ResultScene>();
+		fadeManager_->StartFadeIn([]() { return std::make_unique<ResultScene>(); });
 	}
 
 	commonData_->weaponCount = weaponRenders_.size();
@@ -440,7 +511,7 @@ void ShigeScene::Draw() {
 	}
 
 	enemyManager_->Draw(cmdObj);
-	//enemyEffectManager_->Draw();
+	// enemyEffectManager_->Draw();
 
 	commonData_->trailDrawer->Draw(cmdObj, camera_->GetVPMatrix());
 	commonData_->particleDrawer->Draw(cmdObj, camera_->GetVPMatrix());
@@ -472,14 +543,29 @@ void ShigeScene::Draw() {
 
 	gameFrame_->Draw(cmdObj);
 
+	if(isPause_) {
+		pauseMenu_->Draw(cmdObj);
+	}
+
+	mouseCursorSprite_->Draw(cmdObj);
+
 	fadeManager_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
+
+#ifdef USE_IMGUI
+
+	postEffect_->Draw(postEffectConfig_);
+	window->PreDraw(cmdObj, true);
+
+#else
 
 	postEffectConfig_.output = commonData_->mainWindow.second->GetCurrentDisplay();
 	postEffect_->Draw(postEffectConfig_);
 
 	window->PreDraw(cmdObj, false);
+
+#endif
 
 	// ここ以外で記述する場合、ifdefを忘れないようにすること
 #ifdef USE_IMGUI
@@ -527,6 +613,15 @@ void ShigeScene::Draw() {
 	ImGui::DragFloat("intensity", &dirLight_.intensity, 0.01f);
 	dirLight_.direction = dirLight_.direction.Normalize();
 	ImGui::End();
+
+	ImGui::Begin("PostEffect");
+	ImGui::DragFloat("intensity", &vignette_.intensity, 0.01f);
+	ImGui::DragFloat("radius", &vignette_.radius, 0.01f);
+	ImGui::DragFloat("softness", &vignette_.softness, 0.01f);
+	ImGui::ColorEdit4("color", &vignette_.color.x);
+	ImGui::End();
+
+	postEffect_->CopyBuffer(PostEffectJob::Vignette, vignette_);
 
 	// プレイヤーのデバッグ情報を表示
 	if (player_) {

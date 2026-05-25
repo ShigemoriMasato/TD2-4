@@ -2,6 +2,7 @@
 #include <Scene/IScene.h>
 #include <GameObject/Item/ItemManager.h>
 #include <GameObject/Weapon/WeaponManager.h>
+#include <GameObject/Weapon/WeaponData.h>
 #include <GameObject/Weapon/WeaponDebugger.h>
 #include <Collision/ColliderManager.h>
 #include <Camera/DebugCamera.h>
@@ -19,6 +20,9 @@
 #include <UI/Game/SituationGauge.h>
 #include <UI/Game/GaugeAttractEffect.h>
 #include <UI/Game/ValueDeltaEffect.h>
+#include <GameObject/Enemy/EnemyEffect/EnemyEffectManager.h>
+#include <GameObject/Effect/Particle/Drawer/ParticleDrawer.h>
+#include "fontPath.h"
 
 class ShopScene : public IScene {
 public:
@@ -81,18 +85,30 @@ private:
 	// リロールバー用変数
 	RerollBar rerollBarFill_;  // 前面（進行状況）
 	RerollBar rerollBarBG_;    // 背景
-	Vector2 rerollBarSize_ = { 850.0f, 50.0f };
-	Vector2 rerollBarPos_ = { 480.0f, -230.0f };
+	Vector2 rerollBarSize_ = { 950.0f, 50.0f };
+	Vector2 rerollBarPos_ = { 630.0f, -240.0f };
 	
 	// リロールテキスト用変数
 	std::unique_ptr<SHEngine::Text> rerollText_ = nullptr;
-	Transform rerollTextTransform_ = { {3.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {70.0f, -245.0f, 0.0f} };
+	Transform rerollTextTransform_ = { {3.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {180.0f, -256.0f, 0.0f} };
 	Vector4 rerollTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// 操作説明テキスト用変数
 	std::unique_ptr<SHEngine::Text> controlText_ = nullptr;
 	Transform controlTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {190.0f, -315.0f, 0.0f} };
 	Vector4 controlTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	// ホバー時「持つ」テキスト用変数
+	std::unique_ptr<SHEngine::Text> holdHoverText_ = nullptr;
+	Transform holdHoverTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
+	Vector4 holdHoverTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Vector2 holdHoverTextOffset_ = { -150.0f, 15.0f };
+
+	// ホバー時「設置」テキスト用変数
+	std::unique_ptr<SHEngine::Text> placeHoverText_ = nullptr;
+	Transform placeHoverTextTransform_ = { {2.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
+	Vector4 placeHoverTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Vector2 placeHoverTextOffset_ = { 50.0f, 15.0f };
 
 	// ラクラク配置テキスト用変数
 	std::unique_ptr<SHEngine::Text> easyPlaceText_ = nullptr;
@@ -114,15 +130,15 @@ private:
 	int mouseLeftActiveTextureIndex_ = -1;
 	int mouseRightActiveTextureIndex_ = -1;
 
-	Vector3 cameraCenter_ = { -7.0f, -40.0f, -6.5f };
+	Vector3 cameraCenter_ = { -5.0f, -32.0f, -5.0f };
 	Vector3 cameraSpherical_ = { 20.0f, 0.0f, -1.570f };
-	Vector2 cameraPerspectiveSize_ = { 352.0f, 624.0f };
+	Vector2 cameraPerspectiveSize_ = { 355.0f, 624.0f };
 	
 	int pieceModelID_ = -1;
 
 	int rerollCount_ = 3; // リロール可能な回数
 	bool pendingReroll_ = false; // リロール待機フラグ
-	float rerollIntervalTime_ = 1.0f; // 補充インターバル時間（秒）
+	float rerollIntervalTime_ = 1.5f; // 補充インターバル時間（秒）
 	float rerollIntervalTimer_ = 0.0f; // 補充インターバルタイマー
 
 	GameDisplayRange displayRange_;
@@ -141,4 +157,12 @@ private:
 	std::vector<std::unique_ptr<ValueDeltaEffect>> valueEffects_;
 	SHEngine::DrawData textDrawData_{};
 	Vector3 valueEfectPos_ = {1000.0f, -200.0f, 0.0f};
+
+	// pieceBreakパーティクル
+	std::unique_ptr<ParticleDrawer> shopParticleDrawer_;
+	std::unordered_map<int, MultiParticleData> breakParticles_;
+	int nextBreakParticleId_ = 0;
+
+	// 武器種ごとのパーティクル発生位置Offset
+	std::unordered_map<WeaponType, Vector3> weaponBreakParticleOffsets_;
 };

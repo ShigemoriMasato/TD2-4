@@ -36,6 +36,7 @@
 #include <GameObject/Effect/LetterBox/LetterBox.h>
 #include <GameObject/Enemy/EnemyEffect/EnemyEffectManager.h>
 #include "GameObject/Fade/FadeManager.h"
+#include "UI/Game/Pause/PauseMenu.h"
 
 class ShigeScene : public IScene {
 public:
@@ -118,6 +119,20 @@ private:// System系
 	DirectionalLight dirLight_;
 
 	bool isPlayerDead_ = false;
+
+	Vignette vignette_;
+	AnimationBundle<float> vignetteIntensityAnim_;
+	float vinetteIntensity_ = 0.2f;
+	float vinetteActiveHP_ = 100.0f;
+
+	// ポーズ
+	bool isPause_ = false;
+	std::unique_ptr<PauseMenu> pauseMenu_;
+
+	// マウスカーソルスプライト
+	std::unique_ptr<SHEngine::RenderObject> mouseCursorSprite_ = nullptr;
+	int mouseCursorTextureIndex_ = -1;
+	Transform mouseCursorTransform_ = { {32.0f, 32.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 
 private:// Shop
 

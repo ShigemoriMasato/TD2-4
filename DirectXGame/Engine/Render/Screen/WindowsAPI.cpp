@@ -34,14 +34,15 @@ void SHEngine::Screen::WindowsAPI::Initialize(WindowDesc& desc, HINSTANCE hInsta
 
 	RegisterClass(&wc_);
 
+	constexpr DWORD kWindowStyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
 	RECT wrc = { 0, 0, desc.width, desc.height };
-	AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
+	AdjustWindowRect(&wrc, kWindowStyle, false);
 
 	// ウィンドウの作成
 	hwnd_ = CreateWindow(
 		wc_.lpszClassName,
 		wc_.lpszClassName,
-		WS_OVERLAPPEDWINDOW,
+		kWindowStyle,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		wrc.right - wrc.left, wrc.bottom - wrc.top,
 		nullptr, nullptr, wc_.hInstance, nullptr
@@ -60,6 +61,9 @@ void SHEngine::Screen::WindowsAPI::Initialize(WindowDesc& desc, HINSTANCE hInsta
 	height_ = desc.height;
 
 	ShowWindow(hwnd_, SW_SHOW);
+
+	// マウスカーソルを非表示にする
+	//ShowCursor(FALSE);
 }
 
 LRESULT CALLBACK SHEngine::Screen::WindowsAPI::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {

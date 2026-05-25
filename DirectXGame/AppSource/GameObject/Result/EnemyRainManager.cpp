@@ -24,7 +24,7 @@ void EnemyRainManager::Initilaize(SHEngine::ModelManager* modelManager, SHEngine
 	render_->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "DirectionalLight");
 
 	widthRange_ = {-15.0f, 15.0f};
-	heightRange_ = {10.0f, 30.0f};
+	heightRange_ = {10.0f, 40.0f};
 
 	for (int i = 0; i < kInstanceNum; ++i) {
 		transforms_[i].scale = {1.0f, 1.0f, 1.0f};

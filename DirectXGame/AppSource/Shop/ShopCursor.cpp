@@ -1,6 +1,8 @@
 #include "ShopCursor.h"
+#include <cmath>
 #include <Common/KeyConfig/WorldCursor.h>
 #include <Utils/AppUtils.h>
+#include <GameObject/Weapon/WeaponData.h>
 
 void ShopCursor::Initialize(KeyManager* keyManager, PieceManager* pieceManager) {
 	keyManager_ = keyManager;
@@ -19,11 +21,13 @@ void ShopCursor::Update(Camera* camera) {
 	worldPos_.y -= 0.5f;
 }
 
-void ShopCursor::EditPiece(BackPack* backPack) {
+void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 	auto pieces = pieceManager_->GetAllPieces();
 	auto keys = keyManager_->GetKeyStates();
 
 	isEffect_ = false;
+	hoveredShopPiece_ = nullptr;
+	hoveredBackPackPiece_ = nullptr;
 
 	//持っているピースがあるなら
 	if (heldPiece_) {
@@ -62,7 +66,37 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 				// ゲージに吸われるエフェクトの発火
 				isEffect_ = true;
 				putPos_ = heldPiece_->GetPosition();
+				putWeaponID_ = heldPiece_->GetItem().weaponID;
+				putIsVertical_ = heldPiece_->IsVertical();
+				putDirection_ = heldPiece_->GetDirection();
 
+			} else if (Piece* mergeTarget = pieceManager_->FindMergeTarget(heldPiece_)) {
+				// 同種・同レアリティのピースに重ねた → マージ
+				mergeTarget->Remove(backPack);
+				pieceManager_->RemovePiece(mergeTarget);
+				heldPiece_->SetRarity(static_cast<WeaponRarity>(static_cast<int>(heldPiece_->GetRarity()) + 1));
+				if (heldPiece_->CanPut(backPack)) {
+					heldPiece_->Put(backPack);
+
+					isEffect_ = true;
+					putPos_ = heldPiece_->GetPosition();
+					putWeaponID_ = heldPiece_->GetItem().weaponID;
+					putIsVertical_ = heldPiece_->IsVertical();
+					putDirection_ = heldPiece_->GetDirection();
+				} else {
+					// マージ後も置けない場合は元の場所に戻す
+					heldPiece_->SetRarity(static_cast<WeaponRarity>(static_cast<int>(heldPiece_->GetRarity()) - 1));
+					auto currentDir = heldPiece_->GetDirection();
+					while (currentDir != preHeldPieceDir_) {
+						heldPiece_->RotateRight();
+						currentDir = heldPiece_->GetDirection();
+					}
+					heldPiece_->SetPosition(preHeldPiecePos_);
+					heldPiece_->SetReserved(wasReserved);
+					if (heldPiece_->CanPut(backPack)) {
+						heldPiece_->Put(backPack);
+					}
+				}
 			} else {
 				// 元の場所に戻す
 				auto currentDir = heldPiece_->GetDirection();
@@ -95,6 +129,13 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 	for (auto& piece : pieces) {
 		if (piece->IsHovered(worldPos_, backPack)) {
 
+			// ショップピースならhover状態を記録
+			if (pieceManager_->IsShopPiece(piece)) {
+				hoveredShopPiece_ = piece;
+			} else {
+				hoveredBackPackPiece_ = piece;
+			}
+
 			if (keys[Key::Hold]) {
 				heldPiece_ = piece;
 				preHeldPieceDir_ = heldPiece_->GetDirection();
@@ -112,6 +153,36 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 				piece->Use();
 			}
 
+			// 右クリック長押し（AutoPlace）によるBackPack削除タイマー処理
+			if (!pieceManager_->IsShopPiece(piece)) {
+				if (keys[Key::AutoPlace]) {
+					if (rightClickTarget_ != piece) {
+						rightClickTarget_ = piece;
+						rightClickHoldTimer_ = 0.0f;
+					}
+					rightClickHoldTimer_ += deltaTime;
+					// sin/cos波でX・Z両軸シェイク（時間とともに振幅増大）
+					float progress = rightClickHoldTimer_ / kRightClickDeleteTime_;
+					float amplitude = 0.05f + 0.15f * progress;
+					float shakeX = std::sin(rightClickHoldTimer_ * 30.0f) * amplitude;
+					float shakeZ = std::cos(rightClickHoldTimer_ * 30.0f) * amplitude;
+					piece->SetShakeOffset(shakeX, shakeZ);
+					if (rightClickHoldTimer_ >= kRightClickDeleteTime_) {
+						piece->ResetShakeOffset();
+						pieceManager_->RemovePieceWithEffect(piece, backPack);
+						rightClickTarget_ = nullptr;
+						rightClickHoldTimer_ = 0.0f;
+						break;
+					}
+				} else {
+					if (rightClickTarget_ == piece) {
+						piece->ResetShakeOffset();
+						rightClickTarget_ = nullptr;
+						rightClickHoldTimer_ = 0.0f;
+					}
+				}
+			}
+
 			// 右クリック（AutoPlace）の処理
 			if (keys[Key::AutoPlace]) {
 				// ショップエリアのピースかを確認
@@ -124,11 +195,14 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 					if (piece->AutoPlace(backPack)) {
 						// 配置成功：何もしない（既にPutが呼ばれている）
 
-						// ゲージに吸われるエフェクトの発火
-						isEffect_ = true;
-						putPos_ = piece->GetPosition();
-						
-					} else {
+								// ゲージに吸われるエフェクトの発火
+								isEffect_ = true;
+								putPos_ = piece->GetPosition();
+								putWeaponID_ = piece->GetItem().weaponID;
+								putIsVertical_ = piece->IsVertical();
+								putDirection_ = piece->GetDirection();
+
+							} else {
 						// 配置失敗：元の位置と回転に戻す
 						// 回転を元に戻す
 						while (piece->GetDirection() != originalDir) {
@@ -142,10 +216,13 @@ void ShopCursor::EditPiece(BackPack* backPack) {
 						// 保留エリアにある場合、通常エリアに移動
 						piece->MoveToNormal(backPack);
 
-						// ゲージに吸われるエフェクトの発火
-						isEffect_ = true;
-						putPos_ = piece->GetPosition();
-					} else {
+								// ゲージに吸われるエフェクトの発火
+								isEffect_ = true;
+								putPos_ = piece->GetPosition();
+								putWeaponID_ = piece->GetItem().weaponID;
+								putIsVertical_ = piece->IsVertical();
+								putDirection_ = piece->GetDirection();
+							} else {
 						// 通常エリアにある場合、保留エリアに移動
 						piece->MoveToReserve(backPack);
 					}

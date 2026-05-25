@@ -15,8 +15,8 @@ void FadeManager::Initialize(SHEngine::ModelManager* modelManager, SHEngine::Dra
 	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
 	render_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 	transform_.scale = {1280.0f, 720.0f, 0.0f};
-	transform_.rotate = {0, 0, 0};
-	transform_.position = {0.0f, 0.0f, 0};
+	transform_.rotate = {0.0f, 0.0f, 0.0f};
+	transform_.position = {0.0f, 0.0f, 0.0f};
 
 	isFinished_ = false;
 }
@@ -46,7 +46,7 @@ void FadeManager::StartFadeOut(bool notifyFinish) {
 	alpha_ = 1.0f;
 }
 
-void FadeManager::StartFadeIn(bool notifyFinish) {
+void FadeManager::StartFadeIn(std::function<std::unique_ptr<IScene>()> nextScene, bool notifyFinish) {
 	if (state_ != FadeState::Idle)
 		return;
 
@@ -54,6 +54,8 @@ void FadeManager::StartFadeIn(bool notifyFinish) {
 	notifyFinish_ = notifyFinish;
 	isFinished_ = false;
 	alpha_ = 0.0f;
+
+	nextScene_ = nextScene;
 }
 
 void FadeManager::UpdateFade(float deltaTime) {
@@ -84,4 +86,15 @@ void FadeManager::UpdateFade(float deltaTime) {
 	default:
 		break;
 	}
+}
+
+std::unique_ptr<IScene> FadeManager::TakeNextScene() { 
+	if (!isFinished_ || !nextScene_)
+		return nullptr;
+
+	auto scene = nextScene_(); // シーン生成
+	nextScene_ = nullptr;      // 一度使ったらクリア
+	isFinished_ = false;
+
+	return scene;
 }

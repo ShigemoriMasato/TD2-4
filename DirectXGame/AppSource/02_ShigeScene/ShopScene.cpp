@@ -84,6 +84,24 @@ void ShopScene::Initialize() {
 	// 有利不利ゲージ
 	situationGauge_ = std::make_unique<SituationGauge>();
 	situationGauge_->Initialize(modelManager_, drawDataManager_, textureManager_);
+
+	// ショップ専用ParticleDrawer
+	shopParticleDrawer_ = std::make_unique<ParticleDrawer>();
+	shopParticleDrawer_->Initialize(drawDataManager_, modelManager_);
+
+	// 武器種ごとのパーティクル発生位置Offsetの初期値
+	weaponBreakParticleOffsets_ = {
+		{ WeaponType::Pistol,   { 1.0f, 0.0f, 1.5f } },
+		{ WeaponType::Sword,    { 0.5f, 0.0f, 2.0f } },
+		{ WeaponType::ShotGun,  { 1.0f, 0.0f, 2.0f } },
+		{ WeaponType::Spear,    { 0.5f, 0.0f, 2.5f } },
+		{ WeaponType::Axe,      { 1.0f, 0.0f, 2.0f } },
+		{ WeaponType::Fist,     { 1.0f, 0.0f, 1.0f } },
+		{ WeaponType::Bow,      { 1.5f, 0.0f, 1.0f } },
+		{ WeaponType::Gurepon,  { 1.0f, 0.0f, 2.0f } },
+		{ WeaponType::Pickaxe,  { 1.5f, 0.0f, 1.5f } },
+		{ WeaponType::Shuriken, { 1.0f, 0.0f, 1.0f } },
+	};
 }
 
 std::unique_ptr<IScene> ShopScene::Update() {
@@ -116,6 +134,37 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	ImGui::DragFloat3("Pos", &effectEndPos_.x, 1.0f);
 	ImGui::DragFloat3("Control1", &control1_.x, 0.1f);
 	ImGui::DragFloat3("Control2", &control2_.x, 0.1f);
+	ImGui::End();
+
+	ImGui::Begin("Hover Text Settings");
+	ImGui::Text("--- Hold Hover Text ---");
+	ImGui::DragFloat3("Hold Scale", &holdHoverTextTransform_.scale.x, 0.1f);
+	ImGui::DragFloat2("Hold Offset", &holdHoverTextOffset_.x, 1.0f);
+	ImGui::ColorEdit4("Hold Color", &holdHoverTextColor_.x);
+	ImGui::Separator();
+	ImGui::Text("--- Place Hover Text ---");
+	ImGui::DragFloat3("Place Scale", &placeHoverTextTransform_.scale.x, 0.1f);
+	ImGui::DragFloat2("Place Offset", &placeHoverTextOffset_.x, 1.0f);
+	ImGui::ColorEdit4("Place Color", &placeHoverTextColor_.x);
+	ImGui::End();
+
+	// 武器種ごとのパーティクルオフセット調整
+	ImGui::Begin("Weapon Break Particle Offsets");
+	static const std::pair<WeaponType, const char*> weaponNames[] = {
+		{ WeaponType::Pistol,   "Pistol"   },
+		{ WeaponType::Sword,    "Sword"    },
+		{ WeaponType::ShotGun,  "ShotGun"  },
+		{ WeaponType::Spear,    "Spear"    },
+		{ WeaponType::Axe,      "Axe"      },
+		{ WeaponType::Fist,     "Fist"     },
+		{ WeaponType::Bow,      "Bow"      },
+		{ WeaponType::Gurepon,  "Gurepon"  },
+		{ WeaponType::Pickaxe,  "Pickaxe"  },
+		{ WeaponType::Shuriken, "Shuriken" },
+	};
+	for (auto& [type, name] : weaponNames) {
+		ImGui::DragFloat3(name, &weaponBreakParticleOffsets_[type].x, 0.1f);
+	}
 	ImGui::End();
 
 	itemManager_->DrawImGui();
@@ -188,9 +237,211 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	}
 
 	shopCursor_->Update(debugCamera_.get());
-	shopCursor_->EditPiece(backPack_.get());
+	shopCursor_->EditPiece(backPack_.get(), deltaTime_);
+
+	// pieceBreakエフェクトの生成
+	{
+		auto breakPositions = pieceManager_->TakeBreakPositions();
+		for (const auto& info : breakPositions) {
+			// 武器種ごとのオフセットを取得
+			Vector3 offset = { 0.0f, 0.0f, 0.0f };
+			if (info.weaponID != -1) {
+				WeaponData* wData = weaponManager_->GetWeapon(info.weaponID);
+				if (wData) {
+					auto it = weaponBreakParticleOffsets_.find(wData->type);
+					if (it != weaponBreakParticleOffsets_.end()) {
+						WeaponType type = it->first;
+						Vector3 base = it->second;
+						switch (info.direction) {
+						case Piece::Direction::Up:
+							offset = base;
+							break;
+						case Piece::Direction::Right:
+							offset = base + Vector3(0.0f, 0.0f, 0.0f);
+							break;
+						case Piece::Direction::Down:
+							offset = base + Vector3(0.0f, 0.0f, 0.0f);
+							break;
+						case Piece::Direction::Left:
+							offset = base + Vector3(0.0f, 0.0f, 0.0f);
+							break;
+						}
+					}
+				}
+			}
+			MultiParticleData data;
+			data.multiParticle.Initialize(textureManager_, modelManager_, commonData_);
+			data.multiParticle.SetDrawer(shopParticleDrawer_.get());
+			data.multiParticle.Add("pieceBreak.json");
+			Matrix4x4 world = Matrix::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, info.position + offset);
+			data.multiParticle.SetModelWorld(world);
+			data.oneShot = true;
+			breakParticles_.emplace(nextBreakParticleId_++, std::move(data));
+		}
+	}
+
+	// 右クリック削除エフェクトの生成
+	{
+		auto deletePositions = pieceManager_->TakeDeletePositions();
+		for (const auto& info : deletePositions) {
+			Vector3 offset = { 0.0f, 0.0f, 0.0f };
+			if (info.weaponID != -1) {
+				WeaponData* wData = weaponManager_->GetWeapon(info.weaponID);
+				if (wData) {
+					auto it = weaponBreakParticleOffsets_.find(wData->type);
+					if (it != weaponBreakParticleOffsets_.end()) {
+						WeaponType type = it->first;
+						Vector3 base = it->second;
+						
+						switch (shopCursor_->GetPutDirection()) {
+						case Piece::Direction::Up:
+							offset = base + Vector3(0.0f, 0.0f, 0.0f);
+							break;
+						case Piece::Direction::Right:
+
+							switch (type) {
+							case WeaponType::Pistol:
+								offset = base + Vector3(0.5f, 0.0f, -1.0f);
+								break;
+							case WeaponType::Sword:
+								offset = base + Vector3(1.5f, 0.0f, -1.5f);
+								break;
+							case WeaponType::ShotGun:
+								offset = base + Vector3(0.5f, 0.0f, -2.0f);
+								break;
+							case WeaponType::Spear:
+								offset = base + Vector3(2.0f, 0.0f, -1.5f);
+								break;
+							case WeaponType::Axe:
+								offset = base + Vector3(1.0f, 0.0f, -2.0f);
+								break;
+							case WeaponType::Fist:
+								offset = base + Vector3(0.0f, 0.0f, -1.0f);
+								break;
+							case WeaponType::Bow:
+								offset = base + Vector3(-0.5f, 0.0f, -1.5f);
+								break;
+							case WeaponType::Gurepon:
+								offset = base + Vector3(1.0f, 0.0f, -2.0f);
+								break;
+							case WeaponType::Pickaxe:
+								offset = base + Vector3(0.0f, 0.0f, -1.5f);
+								break;
+							case WeaponType::Shuriken:
+								offset = base + Vector3(0.0f, 0.0f, -1.0f);
+								break;
+							}
+
+							break;
+						case Piece::Direction::Down:
+
+							switch (type) {
+							case WeaponType::Pistol:
+								offset = base + Vector3(-1.0f, 0.0f, -1.0f);
+								break;
+							case WeaponType::Sword:
+								offset = base + Vector3(0.0f, 0.0f, -2.5f);
+								break;
+							case WeaponType::ShotGun:
+								offset = base + Vector3(-1.0f, 0.0f, -2.5f);
+								break;
+							case WeaponType::Spear:
+								offset = base + Vector3(0.0f, 0.0f, -3.5f);
+								break;
+							case WeaponType::Axe:
+								offset = base + Vector3(-1.0f, 0.0f, -3.0f);
+								break;
+							case WeaponType::Fist:
+								offset = base + Vector3(-1.0f, 0.0f, -1.0f);
+								break;
+							case WeaponType::Bow:
+								offset = base + Vector3(-2.0f, 0.0f, -0.5f);
+								break;
+							case WeaponType::Gurepon:
+								offset = base + Vector3(-1.0f, 0.0f, -3.0f);
+								break;
+							case WeaponType::Pickaxe:
+								offset = base + Vector3(-1.5f, 0.0f, -1.5f);
+								break;
+							case WeaponType::Shuriken:
+								offset = base + Vector3(-1.0f, 0.0f, -1.0f);
+								break;
+							}
+
+							break;
+						case Piece::Direction::Left:
+
+							switch (type) {
+							case WeaponType::Pistol:
+								offset = base + Vector3(-1.5f, 0.0f, 0.0f);
+								break;
+							case WeaponType::Sword:
+								offset = base + Vector3(-1.5f, 0.0f, -1.5f);
+								break;
+							case WeaponType::ShotGun:
+								offset = base + Vector3(-1.5f, 0.0f, -1.0f);
+								break;
+							case WeaponType::Spear:
+								offset = base + Vector3(-2.0f, 0.0f, -1.5f);
+								break;
+							case WeaponType::Axe:
+								offset = base + Vector3(-2.0f, 0.0f, -1.0f);
+								break;
+							case WeaponType::Fist:
+								offset = base + Vector3(-1.0f, 0.0f, 0.0f);
+								break;
+							case WeaponType::Bow:
+								offset = base + Vector3(-1.5f, 0.0f, 1.0f);
+								break;
+							case WeaponType::Gurepon:
+								offset = base + Vector3(-2.0f, 0.0f, -1.0f);
+								break;
+							case WeaponType::Pickaxe:
+								offset = base + Vector3(-1.5f, 0.0f, 0.0f);
+								break;
+							case WeaponType::Shuriken:
+								offset = base + Vector3(-1.0f, 0.0f, 0.0f);
+								break;
+							}
+
+							break;
+						}
+
+					}
+				}
+			}
+			MultiParticleData data;
+			data.multiParticle.Initialize(textureManager_, modelManager_, commonData_);
+			data.multiParticle.SetDrawer(shopParticleDrawer_.get());
+			data.multiParticle.Add("pieceBreak.json");
+			Matrix4x4 world = Matrix::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, info.position + offset);
+			data.multiParticle.SetModelWorld(world);
+			data.oneShot = true;
+			breakParticles_.emplace(nextBreakParticleId_++, std::move(data));
+		}
+	}
+
+	// pieceBreakエフェクトの更新
+	for (auto& [key, data] : breakParticles_) {
+		data.multiParticle.Update(deltaTime_);
+	}
+	for (auto it = breakParticles_.begin(); it != breakParticles_.end(); ) {
+		auto& data = it->second;
+		// 初回発火を検知したらエミッターを止める
+		if (!data.emittedOnce && data.multiParticle.GetIsJustEmitted(0)) {
+			data.emittedOnce = true;
+			data.multiParticle.SetEmittingFlag(0, false);
+		}
+		// 発火済みで全パーティクルが死んだら削除
+		if (data.emittedOnce && data.multiParticle.GetAliveCount(0) == 0) {
+			it = breakParticles_.erase(it);
+			continue;
+		}
+		++it;
+	}
 
 	colliderManager_->CollisionCheckAll();
+
 
 	//DrawInfo集め
 	{
@@ -224,6 +475,135 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	if (shopCursor_->GetIsEffect()) {
 		// ワールド座標を取得
 		Vector3 worldPutPos = shopCursor_->GetPutPos();
+
+		// 武器種ごとのオフセットを加算
+		int putWeaponID = shopCursor_->GetPutWeaponID();
+		if (putWeaponID != -1) {
+			WeaponData* wData = weaponManager_->GetWeapon(putWeaponID);
+			if (wData) {
+				auto it = weaponBreakParticleOffsets_.find(wData->type);
+				if (it != weaponBreakParticleOffsets_.end()) {
+					Vector3 offset = it->second;
+					WeaponType type = it->first;
+
+					switch (shopCursor_->GetPutDirection()) {
+					case Piece::Direction::Up:
+						offset += Vector3(0.0f, 0.0f, 0.0f);
+						break;
+					case Piece::Direction::Right:
+						
+						switch (type){
+						case WeaponType::Pistol:
+							offset += Vector3(0.5f, 0.0f, -1.0f);
+							break;
+						case WeaponType::Sword:
+							offset += Vector3(1.5f, 0.0f, -1.5f);
+							break;
+						case WeaponType::ShotGun:
+							offset += Vector3(0.5f, 0.0f, -2.0f);
+							break;
+						case WeaponType::Spear:
+							offset += Vector3(2.0f, 0.0f, -1.5f);
+							break;
+						case WeaponType::Axe:
+							offset += Vector3(1.0f, 0.0f, -2.0f);
+							break;
+						case WeaponType::Fist:
+							offset += Vector3(0.0f, 0.0f, -1.0f);
+							break;
+						case WeaponType::Bow:
+							offset += Vector3(-0.5f, 0.0f, -1.5f);
+							break;
+						case WeaponType::Gurepon:
+							offset += Vector3(1.0f, 0.0f, -2.0f);
+							break;
+						case WeaponType::Pickaxe:
+							offset += Vector3(0.0f, 0.0f, -1.5f);
+							break;
+						case WeaponType::Shuriken:
+							offset += Vector3(0.0f, 0.0f, -1.0f);
+							break;
+						}
+
+						break;
+					case Piece::Direction::Down:
+						
+						switch (type) {
+						case WeaponType::Pistol:
+							offset += Vector3(-1.0f, 0.0f, -1.0f);
+							break;
+						case WeaponType::Sword:
+							offset += Vector3(0.0f, 0.0f, -2.5f);
+							break;
+						case WeaponType::ShotGun:
+							offset += Vector3(-1.0f, 0.0f, -2.5f);
+							break;
+						case WeaponType::Spear:
+							offset += Vector3(0.0f, 0.0f, -3.5f);
+							break;
+						case WeaponType::Axe:
+							offset += Vector3(-1.0f, 0.0f, -3.0f);
+							break;
+						case WeaponType::Fist:
+							offset += Vector3(-1.0f, 0.0f, -1.0f);
+							break;
+						case WeaponType::Bow:
+							offset += Vector3(-2.0f, 0.0f, -0.5f);
+							break;
+						case WeaponType::Gurepon:
+							offset += Vector3(-1.0f, 0.0f, -3.0f);
+							break;
+						case WeaponType::Pickaxe:
+							offset += Vector3(-1.5f, 0.0f, -1.5f);
+							break;
+						case WeaponType::Shuriken:
+							offset += Vector3(-1.0f, 0.0f, -1.0f);
+							break;
+						}
+
+						break;
+					case Piece::Direction::Left:
+						
+						switch (type) {
+						case WeaponType::Pistol:
+							offset += Vector3(-1.5f, 0.0f, 0.0f);
+							break;
+						case WeaponType::Sword:
+							offset += Vector3(-1.5f, 0.0f, -1.5f);
+							break;
+						case WeaponType::ShotGun:
+							offset += Vector3(-1.5f, 0.0f, -1.0f);
+							break;
+						case WeaponType::Spear:
+							offset += Vector3(-2.0f, 0.0f, -1.5f);
+							break;
+						case WeaponType::Axe:
+							offset += Vector3(-2.0f, 0.0f, -1.0f);
+							break;
+						case WeaponType::Fist:
+							offset += Vector3(-1.0f, 0.0f, 0.0f);
+							break;
+						case WeaponType::Bow:
+							offset += Vector3(-1.5f, 0.0f, 1.0f);
+							break;
+						case WeaponType::Gurepon:
+							offset += Vector3(-2.0f, 0.0f, -1.0f);
+							break;
+						case WeaponType::Pickaxe:
+							offset += Vector3(-1.5f, 0.0f, 0.0f);
+							break;
+						case WeaponType::Shuriken:
+							offset += Vector3(-1.0f, 0.0f, 0.0f);
+							break;
+						}
+
+						break;
+					}
+
+					worldPutPos += offset;
+				}
+			}
+		}
 
 		// ビュープロジェクション行列の計算
 		Matrix4x4 viewProj = debugCamera_->GetVPMatrix();
@@ -275,7 +655,7 @@ void ShopScene::DrawReady() {
 	weaponDebugger_->Draw();
 	//parameterRender_->Draw(cmdObj);
 	//debugObj_->Draw(cmdObj);
-	situationGauge_->Draw(cmdObj);
+	//situationGauge_->Draw(cmdObj);
 
 	for (auto& effect : attractEffects_) {
 		effect->Draw(cmdObj);
@@ -285,8 +665,14 @@ void ShopScene::DrawReady() {
 	DrawRerollBar(cmdObj);
 
 	for (auto& effect : valueEffects_) {
-		effect->Draw(cmdObj);
+		//effect->Draw(cmdObj);
 	}
+
+	// pieceBreakパーティクルの描画（ショップのレンダーターゲット内でショップカメラで描画）
+	for (auto& [key, data] : breakParticles_) {
+		data.multiParticle.Draw();
+	}
+	shopParticleDrawer_->Draw(cmdObj, debugCamera_->GetVPMatrix());
 
 	shopDisplay_->ToPresent();
 }
@@ -339,22 +725,32 @@ void ShopScene::InitializeRerollBar() {
 	textDrawData_ = drawDataManager_->GetDrawData(planeModelData.drawDataIndex);
 
 	rerollText_ = std::make_unique<SHEngine::Text>();
-	rerollText_->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
+	rerollText_->Initialize(textDrawData_, fontPath_, 64);
 	rerollText_->SetText(L"武器購入回数");
 
 	// 操作説明テキストの初期化
 	controlText_ = std::make_unique<SHEngine::Text>();
-	controlText_->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
+	controlText_->Initialize(textDrawData_, fontPath_, 64);
 	controlText_->SetText(L"持つ 離す");
 
 	// ラクラク配置テキストの初期化
 	easyPlaceText_ = std::make_unique<SHEngine::Text>();
-	easyPlaceText_->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
+	easyPlaceText_->Initialize(textDrawData_, fontPath_, 64);
 	easyPlaceText_->SetText(L"自動配置");
+
+	// ホバー時「持つ」テキストの初期化
+	holdHoverText_ = std::make_unique<SHEngine::Text>();
+	holdHoverText_->Initialize(textDrawData_, fontPath_, 64);
+	holdHoverText_->SetText(L"持つ");
+
+	// ホバー時「設置」テキストの初期化
+	placeHoverText_ = std::make_unique<SHEngine::Text>();
+	placeHoverText_->Initialize(textDrawData_, fontPath_, 64);
+	placeHoverText_->SetText(L"設置");
 
 	// 武器安置所テキストの初期化
 	//weaponStorageText_ = std::make_unique<SHEngine::Text>();
-	//weaponStorageText_->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
+	//weaponStorageText_->Initialize(textDrawData_, fontPath_, 64);
 	//weaponStorageText_->SetText(L"武器安置所");
 
 	// マウスボタンスプライトの初期化
@@ -445,6 +841,42 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 	easyPlaceText_->SetTransform(easyPlaceTextTransform_);
 	easyPlaceText_->Update(vpMatrix);
 
+	// ホバー時「持つ」「設置」／持ち中「離す」「回転」／BackPack内ホバー「持つ」「削除(長押し)」テキストの更新
+	bool showHoverText = shopCursor_->HasHeldPiece()
+					  || (shopCursor_->IsHoveringShopPiece()    && !shopCursor_->HasHeldPiece())
+					  || (shopCursor_->IsHoveringBackPackPiece() && !shopCursor_->HasHeldPiece());
+	if (showHoverText) {
+		Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
+		// ShopDisplay は leftTop=(48,48), size=(352,624) でスクリーンに表示される。
+		// world_x = (screen_x - 48) * (1280 / 352)
+		// world_y = -(screen_y - 48) * (720 / 624)
+		float baseWorldX = (cursorPos.x - 48.0f) * (1280.0f / 352.0f);
+		float baseWorldY = -(cursorPos.y - 48.0f) * (720.0f / 624.0f);
+
+		if (shopCursor_->HasHeldPiece()) {
+			holdHoverText_->SetText(L"離す");
+			placeHoverText_->SetText(L"回転");
+		} else if (shopCursor_->IsHoveringBackPackPiece()) {
+			holdHoverText_->SetText(L"持つ");
+			placeHoverText_->SetText(L"削除(長押し)");
+		} else {
+			holdHoverText_->SetText(L"持つ");
+			placeHoverText_->SetText(L"設置");
+		}
+
+		holdHoverTextTransform_.position = { baseWorldX + holdHoverTextOffset_.x, baseWorldY + holdHoverTextOffset_.y, 0.0f };
+		holdHoverText_->SetColor(holdHoverTextColor_);
+		holdHoverText_->SetTransform(holdHoverTextTransform_);
+		holdHoverText_->Update(vpMatrix);
+
+		placeHoverTextTransform_.position = { baseWorldX + placeHoverTextOffset_.x, baseWorldY + placeHoverTextOffset_.y, 0.0f };
+		placeHoverText_->SetColor(placeHoverTextColor_);
+		placeHoverText_->SetTransform(placeHoverTextTransform_);
+		placeHoverText_->Update(vpMatrix);
+	}
+
+
+
 	// 武器安置所テキストの更新
 	//weaponStorageText_->SetColor(weaponStorageTextColor_);
 	//weaponStorageText_->SetTransform(weaponStorageTextTransform_);
@@ -512,11 +944,19 @@ void ShopScene::DrawRerollBar(CmdObj* cmdObj) {
 
 	// テキスト描画
 	rerollText_->Draw(cmdObj);
-	controlText_->Draw(cmdObj);
-	easyPlaceText_->Draw(cmdObj);
+	//controlText_->Draw(cmdObj);
+	//easyPlaceText_->Draw(cmdObj);
 	//weaponStorageText_->Draw(cmdObj);
 
+	// ショップ／BackPack ピースホバー時・持ち中テキスト描画
+	if (shopCursor_->HasHeldPiece()
+	 || (shopCursor_->IsHoveringShopPiece()    && !shopCursor_->HasHeldPiece())
+	 || (shopCursor_->IsHoveringBackPackPiece() && !shopCursor_->HasHeldPiece())) {
+		holdHoverText_->Draw(cmdObj);
+		placeHoverText_->Draw(cmdObj);
+	}
+
 	// マウススプライト描画
-	mouseLeftSprite_->Draw(cmdObj);
-	mouseRightSprite_->Draw(cmdObj);
+	//mouseLeftSprite_->Draw(cmdObj);
+	//mouseRightSprite_->Draw(cmdObj);
 }

@@ -40,6 +40,9 @@ namespace SHEngine {
 		// @brief Samplerの設定
 		void SetSampler(PSO::SamplerID samplerFlag) { samplerFlag_ = uint32_t(samplerFlag); }
 
+		// @brief DrawDataを上書きする
+		void SetDrawData(const DrawData& drawData) { drawData_ = drawData; }
+
 		// @brief 指定された設定を基に描画コマンドを発行する。
 		void Draw(CmdObj* cmdObj);
 

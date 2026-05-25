@@ -5,6 +5,7 @@
 #include <map>
 #include <unordered_map>
 #include <memory>
+#include <Tool/Binary/BinaryManager.h>
 
 namespace SHEngine {
 
@@ -20,7 +21,7 @@ namespace SHEngine {
 	public:
 
 		/// @brief デフォルトコンストラクタ
-		TextureManager() = default;
+		TextureManager();
 		/// @brief デストラクタ
 		~TextureManager();
 
@@ -157,6 +158,12 @@ namespace SHEngine {
 
 		/// @brief ロガー
 		Logger logger_ = nullptr;
+
+	private:
+
+		BinaryManager binaryManager_;
+		const std::string saveFile_ = "UsedTextures.bin";
+
 	};
 
 }

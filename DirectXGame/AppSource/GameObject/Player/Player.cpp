@@ -130,6 +130,29 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, b
 	    {0.0f, 0.0f, 0.0f}  // Body
 	};
 
+	// 死亡時に色とY座標の変更
+	if (currentHP_ <= 0.0f && preHP_ > 0.0f) {
+		float downAmount = 5.0f;
+		// アニメーション開始
+		for (int i = 0; i < static_cast<int>(PartIndex::Count); ++i) {
+			positionYAnimations_[i].anim.Start(partTransforms_[i].position.y, partTransforms_[i].position.y - downAmount, 3.0f, EaseType::EaseOutCubic); // Y座標
+		}
+		colorAnimation_.anim.Start(1.0f, 0.0f, 3.0f, EaseType::EaseOutCubic); // 色
+	}
+
+	// アニメーションの適用
+	for (int i = 0; i < static_cast<int>(PartIndex::Count); ++i) {
+		if (positionYAnimations_[i].anim.GetIsActive()) {
+			// Y座標
+			positionYAnimations_[i].anim.Update(deltaTime, positionYAnimations_[i].temp);
+			partTransforms_[i].position.y = positionYAnimations_[i].temp;
+
+			// 色
+			colorAnimation_.anim.Update(deltaTime, colorAnimation_.temp);
+			color_ = {colorAnimation_.temp, colorAnimation_.temp, colorAnimation_.temp, 1.0f};
+		}
+	}
+
 	for (int i = 0; i < static_cast<int>(PartIndex::Count); ++i) {
 		// モデルの中心を原点から関節位置へずらす行列
 		Matrix4x4 matOffset = Matrix::MakeAffineMatrix({1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {-pivotOffset[i].x, -pivotOffset[i].y, -pivotOffset[i].z});
@@ -147,10 +170,8 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, b
 		// WVP行列を計算
 		Matrix4x4 wvp = matWorldPart * vpMatrix;
 
-		Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
-
 		render_[i]->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
-		render_[i]->CopyBufferData(1, &color, sizeof(Vector4));
+		render_[i]->CopyBufferData(1, &color_, sizeof(Vector4));
 		render_[i]->CopyBufferData(2, &textureIndex_, sizeof(int));
 		render_[i]->CopyBufferData(3, &dirLight_, sizeof(DirectionalLight));
 	}
@@ -165,6 +186,9 @@ void Base::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, b
 			invincibleTimer_ = 0.0f;
 		}
 	}
+
+	// HPの保存
+	preHP_ = currentHP_;
 }
 
 void Player::Base::UpdateParameter(const std::vector<Piece*>& items) { parameterList_->Update(items); }
