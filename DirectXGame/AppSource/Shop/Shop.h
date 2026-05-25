@@ -22,6 +22,6 @@ private:
 	std::mt19937 randomEngine_{ std::random_device{}() };
 	std::vector<int> itemIndices_;
 
-	Vector3 startPos_{ 0.0f, 0.0f, 11.0f };
+	Vector3 startPos_{ 0.0f, 0.0f, 9.0f };
 	Vector3 interval_{ 4.0f, 0.0f, 0.0f };
 };

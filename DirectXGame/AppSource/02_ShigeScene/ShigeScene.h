@@ -132,6 +132,10 @@ private:// System系
 	// マウスカーソルスプライト
 	std::unique_ptr<SHEngine::RenderObject> mouseCursorSprite_ = nullptr;
 	int mouseCursorTextureIndex_ = -1;
+	int mouseCursorTexDefault_ = -1;
+	int mouseCursorTexLeft_ = -1;
+	int mouseCursorTexRight_ = -1;
+	int mouseCursorTexBoth_ = -1;
 	Transform mouseCursorTransform_ = { {32.0f, 32.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 
 private:// Shop

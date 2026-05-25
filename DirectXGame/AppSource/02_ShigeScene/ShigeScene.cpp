@@ -206,7 +206,11 @@ void ShigeScene::Initialize() {
 	});
 
 	// マウスカーソルスプライトの初期化
-	mouseCursorTextureIndex_ = textureManager_->LoadTexture("Assets/Texture/UI/mouse.png");
+	mouseCursorTexDefault_ = textureManager_->LoadTexture("Assets/Texture/UI/mouse.png");
+	mouseCursorTexLeft_    = textureManager_->LoadTexture("Assets/Texture/UI/mouseL.png");
+	mouseCursorTexRight_   = textureManager_->LoadTexture("Assets/Texture/UI/mouseR.png");
+	mouseCursorTexBoth_    = textureManager_->LoadTexture("Assets/Texture/UI/mouseD.png");
+	mouseCursorTextureIndex_ = mouseCursorTexDefault_;
 	mouseCursorSprite_ = std::make_unique<SHEngine::RenderObject>("MouseCursorSprite");
 	mouseCursorSprite_->Initialize();
 	mouseCursorSprite_->SetDrawData(planeDrawData);
@@ -382,6 +386,17 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	// マウスカーソルスプライトの更新
 	{
+		bool leftClick  = (input_->GetMouseButtonState()[0] & 0x80) != 0;
+		bool rightClick = (input_->GetMouseButtonState()[1] & 0x80) != 0;
+		if (leftClick && rightClick) {
+			mouseCursorTextureIndex_ = mouseCursorTexBoth_;
+		} else if (leftClick) {
+			mouseCursorTextureIndex_ = mouseCursorTexLeft_;
+		} else if (rightClick) {
+			mouseCursorTextureIndex_ = mouseCursorTexRight_;
+		} else {
+			mouseCursorTextureIndex_ = mouseCursorTexDefault_;
+		}
 		Vector2 cursorPos = input_->GetCursorPos();
 		mouseCursorTransform_.position = {cursorPos.x, cursorPos.y * -1.0f, 0.0f};
 		Matrix4x4 wvp = Matrix::MakeAffineMatrix(mouseCursorTransform_.scale, mouseCursorTransform_.rotate, mouseCursorTransform_.position);
