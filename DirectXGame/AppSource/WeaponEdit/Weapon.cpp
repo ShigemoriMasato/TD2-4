@@ -17,6 +17,9 @@ void Weapon::Update(float deltaTime) {
 
 	for (size_t i = 0; i < data_.attackAnimation.size(); ++i) {
 		if (timer_ < data_.attackAnimation[i].time) {
+
+			//アニメーションするコード
+
 			break;
 		}
 	}
@@ -32,6 +35,10 @@ void Weapon::DataSetting() {
 
 	//攻撃アニメーションを再生するのにかかる時間を取得
 	animationTime_ = data_.attackAnimation.back().time;
+
+	attackAnimation_.clear();
+	attackAnimation_.resize(data_.attackAnimation.size() + 1);
+	
 
 	int handle = modelManager_->LoadModel(data_.modelFilePath);
 	auto& data = modelManager_->GetNodeModelData(handle);

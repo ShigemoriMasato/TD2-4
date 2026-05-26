@@ -49,7 +49,8 @@ public:
 	void SetWeaponData(const Data& data) { data_ = data; DataSetting(); }
 
 	RenderData GetRenderData() const { return renderData_; }
-
+	const Matrix4x4& GetWorldMatrix() const { return renderData_.world; }
+		
 private:
 
 	void DataSetting();
@@ -59,6 +60,9 @@ private:
 	float animationTime_ = 0.0f;
 	Data data_;
 	RenderData renderData_;
+
+	std::vector<Transform> regularKey_;
+	std::vector<std::vector<Key>> attackAnimation_;
 
 	Matrix4x4 aimMatrix_;
 

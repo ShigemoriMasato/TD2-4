@@ -20,7 +20,21 @@ void WeaponRender::DeleteRenderer(int id) {
 	}
 
 	renderers_.erase(id);
-	gpuBuffers_.erase(id);
+	wvpBuffers_.erase(id);
+}
+
+void WeaponRender::SetCameraMatrix(Matrix4x4 vpMat) {
+	vpMat_ = vpMat;
+}
+
+void WeaponRender::Update(int id, const Matrix4x4& world) {
+	if (!renderers_.contains(id)) {
+		return;
+	}
+	VSData vsData = {};
+	vsData.world = world;
+	vsData.wvp = world * vpMat_;
+	wvpBuffers_[id]->CopyBuffer(&vsData, sizeof(vsData));
 }
 
 void WeaponRender::Draw(CmdObj* cmdObj) {
@@ -89,7 +103,7 @@ void WeaponRender::DrawImGui() {
 int WeaponRender::CreateRenderer(Weapon::RenderData renderData) {
 	int id = nextID_++;
 	auto& r = renderers_[id];
-	auto& wvpBuf = gpuBuffers_[id];
+	auto& wvpBuf = wvpBuffers_[id];
 
 	r = std::make_unique<SHEngine::Renderer>(renderData.drawData);
 	r->SetVS("Model/Obj.VS.hlsl");

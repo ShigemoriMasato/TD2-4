@@ -30,7 +30,6 @@ inline bool FromString(const std::string& s, TrailType& out)
 	return false;
 }
 
-
 struct TrailConfig
 {
 	// 履歴
