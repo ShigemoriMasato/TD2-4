@@ -80,6 +80,10 @@ void ResultScene::Initialize() {
 	dirLight_.color = {1.0f, 1.0f, 1.0f, 1.0f};
 	dirLight_.direction = {0.0f, 1.0f, 0.0f};
 	dirLight_.intensity = 2.0f;
+
+	SHEngine::DrawData planeDrawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
+	gameFrame_ = std::make_unique<GameFrame>();
+	gameFrame_->Initialize(planeDrawData, textureManager_->LoadTexture("TitleFrame.png"));
 }
 
 std::unique_ptr<IScene> ResultScene::Update() {
@@ -147,6 +151,8 @@ std::unique_ptr<IScene> ResultScene::Update() {
 	}
 
 	fadeManager_->Update(camera_->GetVPMatrix(), deltaTime);
+
+	gameFrame_->Update();
 
 	if (auto next = fadeManager_->TakeNextScene()) {
 		return next;
@@ -248,6 +254,8 @@ void ResultScene::Draw() {
 	sword_->Draw(cmdObj);
 
 	fadeManager_->Draw(cmdObj);
+
+	gameFrame_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 

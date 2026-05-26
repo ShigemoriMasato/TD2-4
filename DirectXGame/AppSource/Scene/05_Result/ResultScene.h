@@ -7,7 +7,7 @@
 #include "UI/Result/ResultUIManager.h"
 #include "GameObject/Fade/FadeManager.h"
 #include "GameObject/Result/EnemyRainManager.h"
-
+#include <UI/Game/GameFrame.h>
 class ResultScene : public IScene {
 public:
 
@@ -65,4 +65,6 @@ private:
 	bool isPreFinished_ = false;
 	
 	DirectionalLight dirLight_;
+
+	std::unique_ptr<GameFrame> gameFrame_;
 };
