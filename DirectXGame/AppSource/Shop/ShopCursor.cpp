@@ -56,7 +56,7 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 				heldPiece_->RotateRight();
 				currentDir = heldPiece_->GetDirection();
 			}
-			heldPiece_->SetPosition(worldPos_ - heldPiece_->GetCenterOffset());
+			heldPiece_->SetPosition(worldPos_ - heldPiece_->GetCenterOffset());//
 
 			//おけるなら配置、無理なら元の場所に戻す
 			if (heldPiece_->CanPut(backPack)) {
@@ -72,10 +72,19 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 
 			} else if (Piece* mergeTarget = pieceManager_->FindMergeTarget(heldPiece_)) {
 				// 同種・同レアリティのピースに重ねた → マージ
+				// マージターゲットの情報を保存
+				Vector3 mergeTargetPos = mergeTarget->GetPosition();
+				Piece::Direction mergeTargetDir = mergeTarget->GetDirection();
+				bool mergeTargetReserved = mergeTarget->IsReserved();
+
+				// マージターゲットを一時的に削除
 				mergeTarget->Remove(backPack);
-				pieceManager_->RemovePiece(mergeTarget);
+
+				// heldPieceのレアリティを上げて配置を試みる
 				heldPiece_->SetRarity(static_cast<WeaponRarity>(static_cast<int>(heldPiece_->GetRarity()) + 1));
 				if (heldPiece_->CanPut(backPack)) {
+					// 配置成功：マージターゲットを完全に削除
+					pieceManager_->RemovePiece(mergeTarget);
 					heldPiece_->Put(backPack);
 
 					isEffect_ = true;
@@ -84,18 +93,33 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 					putIsVertical_ = heldPiece_->IsVertical();
 					putDirection_ = heldPiece_->GetDirection();
 				} else {
-					// マージ後も置けない場合は元の場所に戻す
-					heldPiece_->SetRarity(static_cast<WeaponRarity>(static_cast<int>(heldPiece_->GetRarity()) - 1));
-					auto currentDir = heldPiece_->GetDirection();
-					while (currentDir != preHeldPieceDir_) {
-						heldPiece_->RotateRight();
-						currentDir = heldPiece_->GetDirection();
+					// マージ後も置けない場合：heldPieceを削除し、mergeTargetのレアリティを上げて元の位置に戻す
+
+					// heldPieceがShopピースの場合、残りのShopピースを削除する
+					if (pieceManager_->IsShopPiece(heldPiece_)) {
+						pieceManager_->MoveShopToHold(heldPiece_, backPack);
 					}
-					heldPiece_->SetPosition(preHeldPiecePos_);
-					heldPiece_->SetReserved(wasReserved);
-					if (heldPiece_->CanPut(backPack)) {
-						heldPiece_->Put(backPack);
+
+					pieceManager_->RemovePiece(heldPiece_);
+
+					// マージターゲットのレアリティを上げる
+					mergeTarget->SetRarity(static_cast<WeaponRarity>(static_cast<int>(mergeTarget->GetRarity()) + 1));
+					mergeTarget->SetPosition(mergeTargetPos);
+					mergeTarget->SetReserved(mergeTargetReserved);
+
+					// 回転を元に戻す
+					auto currentDir = mergeTarget->GetDirection();
+					while (currentDir != mergeTargetDir) {
+						mergeTarget->RotateRight();
+						currentDir = mergeTarget->GetDirection();
 					}
+
+					// 元の場所に戻す
+					if (mergeTarget->CanPut(backPack)) {
+						mergeTarget->Put(backPack);
+					}
+
+					heldPiece_ = nullptr; // heldPieceはもう存在しないのでnullに設定
 				}
 			} else {
 				// 元の場所に戻す
@@ -113,7 +137,9 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 			}
 
 			// ピースを離すときに持たれている状態を解除
-			heldPiece_->SetHeld(false);
+			if (heldPiece_) {
+				heldPiece_->SetHeld(false);
+			}
 			heldPiece_ = nullptr;
 
 		} else {

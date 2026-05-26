@@ -120,6 +120,14 @@ private:
 	Transform weaponStorageTextTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {65.0f, -612.0f, 0.0f} };
 	Vector4 weaponStorageTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 
+	// 武器補充中テキスト用変数
+	std::unique_ptr<SHEngine::Text> replenishingText_ = nullptr;
+	Transform replenishingTextTransform_ = { {4.0f, 2.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {250.0f, -200.0f, 0.0f} };
+	Vector4 replenishingTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float replenishingTextAnimTimer_ = 0.0f;
+	float replenishingTextAnimInterval_ = 0.5f; // ドットが変わる間隔（秒）
+	int replenishingTextDotCount_ = 1; // 現在のドット数（1〜3）
+
 	// マウスボタンスプライト用変数
 	std::unique_ptr<SHEngine::RenderObject> mouseLeftSprite_ = nullptr;
 	std::unique_ptr<SHEngine::RenderObject> mouseRightSprite_ = nullptr;

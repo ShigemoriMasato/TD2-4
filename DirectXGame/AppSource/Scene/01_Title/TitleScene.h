@@ -39,6 +39,7 @@ private:
 
 	std::unique_ptr<TitleUI> titleUI_;
 	std::unique_ptr<Camera> camera_;
+	std::unique_ptr<Camera> orthoCamera_;
 	std::unique_ptr<GameCamera> gameCamera_;
 	std::unique_ptr<Map> map_;
 	std::unique_ptr<Player::Base> player_;
@@ -99,4 +100,13 @@ private:// Shop
 	std::unique_ptr<Grid> grid_;
 
 	std::unique_ptr<GameFrame> gameFrame_;
+
+	// マウスカーソルスプライト
+	std::unique_ptr<SHEngine::RenderObject> mouseCursorSprite_ = nullptr;
+	int mouseCursorTextureIndex_ = -1;
+	int mouseCursorTexDefault_ = -1;
+	int mouseCursorTexLeft_ = -1;
+	int mouseCursorTexRight_ = -1;
+	int mouseCursorTexBoth_ = -1;
+	Transform mouseCursorTransform_ = { {32.0f, 32.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 };

@@ -37,6 +37,8 @@ void TitleScene::Initialize() {
 	camera_->SetScale({ 1.0f, 1.0f, 1.0f });
 	camera_->MakeMatrix();
 
+	orthoCamera_ = std::make_unique<Camera>();
+
 	gameCamera_ = std::make_unique<GameCamera>();
 	gameCamera_->Initialize();
 	gameCamera_->SetInput(input_);
@@ -149,6 +151,22 @@ void TitleScene::Initialize() {
 	SHEngine::DrawData planeDrawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
 	gameFrame_ = std::make_unique<GameFrame>();
 	gameFrame_->Initialize(planeDrawData, textureManager_->LoadTexture("TitleFrame.png"));
+
+	// マウスカーソルスプライトの初期化
+	mouseCursorTexDefault_ = textureManager_->LoadTexture("Assets/Texture/UI/mouse.png");
+	mouseCursorTexLeft_    = textureManager_->LoadTexture("Assets/Texture/UI/mouseL.png");
+	mouseCursorTexRight_   = textureManager_->LoadTexture("Assets/Texture/UI/mouseR.png");
+	mouseCursorTexBoth_    = textureManager_->LoadTexture("Assets/Texture/UI/mouseD.png");
+	mouseCursorTextureIndex_ = mouseCursorTexDefault_;
+	mouseCursorSprite_ = std::make_unique<SHEngine::RenderObject>("MouseCursorSprite");
+	mouseCursorSprite_->Initialize();
+	mouseCursorSprite_->SetDrawData(planeDrawData);
+	mouseCursorSprite_->psoConfig_.vs = "Simple.VS.hlsl";
+	mouseCursorSprite_->psoConfig_.ps = "PostEffect/Simple.PS.hlsl";
+	mouseCursorSprite_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+	mouseCursorSprite_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	mouseCursorSprite_->SetUseTexture(true);
+	mouseCursorSprite_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Transparent;
 }
 
 std::unique_ptr<IScene> TitleScene::Update() {
@@ -275,6 +293,35 @@ std::unique_ptr<IScene> TitleScene::Update() {
 
 	gameFrame_->Update();
 
+	// orthoCameraの設定
+	OrthographicDesc orthDesc;
+	orthDesc.SetValue();
+	orthoCamera_->SetProjectionMatrix(orthDesc);
+	orthoCamera_->SetScale({1, -1, 1});
+	orthoCamera_->SetPosition({0, 0, 0});
+	orthoCamera_->MakeMatrix();
+
+	// マウスカーソルスプライトの更新
+	{
+		bool leftClick  = (input_->GetMouseButtonState()[0] & 0x80) != 0;
+		bool rightClick = (input_->GetMouseButtonState()[1] & 0x80) != 0;
+		if (leftClick && rightClick) {
+			mouseCursorTextureIndex_ = mouseCursorTexBoth_;
+		} else if (leftClick) {
+			mouseCursorTextureIndex_ = mouseCursorTexLeft_;
+		} else if (rightClick) {
+			mouseCursorTextureIndex_ = mouseCursorTexRight_;
+		} else {
+			mouseCursorTextureIndex_ = mouseCursorTexDefault_;
+		}
+		Vector2 cursorPos = input_->GetCursorPos();
+		mouseCursorTransform_.position = {cursorPos.x, cursorPos.y * -1.0f, 0.0f};
+		Matrix4x4 wvp = Matrix::MakeAffineMatrix(mouseCursorTransform_.scale, mouseCursorTransform_.rotate, mouseCursorTransform_.position);
+		wvp *= orthoCamera_->GetVPMatrix();
+		mouseCursorSprite_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
+		mouseCursorSprite_->CopyBufferData(1, &mouseCursorTextureIndex_, sizeof(int));
+	}
+
 	if (keys[Key::Correct]) {
 		switch (titleUI_->GetCurrentSelect()) {
 		case Title::Select::Start:
@@ -329,6 +376,9 @@ void TitleScene::Draw() {
 
 	// フレームの描画
 	gameFrame_->Draw(cmdObj);
+
+	// マウスカーソルスプライトの描画
+	mouseCursorSprite_->Draw(cmdObj);
 
 	// ディスプレイへの描画終了
 	display->PostDraw(cmdObj);
