@@ -2,14 +2,14 @@
 
 Vector2 InputController::GetMoveDirection(float deltaTime, const MapInfo& mapInfo) {
 	Vector2 dir = {0.0f, 0.0f};
-	if (input_->GetKeyState(DIK_W))
+	/*if (input_->GetKeyState(DIK_W))
 		dir.y += 1.0f;
 	if (input_->GetKeyState(DIK_S))
 		dir.y -= 1.0f;
 	if (input_->GetKeyState(DIK_D))
 		dir.x += 1.0f;
 	if (input_->GetKeyState(DIK_A))
-		dir.x -= 1.0f;
+		dir.x -= 1.0f;*/
 		
 	// キー入力があればターゲット移動をキャンセル
 	if (dir.x != 0.0f || dir.y != 0.0f) {
@@ -23,6 +23,11 @@ Vector2 InputController::GetMoveDirection(float deltaTime, const MapInfo& mapInf
 		} else {
 			hasTarget_ = false; // 到達したら解除
 		}
+	}
+
+	// 入力もターゲット移動もない場合はAIに任せる
+	if (dir.x == 0.0f && dir.y == 0.0f && !hasTarget_ && fallbackController_) {
+		return fallbackController_->GetMoveDirection(deltaTime, mapInfo);
 	}
 
 	return dir;

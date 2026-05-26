@@ -68,13 +68,13 @@ private:
 	Vector3 originPos_ = { 0.0f, 0.0f, -5.0f };
 
 	int width_ = 10;
-	int height_ = 10;
+	int height_ = 8;
 
 	// 初期の空き領域
 	int emptyStartX_ = 1;
 	int emptyStartY_ = 1;
 	int emptyAreaWidth_ = 8;
-	int emptyAreaHeight_ = 10;
+	int emptyAreaHeight_ = 8;
 
 	// 保留エリア（BackPackの下側)
 	int reserveStartX_ = 0;

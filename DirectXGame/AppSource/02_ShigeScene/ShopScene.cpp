@@ -187,12 +187,12 @@ std::unique_ptr<IScene> ShopScene::Update() {
 			shopRerollTimer_ -= shopRerollTime_; // 超過分を維持してタイマーリセット
 
 			// エフェクトの生成
-			if (!pendingReroll_){
-			auto effect = std::make_unique<ValueDeltaEffect>();
-			effect->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
-			Vector3 effectPos = valueEfectPos_;
-			effect->Trigger(true, effectPos);
-			valueEffects_.push_back(std::move(effect));
+			if (!pendingReroll_) {
+				//auto effect = std::make_unique<ValueDeltaEffect>();
+				//effect->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
+				//Vector3 effectPos = valueEfectPos_;
+				//effect->Trigger(true, effectPos);
+				//valueEffects_.push_back(std::move(effect));
 			}
 		}
 	} else {
@@ -220,11 +220,11 @@ std::unique_ptr<IScene> ShopScene::Update() {
 		rerollIntervalTimer_ = 0.0f;
 
 		// エフェクトの生成
-		auto effect = std::make_unique<ValueDeltaEffect>();
-		effect->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
-		Vector3 effectPos = valueEfectPos_;
-		effect->Trigger(false, effectPos);
-		valueEffects_.push_back(std::move(effect));
+		//auto effect = std::make_unique<ValueDeltaEffect>();
+		//effect->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
+		//Vector3 effectPos = valueEfectPos_;
+		//effect->Trigger(false, effectPos);
+		//valueEffects_.push_back(std::move(effect));
 	}
 
 	// 何かしらのトリガーでショップのピースを更新する
@@ -629,14 +629,14 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	}
 
 	// 増減エフェクトの更新と削除
-	for (auto it = valueEffects_.begin(); it != valueEffects_.end();) {
-		(*it)->Update(deltaTime_, orthoCamera_->GetVPMatrix());
-		if (!(*it)->IsActive()) {
-			it = valueEffects_.erase(it);
-		} else {
-			++it;
-		}
-	}
+	//for (auto it = valueEffects_.begin(); it != valueEffects_.end();) {
+	//	(*it)->Update(deltaTime_, orthoCamera_->GetVPMatrix());
+	//	if (!(*it)->IsActive()) {
+	//		it = valueEffects_.erase(it);
+	//	} else {
+	//		++it;
+	//	}
+	//}
 
 	// 有利不利ゲージ
 	situationGauge_->Update(orthoCamera_->GetVPMatrix(), deltaTime_, static_cast<float>(commonData_->enemyCount), static_cast<float>(commonData_->weaponCount), key);
@@ -664,9 +664,9 @@ void ShopScene::DrawReady() {
 	// リロールバーの描画
 	DrawRerollBar(cmdObj);
 
-	for (auto& effect : valueEffects_) {
-		//effect->Draw(cmdObj);
-	}
+	//for (auto& effect : valueEffects_) {
+	//	//effect->Draw(cmdObj);
+	//}
 
 	// pieceBreakパーティクルの描画（ショップのレンダーターゲット内でショップカメラで描画）
 	for (auto& [key, data] : breakParticles_) {

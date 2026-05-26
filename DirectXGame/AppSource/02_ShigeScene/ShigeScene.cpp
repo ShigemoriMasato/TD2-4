@@ -86,6 +86,46 @@ void ShigeScene::Initialize() {
 
 	targetMarkerTransform_.scale = {1.0f, 1.0f, 1.0f};
 
+	// Moveingスプライトの初期化
+	{
+		int handle = modelManager_->LoadModel("Assets/Model/UI/Game/Moveing");
+		auto modelData = modelManager_->GetNodeModelData(handle);
+		auto drawData = drawDataManager_->GetDrawData(modelData.drawDataIndex);
+		moveingRender_ = std::make_unique<SHEngine::RenderObject>("Moveing");
+		moveingRender_->Initialize();
+		moveingRender_->psoConfig_.vs = "Game/Field.VS.hlsl";
+		moveingRender_->psoConfig_.ps = "Game/FieldNoLight.PS.hlsl";
+		moveingRender_->SetUseTexture(true);
+		moveingRender_->SetDrawData(drawData);
+		moveingRender_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
+		moveingRender_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+		moveingRender_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+		moveingTexIndex_ = modelData.materials[modelData.materialIndex.front()].textureIndex;
+		Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
+		moveingRender_->CopyBufferData(1, &color, sizeof(color));
+		moveingRender_->CopyBufferData(2, &moveingTexIndex_, sizeof(moveingTexIndex_));
+	}
+
+	// AutoMoveingスプライトの初期化
+	{
+		int handle = modelManager_->LoadModel("Assets/Model/UI/Game/AutoMoveing");
+		auto modelData = modelManager_->GetNodeModelData(handle);
+		auto drawData = drawDataManager_->GetDrawData(modelData.drawDataIndex);
+		autoMoveingRender_ = std::make_unique<SHEngine::RenderObject>("AutoMoveing");
+		autoMoveingRender_->Initialize();
+		autoMoveingRender_->psoConfig_.vs = "Game/Field.VS.hlsl";
+		autoMoveingRender_->psoConfig_.ps = "Game/FieldNoLight.PS.hlsl";
+		autoMoveingRender_->SetUseTexture(true);
+		autoMoveingRender_->SetDrawData(drawData);
+		autoMoveingRender_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
+		autoMoveingRender_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+		autoMoveingRender_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+		autoMoveingTexIndex_ = modelData.materials[modelData.materialIndex.front()].textureIndex;
+		Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
+		autoMoveingRender_->CopyBufferData(1, &color, sizeof(color));
+		autoMoveingRender_->CopyBufferData(2, &autoMoveingTexIndex_, sizeof(autoMoveingTexIndex_));
+	}
+
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 
 	waveSystem_ = std::make_unique<LevelSystem>();
@@ -206,7 +246,11 @@ void ShigeScene::Initialize() {
 	});
 
 	// マウスカーソルスプライトの初期化
-	mouseCursorTextureIndex_ = textureManager_->LoadTexture("Assets/Texture/UI/mouse.png");
+	mouseCursorTexDefault_ = textureManager_->LoadTexture("Assets/Texture/UI/mouse.png");
+	mouseCursorTexLeft_    = textureManager_->LoadTexture("Assets/Texture/UI/mouseL.png");
+	mouseCursorTexRight_   = textureManager_->LoadTexture("Assets/Texture/UI/mouseR.png");
+	mouseCursorTexBoth_    = textureManager_->LoadTexture("Assets/Texture/UI/mouseD.png");
+	mouseCursorTextureIndex_ = mouseCursorTexDefault_;
 	mouseCursorSprite_ = std::make_unique<SHEngine::RenderObject>("MouseCursorSprite");
 	mouseCursorSprite_->Initialize();
 	mouseCursorSprite_->SetDrawData(planeDrawData);
@@ -367,6 +411,31 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		isTargetMarkerVisible_ = false;
 	}
 
+	// プレイヤー位置のスプライト更新（移動中:Moveing / 自動移動中:AutoMoveing）
+	{
+		moveingIndicatorAnimTimer_ += deltaTime;
+		float animScale = 1.1f + 0.1f * std::sin(moveingIndicatorAnimTimer_ * 5.0f);
+
+		Transform indicatorTransform;
+		indicatorTransform.scale    = moveingIndicatorOffset_.scale * animScale;
+		indicatorTransform.rotate   = moveingIndicatorOffset_.rotate;
+		indicatorTransform.position = player_->GetTransform().position + moveingIndicatorOffset_.position;
+		Matrix4x4 wvp = Matrix::MakeScaleMatrix(indicatorTransform.scale) *
+						Matrix::MakeRotationMatrix(indicatorTransform.rotate) *
+						Matrix::MakeTranslationMatrix(indicatorTransform.position) * camera_->GetVPMatrix();
+		Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
+		Vector4 color2 = {0.0f, 1.0f, 0.0f, 1.0f };
+		if (inputController_->HasTarget()) {
+			moveingRender_->CopyBufferData(0, &wvp, sizeof(wvp));
+			moveingRender_->CopyBufferData(1, &color2, sizeof(color2));
+			moveingRender_->CopyBufferData(2, &moveingTexIndex_, sizeof(moveingTexIndex_));
+		} else {
+			autoMoveingRender_->CopyBufferData(0, &wvp, sizeof(wvp));
+			autoMoveingRender_->CopyBufferData(1, &color, sizeof(color));
+			autoMoveingRender_->CopyBufferData(2, &autoMoveingTexIndex_, sizeof(autoMoveingTexIndex_));
+		}
+	}
+
 	player_->UpdateParameter(commonData_->pieces);
 	playerHP_->Update(orthoCamera_->GetVPMatrix(), deltaTime, player_->GetCurrentHP(), player_->GetMaxHP());
 
@@ -382,6 +451,17 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	// マウスカーソルスプライトの更新
 	{
+		bool leftClick  = (input_->GetMouseButtonState()[0] & 0x80) != 0;
+		bool rightClick = (input_->GetMouseButtonState()[1] & 0x80) != 0;
+		if (leftClick && rightClick) {
+			mouseCursorTextureIndex_ = mouseCursorTexBoth_;
+		} else if (leftClick) {
+			mouseCursorTextureIndex_ = mouseCursorTexLeft_;
+		} else if (rightClick) {
+			mouseCursorTextureIndex_ = mouseCursorTexRight_;
+		} else {
+			mouseCursorTextureIndex_ = mouseCursorTexDefault_;
+		}
 		Vector2 cursorPos = input_->GetCursorPos();
 		mouseCursorTransform_.position = {cursorPos.x, cursorPos.y * -1.0f, 0.0f};
 		Matrix4x4 wvp = Matrix::MakeAffineMatrix(mouseCursorTransform_.scale, mouseCursorTransform_.rotate, mouseCursorTransform_.position);
@@ -501,6 +581,12 @@ void ShigeScene::Draw() {
 		targetMarkerRender_->Draw(cmdObj);
 	}
 
+	if (inputController_->HasTarget()) {
+		if (moveingRender_) { moveingRender_->Draw(cmdObj); }
+	} else {
+		if (autoMoveingRender_) { autoMoveingRender_->Draw(cmdObj); }
+	}
+
 	player_->Draw(cmdObj);
 	playerHP_->Draw(cmdObj);
 
@@ -606,6 +692,12 @@ void ShigeScene::Draw() {
 	ImGui::DragFloat("displayRight", &displayRange_.right, 1.0f);
 	ImGui::DragFloat("displayTop", &displayRange_.top, 1.0f);
 	ImGui::DragFloat("displayBottom", &displayRange_.bottom, 1.0f);
+	ImGui::End();
+
+	ImGui::Begin("MoveingIndicator");
+	ImGui::DragFloat3("Offset Position", &moveingIndicatorOffset_.position.x, 0.01f);
+	ImGui::DragFloat3("Offset Rotation", &moveingIndicatorOffset_.rotate.x, 0.01f);
+	ImGui::DragFloat3("Offset Scale", &moveingIndicatorOffset_.scale.x, 0.01f);
 	ImGui::End();
 
 	ImGui::Begin("Light");

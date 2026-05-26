@@ -63,7 +63,11 @@ void SHEngine::Screen::WindowsAPI::Initialize(WindowDesc& desc, HINSTANCE hInsta
 	ShowWindow(hwnd_, SW_SHOW);
 
 	// マウスカーソルを非表示にする
-	//ShowCursor(FALSE);
+#ifdef _DEBUG
+	ShowCursor(TRUE);
+#else
+	ShowCursor(FALSE);
+#endif
 }
 
 LRESULT CALLBACK SHEngine::Screen::WindowsAPI::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
