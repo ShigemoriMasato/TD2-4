@@ -37,7 +37,6 @@ void RibbonTrail::Update(float dt)
 
 	const RibbonTrailConfig& uniqueConfig = std::get<RibbonTrailConfig>(config_);
 
-
 	if (isActive_)
 	{
 		// 現在のbase/tip位置を計算
@@ -185,7 +184,7 @@ void RibbonTrail::RebuildVertices()
 	// 順番に頂点を入れるための配列。サンプル数*2の頂点が必要。
 	const size_t stripCount = samples_.size() * 2;
 	gpuVertices_.clear();
-	gpuVertices_.resize(samples_.size() * 2);
+	gpuVertices_.resize(stripCount);
 
 	// uv計算 
 	// サンプル数最大の時に後続サンプルが1になるように0..1に割り当てる。

@@ -113,7 +113,7 @@ void TrailDrawer::BuildVertices()
 		if (slot >= maxTrails) break;
 
 		// そのトレイルの頂点数取得。0以上maxVertexCountPerTrail_未満にclamp
-		const int vcount = std::clamp(t->GetActiveVertexCount(), 0, perTrail);
+		const int vcount = std::clamp(static_cast<int>(t->GetGpuVertices().size()), 0, perTrail);
 		const int dstBase = slot * perTrail;
 		if (vcount > 0)
 		{
@@ -139,10 +139,10 @@ void TrailDrawer::BuildVertices()
 			std::memcpy(&batchVertices_[dstBase], src.data(), static_cast<size_t>(vcount) * sizeof(BatchVertex));
 		}
 
-		//for (int i = dstBase + vcount; i < dstBase + perTrail; ++i)
-		//{
-		//	batchVertices_[i].position.w = 1.0f;
-		//}
+		for (int i = dstBase + vcount; i < dstBase + perTrail; ++i)
+		{
+			batchVertices_[i].position.w = 0.0f;
+		}
 
 		// 残りはゼロ -> PSでclipされる前提
 		++slot;
