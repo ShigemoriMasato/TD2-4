@@ -260,6 +260,8 @@ void ShigeScene::Initialize() {
 
 	weaponList_ = std::make_unique<WeaponList>();
 	weaponList_->Initialize(modelManager_, drawDataManager_, textureManager_);
+
+	vinetteActiveHP_ = player_->GetMaxHP() * 0.2f;
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
