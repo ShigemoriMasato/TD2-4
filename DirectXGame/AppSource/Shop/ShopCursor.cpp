@@ -94,6 +94,12 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 					putDirection_ = heldPiece_->GetDirection();
 				} else {
 					// マージ後も置けない場合：heldPieceを削除し、mergeTargetのレアリティを上げて元の位置に戻す
+
+					// heldPieceがShopピースの場合、残りのShopピースを削除する
+					if (pieceManager_->IsShopPiece(heldPiece_)) {
+						pieceManager_->MoveShopToHold(heldPiece_, backPack);
+					}
+
 					pieceManager_->RemovePiece(heldPiece_);
 
 					// マージターゲットのレアリティを上げる
