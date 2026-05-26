@@ -122,21 +122,6 @@ void HP::Draw(CmdObj* cmdObj) {
 
 	// HPテキスト描画
 	hpText_->Draw(cmdObj);
-
-#ifdef USE_IMGUI
-	ImGui::Begin("Player HP Bar");
-	ImGui::Text("HP Bar Settings");
-	ImGui::DragFloat2("Bar Position", &hpBarPos_.x, 1.0f);
-	ImGui::DragFloat2("Bar Size", &hpBarSize_.x, 1.0f);
-	ImGui::ColorEdit4("Bar Color", &hpColor_.x);
-	
-	ImGui::Separator();
-	ImGui::Text("HP Text Settings");
-	ImGui::DragFloat2("Text Position", &hpTextTransform_.position.x, 1.0f);
-	ImGui::DragFloat("Text Size", &hpTextSize_, 0.1f);
-	ImGui::ColorEdit4("Text Color", &hpTextColor_.x);
-	ImGui::End();
-#endif
 }
 
 void HP::HPBarScaleChange(float currentHP, float maxHP) {

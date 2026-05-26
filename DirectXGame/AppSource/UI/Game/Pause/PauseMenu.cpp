@@ -10,7 +10,7 @@ void PauseMenu::Initialize(ModelManager* modelManager, DrawDataManager* drawData
 	// 各種テキストの生成、初期化
 	for (const auto& info : infos_) {
 		CreateText(info.key, data, "YDWbananaslipplus.otf", 64, info.name, info.text);
-		transforms_[info.key].position.x = 300.0f;
+		transforms_[info.key].position.x = 100.0f;
 		transforms_[info.key].position.y = index * -100.0f - 200.0f;
 		index++;
 	}
@@ -34,6 +34,12 @@ void PauseMenu::Initialize(ModelManager* modelManager, DrawDataManager* drawData
 	backgroundTransform_.position = {0.0f, 0.0f, 0.0f};
 	backgroundTransform_.rotate = {0.0f, 0.0f, 0.0f};
 	backgroundTransform_.scale = {2560.0f, 1440.0f, 0.0f};
+
+	// メニュー画面表記
+	menuText_ = std::make_unique<Text>();
+	menuText_->Initialize(data, "YDWbananaslipplus.otf", 128, "MenuText");
+	menuText_->SetText(L"メニュー画面");
+	menuTextTransform_.position = {500.0f, -100.0f, 0.0f};
 }
 
 void PauseMenu::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, bool> key) {
@@ -90,18 +96,24 @@ void PauseMenu::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<K
 #endif
 	}
 
+	// メニュー画面表記更新
+	menuText_->Update(vpMatrix);
+
 	// 背景のWVP行列を更新
 	backgroundWVP_ = Matrix::MakeAffineMatrix(backgroundTransform_.scale, backgroundTransform_.rotate, backgroundTransform_.position);
 	backgroundWVP_ *= vpMatrix;
 	backgroundRender_->CopyBufferData(0, &backgroundWVP_, sizeof(Matrix4x4));
 
-	Vector4 bgColor = {0.0f, 0.0f, 0.0f, 0.5f};
+	Vector4 bgColor = {0.0f, 0.0f, 0.0f, 0.8f};
 	backgroundRender_->CopyBufferData(1, &bgColor, sizeof(Vector4));
 }
 
 void PauseMenu::Draw(CmdObj* cmdObj) {
 	// 背景描画
 	backgroundRender_->Draw(cmdObj);
+
+	// メニュー画面表記描画
+	menuText_->Draw(cmdObj);
 
 	// テキストの描画
 	for (const auto& info : infos_) {

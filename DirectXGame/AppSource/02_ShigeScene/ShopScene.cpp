@@ -81,10 +81,6 @@ void ShopScene::Initialize() {
 	displayRange_.right = 570.0f;
 	displayRange_.left = 210.0f;
 
-	// 有利不利ゲージ
-	situationGauge_ = std::make_unique<SituationGauge>();
-	situationGauge_->Initialize(modelManager_, drawDataManager_, textureManager_);
-
 	// ショップ専用ParticleDrawer
 	shopParticleDrawer_ = std::make_unique<ParticleDrawer>();
 	shopParticleDrawer_->Initialize(drawDataManager_, modelManager_);
@@ -640,7 +636,7 @@ std::unique_ptr<IScene> ShopScene::Update() {
 
 		// エフェクトの生成&追加
 		auto newEffect = std::make_unique<GaugeAttractEffect>();
-		newEffect->Initialize(screenStartPos, effectEndPos_, drawDataManager_, modelManager_, textureManager_, control1_, control2_);
+		newEffect->Initialize(drawDataManager_, modelManager_, textureManager_, screenStartPos);
 		attractEffects_.push_back(std::move(newEffect));
 	}
 
@@ -664,10 +660,6 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	//	}
 	//}
 
-	// 有利不利ゲージ
-	situationGauge_->Update(orthoCamera_->GetVPMatrix(), deltaTime_, static_cast<float>(commonData_->enemyCount), static_cast<float>(commonData_->weaponCount), key);
-
-
 	return nullptr;
 }
 
@@ -681,7 +673,6 @@ void ShopScene::DrawReady() {
 	weaponDebugger_->Draw();
 	//parameterRender_->Draw(cmdObj);
 	//debugObj_->Draw(cmdObj);
-	//situationGauge_->Draw(cmdObj);
 
 	for (auto& effect : attractEffects_) {
 		effect->Draw(cmdObj);

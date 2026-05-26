@@ -37,6 +37,7 @@
 #include <GameObject/Enemy/EnemyEffect/EnemyEffectManager.h>
 #include "GameObject/Fade/FadeManager.h"
 #include "UI/Game/Pause/PauseMenu.h"
+#include "UI/Game/WeaponList/WeaponList.h"
 
 class ShigeScene : public IScene {
 public:
@@ -96,8 +97,6 @@ private:// System系
 	std::vector<DrawInfo> drawInfos_;
 	std::unique_ptr<ObjectRender> objectRender_;
 	std::unique_ptr<Camera> orthoCamera_;
-
-	std::unique_ptr<ParameterRender> parameterRender_;
 
 	std::unique_ptr<Flash> flashEffect_;
 	std::unique_ptr<LetterBox> letterBox_;
@@ -167,4 +166,6 @@ private:// UI系
 	GameDisplayRange displayRange_ = {};
 
 	std::unique_ptr<PlayData> bgm_ = nullptr;
+
+	std::unique_ptr<WeaponList> weaponList_;
 };
