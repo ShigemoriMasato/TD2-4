@@ -210,6 +210,28 @@ std::unique_ptr<IScene> ShopScene::Update() {
 	// リロール待機状態の場合、インターバルタイマーを進める
 	if (pendingReroll_) {
 		rerollIntervalTimer_ += deltaTime_;
+
+		// 武器補充中テキストのアニメーション更新
+		replenishingTextAnimTimer_ += deltaTime_;
+		if (replenishingTextAnimTimer_ >= replenishingTextAnimInterval_) {
+			replenishingTextAnimTimer_ -= replenishingTextAnimInterval_;
+			replenishingTextDotCount_++;
+			if (replenishingTextDotCount_ > 3) {
+				replenishingTextDotCount_ = 1;
+			}
+			// ドット数に応じてテキストを更新
+			switch (replenishingTextDotCount_) {
+			case 1:
+				replenishingText_->SetText(L"武器補充中.");
+				break;
+			case 2:
+				replenishingText_->SetText(L"武器補充中..");
+				break;
+			case 3:
+				replenishingText_->SetText(L"武器補充中...");
+				break;
+			}
+		}
 	}
 
 	// リロール待機状態で、インターバル経過、カウントが1以上、かつピースを持っていなければ更新実行
@@ -218,6 +240,8 @@ std::unique_ptr<IScene> ShopScene::Update() {
 		rerollCount_--;
 		pendingReroll_ = false;
 		rerollIntervalTimer_ = 0.0f;
+		replenishingTextAnimTimer_ = 0.0f; // アニメーションタイマーもリセット
+		replenishingTextDotCount_ = 1; // ドット数もリセット
 
 		// エフェクトの生成
 		//auto effect = std::make_unique<ValueDeltaEffect>();
@@ -233,6 +257,8 @@ std::unique_ptr<IScene> ShopScene::Update() {
 			pieceManager_->RefreshShopPieces(shop_->RefreshShopPieces());
 			pendingReroll_ = false; // 強制更新されたので待機状態を解除
 			rerollIntervalTimer_ = 0.0f; // インターバルタイマーもリセット
+			replenishingTextAnimTimer_ = 0.0f; // アニメーションタイマーもリセット
+			replenishingTextDotCount_ = 1; // ドット数もリセット
 		}
 	}
 
@@ -726,7 +752,7 @@ void ShopScene::InitializeRerollBar() {
 
 	rerollText_ = std::make_unique<SHEngine::Text>();
 	rerollText_->Initialize(textDrawData_, fontPath_, 64);
-	rerollText_->SetText(L"武器購入回数");
+	rerollText_->SetText(L"武器補充回数");
 
 	// 操作説明テキストの初期化
 	controlText_ = std::make_unique<SHEngine::Text>();
@@ -752,6 +778,11 @@ void ShopScene::InitializeRerollBar() {
 	//weaponStorageText_ = std::make_unique<SHEngine::Text>();
 	//weaponStorageText_->Initialize(textDrawData_, fontPath_, 64);
 	//weaponStorageText_->SetText(L"武器安置所");
+
+	// 武器補充中テキストの初期化
+	replenishingText_ = std::make_unique<SHEngine::Text>();
+	replenishingText_->Initialize(textDrawData_, fontPath_, 64);
+	replenishingText_->SetText(L"武器補充中.");
 
 	// マウスボタンスプライトの初期化
 	mouseLeftTextureIndex_ = textureManager_->LoadTexture("Assets/Texture/UI/mouse_left.png");
@@ -818,7 +849,7 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 	rerollBarBG_.render->CopyBufferData(1, &bgColor, sizeof(Vector4));
 
 	// テキストの更新
-	std::wstring text = L"武器購入回数 : " + std::to_wstring(rerollCount_);
+	std::wstring text = L"武器補充回数 : " + std::to_wstring(rerollCount_);
 	rerollText_->SetText(text.c_str());
 
 	rerollText_->SetColor(rerollTextColor_);
@@ -882,6 +913,11 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 	//weaponStorageText_->SetTransform(weaponStorageTextTransform_);
 	//weaponStorageText_->Update(vpMatrix);
 
+	// 武器補充中テキストの更新
+	replenishingText_->SetColor(replenishingTextColor_);
+	replenishingText_->SetTransform(replenishingTextTransform_);
+	replenishingText_->Update(vpMatrix);
+
 	// マウスボタンスプライトの更新
 	// マウスの状態を取得
 	auto mouseButtons = input_->GetMouseButtonState();
@@ -924,6 +960,12 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 	ImGui::DragFloat3("Weapon Storage Text Size", &weaponStorageTextTransform_.scale.x, 0.1f);
 	ImGui::ColorEdit4("Weapon Storage Text Color", &weaponStorageTextColor_.x);
 	ImGui::Separator();
+	ImGui::Text("Replenishing Text Settings");
+	ImGui::DragFloat2("Replenishing Text Position", &replenishingTextTransform_.position.x, 1.0f);
+	ImGui::DragFloat3("Replenishing Text Size", &replenishingTextTransform_.scale.x, 0.1f);
+	ImGui::ColorEdit4("Replenishing Text Color", &replenishingTextColor_.x);
+	ImGui::DragFloat("Replenishing Animation Interval", &replenishingTextAnimInterval_, 0.01f, 0.1f, 2.0f);
+	ImGui::Separator();
 	ImGui::Text("Mouse Sprite Settings");
 	ImGui::DragFloat3("Mouse Left Position", &mouseLeftTransform_.position.x, 1.0f);
 	ImGui::DragFloat3("Mouse Left Scale", &mouseLeftTransform_.scale.x, 1.0f);
@@ -947,6 +989,11 @@ void ShopScene::DrawRerollBar(CmdObj* cmdObj) {
 	//controlText_->Draw(cmdObj);
 	//easyPlaceText_->Draw(cmdObj);
 	//weaponStorageText_->Draw(cmdObj);
+
+	// 武器補充中テキストの描画（リロール待機中のみ）
+	if (pendingReroll_) {
+		replenishingText_->Draw(cmdObj);
+	}
 
 	// ショップ／BackPack ピースホバー時・持ち中テキスト描画
 	if (shopCursor_->HasHeldPiece()
