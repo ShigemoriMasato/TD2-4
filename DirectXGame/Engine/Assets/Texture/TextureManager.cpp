@@ -29,6 +29,8 @@ void TextureManager::Initialize(DXDevice* device, Command::Manager* manager) {
 	srvManager_ = device->GetSRVManager();
 	manager_ = manager;
 
+	textureDataList_.clear();
+
 	cmdObject_->WaitForGPUIdle();
 	cmdObject_->ResetCommandList();
 

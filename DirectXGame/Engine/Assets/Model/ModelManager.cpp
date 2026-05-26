@@ -29,13 +29,6 @@ namespace {
 }
 
 SHEngine::ModelManager::ModelManager() {
-	if (binaryManager_.Boot(saveFile_)) {
-		int modelNum = binaryManager_.Reverse<int>();
-		for (int i = 0; i < modelNum; ++i) {
-			std::string filePath = binaryManager_.Reverse<std::string>();
-			modelFilePaths_[filePath] = i;
-		}
-	}
 }
 
 SHEngine::ModelManager::~ModelManager() {
@@ -65,6 +58,14 @@ void ModelManager::Initialize(TextureManager* textureManager, DrawDataManager* d
 	LoadModel("Assets/.EngineResource/Model/Sphere");
 	LoadModel("Assets/.EngineResource/Model/SimpleSkin");
 	LoadModel("Assets/.EngineResource/Model/DefaultDesc");
+
+	if (binaryManager_.Boot(saveFile_)) {
+		int modelNum = binaryManager_.Reverse<int>();
+		for (int i = 0; i < modelNum; ++i) {
+			LoadModel(binaryManager_.Reverse<std::string>());
+		}
+	}
+
 }
 
 int ModelManager::LoadModel(std::string filePath) {
