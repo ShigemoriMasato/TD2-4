@@ -142,9 +142,6 @@ private:
 	float rerollIntervalTimer_ = 0.0f; // 補充インターバルタイマー
 
 	GameDisplayRange displayRange_;
-	
-	// 有利不利ゲージ
-	std::unique_ptr<SituationGauge> situationGauge_;
 
 	// 武器配置時に発生するエフェクト
 	std::vector<std::unique_ptr<GaugeAttractEffect>> attractEffects_;
@@ -153,10 +150,7 @@ private:
 	Vector3 control1_ = {200.0f, 200.0f, 0.0f}; // 制御点1
 	Vector3 control2_ = {400.0f, -200.0f, 0.0f};  // 制御点2
 
-	// 増減エフェクト
-	std::vector<std::unique_ptr<ValueDeltaEffect>> valueEffects_;
 	SHEngine::DrawData textDrawData_{};
-	Vector3 valueEfectPos_ = {1000.0f, -200.0f, 0.0f};
 
 	// pieceBreakパーティクル
 	std::unique_ptr<ParticleDrawer> shopParticleDrawer_;

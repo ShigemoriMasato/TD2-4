@@ -29,7 +29,7 @@ void EnemyRainManager::Initilaize(SHEngine::ModelManager* modelManager, SHEngine
 	for (int i = 0; i < kInstanceNum; ++i) {
 		transforms_[i].scale = {1.0f, 1.0f, 1.0f};
 		transforms_[i].rotate = {0.0f, 0.0f, RandomUtils::RangeFloat(0.0f, std::numbers::pi_v<float>)};
-		transforms_[i].position = {RandomUtils::RangeFloat(widthRange_.x, widthRange_.y), RandomUtils::RangeFloat(heightRange_.x, heightRange_.y), posZ_};
+		transforms_[i].position = {RandomUtils::RangeFloat(widthRange_.x, widthRange_.y), RandomUtils::RangeFloat(heightRange_.x, heightRange_.y), RandomUtils::RangeFloat(10.0f, 20.0f)};
 	}
 }
 
@@ -44,7 +44,7 @@ void EnemyRainManager::Update(Matrix4x4 vpMatrix, float deltaTime, DirectionalLi
 
 		if (transforms_[i].position.y <= posYLimit_) {
 			transforms_[i].rotate = {0.0f, 0.0f, RandomUtils::RangeFloat(0.0f, std::numbers::pi_v<float>)};
-			transforms_[i].position = {RandomUtils::RangeFloat(widthRange_.x, widthRange_.y), RandomUtils::RangeFloat(heightRange_.x, heightRange_.y), posZ_};
+			transforms_[i].position = {RandomUtils::RangeFloat(widthRange_.x, widthRange_.y), RandomUtils::RangeFloat(heightRange_.x, heightRange_.y), RandomUtils::RangeFloat(10.0f, 20.0f)};
 		}
 	}
 
@@ -58,7 +58,6 @@ void EnemyRainManager::Update(Matrix4x4 vpMatrix, float deltaTime, DirectionalLi
 	ImGui::DragFloat2("WidthRange", &widthRange_.x, 0.01f);
 	ImGui::DragFloat2("HeightRange", &heightRange_.x, 0.01f);
 	ImGui::DragFloat("PosYLimit", &posYLimit_, 0.01f);
-	ImGui::DragFloat("PosZ", &posZ_, 0.01f);
 	ImGui::End();
 #endif
 }

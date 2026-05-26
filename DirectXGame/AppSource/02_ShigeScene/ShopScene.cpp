@@ -81,10 +81,6 @@ void ShopScene::Initialize() {
 	displayRange_.right = 570.0f;
 	displayRange_.left = 210.0f;
 
-	// 有利不利ゲージ
-	situationGauge_ = std::make_unique<SituationGauge>();
-	situationGauge_->Initialize(modelManager_, drawDataManager_, textureManager_);
-
 	// ショップ専用ParticleDrawer
 	shopParticleDrawer_ = std::make_unique<ParticleDrawer>();
 	shopParticleDrawer_->Initialize(drawDataManager_, modelManager_);
@@ -185,15 +181,6 @@ std::unique_ptr<IScene> ShopScene::Update() {
 		if (shopRerollTimer_ >= shopRerollTime_) {
 			rerollCount_++;
 			shopRerollTimer_ -= shopRerollTime_; // 超過分を維持してタイマーリセット
-
-			// エフェクトの生成
-			if (!pendingReroll_){
-			auto effect = std::make_unique<ValueDeltaEffect>();
-			effect->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
-			Vector3 effectPos = valueEfectPos_;
-			effect->Trigger(true, effectPos);
-			valueEffects_.push_back(std::move(effect));
-			}
 		}
 	} else {
 		shopRerollTimer_ = 0.0f;
@@ -218,13 +205,6 @@ std::unique_ptr<IScene> ShopScene::Update() {
 		rerollCount_--;
 		pendingReroll_ = false;
 		rerollIntervalTimer_ = 0.0f;
-
-		// エフェクトの生成
-		auto effect = std::make_unique<ValueDeltaEffect>();
-		effect->Initialize(textDrawData_, "YDWbananaslipplus.otf", 64);
-		Vector3 effectPos = valueEfectPos_;
-		effect->Trigger(false, effectPos);
-		valueEffects_.push_back(std::move(effect));
 	}
 
 	// 何かしらのトリガーでショップのピースを更新する
@@ -628,20 +608,6 @@ std::unique_ptr<IScene> ShopScene::Update() {
 		}
 	}
 
-	// 増減エフェクトの更新と削除
-	for (auto it = valueEffects_.begin(); it != valueEffects_.end();) {
-		(*it)->Update(deltaTime_, orthoCamera_->GetVPMatrix());
-		if (!(*it)->IsActive()) {
-			it = valueEffects_.erase(it);
-		} else {
-			++it;
-		}
-	}
-
-	// 有利不利ゲージ
-	situationGauge_->Update(orthoCamera_->GetVPMatrix(), deltaTime_, static_cast<float>(commonData_->enemyCount), static_cast<float>(commonData_->weaponCount), key);
-
-
 	return nullptr;
 }
 
@@ -655,7 +621,6 @@ void ShopScene::DrawReady() {
 	weaponDebugger_->Draw();
 	//parameterRender_->Draw(cmdObj);
 	//debugObj_->Draw(cmdObj);
-	//situationGauge_->Draw(cmdObj);
 
 	for (auto& effect : attractEffects_) {
 		effect->Draw(cmdObj);
@@ -663,10 +628,6 @@ void ShopScene::DrawReady() {
 
 	// リロールバーの描画
 	DrawRerollBar(cmdObj);
-
-	for (auto& effect : valueEffects_) {
-		//effect->Draw(cmdObj);
-	}
 
 	// pieceBreakパーティクルの描画（ショップのレンダーターゲット内でショップカメラで描画）
 	for (auto& [key, data] : breakParticles_) {

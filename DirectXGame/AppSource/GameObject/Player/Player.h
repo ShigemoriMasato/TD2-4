@@ -17,7 +17,7 @@
 /// プレイヤー
 /// </summary>
 namespace Player {
-enum class PartIndex { RightArm = 0, LeftArm = 1, RightLeg = 2, LeftLeg = 3, Body = 4, Count = 5 };
+enum class PartIndex { RightArm, LeftArm, RightLeg, LeftLeg, Body, Count };
 
 class Base : public Collider {
 public:

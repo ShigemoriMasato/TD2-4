@@ -346,6 +346,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\WeaponEdit\WeaponRender.cpp" />
     <ClCompile Include="AppSource\WeaponEdit\Weapon.cpp" />
     <ClCompile Include="AppSource\WeaponEdit\WeaponImGui.cpp" />
+    <ClCompile Include="AppSource\UI\Game\WeaponList\WeaponList.cpp" />
     <ClInclude Include="AppSource\02_ShigeScene\GameDisplayRange.h" />
     <ClInclude Include="AppSource\fontPath.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\DamagePopup.h" />
@@ -539,6 +540,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\WeaponEdit\Weapon.h" />
     <ClInclude Include="AppSource\WeaponEdit\WeaponImGui.h" />
     <ClInclude Include="AppSource\UI\Game\Pause\PauseMenu.h" />
+    <ClInclude Include="AppSource\UI\Game\WeaponList\WeaponList.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

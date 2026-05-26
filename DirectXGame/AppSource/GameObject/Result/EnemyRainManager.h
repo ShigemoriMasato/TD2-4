@@ -17,7 +17,6 @@ private:
 	Vector4 colors_[kInstanceNum];
 	float fallSpeed_ = 3.0f;
 	float posYLimit_ = -20.0f;
-	float posZ_ = 10.0f;
 	Vector2 widthRange_;
 	Vector2 heightRange_;
 };

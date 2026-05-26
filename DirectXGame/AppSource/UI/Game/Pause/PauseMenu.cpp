@@ -96,13 +96,6 @@ void PauseMenu::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<K
 #endif
 	}
 
-#ifdef USE_IMGUI
-	ImGui::Begin("MenuText");
-	ImGui::DragFloat3("Pos", &menuTextTransform_.position.x, 1.0f);
-	menuText_->SetTransform(menuTextTransform_);
-	ImGui::End();
-#endif
-
 	// メニュー画面表記更新
 	menuText_->Update(vpMatrix);
 

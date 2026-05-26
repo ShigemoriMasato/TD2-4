@@ -109,9 +109,6 @@ void ShigeScene::Initialize() {
 
 	orthoCamera_ = std::make_unique<Camera>();
 
-	parameterRender_ = std::make_unique<ParameterRender>();
-	parameterRender_->Initialize(modelManager_, drawDataManager_, engine_);
-
 	gameFrame_ = std::make_unique<GameFrame>();
 	gameFrame_->Initialize(planeDrawData, textureManager_->LoadTexture("Frame2.png"));
 
@@ -216,6 +213,9 @@ void ShigeScene::Initialize() {
 	mouseCursorSprite_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
 	mouseCursorSprite_->SetUseTexture(true);
 	mouseCursorSprite_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Transparent;
+
+	weaponList_ = std::make_unique<WeaponList>();
+	weaponList_->Initialize(modelManager_, drawDataManager_, textureManager_);
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -228,6 +228,9 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	// ポーズメニュー更新
 	pauseMenu_->Update(orthoCamera_->GetVPMatrix(), deltaTime, key);
+
+	// 武器図鑑更新
+	weaponList_->Update(orthoCamera_->GetVPMatrix(), deltaTime, key);
 
 	// フェード更新
 	fadeManager_->Update(camera_->GetVPMatrix(), deltaTime);
@@ -394,7 +397,6 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	enemySpawnGraphText_->SetTransform(enemySpawnGraphTextTransform_);
 	enemySpawnGraphText_->SetText(L"5分間生き残れ！");
 
-	parameterRender_->Update(orthoCamera_->GetVPMatrix(), player_->GetParameters(), deltaTime, key);
 	map_->Update(camera_->GetVPMatrix());
 	enemyManager_->Update(deltaTime, camera_->GetVPMatrix(), orthoCamera_->GetVPMatrix());
 	enemyEffectManager_->Update(deltaTime);
@@ -522,8 +524,6 @@ void ShigeScene::Draw() {
 
 	enemySpawnGraphText_->Draw(cmdObj);
 
-	parameterRender_->Draw(cmdObj);
-
 	flashEffect_->Draw(cmdObj);
 
 	letterBox_->Draw(cmdObj);
@@ -546,6 +546,8 @@ void ShigeScene::Draw() {
 	if(isPause_) {
 		pauseMenu_->Draw(cmdObj);
 	}
+
+	//weaponList_->Draw(cmdObj);
 
 	mouseCursorSprite_->Draw(cmdObj);
 
