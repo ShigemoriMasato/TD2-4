@@ -35,6 +35,8 @@ std::unique_ptr<IScene> WeaponEditScene::Update() {
 		currentRenderID_ = weaponRender_->AddRenderData(weapon_->GetRenderData());
 	}
 
+	weaponRender_->Update(currentRenderID_, weapon_->GetWorldMatrix());
+
 	return nullptr;
 }
 

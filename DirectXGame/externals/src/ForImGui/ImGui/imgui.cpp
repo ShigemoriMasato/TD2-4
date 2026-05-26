@@ -1215,10 +1215,7 @@ IMPLEMENTING SUPPORT for ImGuiBackendFlags_RendererHasTextures:
 // [SECTION] INCLUDES
 //-------------------------------------------------------------------------
 
-#include <string>
-namespace {
-    std::string currentWindow_Debug;
-}
+#include "imgui_logger.h"
 
 #if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
 #define _CRT_SECURE_NO_WARNINGS
@@ -4173,8 +4170,9 @@ void ImGui::GetAllocatorFunctions(ImGuiMemAllocFunc* p_alloc_func, ImGuiMemFreeF
     *p_user_data = GImAllocatorUserData;
 }
 
-ImGuiContext* ImGui::CreateContext(ImFontAtlas* shared_font_atlas)
+ImGuiContext* ImGui::CreateContext(ImFontAtlas* shared_font_atlas, bool isDebugLog, bool isFilePushed)
 {
+    imgui_logger::Initialize(isDebugLog, isFilePushed);
     ImGuiContext* prev_ctx = GetCurrentContext();
     ImGuiContext* ctx = IM_NEW(ImGuiContext)(shared_font_atlas);
     SetCurrentContext(ctx);
@@ -6684,6 +6682,9 @@ ImGuiItemFlags ImGui::GetItemFlags()
 // ImGuiChildFlags_Borders is defined as always == 1 in order to allow old code passing 'true'. Read comments in imgui.h for details!
 bool ImGui::BeginChild(const char* str_id, const ImVec2& size_arg, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags)
 {
+	std::string windowName;
+    windowName = "C_" + std::string(str_id);
+    imgui_logger::Begin(windowName);
     ImGuiID id = GetCurrentWindow()->GetID(str_id);
     return BeginChildEx(str_id, id, size_arg, child_flags, window_flags);
 }
@@ -6695,6 +6696,9 @@ bool ImGui::BeginChild(ImGuiID id, const ImVec2& size_arg, ImGuiChildFlags child
 
 bool ImGui::BeginChildEx(const char* name, ImGuiID id, const ImVec2& size_arg, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags)
 {
+    std::string windowName;
+    windowName = "C_" + std::string(name);
+    imgui_logger::Begin(windowName);
     ImGuiContext& g = *GImGui;
     ImGuiWindow* parent_window = g.CurrentWindow;
     IM_ASSERT(id != 0);
@@ -6822,6 +6826,8 @@ bool ImGui::BeginChildEx(const char* name, ImGuiID id, const ImVec2& size_arg, I
 
 void ImGui::EndChild()
 {
+	imgui_logger::End();
+
     ImGuiContext& g = *GImGui;
     ImGuiWindow* child_window = g.CurrentWindow;
 
@@ -7791,11 +7797,10 @@ static void SetWindowActiveForSkipRefresh(ImGuiWindow* window)
 //   You can use the "##" or "###" markers to use the same label with different id, or same id with different label. See documentation at the top of this file.
 // - Return false when window is collapsed, so you can early out in your code. You always need to call ImGui::End() even if false is returned.
 // - Passing 'bool* p_open' displays a Close button on the upper-right corner of the window, the pointed value will be set to false when the button is pressed.
-bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags)
-{
-    currentWindow_Debug = name;
-	std::string debugString = "ImGui::Begin(\"" + currentWindow_Debug + "\") called.";
-    OutputDebugStringA(debugString.c_str());
+bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags) {
+	std::string windowName = name ? name : "";
+	imgui_logger::Begin(windowName);
+
     ImGuiContext& g = *GImGui;
     const ImGuiStyle& style = g.Style;
     IM_ASSERT(name != NULL && name[0] != '\0');     // Window name required
@@ -8768,8 +8773,8 @@ bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags)
 
 void ImGui::End()
 {
-	std::string debug_str = "ImGui::End() called for window: " + currentWindow_Debug;
-	OutputDebugStringA(debug_str.c_str());  
+    if (!imgui_logger::End()) {
+    }
 
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;

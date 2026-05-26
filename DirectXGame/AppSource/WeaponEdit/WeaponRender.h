@@ -12,6 +12,9 @@ public:
 	int AddRenderData(const Weapon::RenderData& renderData);
 	void DeleteRenderer(int id);
 
+	void SetCameraMatrix(Matrix4x4 vpMat);
+	void Update(int id, const Matrix4x4& world);
+
 	void Draw(CmdObj* cmdObj);
 
 	SHEngine::GPUBuffer* GetDirLightBuffer() const { return dirLightBuffer_; }
@@ -44,7 +47,8 @@ private:
 	const int maxNum_ = 32;
 
 	std::map<int, std::unique_ptr<SHEngine::Renderer>> renderers_;
-	std::map<int, SHEngine::GPUBuffer*> gpuBuffers_;
+	std::map<int, SHEngine::GPUBuffer*> wvpBuffers_;
+	Matrix4x4 vpMat_;
 	int nextID_ = 0;
 
 private: //Light関係
