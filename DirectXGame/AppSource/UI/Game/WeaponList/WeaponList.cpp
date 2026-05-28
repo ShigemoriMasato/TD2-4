@@ -4,10 +4,13 @@
 
 using namespace SHEngine;
 
-void WeaponList::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager) {
+void WeaponList::Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, KeyManager* keyManager, Input* input) {
 	int modelHandle = modelManager->LoadModel("Assets/.EngineResource/Model/plane");
 	auto modelData = modelManager->GetNodeModelData(modelHandle);
 	DrawData data = drawDataManager->GetDrawData(modelManager->GetNodeModelData(1).drawDataIndex);
+
+	keyManager_ = keyManager;
+	input_ = input;
 
 	// 背景のTransform配列
 	bgTransforms_.resize(kBGSpriteCount);
@@ -20,6 +23,12 @@ void WeaponList::Initialize(SHEngine::ModelManager* modelManager, SHEngine::Draw
 
 	// 武器テキスト開始位置
 	weaponTextStartPos_ = {240.0f, -240.0f, 0.0f};
+
+	// 武器テキストの開始位置
+	weaponTextStartPos_ = {240.0f, -240.0f, 0.0f};
+
+	// 最大スクロール量の計算
+	maxScrollOffset_ = std::max(0.0f, (kWeaponCount - kVisibleItemCount) * kItemHeight);
 
 	// 武器テキストの追加
 	for (int i = 0; i < kWeaponCount; ++i) {
@@ -93,27 +102,25 @@ void WeaponList::Initialize(SHEngine::ModelManager* modelManager, SHEngine::Draw
 }
 
 void WeaponList::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, bool> key) {
-	// 背景の更新
-	std::vector<Matrix4x4> wvpMatrices;
-	wvpMatrices.reserve(kBGSpriteCount);
+	// スクロール
+	float scrollDelta = -input_->GetMouseWheel();
 
-	for (int i = 0; i < kBGSpriteCount; ++i) {
-		Matrix4x4 wvp = Matrix::MakeAffineMatrix(bgTransforms_[i].scale, bgTransforms_[i].rotate, bgTransforms_[i].position);
-		Vector4 color = {1, 1, 1, 1};
+	// スクロール感度
+	float scrollSpeed = 24.0f;
 
-		wvp *= vpMatrix;
-
-		wvpMatrices.push_back(wvp);
+	if (scrollDelta > 0.0f) {
+		scrollOffset_ -= scrollSpeed;
+	} else if (scrollDelta < 0.0f) {
+		scrollOffset_ += scrollSpeed;
 	}
 
-	// バッファコピー
-	bgRenders_->CopyBufferData(0, wvpMatrices.data(), sizeof(Matrix4x4) * wvpMatrices.size());
-	bgRenders_->CopyBufferData(1, bgColors_.data(), sizeof(Vector4) * bgColors_.size());
-	bgRenders_->CopyBufferData(2, &textureIndex_, sizeof(int));
-	bgRenders_->CopyBufferData(3, &dirLight_, sizeof(DirectionalLight));
+	// スクロール量のクランプ
+	scrollOffset_ = std::clamp(scrollOffset_, 0.0f, maxScrollOffset_);
 
 	// 武器テキストの更新
 	for (int i = 0; i < kWeaponCount; ++i) {
+		weaponTransforms_[i].position.y = weaponTextStartPos_.y - (i * kItemHeight);
+		weaponTexts_[i]->SetTransform(weaponTransforms_[i]);
 		weaponTexts_[i]->Update(vpMatrix);
 
 #ifdef USE_IMGUI
@@ -132,6 +139,63 @@ void WeaponList::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<
 		weaponTexts_[i]->SetTransform(weaponTransforms_[i]);
 #endif
 	}
+
+	// 枠外の判定を無効化
+	float topLimit = weaponTextStartPos_.y + (kItemHeight / 2.0f);
+	float bottomLimit = weaponTextStartPos_.y - ((kVisibleItemCount - 1) * kItemHeight) - (kItemHeight / 2.0f);
+
+	Vector2 mousePos = keyManager_->GetCursorPos();
+	mousePos.y *= -1;
+
+	// 左クリックが押されたか判定
+	if (key[Key::Tr_LeftClick]) {
+		for (int i = 0; i < kWeaponCount; ++i) {
+			float posY = weaponTransforms_[i].position.y;
+
+			//  テキストが枠外にある場合はクリック判定をスキップ
+			if (posY > topLimit || posY < bottomLimit) {
+				continue;
+			}
+
+			// テキストの座標を中心に、当たり判定用の矩形を計算
+			Vector3 pos = weaponTransforms_[i].position;
+			float left = pos.x;
+			float right = pos.x + hitBoxSize_.x;
+			float top = pos.y;
+			float bottom = pos.y - hitBoxSize_.y;
+
+			// マウス座標が矩形の中に入っているか判定
+			if (mousePos.x >= left && mousePos.x <= right && mousePos.y >= bottom && mousePos.y <= top) {
+
+				// 選択中の武器IDを更新
+				selectedWeaponId_ = i;
+
+				// 選択中武器名テキスト更新
+				selectWeaponText_->SetText(weaponNames_[selectedWeaponId_]);
+
+				break;
+			}
+		}
+	}
+
+	// 背景の更新
+	std::vector<Matrix4x4> wvpMatrices;
+	wvpMatrices.reserve(kBGSpriteCount);
+
+	for (int i = 0; i < kBGSpriteCount; ++i) {
+		Matrix4x4 wvp = Matrix::MakeAffineMatrix(bgTransforms_[i].scale, bgTransforms_[i].rotate, bgTransforms_[i].position);
+		Vector4 color = {1, 1, 1, 1};
+
+		wvp *= vpMatrix;
+
+		wvpMatrices.push_back(wvp);
+	}
+
+	// バッファコピー
+	bgRenders_->CopyBufferData(0, wvpMatrices.data(), sizeof(Matrix4x4) * wvpMatrices.size());
+	bgRenders_->CopyBufferData(1, bgColors_.data(), sizeof(Vector4) * bgColors_.size());
+	bgRenders_->CopyBufferData(2, &textureIndex_, sizeof(int));
+	bgRenders_->CopyBufferData(3, &dirLight_, sizeof(DirectionalLight));
 
 	for (int i = 0; i < kBGSpriteCount; ++i) {
 #ifdef USE_IMGUI
@@ -184,9 +248,18 @@ void WeaponList::Draw(CmdObj* cmdObj) {
 	// 選択中武器テキスト
 	selectWeaponText_->Draw(cmdObj);
 
+	// 表示範囲の上下限を計算
+	float topLimit = weaponTextStartPos_.y + (kItemHeight / 2.0f);
+	float bottomLimit = weaponTextStartPos_.y - ((kVisibleItemCount - 1) * kItemHeight) - (kItemHeight / 2.0f);
+
 	// 武器テキストの描画
-	for (auto& text : weaponTexts_) {
-		text->Draw(cmdObj);
+	for (int i = 0; i < kWeaponCount; ++i) {
+		float posY = weaponTransforms_[i].position.y;
+
+		// 座標が枠内に収まっている項目のみ描画する
+		if (posY <= topLimit && posY >= bottomLimit) {
+			weaponTexts_[i]->Draw(cmdObj);
+		}
 	}
 }
 

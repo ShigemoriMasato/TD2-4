@@ -65,6 +65,7 @@ private:
 	bool isPreFinished_ = false;
 	
 	DirectionalLight dirLight_;
+	Bloom bloom_;
 
 	std::unique_ptr<GameFrame> gameFrame_;
 };

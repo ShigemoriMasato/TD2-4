@@ -36,10 +36,10 @@ void ResultSword::Initialize(SHEngine::ModelManager* modelManager, SHEngine::Dra
 	textureIndex_ = material.textureIndex;
 	transformSword1_.scale = {1.0f, 1.0f, 1.0f};
 	transformSword1_.rotate = {std::numbers::pi_v<float> / 2.0f, 0.0f, std::numbers::pi_v<float> * 4.0f};
-	transformSword1_.position = {-13.0f, 0.0f, 0.0f};
+	transformSword1_.position = {-11.0f, 0.0f, 0.0f};
 	transformSword2_.scale = {1.0f, 1.0f, 1.0f};
 	transformSword2_.rotate = {std::numbers::pi_v<float> / 2.0f, 0.0f, -std::numbers::pi_v<float> * 4.0f};
-	transformSword2_.position = {13.0f, 0.0f, 0.0f};
+	transformSword2_.position = {11.0f, 0.0f, 0.0f};
 }
 
 void ResultSword::StartAnimation() {
@@ -47,7 +47,7 @@ void ResultSword::StartAnimation() {
 	EaseType easeType = EaseType::EaseInBack;
 
 	// 剣1
-	Vector3 s1StartPos = {-13.0f, 0.0f, 0.0f};
+	Vector3 s1StartPos = {-11.0f, 0.0f, 0.0f};
 	Vector3 s1EndPos = {0.0f, 0.0f, 0.0f};
 	Vector3 s1StartRot = {std::numbers::pi_v<float> / 2.0f, 0.0f, std::numbers::pi_v<float> * 4.0f};
 	Vector3 s1EndRot = {std::numbers::pi_v<float> / 2.0f, 0.0f, std::numbers::pi_v<float> * 3.0f / 4.0f};
@@ -56,7 +56,7 @@ void ResultSword::StartAnimation() {
 	sword1RotAnim_.Start(s1StartRot, s1EndRot, duration, easeType);
 
 	// 剣2
-	Vector3 s2StartPos = {13.0f, 0.0f, 0.0f};
+	Vector3 s2StartPos = {11.0f, 0.0f, 0.0f};
 	Vector3 s2EndPos = {0.0f, 0.0f, 0.0f};
 	Vector3 s2StartRot = {std::numbers::pi_v<float> / 2.0f, 0.0f, -std::numbers::pi_v<float> * 4.0f};
 	Vector3 s2EndRot = {std::numbers::pi_v<float> / 2.0f, 0.0f, -std::numbers::pi_v<float> * 3.0f / 4.0f};

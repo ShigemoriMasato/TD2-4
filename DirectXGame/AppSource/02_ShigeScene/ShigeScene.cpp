@@ -259,7 +259,7 @@ void ShigeScene::Initialize() {
 	mouseCursorSprite_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Transparent;
 
 	weaponList_ = std::make_unique<WeaponList>();
-	weaponList_->Initialize(modelManager_, drawDataManager_, textureManager_);
+	weaponList_->Initialize(modelManager_, drawDataManager_, textureManager_, commonData_->keyManager.get(), input_);
 
 	vinetteActiveHP_ = player_->GetMaxHP() * 0.2f;
 }
