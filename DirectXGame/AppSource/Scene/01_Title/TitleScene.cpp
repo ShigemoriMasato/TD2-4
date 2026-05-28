@@ -187,14 +187,14 @@ std::unique_ptr<IScene> TitleScene::Update() {
 		bool inRange = false;
 		bool inFrame1 = false;
 		bool inFrame3 = false;
-		if (std::abs(playerPos.x - 0.0f) <= 4.5f && std::abs(playerPos.z - 0.0f) <= 2.0f) {
+		if (std::abs(playerPos.x - 8.0f) <= 4.5f && std::abs(playerPos.z - 0.0f) <= 2.0f) {
 			titleUI_->SetCurrentSelect(Title::Select::Start);
 			inRange = true;
 			inFrame1 = true;
-		} else if (std::abs(playerPos.x - 0.0f) <= 4.5f && std::abs(playerPos.z - (-10.0f)) <= 2.0f) {
+		} else if (std::abs(playerPos.x - (-200.0f)) <= 4.5f && std::abs(playerPos.z - (-10.0f)) <= 2.0f) {
 			titleUI_->SetCurrentSelect(Title::Select::Option);
 			inRange = true;
-		} else if (std::abs(playerPos.x - 0.0f) <= 4.5f && std::abs(playerPos.z - (-20.0f)) <= 2.0f) {
+		} else if (std::abs(playerPos.x - 22.0f) <= 4.5f && std::abs(playerPos.z - 0.0f) <= 2.0f) {
 			titleUI_->SetCurrentSelect(Title::Select::Quit);
 			inRange = true;
 			inFrame3 = true;
