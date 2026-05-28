@@ -64,6 +64,7 @@ void ResultScene::Initialize() {
 	postEffect_->Initialize(textureManager_, drawDataManager_->GetDrawData(commonData_->postEffectDrawDataIndex));
 	postEffectConfig_.cmdObj = commonData_->cmdObject.get();
 	postEffectConfig_.origin = commonData_->display->GetDisplay();
+	postEffectConfig_.jobs_ = static_cast<uint32_t>(PostEffectJob::Bloom);
 
 	posAnime_.anim.Start(100.0f, -230.0f, 2.0f, EaseType::EaseOutBounce);
 
@@ -84,6 +85,11 @@ void ResultScene::Initialize() {
 	SHEngine::DrawData planeDrawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
 	gameFrame_ = std::make_unique<GameFrame>();
 	gameFrame_->Initialize(planeDrawData, textureManager_->LoadTexture("TitleFrame.png"));
+
+	bloom_.intensity = 0.15f;
+	bloom_.radius = 0.8f;
+	bloom_.softness = 1.0f;
+	bloom_.color = {0.0f, 0.0f, 1.0f, 1.0f};
 }
 
 std::unique_ptr<IScene> ResultScene::Update() {
@@ -259,12 +265,14 @@ void ResultScene::Draw() {
 
 	display->PostDraw(cmdObj);
 
-#ifdef SH_RELEASE
+#ifdef USE_IMGUI
+	postEffect_->Draw(postEffectConfig_);
+	window->PreDraw(cmdObj, true);
+#else
 	postEffectConfig_.output = commonData_->mainWindow.second->GetCurrentDisplay();
 	postEffect_->Draw(postEffectConfig_);
-#endif
-
 	window->PreDraw(cmdObj, false);
+#endif
 
 	// ここ以外で記述する場合、ifdefを忘れないようにすること
 #ifdef USE_IMGUI
@@ -291,8 +299,17 @@ void ResultScene::Draw() {
 	ImGui::ColorEdit4("Color", &dirLight_.color.x);
 	ImGui::End();
 
+	ImGui::Begin("PostEffect");
+	ImGui::DragFloat("intensity", &bloom_.intensity, 0.01f);
+	ImGui::DragFloat("radius", &bloom_.radius, 0.01f);
+	ImGui::DragFloat("softness", &bloom_.softness, 0.01f);
+	ImGui::ColorEdit4("color", &bloom_.color.x);
+	ImGui::End();
+
 	dirLight_.direction = dirLight_.direction.Normalize();
+
 #endif
+	postEffect_->CopyBuffer(PostEffectJob::Bloom, bloom_);
 
 	engine_->DrawImGui();
 	window->ToPresent(cmdObj);

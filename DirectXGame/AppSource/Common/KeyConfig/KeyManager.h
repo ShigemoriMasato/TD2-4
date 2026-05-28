@@ -32,6 +32,8 @@ enum class Key {
 	Retry, // リトライ
 	ToTitle, // タイトルへ
 
+	Tr_LeftClick, // Trigger左クリック 
+
 	ControllerChange,//コントローラーの切り換え
 
 	// Debug -===========

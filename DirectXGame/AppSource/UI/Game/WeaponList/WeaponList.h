@@ -21,7 +21,7 @@ enum class BGType {
 /// </summary>
 class WeaponList {
 public:
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager);
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, KeyManager* keyManager, SHEngine::Input* input);
 	void Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, bool> key);
 	void Draw(CmdObj* cmdObj);
 
@@ -80,4 +80,23 @@ private:
 
 	// 武器名テキストの間隔
 	float textMarginY_ = 60.0f;
+
+	// 選択中の武器のインデックス
+	int selectedWeaponId_ = -1;
+
+	// テキストの当たり判定
+	Vector2 hitBoxSize_ = {300.0f, 50.0f};
+
+	// キーマネージャー
+	KeyManager* keyManager_ = nullptr;
+
+	// スクロール関連
+	float scrollOffset_ = 0.0f;    // 現在のスクロール移動量
+	float maxScrollOffset_ = 0.0f; // 最大スクロール量
+
+	// 設定値
+	static const int kVisibleItemCount = 6; // 一度に枠内に表示する武器数
+	const float kItemHeight = 72.0f;        // 武器名テキスト間のY距離
+
+	SHEngine::Input* input_ = nullptr;
 };

@@ -57,3 +57,10 @@ struct Vignette{
 	float radius = 0.0f;                     // 明るさが保たれる半径 (0.0 ~ 1.0)
 	float softness = 0.0f;                   // グラデーションの滑らかさ (0.0 ~ 1.0)
 };
+
+struct Bloom{
+	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f}; // カラー
+	float intensity = 1.0f;                   // Bloomの強さ
+	float radius = 0.5f;                      // Bloomの広がる半径
+	float softness = 0.2f;                    // グラデーションの滑らかさ
+};
