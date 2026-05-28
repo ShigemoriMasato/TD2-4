@@ -318,7 +318,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		isCameraDragging_ = true;
 	}
 
-	if (isCameraDragging_) {
+	/*if (isCameraDragging_) {
 		if (isRightClickHeld) {
 			Vector2 delta = input_->GetMouseMove();
 			float moveScale = 0.05f;
@@ -330,7 +330,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		}
 	} else {
 		cameraTargetOffset_ = {0.0f, 0.0f, 0.0f};
-	}
+	}*/
 
 	Vector3 cameraTargetPos = player_->GetTransform().position + cameraTargetOffset_;
 
