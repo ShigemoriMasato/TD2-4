@@ -12,6 +12,8 @@ public:
 
 private:
 
+	SHEngine::Engine* engine_ = nullptr;
+
 	std::unique_ptr<CmdObj> compute_;
 	std::unique_ptr<CmdObj> direct_;
 
