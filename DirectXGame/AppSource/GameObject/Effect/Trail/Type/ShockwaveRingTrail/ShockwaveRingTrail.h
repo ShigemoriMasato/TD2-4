@@ -7,6 +7,7 @@ class ShockwaveRingTrail : public ITrail
 public:
 	void SetConfig(const TrailPresetVariant& config) override;
 	void Update(float dt) override;
+	void Clear() override;
 
 private:
 	// samples_の情報からuvや色を計算してgpuVertices_にセットする

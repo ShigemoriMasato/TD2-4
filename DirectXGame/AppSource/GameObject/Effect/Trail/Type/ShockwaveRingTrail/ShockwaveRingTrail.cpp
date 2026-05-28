@@ -28,6 +28,13 @@ void ShockwaveRingTrail::SetConfig(const TrailPresetVariant& config)
 	gpuVertices_.reserve((uniqueConfig.cfg.maxSegments + 1) * 2);
 }
 
+void ShockwaveRingTrail::Clear()
+{
+	samples_.clear();
+
+	gpuVertices_.clear();
+}
+
 void ShockwaveRingTrail::Update(float dt)
 {
 	// 「いま生きてる粒が無い」かつ「emitも止まってる」なら何もしない

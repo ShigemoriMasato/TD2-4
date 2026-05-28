@@ -16,7 +16,7 @@ public:
 
 	struct GpuVertex
 	{
-		Vector4 position{ 0, 0, 0, 1 };
+		Vector4 position{ 0, 0, 0, 0 };
 		Vector2 uv;
 		Vector4 color;
 		uint32_t textureIndex = 0;
@@ -39,9 +39,6 @@ protected:
 	// リソースハンドル
 	int textureHandle_ = -1;
 
-	// 履歴
-	int activeVertexCount_ = 0;
-
 public:
 	ITrail() = default;
 	~ITrail() = default;
@@ -52,7 +49,7 @@ public:
 	TrailPresetVariant& GetUniqueConfig() { return config_; }
 
 	// 制御
-	void Clear();
+	virtual void Clear() = 0;
 
 	// テクスチャセット
 	void SetTexture(const std::string& texturePath) { textureHandle_ = textureManager_->LoadTexture(texturePath); }
@@ -66,9 +63,7 @@ public:
 
 	// Drawer用
 	int GetTextureHandle() const { return textureHandle_; }
-	bool GetIsActive() const { return isActive_; }
 
 	const std::vector<GpuVertex>& GetGpuVertices() const { return gpuVertices_; }
-	int GetActiveVertexCount() const { return activeVertexCount_; }
 
 };

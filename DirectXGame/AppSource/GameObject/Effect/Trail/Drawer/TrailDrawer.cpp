@@ -1,5 +1,4 @@
 #include "TrailDrawer.h"
-#include <GameObject/Effect/Trail/ITrail.h>
 #include <algorithm>
 
 void TrailDrawer::Initialize(SHEngine::DrawDataManager* drawDataManager, const Config& cfg)
@@ -11,13 +10,13 @@ void TrailDrawer::Initialize(SHEngine::DrawDataManager* drawDataManager, const C
 	SetConfig(cfg);
 
 	// 現状のconfigから考えた１トレイルあたりの最大頂点数
-	maxVertexCountPerTrail_ = (std::max(1, config_.maxSegmentsPerTrail) + 1) * 2;
+	maxVertexCountPerTrail_ = (std::max(1, config_.maxSegmentsPerTrail)) * 2;
 	// 現状のconfigから考えた全トレイルの最大合計頂点数
 	maxVertexCountTotal_ = std::max(1, config_.maxTrails) * maxVertexCountPerTrail_;
 
 	// 頂点配列リサイズ & 初期化
 	batchVertices_.resize(static_cast<size_t>(maxVertexCountTotal_));
-	std::fill(batchVertices_.begin(), batchVertices_.end(), BatchVertex{});
+	std::fill(batchVertices_.begin(), batchVertices_.end(), ITrail::GpuVertex{});
 
 	// ダミーVB + 固定IB
 	std::vector<VertexData> dummyVB(static_cast<size_t>(maxVertexCountTotal_));
@@ -46,7 +45,7 @@ void TrailDrawer::Initialize(SHEngine::DrawDataManager* drawDataManager, const C
 
 	// VS: t0 頂点配列
 	// VS: b0 VPBuffer
-	render_->CreateSRV(sizeof(BatchVertex), uint32_t(maxVertexCountTotal_), ShaderType::VERTEX_SHADER, "TrailBatchVertices");
+	render_->CreateSRV(sizeof(ITrail::GpuVertex), uint32_t(maxVertexCountTotal_), ShaderType::VERTEX_SHADER, "TrailBatchVertices");
 	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "VP");
 }
 
@@ -107,42 +106,26 @@ void TrailDrawer::BuildVertices()
 	int slot = 0;
 	for (ITrail* t : trails_)
 	{
-		// 無効化されているトレイルはcontinue
-		if (!t || !t->GetIsActive()) continue;
 		// config_.maxTrailsを超えた時はBreak
 		if (slot >= maxTrails) break;
 
-		// そのトレイルの頂点数取得。0以上maxVertexCountPerTrail_未満にclamp
-		const int vcount = std::clamp(static_cast<int>(t->GetGpuVertices().size()), 0, perTrail);
 		const int dstBase = slot * perTrail;
-		if (vcount > 0)
-		{
-			const auto& src = t->GetGpuVertices();
+		const auto& src = t->GetGpuVertices();
 
-			if (dstBase + vcount > maxVertexCountTotal_)
-			{
-				assert(false);
-				break;
-			}
-			//// BuildVertices() 内、memcpy の直前に追加
-			//for (int j = 0; j < vcount; ++j)
-			//{
-			//	if (src[j].position.w == 0.0f)
-			//	{
-			//		// ログ出力（エンジンのログ関数に合わせて）
-			//		logger_->error("TrailDrawer: found w==0 in trail slot {} vertex {} (id?)", slot, j);
-			//		// 一時的に修正して続行する（デバッグ用）
-			//		// const_cast を使うのは一時的なデバッグのみ推奨
-			//		// const_cast<GpuVertex&>(src[j]).position.w = 1.0f;
-			//	}
-			//}
-			std::memcpy(&batchVertices_[dstBase], src.data(), static_cast<size_t>(vcount) * sizeof(BatchVertex));
-		}
+		const size_t ss = src.size();
 
-		for (int i = dstBase + vcount; i < dstBase + perTrail; ++i)
-		{
-			batchVertices_[i].position.w = 0.0f;
-		}
+		//if (ss != perTrail)
+		//{
+		//	assert(false && "ITrail::GetGpuVertices()の返す頂点数は、TrailDrawerのConfigで設定したmaxSegmentsPerTrail*2と同じでなければならない");
+		//}
+
+		//if (sizeof(ITrail::GpuVertex) != sizeof(src[0]))
+		//{
+		//	assert(false && "memcpy時サイズが一致していなければならない");
+		//}
+		
+		//std::memcpy(&batchVertices_[dstBase], src.data(), perTrail * sizeof(ITrail::GpuVertex));
+		std::memcpy(&batchVertices_[dstBase], src.data(), src.size() * sizeof(ITrail::GpuVertex));
 
 		// 残りはゼロ -> PSでclipされる前提
 		++slot;
@@ -156,8 +139,15 @@ void TrailDrawer::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
 
 	BuildVertices();
 
+	//// 渡すサイズが64kbを超えているかチェック 超えてた　SBufferにしたかった
+	//if (sizeof(ITrail::GpuVertex) * batchVertices_.size() > 64 * 1024)
+	//{
+	//	assert(false && "GPUに渡す頂点データのサイズが64kbを超えています。TrailDrawerのConfigを見直してください。");
+	//	return;
+	//}
+
 	// VS: t0 頂点配列
-	render_->CopyBufferData(0, batchVertices_.data(), sizeof(BatchVertex) * batchVertices_.size());
+	render_->CopyBufferData(0, batchVertices_.data(), sizeof(ITrail::GpuVertex) * batchVertices_.size());
 	// VS: b0 VPBuffer
 	render_->CopyBufferData(1, &vpMatrix, sizeof(Matrix4x4));
 

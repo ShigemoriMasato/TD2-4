@@ -56,6 +56,7 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 	WeaponData* wData = weapon_->GetWeaponData();
 	bool currentIsAnimation = weapon_->GetIsAnimation();
 
+	// アニメーション開始のトリガー
 	if (currentIsAnimation && !prevIsAnimation_) {
 		animState_ = AnimState::Forward;
 		direction_ = weapon_->GetDirection();
@@ -191,6 +192,8 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 		scaleOffsetAnim_.anim.Start(scaleStart, scaleEnd, forwardDuration, EaseType::EaseOutCubic);
 
 		weapon_->SetIsAnimation(false); // アニメーションフラグを下す
+
+		trail_.SetEmittingFlag(0, true); // トレイルの発生を開始
 	}
 	prevIsAnimation_ = currentIsAnimation; // 次フレームのために状態を保存
 
@@ -249,6 +252,8 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 			animState_ = AnimState::None;
 			posOffsetAnim_.temp = {0.0f, 0.0f, 0.0f};
 			rotOffsetAnim_.temp = {0.0f, 0.0f, 0.0f};
+			trail_.SetEmittingFlag(0, false); // トレイルの発生を停止
+			trail_.Clear();
 		}
 	}
 
@@ -311,12 +316,12 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 
 	wvp_ = Matrix::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.position);
 
-	if (rotOffsetAnim_.anim.GetIsActive() || posOffsetAnim_.anim.GetIsActive()) {
 		trail_.SetModelWorld(wvp_);
 		trail_.Update(deltaTime);
-	} else {
-		trail_.Clear();
-	}
+	//if (rotOffsetAnim_.anim.GetIsActive() || posOffsetAnim_.anim.GetIsActive()) {
+	//} else {
+	//	//trail_.Clear();
+	//}
 
 	wvp_ *= vpMatrix;
 	Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};

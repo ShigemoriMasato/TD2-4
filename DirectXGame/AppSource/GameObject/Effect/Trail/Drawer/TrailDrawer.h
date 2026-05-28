@@ -13,10 +13,9 @@ class TrailDrawer final
 public:
 	struct Config
 	{
-		int maxTrails = 128;			// そのシーン内の最大トレイル数
+		int maxTrails = 64;			// そのシーン内の最大トレイル数
 		int maxSegmentsPerTrail = 32;	// 全トレイルの最大分割数がmaxSegmentsPerTrailになる
 	};
-
 
 public:
 	void Initialize(SHEngine::DrawDataManager* drawDataManager, const Config& cfg = {});
@@ -27,15 +26,6 @@ public:
 
 	// シーン内トレイルをすべて描画
 	void Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix);
-
-private:
-	struct BatchVertex
-	{
-		Vector4 position = Vector4(0, 0, 0, 1);
-		Vector2 uv;
-		Vector4 color;
-		uint32_t textureIndex;
-	};
 
 private:
 	void BuildIndexBuffer();
@@ -52,7 +42,7 @@ private:
 	std::vector<ITrail*> trails_;
 
 	// trails_に入っているすべてのトレイルの頂点をまとめる配列。サイズは config_.maxTrails * config_.maxSegmentsPerTrail * 2（base/tipの2点分）で固定。activeVertexCount_までが有効。
-	std::vector<BatchVertex> batchVertices_;
+	std::vector<ITrail::GpuVertex> batchVertices_;
 
 	// 今フレーム描画する頂点数。trails_の内容によって毎フレーム変わる。最大で config_.maxTrails * config_.maxSegmentsPerTrail * 2。
 	int maxVertexCountPerTrail_ = 0;
