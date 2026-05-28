@@ -52,6 +52,8 @@ void imgui_logger::Initialize(bool isDebugLog, bool isFilePushed) {
 		//ログファイルのパスを生成
 		std::string logDir = "Logs/" + logName + "/" + fileName.str();
 		sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>(logDir, true));
+
+		archiveOldLogs("Logs/" + logName, 5);
 	}
 
 	if (isDebugLog) {
