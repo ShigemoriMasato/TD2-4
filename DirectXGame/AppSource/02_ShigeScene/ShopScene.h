@@ -161,8 +161,8 @@ private:
 	SHEngine::DrawData textDrawData_{};
 
 	// pieceBreakパーティクル
+	std::unordered_map<int, MultiParticle> breakParticles_;
 	std::unique_ptr<ParticleDrawer> shopParticleDrawer_;
-	std::unordered_map<int, MultiParticleData> breakParticles_;
 	int nextBreakParticleId_ = 0;
 
 	// 武器種ごとのパーティクル発生位置Offset

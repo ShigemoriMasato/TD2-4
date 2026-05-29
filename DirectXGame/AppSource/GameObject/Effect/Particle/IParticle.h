@@ -39,10 +39,11 @@ private:
 protected:
 
 	Matrix4x4 modelWorld_{ Matrix4x4::Identity() };
-	bool isActive_ = true;
+	bool isActive_ = false;
 	float emitTimer_ = 0.0f;
 	Vector3 cameraPos_ = { 0.0f,0.0f,0.0f };
 	ParticlePresetVariant config_;
+	int32_t emitCount_ = 0;
 
 public:
 	IParticle() = default;
@@ -69,8 +70,9 @@ public:
 	void SetEnabled(bool isActive);
 	// カメラ位置セット
 	void SetCameraPos(const Vector3& cameraPos) { cameraPos_ = cameraPos; }
-	// 発生した瞬間を取得
-	bool GetIsJustEmitted() const { return emitTimer_ == 0.0f; }
+	// 発生回数を取得
+	int32_t GetEmitCount() const { return emitCount_; }
+
 
 	// Drawer用
 	int GetModelHandle() const { return modelHandle_; }

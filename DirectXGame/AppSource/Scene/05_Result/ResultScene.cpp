@@ -90,6 +90,14 @@ void ResultScene::Initialize() {
 	bloom_.radius = 0.8f;
 	bloom_.softness = 1.0f;
 	bloom_.color = {0.0f, 0.0f, 1.0f, 1.0f};
+
+	sparkParticle_ = std::make_unique<MultiParticle>();
+	sparkParticle_->Initialize(textureManager_, modelManager_, commonData_);
+	sparkParticle_->Add("spark2");
+	sparkParticle_->Add("spark3");
+	sparkParticle_->Add("death3");
+	sparkParticle_->SetEmittingFlag(false);
+	sparkParticleModelWorld_ = Matrix4x4::Identity();
 }
 
 std::unique_ptr<IScene> ResultScene::Update() {
@@ -148,6 +156,8 @@ std::unique_ptr<IScene> ResultScene::Update() {
 
 		// アニメーション終了後にシーン遷移
 		if (!playing) {
+
+			// フェード開始
 			if (selectedIndex_ == 0) {
 				fadeManager_->StartFadeIn([]() { return std::make_unique<ShigeScene>(); });
 			} else {
@@ -179,6 +189,11 @@ std::unique_ptr<IScene> ResultScene::Update() {
 
 	if (sword_->IsAnimationFinished() && !isPreFinished_) {
 		if (!isCameraShaking_) {
+			// Particle開始
+			if (mrSecond)sparkParticle_->SetEmittingFlag(true);
+			mrSecond = true;
+
+			// カメラシェイク開始
 			isCameraShaking_ = true;
 			shakeTime_ = 0.0f;
 			cameraBasePos_ = camera_->GetPosition();
@@ -207,6 +222,14 @@ std::unique_ptr<IScene> ResultScene::Update() {
 
 	UpdateSelectVisual();
 
+	Matrix4x4 test = Matrix::MakeAffineMatrix(
+		sparkParticleTransform_.scale,
+		sparkParticleTransform_.rotate,
+		sparkParticleTransform_.position);
+	sparkParticle_->SetModelWorld(test);
+	sparkParticle_->SetCameraPos(camera_->GetPosition());
+	sparkParticle_->Update(deltaTime);
+
 #ifdef USE_IMGUI
 	ImGui::Begin("Result Scene Settings");
 
@@ -229,6 +252,15 @@ std::unique_ptr<IScene> ResultScene::Update() {
 		}
 
 		camera_->MakeMatrix();
+
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("Spark Particle"))
+	{
+		ImGui::DragFloat3("Position", &sparkParticleTransform_.position.x, 0.1f);
+		ImGui::DragFloat3("Rotation", &sparkParticleTransform_.rotate.x, 0.01f);
+		ImGui::DragFloat3("Scale", &sparkParticleTransform_.scale.x, 0.01f, 0.01f, 10.0f);
 
 		ImGui::TreePop();
 	}
@@ -256,12 +288,15 @@ void ResultScene::Draw() {
 	retryText_->Draw(cmdObj);
 	toTitleText_->Draw(cmdObj);
 
+	sparkParticle_->Draw();
+	commonData_->particleDrawer->Draw(cmdObj, camera_->GetVPMatrix());
+
 	enemyRainManager_->Draw(cmdObj);
 	sword_->Draw(cmdObj);
 
 	fadeManager_->Draw(cmdObj);
-
 	gameFrame_->Draw(cmdObj);
+
 
 	display->PostDraw(cmdObj);
 

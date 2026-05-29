@@ -67,12 +67,7 @@ void YokoScene::Initialize()
 	particles_.Add("death2");
 	particles_.Add("death2_2");
 	particles_.Add("death2_3");
-
-	// TrailOnParticle初期化
-	for (int i = 0; i < kTrailOnParticle; ++i)
-	{
-		TrailOnParticle[i].Initialize(textureManager_, modelManager_, commonData_, "death1", "sparrrk");
-	}
+	particles_.SetEmittingFlag(true);
 }
 
 std::unique_ptr<IScene> YokoScene::Update()
@@ -134,14 +129,6 @@ std::unique_ptr<IScene> YokoScene::Update()
 	render_->CopyBufferData(2, &textureIndex_, sizeof(int));
 	render_->CopyBufferData(3, &dirLight, sizeof(DirectionalLight));
 
-	// TrailOnParticle更新
-	for (int i = 0; i < kTrailOnParticle; ++i)
-	{
-		TrailOnParticle[i].SetModelWorld(Matrix4x4::Identity());
-		TrailOnParticle[i].Update(dt);
-	}
-
-
 	// トレイル更新
 	trail.SetModelWorld(world);
 	trail.Update(dt);
@@ -170,13 +157,7 @@ void YokoScene::Draw()
 
 	grid_->Draw(cmdObj);
 
-	render_->Draw(cmdObj);
-
-
-	// TrailOnParticle描画
-
-	for (int i = 0; i < kTrailOnParticle; ++i)
-	TrailOnParticle[i].Draw();
+	//render_->Draw(cmdObj);
 
 	trail.Draw();
 	particles_.Draw();

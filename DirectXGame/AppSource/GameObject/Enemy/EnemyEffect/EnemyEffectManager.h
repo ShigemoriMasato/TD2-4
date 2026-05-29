@@ -10,8 +10,6 @@ struct MultiParticleData
 	MultiParticle multiParticle;
 	// 一回のエミットで削除するか
 	bool oneShot = false;
-	// 既に発生したことがあるか（oneShot用）
-	bool emittedOnce = false;
 };
 
 struct MultiTrailData

@@ -291,13 +291,13 @@ std::unique_ptr<IScene> ShopScene::Update() {
 					}
 				}
 			}
-			MultiParticleData data;
-			data.multiParticle.Initialize(textureManager_, modelManager_, commonData_);
-			data.multiParticle.SetDrawer(shopParticleDrawer_.get());
-			data.multiParticle.Add("pieceBreak.json");
+			MultiParticle data;
+			data.Initialize(textureManager_, modelManager_, commonData_);
+			data.SetDrawer(shopParticleDrawer_.get());
+			data.Add("pieceBreak.json");
+			data.SetEmittingFlag(true);
 			Matrix4x4 world = Matrix::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, info.position + offset);
-			data.multiParticle.SetModelWorld(world);
-			data.oneShot = true;
+			data.SetModelWorld(world);
 			breakParticles_.emplace(nextBreakParticleId_++, std::move(data));
 		}
 	}
@@ -432,30 +432,35 @@ std::unique_ptr<IScene> ShopScene::Update() {
 					}
 				}
 			}
-			MultiParticleData data;
-			data.multiParticle.Initialize(textureManager_, modelManager_, commonData_);
-			data.multiParticle.SetDrawer(shopParticleDrawer_.get());
-			data.multiParticle.Add("pieceBreak.json");
+			MultiParticle data;
+			data.Initialize(textureManager_, modelManager_, commonData_);
+			data.SetDrawer(shopParticleDrawer_.get());
+			data.Add("pieceBreak.json");
+			data.SetEmittingFlag(true);
 			Matrix4x4 world = Matrix::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, info.position + offset);
-			data.multiParticle.SetModelWorld(world);
-			data.oneShot = true;
+			data.SetModelWorld(world);
 			breakParticles_.emplace(nextBreakParticleId_++, std::move(data));
 		}
 	}
 
 	// pieceBreakエフェクトの更新
 	for (auto& [key, data] : breakParticles_) {
-		data.multiParticle.Update(deltaTime_);
+		data.Update(deltaTime_);
 	}
 	for (auto it = breakParticles_.begin(); it != breakParticles_.end(); ) {
 		auto& data = it->second;
+		
+		int32_t emitCount = data.GetEmitCount(0);
+		size_t aliveCount = data.GetAliveCount(0);
+
 		// 初回発火を検知したらエミッターを止める
-		if (!data.emittedOnce && data.multiParticle.GetIsJustEmitted(0)) {
-			data.emittedOnce = true;
-			data.multiParticle.SetEmittingFlag(0, false);
+		if (emitCount > 0)
+		{
+			data.SetEmittingFlag(false);
 		}
 		// 発火済みで全パーティクルが死んだら削除
-		if (data.emittedOnce && data.multiParticle.GetAliveCount(0) == 0) {
+		if (emitCount > 0 && aliveCount == 0)
+		{
 			it = breakParticles_.erase(it);
 			continue;
 		}
@@ -687,7 +692,7 @@ void ShopScene::DrawReady() {
 
 	// pieceBreakパーティクルの描画（ショップのレンダーターゲット内でショップカメラで描画）
 	for (auto& [key, data] : breakParticles_) {
-		data.multiParticle.Draw();
+		data.Draw();
 	}
 	shopParticleDrawer_->Draw(cmdObj, debugCamera_->GetVPMatrix());
 
