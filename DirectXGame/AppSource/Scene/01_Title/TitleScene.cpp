@@ -455,7 +455,11 @@ void TitleScene::Draw() {
 	map_->DrawDebugGUI();
 
 	display->DrawImGui();
-	
+
+	ImGui::Begin("Depth");
+	ImGui::Image((ImTextureRef)commonData_->display->GetDisplay()->GetDepthTexture()->GetGPUHandle().ptr, ImVec2(256, 9 * 16));
+	ImGui::End();
+
 	// プレイヤーのデバッグ情報を表示
 	if (player_) {
 		player_->DrawImGui();

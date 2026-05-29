@@ -10,8 +10,9 @@ namespace SHEngine::PSO {
 	 * @brief 深度ステンシルモードのID
 	 */
 	enum class DepthStencilID : uint8_t {
-		Default,		///< 不透明オブジェクト用(深度書き込み有効)
-		Transparent,	///< 透明オブジェクト用(深度書き込み無効、描画順に注意)
+		Default,		///< 不透明オブジェクト用(深度書き込み、比較有効)
+		Transparent,	///< 透明オブジェクト用(比較有効、書き込み無効、描画順に注意)
+		UI,				///< UI用(比較無効、書き込み無効)
 
 		Count           ///< 深度ステンシルモードの総数
 	};

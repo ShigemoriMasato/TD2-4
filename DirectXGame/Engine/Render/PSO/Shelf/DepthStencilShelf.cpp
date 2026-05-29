@@ -20,7 +20,7 @@ DepthStencilShelf::DepthStencilShelf() {
 	D3D12_DEPTH_STENCIL_DESC transparentDesc{};
 	transparentDesc.DepthEnable = true;	//深度バッファを使う
 	transparentDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;	//深度地を書き込まない
-	transparentDesc.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;	//深度値の比較方法
+	transparentDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;	//深度値の比較方法
 
 	transparentDesc.StencilEnable = FALSE; // ステンシルテストを使わないなら FALSE
 	transparentDesc.StencilReadMask = D3D12_DEFAULT_STENCIL_READ_MASK; // デフォルト値
@@ -28,6 +28,16 @@ DepthStencilShelf::DepthStencilShelf() {
 
 	depthStencilDescs_[int(DepthStencilID::Transparent)] = transparentDesc;
 
+	D3D12_DEPTH_STENCIL_DESC uiDesc{};
+	uiDesc.DepthEnable = true;	//深度バッファを使わない
+	uiDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;	//深度地を書き込まない
+	uiDesc.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;	//深度値の比較方法
+
+	uiDesc.StencilEnable = FALSE; // ステンシルテストを使わないなら FALSE
+	uiDesc.StencilReadMask = D3D12_DEFAULT_STENCIL_READ_MASK; // デフォルト値
+	uiDesc.StencilWriteMask = D3D12_DEFAULT_STENCIL_WRITE_MASK; // デフォルト値
+	
+	depthStencilDescs_[int(DepthStencilID::UI)] = uiDesc;
 }
 
 DepthStencilShelf::~DepthStencilShelf() {

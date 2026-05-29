@@ -11,6 +11,7 @@ void FadeManager::Initialize(SHEngine::ModelManager* modelManager, SHEngine::Dra
 	render_->Initialize();
 	render_->psoConfig_.vs = "Simple.VS.hlsl";
 	render_->psoConfig_.ps = "Color.PS.hlsl";
+	render_->psoConfig_.depthStencilID = PSO::DepthStencilID::UI;
 	render_->SetDrawData(data);
 	render_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
 	render_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
