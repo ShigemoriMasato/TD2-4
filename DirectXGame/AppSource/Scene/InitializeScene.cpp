@@ -8,6 +8,7 @@
 #include <03_YokoScene/PrticleEditorScene.h>
 #include <WeaponEdit/WeaponEditScene.h>
 
+#include <Scene/01_Title/IntroScene.h>
 #include <Scene/01_Title/TitleScene.h>
 #include <Scene/05_Result/ResultScene.h>
 
@@ -177,6 +178,8 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	//更新処理
 	commonData_->cmdObject->ResetCommandList();
 
+
+	return std::make_unique<IntroScene>();
 	return std::make_unique<ResultScene>();
 	return std::make_unique<YokoScene>();
 	return std::make_unique<PrticleEditorScene>();

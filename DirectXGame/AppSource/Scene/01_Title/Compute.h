@@ -2,6 +2,7 @@
 #include <SHEngine.h>
 #include <Camera/Camera.h>
 #include <Render/Renderer.h>
+#include "TitleLogo/TitleLogo.h"
 
 class Compute {
 public:
@@ -16,5 +17,8 @@ private:
 
 	std::unique_ptr<CmdObj> compute_;
 	std::unique_ptr<CmdObj> direct_;
+
+
+	std::unique_ptr<TitleLogo> titleLogo_;
 
 };
