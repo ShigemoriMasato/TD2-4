@@ -532,14 +532,11 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	waveSystem_->Update(deltaTime);
 	waveSystemUI_->Update(*waveSystem_, orthoCamera_->GetVPMatrix(), deltaTime);
 
-	if (key[Key::Debug1] || gameTimer_->IsEnd()) {
-	}
-
 	flashEffect_->Update(orthoCamera_->GetVPMatrix(), deltaTime);
 	letterBox_->Update(orthoCamera_->GetVPMatrix(), deltaTime);
 
 	// Vignette
-	if (player_->GetCurrentHP() <= vinetteActiveHP_ && vignette_.intensity == 0.0f) {
+	if (player_->GetCurrentHP() <= vinetteActiveHP_ && vignette_.intensity == 0.0f && player_->GetCurrentHP() != 0.0f) {
 		vignetteIntensityAnim_.anim.Start(0.0f, vinetteIntensity_, 0.5f, EaseType::EaseOutCubic);
 	} else if (player_->GetCurrentHP() > vinetteActiveHP_ && vignette_.intensity == vinetteIntensity_) {
 		vignetteIntensityAnim_.anim.Start(vinetteIntensity_, 0.0f, 0.5f, EaseType::EaseOutCubic);
@@ -548,6 +545,10 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	vignette_.intensity = vignetteIntensityAnim_.temp;
 
 	if (player_->GetCurrentHP() <= 0) {
+		if (vignette_.intensity == vinetteIntensity_) {
+			vignetteIntensityAnim_.anim.Start(vinetteIntensity_, 0.0f, 0.5f, EaseType::EaseOutCubic);
+		}
+
 		if (!flashEffect_->GetIsActive() && !isPlayerDead_) {
 			flashEffect_->Trigger();
 			isPlayerDead_ = true;

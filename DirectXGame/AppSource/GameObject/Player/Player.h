@@ -163,10 +163,6 @@ private:
 	Vector4 color_ = {1.0f, 1.0f, 1.0f, 1.0f};
 	float preHP_ = 0.0f;
 
-	// アニメーション
-	std::array<AnimationBundle<float>, static_cast<int>(PartIndex::Count)> positionYAnimations_; // Y座標
-	AnimationBundle<float> colorAnimation_; // 色
-
 #ifdef _DEBUG
 	bool isDebugInvincible_ = false;
 #endif
