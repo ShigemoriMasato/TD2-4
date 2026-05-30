@@ -40,6 +40,7 @@ void PauseMenu::Initialize(ModelManager* modelManager, DrawDataManager* drawData
 	menuText_->Initialize(data, "YDWbananaslipplus.otf", 128, "MenuText");
 	menuText_->SetText(L"メニュー画面");
 	menuTextTransform_.position = {500.0f, -100.0f, 0.0f};
+	menuText_->SetTransform(menuTextTransform_);
 }
 
 void PauseMenu::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, bool> key) {
