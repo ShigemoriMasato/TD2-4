@@ -152,17 +152,6 @@ std::unique_ptr<IScene> ResultScene::Update() {
 		} else {
 			toTitleText_->SetSize(decideScaleAnime_.temp);
 		}
-
-		// アニメーション終了後にシーン遷移
-		if (!playing) {
-
-			// フェード開始
-			if (selectedIndex_ == 0) {
-				fadeManager_->StartFadeIn([]() { return std::make_unique<ShigeScene>(); });
-			} else {
-				fadeManager_->StartFadeIn([]() { return std::make_unique<TitleScene>(); });
-			}
-		}
 	}
 
 	fadeManager_->Update(camera_->GetVPMatrix(), deltaTime);
@@ -197,6 +186,13 @@ std::unique_ptr<IScene> ResultScene::Update() {
 			shakeTime_ = 0.0f;
 			cameraBasePos_ = camera_->GetPosition();
 			orthoCameraBasePos_ = orthoCamera_->GetPosition();
+
+			// フェード開始
+			if (selectedIndex_ == 0) {
+				fadeManager_->StartFadeIn([]() { return std::make_unique<ShigeScene>(); });
+			} else {
+				fadeManager_->StartFadeIn([]() { return std::make_unique<TitleScene>(); });
+			}
 		}
 	}
 
