@@ -77,8 +77,6 @@ void ParticleDrawer::Draw(CmdObj* cmdObj, const Matrix4x4& vpMatrix)
 			batch.render->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
 
 			/// 各モデルは最大でconfig_.maxInstancesPerModel個のインスタンスを描画できるようにする。
-			/// モデルAが一個しか描画されてなくてもモデルBが大量に描画されてたらモデルAも大量にreserveする
-			/// いずれ改良もあり
 			batch.instances.reserve(config_.maxInstancesPerModel);
 		}
 
