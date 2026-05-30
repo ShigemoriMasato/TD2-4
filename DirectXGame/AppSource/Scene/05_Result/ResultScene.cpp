@@ -95,7 +95,6 @@ void ResultScene::Initialize() {
 	sparkParticle_->Initialize(textureManager_, modelManager_, commonData_);
 	sparkParticle_->Add("spark2");
 	sparkParticle_->Add("spark3");
-	sparkParticle_->Add("death3");
 	sparkParticle_->SetEmittingFlag(false);
 	sparkParticleModelWorld_ = Matrix4x4::Identity();
 }

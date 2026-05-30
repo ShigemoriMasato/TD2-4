@@ -161,11 +161,24 @@ void PrticleEditorScene::BuildTextureList()
 {
 	textureList_.clear();
 
-	const char* kFilePath = "Assets/Texture";
+	const char* kFilePath1 = "Assets/Texture";
 
-	auto textureFileNames = SearchFilePathsAddChild(kFilePath, ".png");
+	std::vector<std::string> textureFileNames = SearchFilePathsAddChild(kFilePath1, ".png");
+	for (auto& name : textureFileNames)
+	{
+		name = "Assets/Texture/" + name;
+	}
 	textureList_ = textureFileNames;
-	std::sort(textureList_.begin(), textureList_.end());
+
+	const char* kFilePath2 = "Assets/.EngineResource/Texture";
+
+	std::vector<std::string> textureFileNames2 = SearchFilePathsAddChild(kFilePath2, ".png");
+	for (auto& name : textureFileNames2)
+	{
+		name = "Assets/.EngineResource/Texture/" + name;
+	}
+	textureList_.insert(textureList_.end(), textureFileNames2.begin(), textureFileNames2.end());
+
 	return;
 
 	//textureList_.clear();
