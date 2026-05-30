@@ -230,7 +230,7 @@ void ShigeScene::Initialize() {
 
 	// ポーズメニュー
 	pauseMenu_ = std::make_unique<PauseMenu>();
-	pauseMenu_->Initialize(modelManager_, drawDataManager_, textureManager_);
+	pauseMenu_->Initialize(modelManager_, drawDataManager_, textureManager_, input_, commonData_->keyManager.get());
 
 	// コールバック登録
 	pauseMenu_->SetAction(0, [this]() {

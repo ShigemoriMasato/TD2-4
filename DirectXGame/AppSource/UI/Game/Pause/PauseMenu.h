@@ -13,7 +13,7 @@ struct TextInitInfo {
 
 class PauseMenu {
 public:
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager);
+	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, SHEngine::Input* input, KeyManager* keyManager);
 	void Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, bool> key);
 	void Draw(CmdObj* cmdObj);
 
@@ -51,4 +51,13 @@ private:
 
 	// 選択中の項目
 	int selectedIndex_ = 0;
+
+	SHEngine::Input* input_ = nullptr;
+	KeyManager* keyManager_ = nullptr;
+
+	// テキストの当たり判定サイズ
+	Vector2 hitBoxSize_ = {400.0f, 60.0f};
+
+	// 前フレームのマウス位置
+	Vector2 lastMousePos_ = {0.0f, 0.0f};
 };
