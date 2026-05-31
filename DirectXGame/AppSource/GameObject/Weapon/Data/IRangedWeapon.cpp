@@ -1,10 +1,11 @@
 #include "IRangedWeapon.h"
+#include <Shop/Piece.h>
 
 void IRangedWeapon::Initialize(int weaponID, Player::Base* player) {
 	IWeapon::Initialize(weaponID, player);
 
 	config_.spreadAngle = weaponData_->spreadAngle;
-	config_.damage = player->GetParameter("Damage") + (weaponData_->baseDamage + player->GetParameter("RangedDamage"));
+	config_.damage = player->GetParameter("Damage") + (weaponData_->baseDamage + player->GetParameter("RangedDamage")) + weaponData_->rarity * 2.0f;
 	config_.speed = weaponData_->range + player->GetParameter("Range");
 	config_.range = config_.speed * lifeTime_;
 	config_.knockbackPower = weaponData_->knockbackPower + player->GetParameter("KnockBack");
@@ -95,6 +96,10 @@ bool IRangedWeapon::EnemyCheck() {
 		config_.direction = atan2f(dir.y, dir.x);
 	}
 	config_.position = pPos;
+
+	// レアリティボーナスを動的に反映
+	int rarity = piece_ ? static_cast<int>(piece_->GetRarity()) : weaponData_->rarity;
+	config_.damage = player_->GetParameter("Damage") + (weaponData_->baseDamage + player_->GetParameter("RangedDamage")) + rarity * 2.0f;
 
 	// 発射
 	Shot(closestEnemy);
