@@ -166,6 +166,25 @@ void ShigeScene::Initialize() {
 		autoMoveingRender_->CopyBufferData(2, &autoMoveingTexIndex_, sizeof(autoMoveingTexIndex_));
 	}
 
+	// ESCIcon
+	{
+		int handle = 0;
+		auto modelData = modelManager_->GetNodeModelData(handle);
+		auto drawData = drawDataManager_->GetDrawData(modelData.drawDataIndex);
+		escIcon_ = std::make_unique<SHEngine::RenderObject>("EscIcon");
+		escIcon_->Initialize();
+		escIcon_->psoConfig_.vs = "Game/Field.VS.hlsl";
+		escIcon_->psoConfig_.ps = "Game/FieldNoLight.PS.hlsl";
+		escIcon_->SetUseTexture(true);
+		escIcon_->SetDrawData(drawData);
+		escIcon_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
+		escIcon_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+		escIcon_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+		escIconTransform_.scale = {64,64,0};
+		escIconTransform_.rotate = {std::numbers::pi_v<float>, 0.0f, 0.0f};
+		escIconTransform_.position = {80,-650,0};
+	}
+
 	IWeapon::StaticInitialize(attackManager_.get(), enemyManager_.get(), weaponDatabase_.get());
 
 	waveSystem_ = std::make_unique<LevelSystem>();
@@ -623,6 +642,28 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		}
 	}
 
+	// ESCIcon
+	{
+		Matrix4x4 wvp = Matrix::MakeAffineMatrix(escIconTransform_.scale, escIconTransform_.rotate, escIconTransform_.position);
+		wvp *= orthoCamera_->GetVPMatrix();
+		int textureIndex = textureManager_->LoadTexture("Assets/Texture/EscIcon.png");
+		Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
+		escIcon_->CopyBufferData(0, &wvp, sizeof(wvp));
+		escIcon_->CopyBufferData(1, &color, sizeof(color));
+		escIcon_->CopyBufferData(2, &textureIndex, sizeof(textureIndex));
+	}
+
+	pauseText_->Update(orthoCamera_->GetVPMatrix());
+	pauseText_->SetTransform(pauseTextTransform_);
+
+#ifdef USE_IMGUI
+	ImGui::Begin("Esc");
+	ImGui::DragFloat3("IconPos", &escIconTransform_.position.x, 1.0f);
+	ImGui::DragFloat3("IconRot", &escIconTransform_.rotate.x, 0.01f);
+	ImGui::DragFloat3("TextPos", &pauseTextTransform_.position.x, 1.0f);
+	ImGui::End();
+#endif
+
 	waveSystem_->Update(deltaTime);
 	waveSystemUI_->Update(*waveSystem_, orthoCamera_->GetVPMatrix(), deltaTime);
 
@@ -721,6 +762,9 @@ void ShigeScene::Draw() {
 	controllers_[0]->DrawImGui();
 
 	timerText_->Draw(cmdObj);
+
+	escIcon_->Draw(cmdObj);
+	pauseText_->Draw(cmdObj);
 
 	enemySpawnGraphText_->Draw(cmdObj);
 
