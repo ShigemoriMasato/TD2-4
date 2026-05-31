@@ -15,6 +15,8 @@ enum class BGType {
 	WeaponName,       // 武器項目の背景
 	SelectWeaponName, // 選択中武器名の背景
 	CloseButton,      // 閉じるボタン
+	ScrollbarTrack,   // スクロールバーの背景
+	ScrollbarKnob,    // スクロールバーのつまみ
 
 	Count,
 };
@@ -77,7 +79,7 @@ private:
 	std::array<std::wstring, kWeaponCount> weaponNames_ = {L"Sword", L"Pistol", L"Spear", L"Shotgun", L"Axe", L"Bow", L"Fist", L"Gurepon", L"Pickaxe", L"Shuriken"};
 
 	// スプライト名配列
-	std::array<std::string, kBGSpriteCount> bgSpriteNames_ = {"FullBG", "AllWeaponsBG", "SelectWeaponBG", "WeaponName", "SelectWeaponName", "CloseButton"};
+	std::array<std::string, kBGSpriteCount> bgSpriteNames_ = {"FullBG", "AllWeaponsBG", "SelectWeaponBG", "WeaponName", "SelectWeaponName", "CloseButton", "ScrollbarTrack", "ScrollbarKnob"};
 
 	// 背景スプライトの色
 	std::vector<Vector4> bgColors_;
@@ -150,4 +152,8 @@ private:
 	// 選択中武器名からのY座標オフセット
 	float dmgOffsetY_ = -370.0f;
 	float spdOffsetY_ = -420.0f;
+
+	bool isDraggingScrollbar_ = false;   // スクロールバーをドラッグ中かどうか
+	float dragStartY_ = 0.0f;            // ドラッグ開始時のマウスY座標
+	float dragStartScrollOffset_ = 0.0f; // ドラッグ開始時のスクロール量
 };

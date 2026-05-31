@@ -114,6 +114,20 @@ void WeaponList::Initialize(
 	bgTransforms_[index].position = {96.0f, -96.0f, 0.0f};
 	bgColors_[index] = {1.0f, 1.0f, 1.0f, 1.0f};
 
+	// スクロールバートラック
+	index = static_cast<int>(BGType::ScrollbarTrack);
+	bgTransforms_[index].scale = {16.0f, 400.0f, 0.0f}; // リストの高さに合わせる
+	bgTransforms_[index].rotate = {0, 0, 0};
+	bgTransforms_[index].position = {580.0f, -400.0f, 0}; // 武器一覧UIの右端に配置
+	bgColors_[index] = {0.2f, 0.2f, 0.2f, 1.0f};
+
+	// スクロールバーノブ
+	index = static_cast<int>(BGType::ScrollbarKnob);
+	bgTransforms_[index].scale = {16.0f, 60.0f, 0.0f};
+	bgTransforms_[index].rotate = {0, 0, 0};
+	bgTransforms_[index].position = {580.0f, 0.0f, 0};
+	bgColors_[index] = {0.8f, 0.8f, 0.8f, 1.0f};
+
 	// 武器一覧テキスト
 	allWeaponText_ = AddText(L"武器一覧", data, "YDWbananaslipplus.otf", 64, "AllWeapons");
 	allWeaponsTransform_.position.x = 230.0f;
@@ -312,6 +326,69 @@ void WeaponList::Update(Matrix4x4 orthoVpMatrix, Matrix4x4 vpMatrix, float delta
 	bgRenders_->CopyBufferData(1, bgColors_.data(), sizeof(Vector4) * bgColors_.size());
 	bgRenders_->CopyBufferData(2, textureIndexArray_.data(), sizeof(int) * textureIndexArray_.size());
 	bgRenders_->CopyBufferData(3, &dirLight_, sizeof(DirectionalLight));
+
+	// スクロールバーのパラメータ
+	float trackHeight = 400.0f;
+	float trackCenterY = -400.0f;
+	float knobHeight = 60.0f;
+	float movableRange = trackHeight - knobHeight;
+	float trackTopY = trackCenterY + (movableRange / 2.0f);
+
+	int knobIndex = static_cast<int>(BGType::ScrollbarKnob);
+	Vector3 knobPos = bgTransforms_[knobIndex].position;
+	Vector3 knobScale = bgTransforms_[knobIndex].scale;
+
+	// ノブの当たり判定用矩形
+	float knobLeft = knobPos.x;
+	float knobRight = knobPos.x + knobScale.x;
+	float knobTop = knobPos.y + (knobScale.y / 2.0f);
+	float knobBottom = knobPos.y - (knobScale.y / 2.0f);
+
+	// マウスがノブにホバーしているか
+	bool isHoverKnob = (mousePos.x >= knobLeft && mousePos.x <= knobRight && mousePos.y >= knobBottom && mousePos.y <= knobTop);
+
+	// 左クリック長押し
+	bool isLeftClickHeld = key[Key::Hold];
+
+	// ドラッグ開始判定
+	if (isHoverKnob) {
+		bgColors_[knobIndex] = {1.0f, 1.0f, 1.0f, 1.0f};
+		if (key[Key::Tr_LeftClick]) {
+			isDraggingScrollbar_ = true;
+			dragStartY_ = mousePos.y;
+			dragStartScrollOffset_ = scrollOffset_;
+		}
+	} else if (!isDraggingScrollbar_) {
+		bgColors_[knobIndex] = {0.8f, 0.8f, 0.8f, 1.0f};
+	}
+
+	// ドラッグ中の処理
+	if (isDraggingScrollbar_) {
+		bgColors_[knobIndex] = {0.6f, 0.6f, 0.6f, 1.0f};
+
+		if (isLeftClickHeld) {
+			// マウスの移動量からスクロールの増加量を計算
+			float dragDeltaY = mousePos.y - dragStartY_;
+
+			// ノブの移動量をcrollOffset_の変化量に変換
+			float rawScrollAmount = -dragDeltaY * (maxScrollOffset_ / movableRange);
+
+			// 72.0f単位にスナップ
+			float snappedScroll = std::round(rawScrollAmount / 72.0f) * 72.0f;
+
+			scrollOffset_ = dragStartScrollOffset_ + snappedScroll;
+		} else {
+			// 左クリックが離されたらドラッグ終了
+			isDraggingScrollbar_ = false;
+		}
+	}
+
+	// スクロール量のクランプ
+	scrollOffset_ = std::clamp(scrollOffset_, 0.0f, maxScrollOffset_);
+
+	// ノブのY座標を更新
+	float scrollRatio = (maxScrollOffset_ > 0.0f) ? (scrollOffset_ / maxScrollOffset_) : 0.0f;
+	bgTransforms_[knobIndex].position.y = trackTopY - (scrollRatio * movableRange);
 
 	for (int i = 0; i < kWeaponCount; ++i) {
 		// 各アイテムの現在のY座標を計算
