@@ -1,11 +1,11 @@
 {
     "cfg.emitInterval": 0.10000000149011612,
     "cfg.emitNum": 10,
-    "cfg.isBillboard": true,
+    "cfg.isBillboard": false,
     "cfg.lifeTime": 1.0,
     "cfg.modelPath": "Assets/.EngineResource/Model/Cube",
     "cfg.speed": 1.0,
-    "cfg.texturePath": "mouse_right.png",
+    "cfg.texturePath": "Assets/.EngineResource/Texture/white1x1.png",
     "init.color.acc": [
         0.0,
         0.0,
@@ -69,7 +69,7 @@
         0.0
     ],
     "init.rotate.isRandomAcc": false,
-    "init.rotate.isRandomVal": false,
+    "init.rotate.isRandomVal": true,
     "init.rotate.isRandomVel": false,
     "init.rotate.randomRangeAccMax": [
         0.0,
@@ -82,9 +82,9 @@
         0.0
     ],
     "init.rotate.randomRangeValMax": [
-        0.0,
-        0.0,
-        0.0
+        6.0,
+        6.0,
+        6.0
     ],
     "init.rotate.randomRangeValMin": [
         0.0,
@@ -152,7 +152,7 @@
     "init.scale.val": [
         1.0,
         1.0,
-        0.0
+        1.0
     ],
     "init.scale.vel": [
         1.0,

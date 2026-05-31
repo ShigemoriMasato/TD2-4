@@ -183,13 +183,11 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	return std::make_unique<TrailEditorScene>();
 	return std::make_unique<ShigeScene>();
 	return std::make_unique<TitleScene>();
-	return std::make_unique<PrticleEditorScene>();
 	return std::make_unique<TrailEditorScene>();
 
 	return std::make_unique<IntroScene>();
 	return std::make_unique<ResultScene>();
 	return std::make_unique<YokoScene>();
-	return std::make_unique<ShigeScene>();
 	return std::make_unique<ResultScene>();
 }
 
