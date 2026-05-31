@@ -10,6 +10,10 @@ using namespace SHEngine;
 
 ResultScene::ResultScene() {}
 
+ResultScene::~ResultScene() {
+	bgm_->Stop();
+}
+
 void ResultScene::Initialize() {
 	camera_ = std::make_unique<Camera>();
 	PerspectiveFovDesc perspectiveDesc{};
@@ -97,6 +101,18 @@ void ResultScene::Initialize() {
 	sparkParticle_->Add("spark3");
 	sparkParticle_->SetEmittingFlag(false);
 	sparkParticleModelWorld_ = Matrix4x4::Identity();
+
+	// BGM
+	AudioData* data = nullptr;
+	if(isWin_){
+		// 勝利時
+		data = AudioManager::GetInstance()->GetData("WinSE.mp3");
+	}else{
+		// 敗北時
+		data = AudioManager::GetInstance()->GetData("LoseSE.mp3");
+	}
+	data->SetVolume(0.5f);
+	bgm_ = data->CustomPlay(0);
 }
 
 std::unique_ptr<IScene> ResultScene::Update() {
@@ -181,10 +197,12 @@ std::unique_ptr<IScene> ResultScene::Update() {
 
 	// 左クリックで決定
 	if (key[Key::Tr_LeftClick] && !isDeciding_) {
-	    isDeciding_ = true;
-	    float startSize = 2.0f;
-	    decideScaleAnime_.anim.Start(startSize, startSize * 1.5f, 0.3f, EaseType::EaseOutBack);
-	    sword_->StartAnimation();
+		isDeciding_ = true;
+		float startSize = 2.0f;
+		decideScaleAnime_.anim.Start(startSize, startSize * 1.5f, 0.3f, EaseType::EaseOutBack);
+		sword_->StartAnimation();
+
+		AudioManager::GetInstance()->GetData("BackPackMove.mp3")->Play();
 	}
 
 	if (isDeciding_) {
@@ -226,16 +244,19 @@ std::unique_ptr<IScene> ResultScene::Update() {
 			mrSecond = true;
 
 			// カメラシェイク開始
-			isCameraShaking_ = true;
-			shakeTime_ = 0.0f;
-			cameraBasePos_ = camera_->GetPosition();
-			orthoCameraBasePos_ = orthoCamera_->GetPosition();
+			if (isDeciding_) {
+				isCameraShaking_ = true;
+				shakeTime_ = 0.0f;
+				cameraBasePos_ = camera_->GetPosition();
+				orthoCameraBasePos_ = orthoCamera_->GetPosition();
+				AudioManager::GetInstance()->GetData("Sword.mp3")->Play();
 
-			// フェード開始
-			if (selectedIndex_ == 0) {
-				fadeManager_->StartFadeIn([]() { return std::make_unique<ShigeScene>(); });
-			} else {
-				fadeManager_->StartFadeIn([]() { return std::make_unique<TitleScene>(); });
+				// フェード開始
+				if (selectedIndex_ == 0) {
+					fadeManager_->StartFadeIn([]() { return std::make_unique<ShigeScene>(); });
+				} else {
+					fadeManager_->StartFadeIn([]() { return std::make_unique<TitleScene>(); });
+				}
 			}
 		}
 	}
@@ -308,6 +329,11 @@ std::unique_ptr<IScene> ResultScene::Update() {
 
 	ImGui::End();
 #endif
+
+	if (selectedIndex_ != lastSelectedIndex_) {
+		AudioManager::GetInstance()->GetData("ItemSelect.mp3")->Play();
+		lastSelectedIndex_ = selectedIndex_;
+	}
 
 	return nullptr;
 }

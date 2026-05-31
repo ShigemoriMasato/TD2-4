@@ -265,6 +265,11 @@ void WeaponList::Update(Matrix4x4 orthoVpMatrix, Matrix4x4 vpMatrix, float delta
 		// カーソルが被っているときは色を変える
 		bgColors_[closeBtnIndex] = {0.6f, 0.6f, 0.6f, 1.0f};
 
+		if(!playingCloseSE_){
+			playingCloseSE_ = true;
+			AudioManager::GetInstance()->GetData("ItemSelect.mp3")->Play();
+		}
+
 		// 左クリックされたときの処理
 		if (key[Key::Tr_LeftClick]) {
 			// クリック時は元の色に戻す
@@ -274,10 +279,16 @@ void WeaponList::Update(Matrix4x4 orthoVpMatrix, Matrix4x4 vpMatrix, float delta
 			if (closeAction_) {
 				closeAction_();
 			}
+
+			AudioManager::GetInstance()->GetData("BackPackMove.mp3")->Play();
 		}
 	} else {
 		// 被っていないときは元の色に戻す
 		bgColors_[closeBtnIndex] = {1.0f, 1.0f, 1.0f, 1.0f};
+
+		if (playingCloseSE_) {
+			playingCloseSE_ = false;
+		}
 	}
 
 	// 左クリックが押されたか判定
@@ -305,6 +316,8 @@ void WeaponList::Update(Matrix4x4 orthoVpMatrix, Matrix4x4 vpMatrix, float delta
 
 				// 選択中武器名テキスト更新
 				selectWeaponText_->SetText(weaponNames_[selectedWeaponId_]);
+
+				AudioManager::GetInstance()->GetData("BackPackMove.mp3")->Play();
 
 				break;
 			}
@@ -357,6 +370,7 @@ void WeaponList::Update(Matrix4x4 orthoVpMatrix, Matrix4x4 vpMatrix, float delta
 			isDraggingScrollbar_ = true;
 			dragStartY_ = mousePos.y;
 			dragStartScrollOffset_ = scrollOffset_;
+			AudioManager::GetInstance()->GetData("ItemSelect.mp3")->Play();
 		}
 	} else if (!isDraggingScrollbar_) {
 		bgColors_[knobIndex] = {0.8f, 0.8f, 0.8f, 1.0f};

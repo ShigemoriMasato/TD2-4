@@ -237,11 +237,6 @@ void ShigeScene::Initialize() {
 	bgmVolume_ = commonData_->bgmVolume * commonData_->masterVolume;
 	seVolume_ = commonData_->seVolume * commonData_->masterVolume;
 
-	// BGM
-	auto data = AudioManager::GetInstance()->GetData("GameScene.mp3");
-	data->SetVolume(0);
-	bgm_ = data->CustomPlay(255);
-
 	// ライトの設定
 	dirLight_.color = {1.0f, 1.0f, 1.0f, 1.0f};
 	dirLight_.direction = {0.0f, 1.0f, 0.0f};
@@ -307,8 +302,10 @@ void ShigeScene::Initialize() {
 
 	vinetteActiveHP_ = player_->GetMaxHP() * 0.2f;
 
-	AudioManager::GetInstance()->GetData("GameSceneBGM.mp3")->SetVolume(0.1f);
-	AudioManager::GetInstance()->GetData("GameSceneBGM.mp3")->Play();
+	// BGM
+	auto data = AudioManager::GetInstance()->GetData("GameSceneBGM.mp3");
+	data->SetVolume(0.1f);
+	bgm_ = data->CustomPlay(255);
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
