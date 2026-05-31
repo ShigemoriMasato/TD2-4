@@ -1,6 +1,7 @@
 #pragma once
 #include "EnemyHP.h"
 #include <Assets/Model/ModelManager.h>
+#include <Assets/Audio/AudioManager.h>
 #include <Collision/Collider.h>
 #include <GameObject/DrawInfo.h>
 #include <Render/Font/Text.h>
@@ -57,6 +58,8 @@ protected:
 	Map* map_ = nullptr;
 
 	std::vector<int> damageQueue_;
+
+	std::array<AudioData*, 3> damageSounds_{};
 
 private:
 	Vector2 WorldToScreenPos(const Vector3& worldPos, const Matrix4x4& viewProjectionMatrix, float screenWidth, float screenHeight);
