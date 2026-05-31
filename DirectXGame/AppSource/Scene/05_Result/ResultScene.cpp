@@ -144,6 +144,49 @@ std::unique_ptr<IScene> ResultScene::Update() {
 	toTitleText_->SetTransform(toTitleTextTransform_);
 	toTitleText_->Update(orthoCamera_->GetVPMatrix());
 
+	// ホバー処理
+	Vector2 mousePos = commonData_->keyManager->GetCursorPos();
+	mousePos.y *= -1;
+
+	bool isMouseMoved = (mousePos.x != lastMousePos_.x || mousePos.y != lastMousePos_.y);
+	lastMousePos_ = mousePos;
+
+	if (isMouseMoved) {
+		// Retryの当たり判定
+		{
+			Vector3 pos = {retryTextTransform_.position.x + retryTextMarginX_, retryTextTransform_.position.y, retryTextTransform_.position.z};
+			float left = pos.x - hitBoxSize_.x / 2.0f;
+			float right = pos.x + hitBoxSize_.x / 2.0f;
+			float bottom = pos.y - hitBoxSize_.y / 2.0f;
+			float top = pos.y + hitBoxSize_.y / 2.0f;
+
+			if (mousePos.x >= left && mousePos.x <= right && mousePos.y >= bottom && mousePos.y <= top) {
+				selectedIndex_ = 0;
+			}
+		}
+
+		// ToTitleの当たり判定
+		{
+			Vector3 pos = {toTitleTextTransform_.position.x + toTitleTextMarginX_, toTitleTextTransform_.position.y, toTitleTextTransform_.position.z};
+			float left = pos.x - hitBoxSize_.x / 2.0f;
+			float right = pos.x + hitBoxSize_.x / 2.0f;
+			float bottom = pos.y - hitBoxSize_.y / 2.0f;
+			float top = pos.y + hitBoxSize_.y / 2.0f;
+
+			if (mousePos.x >= left && mousePos.x <= right && mousePos.y >= bottom && mousePos.y <= top) {
+				selectedIndex_ = 1;
+			}
+		}
+	}
+
+	// 左クリックで決定
+	if (key[Key::Tr_LeftClick] && !isDeciding_) {
+	    isDeciding_ = true;
+	    float startSize = 2.0f;
+	    decideScaleAnime_.anim.Start(startSize, startSize * 1.5f, 0.3f, EaseType::EaseOutBack);
+	    sword_->StartAnimation();
+	}
+
 	if (isDeciding_) {
 		bool playing = decideScaleAnime_.anim.Update(deltaTime, decideScaleAnime_.temp);
 
@@ -178,7 +221,8 @@ std::unique_ptr<IScene> ResultScene::Update() {
 	if (sword_->IsAnimationFinished() && !isPreFinished_) {
 		if (!isCameraShaking_) {
 			// Particle開始
-			if (mrSecond)sparkParticle_->SetEmittingFlag(true);
+			if (mrSecond)
+				sparkParticle_->SetEmittingFlag(true);
 			mrSecond = true;
 
 			// カメラシェイク開始
@@ -217,10 +261,7 @@ std::unique_ptr<IScene> ResultScene::Update() {
 
 	UpdateSelectVisual();
 
-	Matrix4x4 test = Matrix::MakeAffineMatrix(
-		sparkParticleTransform_.scale,
-		sparkParticleTransform_.rotate,
-		sparkParticleTransform_.position);
+	Matrix4x4 test = Matrix::MakeAffineMatrix(sparkParticleTransform_.scale, sparkParticleTransform_.rotate, sparkParticleTransform_.position);
 	sparkParticle_->SetModelWorld(test);
 	sparkParticle_->SetCameraPos(camera_->GetPosition());
 	sparkParticle_->Update(deltaTime);
@@ -251,14 +292,19 @@ std::unique_ptr<IScene> ResultScene::Update() {
 		ImGui::TreePop();
 	}
 
-	if (ImGui::TreeNode("Spark Particle"))
-	{
+	if (ImGui::TreeNode("Spark Particle")) {
 		ImGui::DragFloat3("Position", &sparkParticleTransform_.position.x, 0.1f);
 		ImGui::DragFloat3("Rotation", &sparkParticleTransform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Scale", &sparkParticleTransform_.scale.x, 0.01f, 0.01f, 10.0f);
 
 		ImGui::TreePop();
 	}
+
+	ImGui::Begin("Textmargin");
+	ImGui::DragFloat("Retry", &retryTextMarginX_, 1.0f);
+	ImGui::DragFloat("ToTitle", &toTitleTextMarginX_, 1.0f);
+	ImGui::DragFloat2("HitBox", &hitBoxSize_.x, 1.0f);
+	ImGui::End();
 
 	ImGui::End();
 #endif
@@ -291,7 +337,6 @@ void ResultScene::Draw() {
 
 	fadeManager_->Draw(cmdObj);
 	gameFrame_->Draw(cmdObj);
-
 
 	display->PostDraw(cmdObj);
 
