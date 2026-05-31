@@ -161,9 +161,6 @@ void YokoScene::Draw()
 
 	trail.Draw();
 	particles_.Draw();
-	
-
-
 
 	// パーティクル描画
 	commonData_->particleDrawer->Draw(cmdObj, camera_->GetVPMatrix());
