@@ -44,6 +44,23 @@ void PauseMenu::Initialize(ModelManager* modelManager, DrawDataManager* drawData
 	menuText_->SetText(L"メニュー画面");
 	menuTextTransform_.position = {500.0f, -100.0f, 0.0f};
 	menuText_->SetTransform(menuTextTransform_);
+
+	// 選択項目の背景生成&初期化
+	itemBgRender_ = std::make_unique<RenderObject>("ItemBG");
+	itemBgRender_->Initialize();
+
+	// シンプルな単色シェーダーを使用
+	itemBgRender_->psoConfig_.vs = "Simple.VS.hlsl";
+	itemBgRender_->psoConfig_.ps = "Color.PS.hlsl";
+
+	itemBgRender_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER);
+	itemBgRender_->CreateCBV(sizeof(Vector4), ShaderType::PIXEL_SHADER, "Color");
+
+	itemBgRender_->SetDrawData(data);
+
+	itemBgTransform_.position = {0.0f, 0.0f, 0.0f};
+	itemBgTransform_.rotate = {0.0f, 0.0f, 0.0f};
+	itemBgTransform_.scale = {0.0f, 0.0f, 1.0f};
 }
 
 void PauseMenu::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, bool> key) {
@@ -105,7 +122,7 @@ void PauseMenu::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<K
 		// 選択中ならサイズを大きくする
 		if (index == selectedIndex_) {
 			transforms_[info.key].scale = {slectedSize_, slectedSize_, 1.0f};
-			color = {1.0f, 0.0f, 0.0f, 1.0f};
+			color = selectColor_;
 		} else {
 			transforms_[info.key].scale = {normalSize_, normalSize_, 1.0f};
 			color = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -133,6 +150,12 @@ void PauseMenu::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<K
 #endif
 	}
 
+#ifdef USE_IMGUI
+	ImGui::Begin("UI");
+	ImGui::ColorEdit4("selectColor", &selectColor_.x);
+	ImGui::End();
+#endif
+
 	// メニュー画面表記更新
 	menuText_->Update(vpMatrix);
 
@@ -141,13 +164,45 @@ void PauseMenu::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<K
 	backgroundWVP_ *= vpMatrix;
 	backgroundRender_->CopyBufferData(0, &backgroundWVP_, sizeof(Matrix4x4));
 
-	Vector4 bgColor = {0.0f, 0.0f, 0.0f, 0.8f};
+	Vector4 bgColor = {0.0f, 0.0f, 0.0f, 0.9f};
 	backgroundRender_->CopyBufferData(1, &bgColor, sizeof(Vector4));
+
+	// 選択中のインデックスが変わった瞬間にアニメーションを開始する
+	if (selectedIndex_ != previousSelectedIndex_) {
+		previousSelectedIndex_ = selectedIndex_;
+
+		// イージング
+		Vector3 startScale = {0.0f, 0.0f, 1.0f};
+		Vector3 endScale = {itemBgSize_.x, itemBgSize_.y, 1.0f};
+
+		scaleAnim_.anim.Start(startScale, endScale, 0.2f, EaseType::EaseOutBack);
+	}
+
+	// アニメーションの更新
+	scaleAnim_.anim.Update(deltaTime, scaleAnim_.temp);
+	itemBgTransform_.scale = scaleAnim_.temp;
+
+	// 背景の座標を選択中のテキストの座標に合わせる
+	std::wstring selectedKey = infos_[selectedIndex_].key;
+	itemBgTransform_.position = transforms_[selectedKey].position;
+	itemBgWVP_ = Matrix::MakeAffineMatrix(itemBgTransform_.scale, itemBgTransform_.rotate, itemBgTransform_.position);
+	itemBgWVP_ *= vpMatrix;
+	itemBgRender_->CopyBufferData(0, &itemBgWVP_, sizeof(Matrix4x4));
+	itemBgRender_->CopyBufferData(1, &itemBgColor_, sizeof(Vector4));
+
+#ifdef USE_IMGUI
+	ImGui::Begin("ItemBg");
+	ImGui::DragFloat2("Size", &itemBgSize_.x, 1.0f);
+	ImGui::End();
+#endif
 }
 
 void PauseMenu::Draw(CmdObj* cmdObj) {
 	// 背景描画
 	backgroundRender_->Draw(cmdObj);
+
+	// 選択項目の背景描画
+	itemBgRender_->Draw(cmdObj);
 
 	// メニュー画面表記描画
 	menuText_->Draw(cmdObj);

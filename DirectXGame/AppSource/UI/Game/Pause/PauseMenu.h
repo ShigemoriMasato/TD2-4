@@ -1,9 +1,10 @@
 #pragma once
-#include <Render/RenderObject.h>
-#include <assets/Model/ModelManager.h>
-#include <Render/Font/Text.h>
+#include "GameObject/EasingAnimation/AnimationBundle.h"
 #include <Common/KeyConfig/KeyManager.h>
+#include <Render/Font/Text.h>
+#include <Render/RenderObject.h>
 #include <SHEngine.h>
+#include <assets/Model/ModelManager.h>
 
 struct TextInitInfo {
 	std::wstring key;
@@ -40,9 +41,9 @@ private:
 	Transform menuTextTransform_;
 
 	std::vector<TextInitInfo> infos_ = {
-	    {L"Resume",  "ResumeText",  L"再開" },
+	    {L"Resume",  "ResumeText",  L"再開"      },
         {L"ToTitle", "ToTitleText", L"タイトルへ"},
-        {L"Weapons", "WeaponsText", L"武器図鑑"}
+        {L"Weapons", "WeaponsText", L"武器図鑑"  }
     };
 
 	// テキストのサイズ
@@ -60,4 +61,18 @@ private:
 
 	// 前フレームのマウス位置
 	Vector2 lastMousePos_ = {0.0f, 0.0f};
+
+	// 選択時の色
+	Vector4 selectColor_ = {1.0f, 0.4f, 0.0f, 1.0f};
+
+	// 選択中項目の背景
+	std::unique_ptr<SHEngine::RenderObject> itemBgRender_;
+	Transform itemBgTransform_;
+	Matrix4x4 itemBgWVP_;
+	Vector4 itemBgColor_ = {1.0f, 0.4f, 0.0f, 0.5f};
+	Vector2 itemBgSize_ = {700.0f, 60.0f};
+
+	// アニメーション関連
+	AnimationBundle<Vector3> scaleAnim_;
+	int previousSelectedIndex_ = -1; // 選択切り替えを検知するための変数
 };
