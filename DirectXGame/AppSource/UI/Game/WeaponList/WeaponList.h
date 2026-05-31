@@ -156,4 +156,7 @@ private:
 	bool isDraggingScrollbar_ = false;   // スクロールバーをドラッグ中かどうか
 	float dragStartY_ = 0.0f;            // ドラッグ開始時のマウスY座標
 	float dragStartScrollOffset_ = 0.0f; // ドラッグ開始時のスクロール量
+
+	bool playingCloseSE_ = false;
+	bool playingTextSE_ = false;
 };

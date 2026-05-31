@@ -82,4 +82,6 @@ private:
 
 	float retryTextMarginX_ = 120.0f;
 	float toTitleTextMarginX_ = 150.0f;
+
+	int lastSelectedIndex_ = -1;
 };

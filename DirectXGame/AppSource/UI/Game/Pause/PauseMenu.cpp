@@ -111,6 +111,8 @@ void PauseMenu::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<K
 			if (actions_[selectedIndex_]) {
 				actions_[selectedIndex_]();
 			}
+
+			AudioManager::GetInstance()->GetData("BackPackMove.mp3")->Play();
 		}
 	}
 
@@ -189,6 +191,11 @@ void PauseMenu::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<K
 	itemBgWVP_ *= vpMatrix;
 	itemBgRender_->CopyBufferData(0, &itemBgWVP_, sizeof(Matrix4x4));
 	itemBgRender_->CopyBufferData(1, &itemBgColor_, sizeof(Vector4));
+
+	if (selectedIndex_ != lastSelectedIndex_) {
+		AudioManager::GetInstance()->GetData("ItemSelect.mp3")->Play();
+		lastSelectedIndex_ = selectedIndex_;
+	}
 
 #ifdef USE_IMGUI
 	ImGui::Begin("ItemBg");

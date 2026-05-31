@@ -75,4 +75,6 @@ private:
 	// アニメーション関連
 	AnimationBundle<Vector3> scaleAnim_;
 	int previousSelectedIndex_ = -1; // 選択切り替えを検知するための変数
+
+	int lastSelectedIndex_ = -1;
 };
