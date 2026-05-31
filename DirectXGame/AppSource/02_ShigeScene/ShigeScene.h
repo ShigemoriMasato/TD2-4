@@ -152,6 +152,16 @@ private:// System系
 	int mouseCursorTexBoth_ = -1;
 	Transform mouseCursorTransform_ = { {32.0f, 32.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 
+	// mouseM スプライト
+	std::unique_ptr<SHEngine::RenderObject> mouseMSprite_ = nullptr;
+	int mouseMTexIndex_ = -1;
+	Transform mouseMTransform_ = { {32.0f, 32.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {480.0f, -640.0f, 0.0f} };
+
+	// ポーズテキスト
+	std::unique_ptr<SHEngine::Text> pauseText_;
+	Transform pauseTextTransform_ = { {0.8f, 0.8f, 1.0f}, {0.0f, 0.0f, 0.0f}, {500.0f, -648.0f, 0.0f} };
+	Vector4 pauseTextColor_ = {1.0f, 1.0f, 1.0f, 1.0f};
+
 private:// Shop
 
 	std::unique_ptr<ShopScene> shopScene_;

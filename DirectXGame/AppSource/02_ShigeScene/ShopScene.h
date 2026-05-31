@@ -126,8 +126,9 @@ private:
 	std::unique_ptr<SHEngine::Text> rerollButtonText_ = nullptr;
 	Transform rerollButtonTextTransform_ = { {3.0f, 1.5f, 1.0f}, {0.0f, 0.0f, 0.0f}, {70.0f, -65.0f, 0.0f} };
 	Vector4 rerollButtonTextColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
-	Vector4 rerollButtonTextColorDisabled_ = { 0.5f, 0.5f, 0.5f, 1.0f };
-	Vector2 rerollButtonHitSize_ = { 200.0f, 50.0f };
+	Vector4 rerollButtonTextColorDisabled_ = { 0.2f, 0.2f, 0.2f, 1.0f };
+	Vector2 rerollButtonHitSize_   = { 150.0f, 50.0f };
+	Vector2 rerollButtonHitOffset_ = {  40.0f, -30.0f };
 
 	// 武器補充中テキスト用変数
 	std::unique_ptr<SHEngine::Text> replenishingText_ = nullptr;

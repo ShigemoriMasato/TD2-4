@@ -214,6 +214,12 @@ void ShigeScene::Initialize() {
 	timerTextTransform_.position = {550.0f, -85.0f, 0.0f}; // Top center or so // default
 	timerTextTransform_.scale = {2.0f, 2.0f, 1.0f};
 
+	// ポーズテキストの初期化
+	pauseText_ = std::make_unique<SHEngine::Text>(16);
+	pauseText_->Initialize(planeDrawData, fontPath_, 64);
+	pauseText_->SetColor(pauseTextColor_);
+	pauseText_->SetText(L"ポーズ");
+
 	enemySpawnGraphText_ = std::make_unique<SHEngine::Text>(64);
 	enemySpawnGraphText_->Initialize(planeDrawData, fontPath_, 64);
 	enemySpawnGraphText_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
@@ -298,6 +304,18 @@ void ShigeScene::Initialize() {
 	mouseCursorSprite_->SetUseTexture(true);
 	mouseCursorSprite_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Transparent;
 
+	// mouseM スプライトの初期化
+	mouseMTexIndex_ = textureManager_->LoadTexture("Assets/Texture/UI/mouseM.png");
+	mouseMSprite_ = std::make_unique<SHEngine::RenderObject>("MouseMSprite");
+	mouseMSprite_->Initialize();
+	mouseMSprite_->SetDrawData(planeDrawData);
+	mouseMSprite_->psoConfig_.vs = "Simple.VS.hlsl";
+	mouseMSprite_->psoConfig_.ps = "PostEffect/Simple.PS.hlsl";
+	mouseMSprite_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+	mouseMSprite_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	mouseMSprite_->SetUseTexture(true);
+	mouseMSprite_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Transparent;
+
 	weaponList_ = std::make_unique<WeaponList>();
 	weaponList_->Initialize(modelManager_, drawDataManager_, textureManager_, commonData_->keyManager.get(), input_, weaponDatabase_.get());
 	weaponList_->SetCloseAction([this]() {
@@ -356,6 +374,14 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		wvp *= orthoCamera_->GetVPMatrix();
 		mouseCursorSprite_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
 		mouseCursorSprite_->CopyBufferData(1, &mouseCursorTextureIndex_, sizeof(int));
+	}
+
+	// mouseM スプライトの更新
+	{
+		Matrix4x4 wvp = Matrix::MakeAffineMatrix(mouseMTransform_.scale, mouseMTransform_.rotate, mouseMTransform_.position);
+		wvp *= orthoCamera_->GetVPMatrix();
+		mouseMSprite_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
+		mouseMSprite_->CopyBufferData(1, &mouseMTexIndex_, sizeof(int));
 	}
 
 #ifdef _DEBUG
@@ -554,6 +580,11 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	timerText_->Update(orthoCamera_->GetVPMatrix());
 	timerText_->SetTransform(timerTextTransform_);
 
+	// ポーズテキストの更新
+	pauseText_->Update(orthoCamera_->GetVPMatrix());
+	pauseText_->SetTransform(pauseTextTransform_);
+	pauseText_->SetColor(pauseTextColor_);
+
 	enemySpawnGraphText_->Update(orthoCamera_->GetVPMatrix());
 	enemySpawnGraphText_->SetTransform(enemySpawnGraphTextTransform_);
 	enemySpawnGraphText_->SetText(L"5分間生き残れ！");
@@ -729,6 +760,10 @@ void ShigeScene::Draw() {
 
 	mouseCursorSprite_->Draw(cmdObj);
 
+	mouseMSprite_->Draw(cmdObj);
+
+	pauseText_->Draw(cmdObj);
+
 	fadeManager_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
@@ -808,6 +843,18 @@ void ShigeScene::Draw() {
 	ImGui::End();
 
 	postEffect_->CopyBuffer(PostEffectJob::Vignette, vignette_);
+
+	ImGui::Begin("MouseM & PauseText");
+	ImGui::SeparatorText("MouseM Sprite");
+	ImGui::DragFloat3("MouseM Pos", &mouseMTransform_.position.x, 1.0f);
+	ImGui::DragFloat3("MouseM Scale", &mouseMTransform_.scale.x, 0.5f);
+	ImGui::SeparatorText("Pause Text");
+	ImGui::DragFloat3("PauseText Pos", &pauseTextTransform_.position.x, 1.0f);
+	ImGui::DragFloat3("PauseText Scale", &pauseTextTransform_.scale.x, 0.01f);
+	if (ImGui::ColorEdit4("PauseText Color", &pauseTextColor_.x)) {
+		pauseText_->SetColor(pauseTextColor_);
+	}
+	ImGui::End();
 
 	// プレイヤーのデバッグ情報を表示
 	if (player_) {

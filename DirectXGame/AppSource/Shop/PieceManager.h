@@ -54,6 +54,21 @@ public:
 	// ピースがショップエリアにあるかを判定
 	bool IsShopPiece(Piece* piece) const;
 
+	// 現在のショップピース全てのブレイクエフェクトを即座に記録し、描画からも除外する
+	void EmitShopBreakEffects() {
+		for (const auto& piece : shopPieces_) {
+			pendingBreakPositions_.push_back({ piece->GetPosition(), piece->GetItem().weaponID, piece->GetDirection() });
+		}
+		// allPieces_ からショップピースを取り除いて即座に非表示にする
+		allPieces_.erase(std::remove_if(allPieces_.begin(), allPieces_.end(),
+			[this](Piece* p) {
+				for (const auto& sp : shopPieces_) {
+					if (sp.get() == p) return true;
+				}
+				return false;
+			}), allPieces_.end());
+	}
+
 	// ホールドに直接ピースを追加する（初期武器付与などに使用）
 	void AddHoldPiece(std::unique_ptr<Piece> piece) {
 		allPieces_.push_back(piece.get());
