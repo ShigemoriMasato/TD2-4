@@ -22,6 +22,9 @@ public:
 	// ターゲットの取得
 	IEnemy* GetTargetEnemy() const { return targetEnemy_; }
 
+	// ダメージを受けたことを通知する
+	void NotifyDamaged();
+
 	// ImGui描画
 	void DrawImGui();
 
@@ -50,6 +53,12 @@ private:
 
 	// 現在のAIモード
 	AIMode currentMode_ = AIMode::SKIRMISH;
+
+	// 最後にダメージを受けてからの経過時間
+	float noDamageTimer_ = 0.0f;
+
+	// EVASIVEからSKIRMISHに戻るまでの時間
+	float evasiveDuration_ = 5.0f;
 
 	// タイマー乱数
 	float minTime_ = 0.5f;

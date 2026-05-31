@@ -237,7 +237,10 @@ std::unique_ptr<IScene> TitleScene::Update() {
 	}
 	matrixBuffer_->CopyBuffer(leafWorlds.data(), sizeof(Matrix4x4) * leafWorlds.size());
 
-	splashBuffer_->CopyBuffer(&vp, sizeof(Matrix4x4));
+	{
+		Matrix4x4 splashWVP = splashTransform_.GetMatrix() * vp;
+		splashBuffer_->CopyBuffer(&splashWVP, sizeof(Matrix4x4));
+	}
 
 	shopScene_->SetDeltaTime(deltaTime);
 	shopScene_->Update();
@@ -485,6 +488,12 @@ void TitleScene::Draw() {
 
 		camera_->MakeMatrix();
 
+		ImGui::TreePop();
+	}
+
+	// Splash Transform
+	if (ImGui::TreeNode("Splash")) {
+		ImGui::DragFloat3("Translate", &splashTransform_.position.x, 0.1f);
 		ImGui::TreePop();
 	}
 

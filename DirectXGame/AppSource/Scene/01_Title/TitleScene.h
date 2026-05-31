@@ -123,6 +123,7 @@ private:// Shop
 
 	std::unique_ptr<SHEngine::Renderer> splash_ = nullptr;
 	SHEngine::GPUBuffer* splashBuffer_ = nullptr;
+	Transform splashTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 2.0f} };
 
 	void Save();
 	void Load();

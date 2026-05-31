@@ -20,6 +20,13 @@ public:
 
 	void SetFallbackController(IController* ai) { fallbackController_ = ai; }
 
+	// ダメージをフォールバックコントローラーに転送する
+	void NotifyDamaged() override {
+		if (fallbackController_) {
+			fallbackController_->NotifyDamaged();
+		}
+	}
+
 	void DrawImGui()override;
 
 private:

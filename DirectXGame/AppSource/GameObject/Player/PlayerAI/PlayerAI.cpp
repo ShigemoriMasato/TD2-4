@@ -4,7 +4,21 @@
 #include <imgui/imgui.h>
 #include <algorithm>
 
+void PlayerAI::NotifyDamaged() {
+	currentMode_ = AIMode::EVASIVE;
+	noDamageTimer_ = 0.0f;
+}
+
 Vector3 PlayerAI::ComputeMoveDirection(const Vector3& playerPos, const std::vector<IEnemy*>& enemies, const MapInfo& mapInfo, float deltaTime) {
+	// EVASIVEモード中、無被ダメージ時間を計測してSKIRMISHへ戻す
+	if (currentMode_ == AIMode::EVASIVE) {
+		noDamageTimer_ += deltaTime;
+		if (noDamageTimer_ >= evasiveDuration_) {
+			currentMode_ = AIMode::SKIRMISH;
+			noDamageTimer_ = 0.0f;
+		}
+	}
+
 	// ターゲットの敵が倒されていたらターゲットを解除する
 	if (targetEnemy_ && !targetEnemy_->IsActive()) {
 		targetEnemy_ = nullptr;
