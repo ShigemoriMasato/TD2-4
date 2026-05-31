@@ -140,7 +140,6 @@ void InitializeScene::Initialize() {
 	keyManager->SetButton(Key::Reverse, XBoxController::kB, KeyState::Trigger);
 
 	keyManager->SetKey(Key::Pause, DIK_ESCAPE, KeyState::Trigger);
-	keyManager->SetKey(Key::Pause, DIK_F1, KeyState::Trigger);
 	keyManager->SetButton(Key::Pause, XBoxController::kStart, KeyState::Trigger);
 	keyManager->SetMouse(Key::Pause, 2, KeyState::Trigger);
 
@@ -149,10 +148,6 @@ void InitializeScene::Initialize() {
 	keyManager->SetKey(Key::Restart, DIK_R, KeyState::Trigger);
 	keyManager->SetKey(Key::Restart, DIK_ESCAPE, KeyState::Trigger);
 	keyManager->SetButton(Key::Restart, XBoxController::kSelect, KeyState::Trigger);
-
-	keyManager->SetKey(Key::Debug1, DIK_F1, KeyState::Trigger);
-	keyManager->SetKey(Key::Debug2, DIK_F2, KeyState::Trigger);
-	keyManager->SetKey(Key::Debug3, DIK_F3, KeyState::Trigger);
 
 	//================================================================================
 
