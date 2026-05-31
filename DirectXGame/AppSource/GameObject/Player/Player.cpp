@@ -226,6 +226,11 @@ void Player::Base::Damage(float amount) {
 	isInvincible_ = true;
 	invincibleTimer_ = invincibleDuration_; // タイマーをセット
 
+	// AI にダメージを通知する
+	if (controller_) {
+		controller_->NotifyDamaged();
+	}
+
 	// ダメージSEをランダムで再生
 	static const char* damageSounds[] = { "pDamage1.mp3", "pDamage2.mp3", "pDamage3.mp3" };
 	int index = std::rand() % 3;

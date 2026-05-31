@@ -23,6 +23,13 @@ public:
 	// 現在のターゲットを取得
 	IEnemy* GetTargetEnemy() const { return ai_ ? ai_->GetTargetEnemy() : nullptr; }
 
+	// ダメージを受けたことを通知する
+	void NotifyDamaged() override {
+		if (ai_) {
+			ai_->NotifyDamaged();
+		}
+	}
+
 	void DrawImGui()override;
 
 private:

@@ -21,5 +21,8 @@ public:
 	// ターゲットの座標を取得する
 	virtual Vector3 GetTargetPosition() const { return {}; }
 
+	// ダメージを受けたことを通知する
+	virtual void NotifyDamaged() {}
+
 	virtual void DrawImGui() = 0;
 };
