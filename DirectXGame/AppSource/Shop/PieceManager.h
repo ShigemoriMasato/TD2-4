@@ -54,6 +54,12 @@ public:
 	// ピースがショップエリアにあるかを判定
 	bool IsShopPiece(Piece* piece) const;
 
+	// ホールドに直接ピースを追加する（初期武器付与などに使用）
+	void AddHoldPiece(std::unique_ptr<Piece> piece) {
+		allPieces_.push_back(piece.get());
+		holdPieces_.push_back(std::move(piece));
+	}
+
 private:
 
 	std::vector<BreakEffectInfo> pendingBreakPositions_;

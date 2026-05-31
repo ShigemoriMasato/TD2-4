@@ -127,6 +127,13 @@ private:// System系
 
 	bool isPlayerDead_ = false;
 
+	// カメラシェイク用
+	bool isCameraShaking_ = false;
+	float cameraShakeTime_ = 0.0f;
+	float cameraShakeDuration_ = 0.3f;
+	float cameraShakeIntensity_ = 0.5f;
+	float prevPlayerHP_ = -1.0f;
+
 	Vignette vignette_;
 	AnimationBundle<float> vignetteIntensityAnim_;
 	float vinetteIntensity_ = 0.2f;

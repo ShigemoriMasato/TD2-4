@@ -2,6 +2,7 @@
 #include "ShopScene.h"
 #include "fontPath.h"
 #include <../Engine/Assets/Audio/AudioManager.h>
+#include "GameObject/Random/Random.h"
 #include <Common/KeyConfig/WorldCursor.h>
 #include <Utility/Color.h>
 #include <Utility/Matrix.h>
@@ -33,6 +34,39 @@ void ShigeScene::Initialize() {
 	shopScene_ = std::make_unique<ShopScene>();
 	shopScene_->Ready(engine_, commonData_);
 	shopScene_->Initialize();
+
+	// 初期武器としてコモンのソード（weaponID=1）を左下に配置する
+	{
+		ItemManager* itemManager = shopScene_->GetItemManager();
+		PieceManager* pieceManager = shopScene_->GetPieceManager();
+		BackPack* backPack = shopScene_->GetBackPack();
+		const auto& allItems = itemManager->GetAllItems();
+		for (const auto& [id, item] : allItems) {
+			if (item.weaponID == 1) {
+				auto piece = std::make_unique<Piece>(item, 0);
+				piece->SetRarity(WeaponRarity::Common);
+				// 通常エリアの左下から配置を試みる
+				int normalStartX = backPack->GetNormalAreaStartX();
+				int normalStartY = backPack->GetNormalAreaStartY();
+				int normalWidth  = backPack->GetNormalAreaWidth();
+				int normalHeight = backPack->GetNormalAreaHeight();
+				Vector3 originPos = backPack->GetOriginPos();
+				bool placed = false;
+				for (int y = normalStartY + normalHeight; y >= normalStartY && !placed; --y) {
+					for (int x = normalStartX; x < normalStartX + normalWidth && !placed; ++x) {
+						Vector3 worldPos = originPos + Vector3(1.0, 0.0f, 3.0f);
+						piece->SetPosition(worldPos - piece->GetCenterOffset());
+						if (piece->CanPut(backPack)) {
+							piece->Put(backPack);
+							placed = true;
+						}
+					}
+				}
+				pieceManager->AddHoldPiece(std::move(piece));
+				break;
+			}
+		}
+	}
 
 	grid_ = std::make_unique<Grid>();
 	grid_->Initialize(drawDataManager_);
@@ -272,6 +306,9 @@ void ShigeScene::Initialize() {
 	});
 
 	vinetteActiveHP_ = player_->GetMaxHP() * 0.2f;
+
+	AudioManager::GetInstance()->GetData("GameSceneBGM.mp3")->SetVolume(0.1f);
+	AudioManager::GetInstance()->GetData("GameSceneBGM.mp3")->Play();
 }
 
 std::unique_ptr<IScene> ShigeScene::Update() {
@@ -370,6 +407,34 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	Vector3 cameraTargetPos = player_->GetTransform().position + cameraTargetOffset_;
 
 	gameCamera_->Update(deltaTime, cameraTargetPos);
+
+	// ダメージ検知 → カメラシェイク開始
+	{
+		float currentHP = player_->GetCurrentHP();
+		if (prevPlayerHP_ >= 0.0f && currentHP < prevPlayerHP_) {
+			isCameraShaking_ = true;
+			cameraShakeTime_ = 0.0f;
+		}
+		prevPlayerHP_ = currentHP;
+	}
+
+	// カメラシェイク処理
+	if (isCameraShaking_) {
+		cameraShakeTime_ += deltaTime;
+		if (cameraShakeTime_ >= cameraShakeDuration_) {
+			isCameraShaking_ = false;
+		} else {
+			float t = 1.0f - (cameraShakeTime_ / cameraShakeDuration_);
+			float offsetX = RandomUtils::RangeFloat(-1.0f, 1.0f) * cameraShakeIntensity_ * t;
+			float offsetY = RandomUtils::RangeFloat(-1.0f, 1.0f) * cameraShakeIntensity_ * t;
+			Vector3 shakePos = gameCamera_->GetPosition();
+			shakePos.x += offsetX;
+			shakePos.y += offsetY;
+			gameCamera_->SetPosition(shakePos);
+			gameCamera_->MakeMatrix();
+		}
+	}
+
 	Vector3 cameraPos = gameCamera_->GetPosition();
 	grid_->Update(cameraPos, camera_->GetVPMatrix());
 
@@ -420,6 +485,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 				}
 				// Playerを指定のワールド座標へ移動させる（InputController使用時用）
 				player_->GetController()->SetTargetPosition(clampedPos);
+				AudioManager::GetInstance()->GetData("oku.mp3")->Play();
 			}
 		}
 	}

@@ -35,6 +35,8 @@ public:
 	void Draw() override;
 	void SetDeltaTime(float& deltaTime) { deltaTime_ = deltaTime; }
 	ItemManager* GetItemManager() { return itemManager_.get(); }
+	PieceManager* GetPieceManager() { return pieceManager_.get(); }
+	BackPack* GetBackPack() { return backPack_.get(); }
 	DebugCamera* GetCamera() { return debugCamera_.get(); }
 	
 private:

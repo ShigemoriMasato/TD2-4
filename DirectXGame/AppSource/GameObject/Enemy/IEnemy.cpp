@@ -2,6 +2,7 @@
 #include "EnemyManager.h"
 #include <GameObject/Attack/IAttackObject.h>
 #include <GameObject/Map/Map.h>
+#include <random>
 
 void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id, Map* map) {
 	drawInfo_.resize(4);
@@ -24,6 +25,11 @@ void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id, Map* 
 	SetColliderConfig(config);
 	enemyHP_ = std::make_unique<EnemyHP>();
 	enemyHP_->Initialize(modelManager_, drawDataManager_);
+
+	auto* audio = AudioManager::GetInstance();
+	damageSounds_[0] = audio->GetData("damage1.mp3");
+	damageSounds_[1] = audio->GetData("damage2.mp3");
+	damageSounds_[2] = audio->GetData("damage3.mp3");
 }
 
 void IEnemy::Update(float deltaTime) { enemyHP_->Update(deltaTime, static_cast<float>(hp_), static_cast<float>(maxHp_), position_); }
@@ -85,6 +91,13 @@ void IEnemy::OnCollision(Collider* other) {
 	auto attack = static_cast<IAttackObject*>(other);
 	hp_ -= static_cast<int>(attack->GetDamage());
 	damageQueue_.push_back(static_cast<int>(attack->GetDamage()));
+
+	{
+		static std::mt19937 rng(std::random_device{}());
+		std::uniform_int_distribution<int> dist(0, 2);
+		damageSounds_[dist(rng)]->SetVolume(0.25f);
+		damageSounds_[dist(rng)]->Play();
+	}
 
 	if (hp_ <= 0) {
 		KillMe();

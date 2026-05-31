@@ -225,6 +225,12 @@ void Player::Base::Damage(float amount) {
 	currentHP_ = std::max(currentHP_ - amount, 0.0f);
 	isInvincible_ = true;
 	invincibleTimer_ = invincibleDuration_; // タイマーをセット
+
+	// ダメージSEをランダムで再生
+	static const char* damageSounds[] = { "pDamage1.mp3", "pDamage2.mp3", "pDamage3.mp3" };
+	int index = std::rand() % 3;
+	AudioManager::GetInstance()->GetData(damageSounds[index])->SetVolume(0.25f);
+	AudioManager::GetInstance()->GetData(damageSounds[index])->Play();
 }
 
 void Player::Base::Heal(float amount) {

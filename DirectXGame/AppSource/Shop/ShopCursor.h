@@ -3,6 +3,8 @@
 #include <Camera/Camera.h>
 #include "PieceManager.h"
 #include "Piece.h"
+#include <Assets/Audio/Data/PlayData.h>
+#include <memory>
 
 class ShopCursor {
 public:
@@ -50,4 +52,7 @@ private:
 	Piece* rightClickTarget_ = nullptr;
 	float rightClickHoldTimer_ = 0.0f;
 	static constexpr float kRightClickDeleteTime_ = 1.0f;
+
+	// 右クリック長押し中のチャージ音再生データ
+	std::unique_ptr<PlayData> breakChargePlayData_ = nullptr;
 };

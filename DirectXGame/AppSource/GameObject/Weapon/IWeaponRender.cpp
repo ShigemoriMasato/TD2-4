@@ -183,6 +183,7 @@ void IWeaponRender::Update(Matrix4x4 vpMatrix, Vector3 playerPos, float deltaTim
 			}
 
 			if (!seName.empty()) {
+				AudioManager::GetInstance()->GetData(seName)->SetVolume(0.5f);
 				AudioManager::GetInstance()->GetData(seName)->Play();
 			}
 		}

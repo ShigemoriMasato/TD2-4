@@ -239,6 +239,7 @@ std::unique_ptr<IScene> TitleScene::Update() {
 		Vector3 clampedPos = map_->ClampToCircularBounds(clickWorldPos);
 		// Playerを指定のワールド座標へ移動させる
 		player_->GetController()->SetTargetPosition(clampedPos);
+		AudioManager::GetInstance()->GetData("oku.mp3")->Play();
 
 		// Compassの退場アニメーションを開始
 		titleUI_->StartCompassExitAnimation();

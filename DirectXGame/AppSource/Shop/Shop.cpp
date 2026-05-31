@@ -1,4 +1,5 @@
 #include "Shop.h"
+#include <../Engine/Assets/Audio/AudioManager.h>
 #ifdef USE_IMGUI
 #include <imgui/imgui.h>
 #endif
@@ -43,10 +44,13 @@ std::vector<std::unique_ptr<Piece>> Shop::RefreshShopPieces() {
 
 		shopPieces.push_back(std::move(piece));
 	}
+	AudioManager::GetInstance()->GetData("WeaponPop.mp3")->SetVolume(1.0f);
+	AudioManager::GetInstance()->GetData("WeaponPop.mp3")->Play();
 	return shopPieces;
 }
 
-void Shop::DrawImGui() {
+void Shop::DrawImGui()
+{
 #ifdef USE_IMGUI
 	ImGui::Begin("Shop");
 	ImGui::DragFloat3("Start Pos", &startPos_.x, 0.1f);

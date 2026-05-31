@@ -3,6 +3,7 @@
 #include <Common/KeyConfig/WorldCursor.h>
 #include <Utils/AppUtils.h>
 #include <GameObject/Weapon/WeaponData.h>
+#include <../Engine/Assets/Audio/AudioManager.h>
 
 void ShopCursor::Initialize(KeyManager* keyManager, PieceManager* pieceManager) {
 	keyManager_ = keyManager;
@@ -31,8 +32,9 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 
 	//持っているピースがあるなら
 	if (heldPiece_) {
-		if(keys[Key::Rotate]) {
+		if (keys[Key::Rotate]) {
 			heldPiece_->RotateRight();
+			AudioManager::GetInstance()->GetData("BackPackMove.mp3")->Play();
 		}
 
 		if (!keys[Key::Hold]) {
@@ -168,6 +170,7 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 				preHeldPiecePos_ = piece->GetPosition();
 				// ピースを持つときに持たれている状態を設定
 				heldPiece_->SetHeld(true);
+				AudioManager::GetInstance()->GetData("BackPackMove.mp3")->Play();
 			}
 
 			if (keys[Key::Erase]) {
@@ -185,6 +188,7 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 					if (rightClickTarget_ != piece) {
 						rightClickTarget_ = piece;
 						rightClickHoldTimer_ = 0.0f;
+						breakChargePlayData_ = AudioManager::GetInstance()->GetData("BreakCharge.mp3")->CustomPlay(0);
 					}
 					rightClickHoldTimer_ += deltaTime;
 					// sin/cos波でX・Z両軸シェイク（時間とともに振幅増大）
@@ -196,6 +200,11 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 					if (rightClickHoldTimer_ >= kRightClickDeleteTime_) {
 						piece->ResetShakeOffset();
 						pieceManager_->RemovePieceWithEffect(piece, backPack);
+						if (breakChargePlayData_) {
+							breakChargePlayData_->Stop();
+							breakChargePlayData_.reset();
+						}
+						AudioManager::GetInstance()->GetData("WeaponBreak.mp3")->Play();
 						rightClickTarget_ = nullptr;
 						rightClickHoldTimer_ = 0.0f;
 						break;
@@ -203,32 +212,37 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 				} else {
 					if (rightClickTarget_ == piece) {
 						piece->ResetShakeOffset();
+						if (breakChargePlayData_) {
+							breakChargePlayData_->Stop();
+							breakChargePlayData_.reset();
+						}
 						rightClickTarget_ = nullptr;
 						rightClickHoldTimer_ = 0.0f;
 					}
 				}
 			}
 
-			// 右クリック（AutoPlace）の処理
-			if (keys[Key::AutoPlace]) {
+			// 右クリック（AutoPlace）の処理（削除タイマー動作中はスキップ）
+			if (keys[Key::AutoPlace] && rightClickTarget_ == nullptr) {
 				// ショップエリアのピースかを確認
 				if (pieceManager_->IsShopPiece(piece)) {
 					// 元の位置と回転を保存
 					Vector3 originalPos = piece->GetPosition();
 					Piece::Direction originalDir = piece->GetDirection();
-					
+
 					// 自動配置を試みる
 					if (piece->AutoPlace(backPack)) {
 						// 配置成功：何もしない（既にPutが呼ばれている）
+						AudioManager::GetInstance()->GetData("rotate.mp3")->SetVolume(1.0f);
+						AudioManager::GetInstance()->GetData("rotate.mp3")->Play();
+						// ゲージに吸われるエフェクトの発火
+						isEffect_ = true;
+						putPos_ = piece->GetPosition();
+						putWeaponID_ = piece->GetItem().weaponID;
+						putIsVertical_ = piece->IsVertical();
+						putDirection_ = piece->GetDirection();
 
-								// ゲージに吸われるエフェクトの発火
-								isEffect_ = true;
-								putPos_ = piece->GetPosition();
-								putWeaponID_ = piece->GetItem().weaponID;
-								putIsVertical_ = piece->IsVertical();
-								putDirection_ = piece->GetDirection();
-
-							} else {
+					} else {
 						// 配置失敗：元の位置と回転に戻す
 						// 回転を元に戻す
 						while (piece->GetDirection() != originalDir) {
@@ -242,13 +256,13 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 						// 保留エリアにある場合、通常エリアに移動
 						piece->MoveToNormal(backPack);
 
-								// ゲージに吸われるエフェクトの発火
-								isEffect_ = true;
-								putPos_ = piece->GetPosition();
-								putWeaponID_ = piece->GetItem().weaponID;
-								putIsVertical_ = piece->IsVertical();
-								putDirection_ = piece->GetDirection();
-							} else {
+						// ゲージに吸われるエフェクトの発火
+						isEffect_ = true;
+						putPos_ = piece->GetPosition();
+						putWeaponID_ = piece->GetItem().weaponID;
+						putIsVertical_ = piece->IsVertical();
+						putDirection_ = piece->GetDirection();
+					} else {
 						// 通常エリアにある場合、保留エリアに移動
 						piece->MoveToReserve(backPack);
 					}
