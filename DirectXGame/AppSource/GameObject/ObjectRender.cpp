@@ -36,6 +36,10 @@ void ObjectRender::SetDrawInfo(DrawInfo* info, size_t num, Matrix4x4 vpMatrix) {
 
 void ObjectRender::Draw(CmdObj* cmdObj) {
 	for (auto& [id, renderObject] : renderObjects_) {
+		if (id == 0) {
+			continue;
+		}
+
 		if (renderObject) {
 			renderObject->Draw(cmdObj);
 		}
