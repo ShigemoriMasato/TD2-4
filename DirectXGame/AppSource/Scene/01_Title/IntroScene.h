@@ -7,6 +7,8 @@
 #include "Object/Gate.h"
 #include <GameObject/Effect/Particle/MultiParticle/MultiParticle.h>
 #include <Render/PostEffect.h>
+#include <Render/RenderObject.h>
+#include <Camera/Camera.h>
 
 class IntroScene : public IScene {
 public:
@@ -42,5 +44,15 @@ private:
 	Fade fade_;
 
 	bool fadeIn_ = false;
+
+	// マウスカーソルスプライト
+	std::unique_ptr<SHEngine::RenderObject> mouseCursorSprite_;
+	int mouseCursorTexDefault_ = 0;
+	int mouseCursorTexLeft_    = 0;
+	int mouseCursorTexRight_   = 0;
+	int mouseCursorTexBoth_    = 0;
+	int mouseCursorTextureIndex_ = 0;
+	Transform mouseCursorTransform_ = { {32.0f, 32.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
+	std::unique_ptr<Camera> orthoCamera_;
 
 };
