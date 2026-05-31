@@ -12,6 +12,8 @@ void SHEngine::Renderer::SetGPUBuffer(GPUBuffer* gpuBuffer, ShaderType shaderTyp
 }
 
 void SHEngine::Renderer::Draw(CmdObj* cmdObj) {
+	if (instanceNum_ == 0) return;
+
 	auto cmdList = cmdObj->GetCommandList();
 	auto display = cmdObj->GetRenderTarget();
 

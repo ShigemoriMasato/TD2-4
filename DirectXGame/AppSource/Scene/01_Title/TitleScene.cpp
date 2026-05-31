@@ -15,6 +15,7 @@ TitleScene::TitleScene() {
 
 TitleScene::~TitleScene() {
 	bgm_->Stop();
+	Save();
 }
 
 void TitleScene::Initialize() {
@@ -120,7 +121,6 @@ void TitleScene::Initialize() {
 	yukaRender_->CreateCBV(sizeof(DirectionalLight), ShaderType::PIXEL_SHADER, "DirectionalLight");
 
 	yukaTexIndex_ = yukaModelData.materials[yukaModelData.materialIndex.front()].textureIndex;
-	Vector4 yukaColor = {1.0f, 0.0f, 0.0f, 1.0f};
 	yukaRender_->CopyBufferData(1, &yukaColor, sizeof(yukaColor));
 	yukaRender_->CopyBufferData(2, &yukaTexIndex_, sizeof(yukaTexIndex_));
 
@@ -130,7 +130,7 @@ void TitleScene::Initialize() {
 
 	// ライトの設定
 	dirLight_.color = {1.0f, 1.0f, 1.0f, 1.0f};
-	dirLight_.direction = {0.0f, 1.0f, 0.0f};
+	dirLight_.direction = {0.0f, -1.0f, 0.0f};
 	dirLight_.intensity = 1.0f;
 
 	bgm_ = AudioManager::GetInstance()->GetData("TitleScene.mp3")->CustomPlay(255);
@@ -167,12 +167,77 @@ void TitleScene::Initialize() {
 	mouseCursorSprite_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
 	mouseCursorSprite_->SetUseTexture(true);
 	mouseCursorSprite_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Transparent;
+
+	{
+		container_ = std::make_unique<SHEngine::BufferContainer>();
+
+		auto model = modelManager_->GetNodeModelData(modelManager_->LoadModel("leaf"));
+		auto leaf = drawDataManager_->GetDrawData(model.drawDataIndex);
+		leaf_ = std::make_unique<SHEngine::Renderer>(leaf);
+
+		leaf_->SetVS("Simple_s.VS.hlsl");
+		leaf_->SetPS("TexColor.PS.hlsl");
+
+		leaf_->SetDepthStencil(SHEngine::PSO::DepthStencilID::Transparent);
+		
+		matrixBuffer_ = container_->Create(BufferType::SRV, sizeof(Matrix4x4), 128);
+		auto indexBuffer = container_->Create(BufferType::CBV, sizeof(int));
+		auto colorBuffer = container_->Create(BufferType::CBV, sizeof(Vector4));
+		Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+		int textureIndex = model.materials[model.materialIndex.front()].textureIndex;
+		colorBuffer->CopyBuffer(&color, sizeof(color));
+		indexBuffer->CopyBuffer(&textureIndex, sizeof(textureIndex));
+
+		leaf_->SetGPUBuffer(matrixBuffer_, ShaderType::VERTEX_SHADER, BufferType::SRV);
+		leaf_->SetGPUBuffer(colorBuffer, ShaderType::PIXEL_SHADER, BufferType::CBV);
+		leaf_->SetGPUBuffer(indexBuffer, ShaderType::PIXEL_SHADER, BufferType::CBV);
+		leaf_->SetUseTexture(true);
+		leaf_->SetSampler(uint32_t(SHEngine::PSO::SamplerID::Default));
+		leaf_->SetRasterizer(SHEngine::PSO::RasterizerID::CullNone);
+		leaf_->SetDepthStencil(SHEngine::PSO::DepthStencilID::Transparent);
+	}
+
+	{
+		auto model = modelManager_->GetNodeModelData(modelManager_->LoadModel("splash"));
+		auto drawData = drawDataManager_->GetDrawData(model.drawDataIndex);
+
+		splash_ = std::make_unique<SHEngine::Renderer>(drawData);
+		splash_->SetVS("Simple.VS.hlsl");
+		splash_->SetPS("PostEffect/Simple.PS.hlsl");
+		splashBuffer_ = container_->Create(BufferType::CBV, sizeof(Matrix4x4));
+		auto tex = container_->Create(BufferType::CBV, sizeof(int));
+		int textureIndex = model.materials[model.materialIndex.front()].textureIndex;
+		tex->CopyBuffer(&textureIndex, sizeof(textureIndex));
+
+		splash_->SetGPUBuffer(splashBuffer_, ShaderType::VERTEX_SHADER, BufferType::CBV);
+		splash_->SetGPUBuffer(tex, ShaderType::PIXEL_SHADER, BufferType::CBV);
+		splash_->SetUseTexture(true);
+		splash_->SetSampler(uint32_t(SHEngine::PSO::SamplerID::Default));
+	}
+
+	Load();
 }
 
 std::unique_ptr<IScene> TitleScene::Update() {
 	auto keys = commonData_->keyManager->GetKeyStates();
 
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
+
+	for (int i = 0; i < particles_.size(); ++i) {
+		particles_[i]->SetModelWorld(particleTransforms_[i].GetMatrix());
+		particles_[i]->SetCameraPos(gameCamera_->GetPosition());
+		particles_[i]->Update(deltaTime);
+	}
+
+	std::vector<Matrix4x4> leafWorlds;
+	leafWorlds.reserve(leafTransforms_.size());
+	Matrix4x4 vp = gameCamera_->GetVPMatrix();
+	for (const auto& trans : leafTransforms_) {
+		leafWorlds.push_back(trans.GetMatrix() * vp);
+	}
+	matrixBuffer_->CopyBuffer(leafWorlds.data(), sizeof(Matrix4x4) * leafWorlds.size());
+
+	splashBuffer_->CopyBuffer(&vp, sizeof(Matrix4x4));
 
 	shopScene_->SetDeltaTime(deltaTime);
 	shopScene_->Update();
@@ -280,7 +345,6 @@ std::unique_ptr<IScene> TitleScene::Update() {
 		Matrix4x4 yukaWvp = Matrix::MakeScaleMatrix(yukaTransform_.scale) * Matrix::MakeRotationMatrix(yukaTransform_.rotate) *
 			Matrix::MakeTranslationMatrix(yukaTransform_.position) * gameCamera_->GetVPMatrix();
 
-		Vector4 yukaColor = { 1.0f, 0.0f, 0.0f, 1.0f };
 		yukaRender_->CopyBufferData(0, &yukaWvp, sizeof(yukaWvp));
 		yukaRender_->CopyBufferData(1, &yukaColor, sizeof(yukaColor));
 		yukaRender_->CopyBufferData(2, &yukaTexIndex_, sizeof(yukaTexIndex_));
@@ -338,6 +402,8 @@ void TitleScene::Draw() {
 	// ディスプレイへの描画開始
 	display->PreDraw(cmdObj, true);
 
+	splash_->Draw(cmdObj);
+
 	// Mapの描画（displayに描画）
 	//map_->Draw(cmdObj);
 
@@ -357,6 +423,14 @@ void TitleScene::Draw() {
 
 	// TitleUIの描画（displayに描画）
 	titleUI_->Draw(cmdObj);
+
+	leaf_->instanceNum_ = static_cast<uint32_t>(leafTransforms_.size());
+	leaf_->Draw(cmdObj);
+
+	for (auto& particle : particles_) {
+		particle->Draw();
+	}
+	commonData_->particleDrawer->Draw(cmdObj, gameCamera_->GetVPMatrix());
 
 	// フェードの描画
 	fadeManager_->Draw(cmdObj);
@@ -443,10 +517,6 @@ void TitleScene::Draw() {
 
 	display->DrawImGui();
 
-	ImGui::Begin("Depth");
-	ImGui::Image((ImTextureRef)commonData_->display->GetDisplay()->GetDepthTexture()->GetGPUHandle().ptr, ImVec2(256, 9 * 16));
-	ImGui::End();
-
 	// プレイヤーのデバッグ情報を表示
 	if (player_) {
 		player_->DrawImGui();
@@ -457,6 +527,77 @@ void TitleScene::Draw() {
 	ImGui::Text("DeltaTime: %.3f ms", deltaTime * 1000.0f);
 	ImGui::Text("FPS: %.1f", 1.0f / deltaTime);
 	ImGui::End();
+
+	ImGui::Begin("Particle");
+
+	static int particleEditIndex = 0;
+	ImGui::Text("Current: %d / %d", particleEditIndex + 1, static_cast<int>(particles_.size()));
+	if (ImGui::Button("-")) {
+		particleEditIndex--;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("+")) {
+		particleEditIndex++;
+	}
+
+	if (ImGui::Button("Add")) {
+		auto& particle = particles_.emplace_back(std::make_unique<MultiParticle>());
+		particle->Initialize(textureManager_, modelManager_, commonData_);
+		particle->Add("titleUI.json");
+		particle->SetEmittingFlag(true);
+		particleTransforms_.emplace_back();
+	}
+	if (ImGui::Button("Erase Current")) {
+		if (!particles_.empty()) {
+			particles_.erase(particles_.begin() + particleEditIndex);
+			particleTransforms_.erase(particleTransforms_.begin() + particleEditIndex);
+		}
+	}
+
+	particleEditIndex = std::clamp(particleEditIndex, 0, std::max(0, static_cast<int>(particles_.size()) - 1));
+
+	if (!particleTransforms_.empty()) {
+		auto& transform = particleTransforms_[particleEditIndex];
+		ImGui::DragFloat3("Scale", &transform.scale.x, 0.01f, 0.01f, 10.0f);
+		ImGui::DragFloat3("Rotation", &transform.rotate.x, 0.01f);
+		ImGui::DragFloat3("Position", &transform.position.x, 0.01f);
+	}
+
+	ImGui::End();
+
+	ImGui::Begin("Leaf");
+
+	static int leafEditIndex = 0;
+	ImGui::Text("Current: %d / %d", leafEditIndex + 1, static_cast<int>(leafTransforms_.size()));
+	if (ImGui::Button("-##Leaf")) {
+		leafEditIndex--;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("+##Leaf")) {
+		leafEditIndex++;
+	}
+
+	if (ImGui::Button("Add##Leaf")) {
+		leafTransforms_.emplace_back();
+	}
+
+	if (ImGui::Button("Erase Current##Leaf")) {
+		if (!leafTransforms_.empty()) {
+			leafTransforms_.erase(leafTransforms_.begin() + leafEditIndex);
+		}
+	}
+
+	leafEditIndex = std::clamp(leafEditIndex, 0, std::max(0, static_cast<int>(leafTransforms_.size()) - 1));
+
+	if (!leafTransforms_.empty()) {
+		auto& leafTrans = leafTransforms_[leafEditIndex];
+		ImGui::DragFloat3("Scale##Leaf", &leafTrans.scale.x, 0.01f, 0.01f, 10.0f);
+		ImGui::DragFloat3("Rotation##Leaf", &leafTrans.rotate.x, 0.01f);
+		ImGui::DragFloat3("Position##Leaf", &leafTrans.position.x, 0.01f);
+	}
+
+	ImGui::End();
+
 #endif
 
 	engine_->DrawImGui();
@@ -468,4 +609,64 @@ void TitleScene::Draw() {
 void TitleScene::UpdateCalculatedVolumes() {
 	calculatedBgmVolume_ = (*bgmVolume_) * (*masterVolume_);
 	calculatedSeVolume_ = (*seVolume_) * (*masterVolume_);
+}
+
+void TitleScene::Save() {
+	BinaryManager bin;
+	const std::string saveFile = "TitleParticleConfig.bin";
+
+	int num = static_cast<int>(particles_.size());
+	bin.Register(&num);
+	for (const auto& trans : particleTransforms_) {
+		bin.Register(&trans);
+	}
+	bin.Write(saveFile);
+
+	BinaryManager bin2;
+	const std::string saveFile2 = "leafs.bin";
+	int leafNum = static_cast<int>(leafTransforms_.size());
+	bin2.Register(&leafNum);
+	for (const auto& trans : leafTransforms_) {
+		bin2.Register(&trans);
+	}
+	bin2.Write(saveFile2);
+}
+
+void TitleScene::Load() {
+	BinaryManager bin;
+	const std::string saveFile = "TitleParticleConfig.bin";
+
+	if (bin.Boot(saveFile)) {
+		int num = bin.Reverse<int>();
+		particles_.clear();
+		for (int i = 0; i < num; ++i) {
+			auto& particle = particles_.emplace_back(std::make_unique<MultiParticle>());
+			particle->Initialize(textureManager_, modelManager_, commonData_);
+			particle->Add("titleUI.json");
+			particle->SetEmittingFlag(true);
+			
+			auto& particleTransform = particleTransforms_.emplace_back();
+			particleTransform = bin.Reverse<Transform>();
+		}
+	}else {
+		auto& particle = particles_.emplace_back(std::make_unique<MultiParticle>());
+		particle->Initialize(textureManager_, modelManager_, commonData_);
+		particle->Add("titleUI.json");
+		particle->SetEmittingFlag(true);
+
+		auto& trans = particleTransforms_.emplace_back();
+	}
+
+	BinaryManager bin2;
+	const std::string saveFile2 = "leafs.bin";
+
+	if (!bin2.Boot(saveFile2)) {
+		return;
+	}
+
+	int leafNum = bin2.Reverse<int>();
+	leafTransforms_.resize(leafNum);
+	for (int i = 0; i < leafNum; ++i) {
+		leafTransforms_[i] = bin2.Reverse<Transform>();
+	}
 }

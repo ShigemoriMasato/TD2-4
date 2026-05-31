@@ -13,6 +13,7 @@ class ParticleDrawer;
 class MultiParticle final
 {
 public:
+
 	void Initialize(
 		SHEngine::TextureManager* textureManager,
 		SHEngine::ModelManager* modelManager,

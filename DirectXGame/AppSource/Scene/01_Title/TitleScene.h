@@ -14,6 +14,7 @@
 #include <02_ShigeScene/ShopScene.h>
 #include <Render/RenderObject.h>
 #include <Tool/Grid/Grid.h>
+#include <Render/Renderer.h>
 
 // ダミーコントローラー（タイトル画面用）
 class DummyController : public IController {
@@ -109,4 +110,20 @@ private:// Shop
 	int mouseCursorTexRight_ = -1;
 	int mouseCursorTexBoth_ = -1;
 	Transform mouseCursorTransform_ = { {32.0f, 32.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
+
+	Vector4 yukaColor = { 0.6f, 0.6f, 0.3f, 1.0f };
+
+	std::vector<std::unique_ptr<MultiParticle>> particles_;
+	std::vector<Transform> particleTransforms_;
+
+	std::unique_ptr<SHEngine::BufferContainer> container_;
+	std::unique_ptr<SHEngine::Renderer> leaf_;
+	SHEngine::GPUBuffer* matrixBuffer_ = nullptr;
+	std::vector<Transform> leafTransforms_;
+
+	std::unique_ptr<SHEngine::Renderer> splash_ = nullptr;
+	SHEngine::GPUBuffer* splashBuffer_ = nullptr;
+
+	void Save();
+	void Load();
 };

@@ -29,6 +29,8 @@ void DebugCamera::Update(bool enableInput) {
 	Vector3 cameraVelocity{};
 	Vector3 centerVelocity{};
 
+#ifdef USE_IMGUI
+
 	//===================
 	//球面座標系
 	//===================
@@ -48,6 +50,8 @@ void DebugCamera::Update(bool enableInput) {
 			spherical_ += Vector3(mouseWheel * 0.05f, mouseMove.y * speed_, -mouseMove.x * speed_);
 		}
 	}
+
+#endif
 
 	spherical_.x = std::max(0.01f, spherical_.x); // マイナスにならないようにする
 

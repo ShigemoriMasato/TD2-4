@@ -53,7 +53,7 @@ std::unique_ptr<IScene> IntroScene::Update() {
 	multiParticle2_.SetCameraPos(camera_.GetPosition());
 	multiParticle2_.Update(deltaTime);
 
-	if (keys[Key::Correct]) {
+	if (keys[Key::Correct] && !fadeIn_) {
 		gate_.Open();
 		compute_->GetTitleLogo()->Mist();
 		fadeIn_ = true;
