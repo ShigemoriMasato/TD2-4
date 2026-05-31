@@ -6,6 +6,12 @@
 namespace fs = std::filesystem;
 
 void BinaryManager::Write(const std::string& fileName) {
+	BinaryManager buff;
+	buff.Boot(fileName); // 既存のファイルからバッファを読み込む
+	if (buff.inputBuffer_ == this->binaryBuffer_) {
+		return; // バッファが同じなら書き込まない
+	}
+
 	std::ofstream file(basePath + fileName, std::ios::binary);
 
 	if (!file) {
