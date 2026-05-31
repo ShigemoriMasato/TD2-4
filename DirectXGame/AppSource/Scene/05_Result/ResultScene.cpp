@@ -5,7 +5,7 @@
 #include <Utility/Color.h>
 #include <format>
 #include <imgui/imgui.h>
-
+#include <Scene/01_Title/IntroScene.h>
 using namespace SHEngine;
 
 ResultScene::ResultScene() {}
@@ -89,6 +89,22 @@ void ResultScene::Initialize() {
 	SHEngine::DrawData planeDrawData = drawDataManager_->GetDrawData(modelManager_->GetNodeModelData(1).drawDataIndex);
 	gameFrame_ = std::make_unique<GameFrame>();
 	gameFrame_->Initialize(planeDrawData, textureManager_->LoadTexture("TitleFrame.png"));
+
+	// マウスカーソルスプライトの初期化
+	mouseCursorTexDefault_ = textureManager_->LoadTexture("Assets/Texture/UI/mouse.png");
+	mouseCursorTexLeft_    = textureManager_->LoadTexture("Assets/Texture/UI/mouseL.png");
+	mouseCursorTexRight_   = textureManager_->LoadTexture("Assets/Texture/UI/mouseR.png");
+	mouseCursorTexBoth_    = textureManager_->LoadTexture("Assets/Texture/UI/mouseD.png");
+	mouseCursorTextureIndex_ = mouseCursorTexDefault_;
+	mouseCursorSprite_ = std::make_unique<SHEngine::RenderObject>("MouseCursorSprite");
+	mouseCursorSprite_->Initialize();
+	mouseCursorSprite_->SetDrawData(planeDrawData);
+	mouseCursorSprite_->psoConfig_.vs = "Simple.VS.hlsl";
+	mouseCursorSprite_->psoConfig_.ps = "PostEffect/Simple.PS.hlsl";
+	mouseCursorSprite_->CreateCBV(sizeof(Matrix4x4), ShaderType::VERTEX_SHADER, "WVP");
+	mouseCursorSprite_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
+	mouseCursorSprite_->SetUseTexture(true);
+	mouseCursorSprite_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Transparent;
 
 	bloom_.intensity = 0.15f;
 	bloom_.radius = 0.8f;
@@ -255,7 +271,7 @@ std::unique_ptr<IScene> ResultScene::Update() {
 				if (selectedIndex_ == 0) {
 					fadeManager_->StartFadeIn([]() { return std::make_unique<ShigeScene>(); });
 				} else {
-					fadeManager_->StartFadeIn([]() { return std::make_unique<TitleScene>(); });
+					fadeManager_->StartFadeIn([]() { return std::make_unique<IntroScene>(); });
 				}
 			}
 		}
@@ -335,6 +351,27 @@ std::unique_ptr<IScene> ResultScene::Update() {
 		lastSelectedIndex_ = selectedIndex_;
 	}
 
+	// マウスカーソルスプライトの更新
+	{
+		bool leftClick  = (input_->GetMouseButtonState()[0] & 0x80) != 0;
+		bool rightClick = (input_->GetMouseButtonState()[1] & 0x80) != 0;
+		if (leftClick && rightClick) {
+			mouseCursorTextureIndex_ = mouseCursorTexBoth_;
+		} else if (leftClick) {
+			mouseCursorTextureIndex_ = mouseCursorTexLeft_;
+		} else if (rightClick) {
+			mouseCursorTextureIndex_ = mouseCursorTexRight_;
+		} else {
+			mouseCursorTextureIndex_ = mouseCursorTexDefault_;
+		}
+		Vector2 cursorPos = input_->GetCursorPos();
+		mouseCursorTransform_.position = {cursorPos.x, cursorPos.y * -1.0f, 0.0f};
+		Matrix4x4 wvp = Matrix::MakeAffineMatrix(mouseCursorTransform_.scale, mouseCursorTransform_.rotate, mouseCursorTransform_.position);
+		wvp *= orthoCamera_->GetVPMatrix();
+		mouseCursorSprite_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
+		mouseCursorSprite_->CopyBufferData(1, &mouseCursorTextureIndex_, sizeof(int));
+	}
+
 	return nullptr;
 }
 
@@ -363,6 +400,9 @@ void ResultScene::Draw() {
 
 	fadeManager_->Draw(cmdObj);
 	gameFrame_->Draw(cmdObj);
+
+	// マウスカーソルスプライトの描画
+	mouseCursorSprite_->Draw(cmdObj);
 
 	display->PostDraw(cmdObj);
 
