@@ -39,4 +39,8 @@ private:
 	PostEffect postEffect_;
 	PostEffectConfig postEffectConfig_;
 
+	Fade fade_;
+
+	bool fadeIn_ = false;
+
 };
