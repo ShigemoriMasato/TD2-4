@@ -14,10 +14,7 @@ void AttackManager::Update(float deltaTime) {
 	}
 
 	// 非アクティブな攻撃オブジェクトを削除
-	attackObjects_.erase(
-		std::remove_if(attackObjects_.begin(), attackObjects_.end(),
-			[](const std::unique_ptr<IAttackObject>& obj) { return !obj->IsActive(); }),
-		attackObjects_.end());
+	attackObjects_.erase(std::remove_if(attackObjects_.begin(), attackObjects_.end(), [](const std::unique_ptr<IAttackObject>& obj) { return !obj->IsActive(); }), attackObjects_.end());
 }
 
 void AttackManager::Draw(CmdObj* cmdObj) {
