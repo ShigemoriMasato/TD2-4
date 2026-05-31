@@ -76,4 +76,10 @@ private:
 	Transform sparkParticleTransform_;
 	Matrix4x4 sparkParticleModelWorld_;
 	bool mrSecond = false;
+
+	Vector2 lastMousePos_ = {0.0f, 0.0f};
+	Vector2 hitBoxSize_ = {200.0f, 60.0f};
+
+	float retryTextMarginX_ = 120.0f;
+	float toTitleTextMarginX_ = 150.0f;
 };
