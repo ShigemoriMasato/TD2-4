@@ -298,7 +298,7 @@ void ShigeScene::Initialize() {
 	mouseCursorSprite_->CreateCBV(sizeof(int), ShaderType::PIXEL_SHADER, "TextureIndex");
 	mouseCursorSprite_->SetUseTexture(true);
 	mouseCursorSprite_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Transparent;
-
+	
 	// mouseM スプライトの初期化
 	mouseMTexIndex_ = textureManager_->LoadTexture("Assets/Texture/UI/mouseM.png");
 	mouseMSprite_ = std::make_unique<SHEngine::RenderObject>("MouseMSprite");
