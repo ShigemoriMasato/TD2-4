@@ -8,6 +8,7 @@
 #include <03_YokoScene/PrticleEditorScene.h>
 #include <WeaponEdit/WeaponEditScene.h>
 
+#include <Scene/01_Title/IntroScene.h>
 #include <Scene/01_Title/TitleScene.h>
 #include <Scene/05_Result/ResultScene.h>
 
@@ -181,11 +182,15 @@ std::unique_ptr<IScene> InitializeScene::Update() {
 	return std::make_unique<TitleScene>();
 	return std::make_unique<TrailEditorScene>();
 	return std::make_unique<ShigeScene>();
+	return std::make_unique<TitleScene>();
 	return std::make_unique<PrticleEditorScene>();
 	return std::make_unique<TrailEditorScene>();
-	return std::make_unique<PrticleEditorScene>();
-	return std::make_unique<PrticleEditorScene>();
+
+	return std::make_unique<IntroScene>();
+	return std::make_unique<ResultScene>();
 	return std::make_unique<YokoScene>();
+	return std::make_unique<ShigeScene>();
+	return std::make_unique<ResultScene>();
 }
 
 void InitializeScene::Draw() {

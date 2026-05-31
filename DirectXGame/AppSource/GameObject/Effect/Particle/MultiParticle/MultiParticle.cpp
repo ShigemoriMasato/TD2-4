@@ -69,6 +69,14 @@ void MultiParticle::SetEmittingFlag(const int32_t id, bool flag)
 	}
 }
 
+void MultiParticle::SetEmittingFlag(bool flag)
+{
+	for (auto& [name, particle] : instanceCache_)
+	{
+		particle->SetEnabled(flag);
+	}
+}
+
 void MultiParticle::SetConfig(const int32_t id, const ParticlePresetVariant& presetVar)
 {
 	if (instanceCache_.find(id) != instanceCache_.end())
@@ -86,13 +94,13 @@ ParticlePresetVariant MultiParticle::GetConfig(const int32_t id)
 	return {};
 }
 
-bool MultiParticle::GetIsJustEmitted(const int32_t id)
+int32_t MultiParticle::GetEmitCount(const int32_t id)
 {
 	if (instanceCache_.find(id) != instanceCache_.end())
 	{
-		return instanceCache_[id]->GetIsJustEmitted();
+		return instanceCache_[id]->GetEmitCount();
 	}
-	return false;
+	return 0;
 }
 
 void MultiParticle::Clear()

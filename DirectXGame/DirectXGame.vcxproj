@@ -211,6 +211,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\Utils\AppUtils.cpp" />
     <ClCompile Include="AppSource\GameObject\Result\EnemyRainManager.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Particle\Type\B_S_R_T_C_Particle\B_S_R_T_C_Particle.cpp" />
+    <ClCompile Include="AppSource\Scene\01_Title\Compute.cpp" />
     <ClCompile Include="Engine\Render\Buffer\BufferContainer.cpp" />
     <ClCompile Include="Engine\Assets\Audio\Data\PlayData.cpp" />
     <ClCompile Include="Engine\Compute\PSO\CSPSOManager.cpp" />
@@ -299,6 +300,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\Fade\FadeManager.cpp" />
     <ClCompile Include="AppSource\GameObject\GPUParticle\GPUParticle.cpp" />
     <ClCompile Include="AppSource\GameObject\GPUParticle\GPUPRender.cpp" />
+    <ClCompile Include="AppSource\Scene\01_Title\IntroScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\ITrail.cpp" />
@@ -344,6 +346,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\WeaponEdit\Weapon.cpp" />
     <ClCompile Include="AppSource\WeaponEdit\WeaponImGui.cpp" />
     <ClCompile Include="AppSource\UI\Game\WeaponList\WeaponList.cpp" />
+    <ClCompile Include="AppSource\Scene\01_Title\TitleLogo\TitleLogo.cpp" />
     <ClInclude Include="AppSource\02_ShigeScene\GameDisplayRange.h" />
     <ClInclude Include="AppSource\fontPath.h" />
     <ClInclude Include="AppSource\GameObject\Enemy\DamagePopup.h" />
@@ -404,6 +407,7 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\Utils\AppUtils.h" />
     <ClInclude Include="AppSource\GameObject\Result\EnemyRainManager.h" />
     <ClInclude Include="AppSource\GameObject\Effect\Particle\Type\B_S_R_T_C_Particle\B_S_R_T_C_Particle.h" />
+    <ClInclude Include="AppSource\Scene\01_Title\Compute.h" />
     <ClInclude Include="Engine\Render\Buffer\BufferContainer.h" />
     <ClInclude Include="Engine\Assets\Audio\Data\PlayData.h" />
     <ClInclude Include="Engine\Compute\PSO\CSPSOManager.h" />
@@ -534,6 +538,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\WeaponEdit\WeaponImGui.h" />
     <ClInclude Include="AppSource\UI\Game\Pause\PauseMenu.h" />
     <ClInclude Include="AppSource\UI\Game\WeaponList\WeaponList.h" />
+    <ClInclude Include="AppSource\Scene\01_Title\TitleLogo\TitleLogo.h" />
+    <ClInclude Include="AppSource\Scene\01_Title\IntroScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

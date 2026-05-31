@@ -1,5 +1,6 @@
 #include "ShigeScene.h"
 #include "ShopScene.h"
+#include "fontPath.h"
 #include <../Engine/Assets/Audio/AudioManager.h>
 #include "GameObject/Random/Random.h"
 #include <Common/KeyConfig/WorldCursor.h>
@@ -10,7 +11,6 @@
 #include <imgui/imgui.h>
 #include <numbers>
 #include <windows.h>
-#include "fontPath.h"
 ShigeScene::~ShigeScene() { bgm_->Stop(); }
 
 void ShigeScene::Initialize() {
@@ -22,6 +22,12 @@ void ShigeScene::Initialize() {
 	gameCamera_->SetInput(input_);
 	gameCamera_->SetOffset({0.0f, 30.0f, -45.0f});
 	gameCamera_->Setrotation({-0.5f, 0.0f, 0.0f});
+
+	pauseCamera_ = std::make_unique<GameCamera>();
+	pauseCamera_->Initialize();
+	pauseCamera_->SetInput(input_);
+	pauseCamera_->SetOffset({0.0f, 0.0f, -45.0f});
+	pauseCamera_->Setrotation({0.0f, 0.0f, 0.0f});
 
 	camera_ = gameCamera_.get();
 
@@ -258,7 +264,7 @@ void ShigeScene::Initialize() {
 
 	// ポーズメニュー
 	pauseMenu_ = std::make_unique<PauseMenu>();
-	pauseMenu_->Initialize(modelManager_, drawDataManager_, textureManager_);
+	pauseMenu_->Initialize(modelManager_, drawDataManager_, textureManager_, input_, commonData_->keyManager.get());
 
 	// コールバック登録
 	pauseMenu_->SetAction(0, [this]() {
@@ -273,14 +279,14 @@ void ShigeScene::Initialize() {
 
 	pauseMenu_->SetAction(2, [this]() {
 		// Weapons
-		fadeManager_->StartFadeIn([]() { return std::make_unique<ResultScene>(); });
+		isWeaponListVisible_ = true;
 	});
 
 	// マウスカーソルスプライトの初期化
 	mouseCursorTexDefault_ = textureManager_->LoadTexture("Assets/Texture/UI/mouse.png");
-	mouseCursorTexLeft_    = textureManager_->LoadTexture("Assets/Texture/UI/mouseL.png");
-	mouseCursorTexRight_   = textureManager_->LoadTexture("Assets/Texture/UI/mouseR.png");
-	mouseCursorTexBoth_    = textureManager_->LoadTexture("Assets/Texture/UI/mouseD.png");
+	mouseCursorTexLeft_ = textureManager_->LoadTexture("Assets/Texture/UI/mouseL.png");
+	mouseCursorTexRight_ = textureManager_->LoadTexture("Assets/Texture/UI/mouseR.png");
+	mouseCursorTexBoth_ = textureManager_->LoadTexture("Assets/Texture/UI/mouseD.png");
 	mouseCursorTextureIndex_ = mouseCursorTexDefault_;
 	mouseCursorSprite_ = std::make_unique<SHEngine::RenderObject>("MouseCursorSprite");
 	mouseCursorSprite_->Initialize();
@@ -293,7 +299,11 @@ void ShigeScene::Initialize() {
 	mouseCursorSprite_->psoConfig_.depthStencilID = SHEngine::PSO::DepthStencilID::Transparent;
 
 	weaponList_ = std::make_unique<WeaponList>();
-	weaponList_->Initialize(modelManager_, drawDataManager_, textureManager_, commonData_->keyManager.get(), input_);
+	weaponList_->Initialize(modelManager_, drawDataManager_, textureManager_, commonData_->keyManager.get(), input_, weaponDatabase_.get());
+	weaponList_->SetCloseAction([this]() {
+		// バツボタンが押されたら武器リストを閉じる
+		isWeaponListVisible_ = false;
+	});
 
 	vinetteActiveHP_ = player_->GetMaxHP() * 0.2f;
 
@@ -305,15 +315,19 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	auto key = commonData_->keyManager->GetKeyStates();
 	float deltaTime = engine_->GetFPSObserver()->GetDeltatime();
 
-	if(key[Key::Debug3]){
+	if (key[Key::Pause]) {
 		isPause_ = !isPause_;
 	}
 
-	// ポーズメニュー更新
-	pauseMenu_->Update(orthoCamera_->GetVPMatrix(), deltaTime, key);
-
-	// 武器図鑑更新
-	weaponList_->Update(orthoCamera_->GetVPMatrix(), deltaTime, key);
+	if (isWeaponListVisible_) {
+		// 武器リスト表示中は武器リストのみを更新
+		weaponList_->Update(orthoCamera_->GetVPMatrix(), pauseCamera_->GetVPMatrix(), deltaTime, key);
+	} else {
+		if (isPause_) {
+			// 武器リストが開いていないときだけポーズメニューを更新
+			pauseMenu_->Update(orthoCamera_->GetVPMatrix(), deltaTime, key);
+		}
+	}
 
 	// フェード更新
 	fadeManager_->Update(camera_->GetVPMatrix(), deltaTime);
@@ -323,6 +337,27 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		return next;
 	}
 
+	// マウスカーソルスプライトの更新
+	{
+		bool leftClick = (input_->GetMouseButtonState()[0] & 0x80) != 0;
+		bool rightClick = (input_->GetMouseButtonState()[1] & 0x80) != 0;
+		if (leftClick && rightClick) {
+			mouseCursorTextureIndex_ = mouseCursorTexBoth_;
+		} else if (leftClick) {
+			mouseCursorTextureIndex_ = mouseCursorTexLeft_;
+		} else if (rightClick) {
+			mouseCursorTextureIndex_ = mouseCursorTexRight_;
+		} else {
+			mouseCursorTextureIndex_ = mouseCursorTexDefault_;
+		}
+		Vector2 cursorPos = input_->GetCursorPos();
+		mouseCursorTransform_.position = {cursorPos.x, cursorPos.y * -1.0f, 0.0f};
+		Matrix4x4 wvp = Matrix::MakeAffineMatrix(mouseCursorTransform_.scale, mouseCursorTransform_.rotate, mouseCursorTransform_.position);
+		wvp *= orthoCamera_->GetVPMatrix();
+		mouseCursorSprite_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
+		mouseCursorSprite_->CopyBufferData(1, &mouseCursorTextureIndex_, sizeof(int));
+	}
+
 #ifdef _DEBUG
 	if (input_->GetKeyState(DIK_TAB) && !input_->GetPreKeyState(DIK_TAB)) {
 		return std::make_unique<TitleScene>();
@@ -330,7 +365,7 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 #endif
 
 	// ポーズフラグが立っていれば更新処理をスルー
-	if(isPause_){
+	if (isPause_) {
 		return 0;
 	}
 
@@ -356,17 +391,17 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	}
 
 	/*if (isCameraDragging_) {
-		if (isRightClickHeld) {
-			Vector2 delta = input_->GetMouseMove();
-			float moveScale = 0.05f;
-			cameraTargetOffset_.x -= delta.x * moveScale;
-			cameraTargetOffset_.z += delta.y * moveScale;
-		} else {
-			isCameraDragging_ = false;
-			cameraTargetOffset_ = {0.0f, 0.0f, 0.0f};
-		}
+	    if (isRightClickHeld) {
+	        Vector2 delta = input_->GetMouseMove();
+	        float moveScale = 0.05f;
+	        cameraTargetOffset_.x -= delta.x * moveScale;
+	        cameraTargetOffset_.z += delta.y * moveScale;
+	    } else {
+	        isCameraDragging_ = false;
+	        cameraTargetOffset_ = {0.0f, 0.0f, 0.0f};
+	    }
 	} else {
-		cameraTargetOffset_ = {0.0f, 0.0f, 0.0f};
+	    cameraTargetOffset_ = {0.0f, 0.0f, 0.0f};
 	}*/
 
 	Vector3 cameraTargetPos = player_->GetTransform().position + cameraTargetOffset_;
@@ -488,14 +523,13 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 		float animScale = 1.1f + 0.1f * std::sin(moveingIndicatorAnimTimer_ * 5.0f);
 
 		Transform indicatorTransform;
-		indicatorTransform.scale    = moveingIndicatorOffset_.scale * animScale;
-		indicatorTransform.rotate   = moveingIndicatorOffset_.rotate;
+		indicatorTransform.scale = moveingIndicatorOffset_.scale * animScale;
+		indicatorTransform.rotate = moveingIndicatorOffset_.rotate;
 		indicatorTransform.position = player_->GetTransform().position + moveingIndicatorOffset_.position;
-		Matrix4x4 wvp = Matrix::MakeScaleMatrix(indicatorTransform.scale) *
-						Matrix::MakeRotationMatrix(indicatorTransform.rotate) *
-						Matrix::MakeTranslationMatrix(indicatorTransform.position) * camera_->GetVPMatrix();
+		Matrix4x4 wvp = Matrix::MakeScaleMatrix(indicatorTransform.scale) * Matrix::MakeRotationMatrix(indicatorTransform.rotate) * Matrix::MakeTranslationMatrix(indicatorTransform.position) *
+		                camera_->GetVPMatrix();
 		Vector4 color = {1.0f, 1.0f, 1.0f, 1.0f};
-		Vector4 color2 = {0.0f, 1.0f, 0.0f, 1.0f };
+		Vector4 color2 = {0.0f, 1.0f, 0.0f, 1.0f};
 		if (inputController_->HasTarget()) {
 			moveingRender_->CopyBufferData(0, &wvp, sizeof(wvp));
 			moveingRender_->CopyBufferData(1, &color2, sizeof(color2));
@@ -519,27 +553,6 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 
 	timerText_->Update(orthoCamera_->GetVPMatrix());
 	timerText_->SetTransform(timerTextTransform_);
-
-	// マウスカーソルスプライトの更新
-	{
-		bool leftClick  = (input_->GetMouseButtonState()[0] & 0x80) != 0;
-		bool rightClick = (input_->GetMouseButtonState()[1] & 0x80) != 0;
-		if (leftClick && rightClick) {
-			mouseCursorTextureIndex_ = mouseCursorTexBoth_;
-		} else if (leftClick) {
-			mouseCursorTextureIndex_ = mouseCursorTexLeft_;
-		} else if (rightClick) {
-			mouseCursorTextureIndex_ = mouseCursorTexRight_;
-		} else {
-			mouseCursorTextureIndex_ = mouseCursorTexDefault_;
-		}
-		Vector2 cursorPos = input_->GetCursorPos();
-		mouseCursorTransform_.position = {cursorPos.x, cursorPos.y * -1.0f, 0.0f};
-		Matrix4x4 wvp = Matrix::MakeAffineMatrix(mouseCursorTransform_.scale, mouseCursorTransform_.rotate, mouseCursorTransform_.position);
-		wvp *= orthoCamera_->GetVPMatrix();
-		mouseCursorSprite_->CopyBufferData(0, &wvp, sizeof(Matrix4x4));
-		mouseCursorSprite_->CopyBufferData(1, &mouseCursorTextureIndex_, sizeof(int));
-	}
 
 	enemySpawnGraphText_->Update(orthoCamera_->GetVPMatrix());
 	enemySpawnGraphText_->SetTransform(enemySpawnGraphTextTransform_);
@@ -585,14 +598,11 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	waveSystem_->Update(deltaTime);
 	waveSystemUI_->Update(*waveSystem_, orthoCamera_->GetVPMatrix(), deltaTime);
 
-	if (key[Key::Debug1] || gameTimer_->IsEnd()) {
-	}
-
 	flashEffect_->Update(orthoCamera_->GetVPMatrix(), deltaTime);
 	letterBox_->Update(orthoCamera_->GetVPMatrix(), deltaTime);
 
 	// Vignette
-	if (player_->GetCurrentHP() <= vinetteActiveHP_ && vignette_.intensity == 0.0f) {
+	if (player_->GetCurrentHP() <= vinetteActiveHP_ && vignette_.intensity == 0.0f && player_->GetCurrentHP() != 0.0f) {
 		vignetteIntensityAnim_.anim.Start(0.0f, vinetteIntensity_, 0.5f, EaseType::EaseOutCubic);
 	} else if (player_->GetCurrentHP() > vinetteActiveHP_ && vignette_.intensity == vinetteIntensity_) {
 		vignetteIntensityAnim_.anim.Start(vinetteIntensity_, 0.0f, 0.5f, EaseType::EaseOutCubic);
@@ -601,6 +611,10 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 	vignette_.intensity = vignetteIntensityAnim_.temp;
 
 	if (player_->GetCurrentHP() <= 0) {
+		if (vignette_.intensity == vinetteIntensity_) {
+			vignetteIntensityAnim_.anim.Start(vinetteIntensity_, 0.0f, 0.5f, EaseType::EaseOutCubic);
+		}
+
 		if (!flashEffect_->GetIsActive() && !isPlayerDead_) {
 			flashEffect_->Trigger();
 			isPlayerDead_ = true;
@@ -615,14 +629,14 @@ std::unique_ptr<IScene> ShigeScene::Update() {
 				std::string debugMsg = std::format("Player Survived Time: {:.2f} s\n", gameTimer_->GetTimer());
 				OutputDebugStringA(debugMsg.c_str());
 				commonData_->isWin = false;
-				commonData_->clearTime = gameTimer_->GetTimer();
+				commonData_->clearTime = std::clamp(gameTimer_->GetTimer(), 0.0f, 300.0f);
 				commonData_->killCount = enemyManager_->GetKillCount();
 				fadeManager_->StartFadeIn([]() { return std::make_unique<ResultScene>(); });
 			}
 		}
 	} else if (waveSystem_->End()) {
 		commonData_->isWin = true;
-		commonData_->clearTime = gameTimer_->GetTimer();
+		commonData_->clearTime = std::clamp(gameTimer_->GetTimer(), 0.0f, 300.0f);
 		commonData_->killCount = enemyManager_->GetKillCount();
 		fadeManager_->StartFadeIn([]() { return std::make_unique<ResultScene>(); });
 	}
@@ -652,9 +666,13 @@ void ShigeScene::Draw() {
 	}
 
 	if (inputController_->HasTarget()) {
-		if (moveingRender_) { moveingRender_->Draw(cmdObj); }
+		if (moveingRender_) {
+			moveingRender_->Draw(cmdObj);
+		}
 	} else {
-		if (autoMoveingRender_) { autoMoveingRender_->Draw(cmdObj); }
+		if (autoMoveingRender_) {
+			autoMoveingRender_->Draw(cmdObj);
+		}
 	}
 
 	player_->Draw(cmdObj);
@@ -697,11 +715,17 @@ void ShigeScene::Draw() {
 
 	gameFrame_->Draw(cmdObj);
 
-	if(isPause_) {
-		pauseMenu_->Draw(cmdObj);
+	if (isPause_) {
+		// 武器リストが表示されていないときだけポーズメニューを描画
+		if (!isWeaponListVisible_) {
+			pauseMenu_->Draw(cmdObj);
+		}
 	}
 
-	//weaponList_->Draw(cmdObj);
+	// 武器リストの表示フラグが立っているときだけ描画
+	if (isWeaponListVisible_) {
+		weaponList_->Draw(cmdObj);
+	}
 
 	mouseCursorSprite_->Draw(cmdObj);
 

@@ -5,6 +5,8 @@
 #include <SHEngine.h>
 #include <assets/Model/ModelManager.h>
 
+class WeaponDatabase;
+
 // 背景の種類
 enum class BGType {
 	FullBG,           // 全体の背景
@@ -12,6 +14,7 @@ enum class BGType {
 	SelectWeaponBG,   // 選択中武器の背景
 	WeaponName,       // 武器項目の背景
 	SelectWeaponName, // 選択中武器名の背景
+	CloseButton,      // 閉じるボタン
 
 	Count,
 };
@@ -21,9 +24,13 @@ enum class BGType {
 /// </summary>
 class WeaponList {
 public:
-	void Initialize(SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, KeyManager* keyManager, SHEngine::Input* input);
-	void Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, bool> key);
+	void Initialize(
+	    SHEngine::ModelManager* modelManager, SHEngine::DrawDataManager* drawDataManager, SHEngine::TextureManager* textureManager, KeyManager* keyManager, SHEngine::Input* input,
+	    WeaponDatabase* weaponDatabase);
+	void Update(Matrix4x4 orthoVpMatrix, Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, bool> key);
 	void Draw(CmdObj* cmdObj);
+
+	void SetCloseAction(std::function<void()> action) { closeAction_ = action; }
 
 private:
 	// 武器テキストの追加
@@ -49,7 +56,7 @@ private:
 	static const int kWeaponCount = 10;
 
 	// テクスチャインデックス
-	int textureIndex_ = 0;
+	std::vector<int> textureIndexArray_;
 
 	// DirectionalLight
 	DirectionalLight dirLight_{};
@@ -70,7 +77,7 @@ private:
 	std::array<std::wstring, kWeaponCount> weaponNames_ = {L"Sword", L"Pistol", L"Spear", L"Shotgun", L"Axe", L"Bow", L"Fist", L"Gurepon", L"Pickaxe", L"Shuriken"};
 
 	// スプライト名配列
-	std::array<std::string, kBGSpriteCount> bgSpriteNames_ = {"FullBG", "AllWeaponsBG", "SelectWeaponBG", "WeaponName", "SelectWeaponName"};
+	std::array<std::string, kBGSpriteCount> bgSpriteNames_ = {"FullBG", "AllWeaponsBG", "SelectWeaponBG", "WeaponName", "SelectWeaponName", "CloseButton"};
 
 	// 背景スプライトの色
 	std::vector<Vector4> bgColors_;
@@ -82,7 +89,7 @@ private:
 	float textMarginY_ = 60.0f;
 
 	// 選択中の武器のインデックス
-	int selectedWeaponId_ = -1;
+	int selectedWeaponId_ = 0;
 
 	// テキストの当たり判定
 	Vector2 hitBoxSize_ = {300.0f, 50.0f};
@@ -99,4 +106,48 @@ private:
 	const float kItemHeight = 72.0f;        // 武器名テキスト間のY距離
 
 	SHEngine::Input* input_ = nullptr;
+
+	// 武器モデルの描画オブジェクト配列
+	std::vector<std::unique_ptr<SHEngine::RenderObject>> weaponModels_;
+
+	// 武器モデルのテクスチャインデックス配列
+	std::vector<int> weaponTextureIndices_;
+
+	// 画面右側に表示するモデル用のTransform
+	Transform weaponModelTransform_ = {
+	    {1.0f, 1.0f, 1.0f},
+        {0.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f}
+    };
+
+	// モデルをゆっくり回転させるための角度
+	float modelRotationY_ = 0.0f;
+
+	// 閉じるアクション用のコールバック
+	std::function<void()> closeAction_;
+
+	SHEngine::TextureManager* textureManager_ = nullptr;
+
+	// 武器項目背後の矩形用
+	std::unique_ptr<SHEngine::RenderObject> weaponBGRenders_;
+	std::vector<Transform> weaponBGTransforms_;
+	std::vector<Vector4> weaponBGColors_;
+
+	// ホバー時と通常時の色
+	const Vector4 kNormalBGColor = {0.1f, 0.1f, 0.1f, 0.3f}; // 通常時
+	const Vector4 kHoverBGColor = {0.5f, 0.5f, 0.5f, 0.6f};  // ホバー時
+
+	Vector2 textBGMargin_ = { 140.0f, 8.0f };
+
+	// 選択中武器のステータス表示用テキスト
+	std::vector<std::unique_ptr<SHEngine::Text>> selectDamageTexts_;
+	std::vector<std::unique_ptr<SHEngine::Text>> selectSpeedTexts_;
+
+	// ステータステキスト用のTransform
+	Transform selectDamageTransform_;
+	Transform selectSpeedTransform_;
+
+	// 選択中武器名からのY座標オフセット
+	float dmgOffsetY_ = -370.0f;
+	float spdOffsetY_ = -420.0f;
 };

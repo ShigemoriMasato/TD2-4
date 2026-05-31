@@ -55,6 +55,7 @@ private:
 private:// System系
 	std::unique_ptr<DebugCamera> debugCamera_;
 	std::unique_ptr<GameCamera> gameCamera_;
+	std::unique_ptr<GameCamera> pauseCamera_;
 	Camera* camera_;
 
 	std::unique_ptr<Grid> grid_;
@@ -175,4 +176,5 @@ private:// UI系
 	std::unique_ptr<PlayData> bgm_ = nullptr;
 
 	std::unique_ptr<WeaponList> weaponList_;
+	bool isWeaponListVisible_ = false;
 };

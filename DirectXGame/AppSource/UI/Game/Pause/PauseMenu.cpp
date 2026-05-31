@@ -3,7 +3,10 @@
 
 using namespace SHEngine;
 
-void PauseMenu::Initialize(ModelManager* modelManager, DrawDataManager* drawDataManager, TextureManager* textureManager) {
+void PauseMenu::Initialize(ModelManager* modelManager, DrawDataManager* drawDataManager, TextureManager* textureManager, Input* input, KeyManager* keyManager) {
+	input_ = input;
+	keyManager_ = keyManager;
+
 	DrawData data = drawDataManager->GetDrawData(modelManager->GetNodeModelData(1).drawDataIndex);
 	int index = 0;
 
@@ -40,6 +43,7 @@ void PauseMenu::Initialize(ModelManager* modelManager, DrawDataManager* drawData
 	menuText_->Initialize(data, "YDWbananaslipplus.otf", 128, "MenuText");
 	menuText_->SetText(L"メニュー画面");
 	menuTextTransform_.position = {500.0f, -100.0f, 0.0f};
+	menuText_->SetTransform(menuTextTransform_);
 }
 
 void PauseMenu::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<Key, bool> key) {
@@ -57,6 +61,39 @@ void PauseMenu::Update(Matrix4x4 vpMatrix, float deltaTime, std::unordered_map<K
 	if (key[Key::Correct]) {
 		if (actions_.count(selectedIndex_)) {
 			actions_[selectedIndex_]();
+		}
+	}
+
+	if (input_) {
+		Vector2 mousePos = keyManager_->GetCursorPos();
+		mousePos.y *= -1;
+
+		// マウスが動いたときだけホバー判定を有効にする
+		bool isMouseMoved = (mousePos.x != lastMousePos_.x || mousePos.y != lastMousePos_.y);
+		lastMousePos_ = mousePos;
+
+		if (isMouseMoved) {
+			int index = 0;
+			for (const auto& info : infos_) {
+				Vector3 pos = transforms_[info.key].position;
+				float left = pos.x - hitBoxSize_.x / 2.0f;
+				float right = pos.x + hitBoxSize_.x / 2.0f;
+				float bottom = pos.y - hitBoxSize_.y / 2.0f;
+				float top = pos.y + hitBoxSize_.y / 2.0f;
+
+				// マウスがテキストの枠内に入っていたら選択を上書き
+				if (mousePos.x >= left && mousePos.x <= right && mousePos.y >= bottom && mousePos.y <= top) {
+					selectedIndex_ = index;
+					break;
+				}
+				index++;
+			}
+		}
+
+		if (key[Key::Tr_LeftClick]) {
+			if (actions_[selectedIndex_]) {
+				actions_[selectedIndex_]();
+			}
 		}
 	}
 

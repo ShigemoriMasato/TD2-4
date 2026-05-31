@@ -7,7 +7,9 @@
 #include "UI/Result/ResultUIManager.h"
 #include "GameObject/Fade/FadeManager.h"
 #include "GameObject/Result/EnemyRainManager.h"
+#include <GameObject/Effect/Particle/MultiParticle/MultiParticle.h>
 #include <UI/Game/GameFrame.h>
+
 class ResultScene : public IScene {
 public:
 
@@ -68,4 +70,10 @@ private:
 	Bloom bloom_;
 
 	std::unique_ptr<GameFrame> gameFrame_;
+
+	// 火花Particle
+	std::unique_ptr<MultiParticle> sparkParticle_;
+	Transform sparkParticleTransform_;
+	Matrix4x4 sparkParticleModelWorld_;
+	bool mrSecond = false;
 };

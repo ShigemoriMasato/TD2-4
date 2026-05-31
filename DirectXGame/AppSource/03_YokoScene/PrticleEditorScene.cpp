@@ -1,6 +1,7 @@
 #include "PrticleEditorScene.h"
 #include <Utility/DataStructures.h>
 #include "03_YokoScene/YokoScene.h"
+#include <Utility/SearchFile.h>
 
 using namespace SHEngine;
 
@@ -131,40 +132,71 @@ void PrticleEditorScene::BuildModelList()
 	modelList_.clear();
 
 	const char* kFilePath = "Assets/Model";
-	std::error_code ec;
-	if (!std::filesystem::exists(kFilePath, ec))
-	{
-		return;
-	}
-	
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(kFilePath))
-	{
-		// is_directory() = それがフォルダかファイルか
-		if (!entry.is_directory()) continue;
-	
-		modelList_.push_back(entry.path().filename().generic_string());
-	}
+	auto modelFileNames = SearchDirectoryPathsAddChild(kFilePath);
+	modelList_ = modelFileNames;
 	std::sort(modelList_.begin(), modelList_.end());
+	return;
+
+
+	modelList_.clear();
+
+	//const char* kFilePath = "Assets/Model";
+	//std::error_code ec;
+	//if (!std::filesystem::exists(kFilePath, ec))
+	//{
+	//	return;
+	//}
+	//
+	//for (const auto& entry : std::filesystem::recursive_directory_iterator(kFilePath))
+	//{
+	//	// is_directory() = それがフォルダかファイルか
+	//	if (!entry.is_directory()) continue;
+	//
+	//	modelList_.push_back(entry.path().filename().generic_string());
+	//}
+	//std::sort(modelList_.begin(), modelList_.end());
 }
 // "Assets/Texture/"以下のテクスチャをリストアップしてTextureList_作成。
 void PrticleEditorScene::BuildTextureList()
 {
 	textureList_.clear();
 
-	const char* kFilePath = "Assets/Texture";
-	std::error_code ec;
-	if (!std::filesystem::exists(kFilePath, ec))
-	{
-		return;
-	}
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(kFilePath))
-	{
-		// is_directory() = それがフォルダかファイルか
-		if (entry.is_directory()) continue;
+	const char* kFilePath1 = "Assets/Texture";
 
-		textureList_.push_back(entry.path().filename().generic_string());
+	std::vector<std::string> textureFileNames = SearchFilePathsAddChild(kFilePath1, ".png");
+	for (auto& name : textureFileNames)
+	{
+		name = "Assets/Texture/" + name;
 	}
-	std::sort(textureList_.begin(), textureList_.end());
+	textureList_ = textureFileNames;
+
+	const char* kFilePath2 = "Assets/.EngineResource/Texture";
+
+	std::vector<std::string> textureFileNames2 = SearchFilePathsAddChild(kFilePath2, ".png");
+	for (auto& name : textureFileNames2)
+	{
+		name = "Assets/.EngineResource/Texture/" + name;
+	}
+	textureList_.insert(textureList_.end(), textureFileNames2.begin(), textureFileNames2.end());
+
+	return;
+
+	//textureList_.clear();
+
+	//const char* kFilePath = "Assets/Texture";
+	//std::error_code ec;
+	//if (!std::filesystem::exists(kFilePath, ec))
+	//{
+	//	return;
+	//}
+	//for (const auto& entry : std::filesystem::recursive_directory_iterator(kFilePath))
+	//{
+	//	// is_directory() = それがフォルダかファイルか
+	//	if (entry.is_directory()) continue;
+
+	//	textureList_.push_back(entry.path().filename().generic_string());
+	//}
+	//std::sort(textureList_.begin(), textureList_.end());
 }
 // "Assets/Json/Particle"以下のjsonをリストアップしてJsonList_作成
 void PrticleEditorScene::BuildJsonList()
@@ -197,6 +229,7 @@ void PrticleEditorScene::RebuildDrawParticle()
 	{
 		drawingParticle_.Add(name);
 	}
+	drawingParticle_.SetEmittingFlag(true);
 }
 // 編集中のParticleの再構築。Jsonの内容で再構築
 void PrticleEditorScene::RebuildEditParticleByJson()
@@ -220,6 +253,8 @@ void PrticleEditorScene::RebuildEditParticleByJson()
 		particleConfig_ = b_S_R_T_C_Config_.cfg;
 		currentType_ = ParticleType::B_S_R_T_C;
 	}
+	editingParticle_.SetEmittingFlag(true);
+
 }
 // 編集中のParticleの再構築。現在のConfigで再構築
 void PrticleEditorScene::RebuildEditParticleByCurrentConfig()
@@ -239,6 +274,7 @@ void PrticleEditorScene::RebuildEditParticleByCurrentConfig()
 		b_S_R_T_C_Config_.cfg = particleConfig_;
 		editingParticle_.SetConfig(slot, b_S_R_T_C_Config_);
 	}
+	editingParticle_.SetEmittingFlag(true);
 }
 
 // データ保存

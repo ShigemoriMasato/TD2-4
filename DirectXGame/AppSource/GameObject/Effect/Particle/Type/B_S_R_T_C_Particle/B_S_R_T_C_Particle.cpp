@@ -66,6 +66,7 @@ void B_S_R_T_C_Particle::Update(float dt)
 	if (isActive_ && (emitTimer_ >= uniqueConfig.cfg.emitInterval || emitTimer_ < 0.0f))
 	{
 		emitTimer_ = 0.0f;
+		emitCount_++;
 
 		for (int32_t i = 0; i < uniqueConfig.cfg.emitNum; ++i)
 		{
@@ -121,7 +122,7 @@ void B_S_R_T_C_Particle::Update(float dt)
 		instance.age += dt;
 	}
 
-	// 寿命切れ削除 & マイナススケール削除 & アルファマイナス削除
+	// 寿命切れ削除 & マイナススケール削除 & マイナスアルファ削除
 	instances_.erase(
 		std::remove_if(instances_.begin(), instances_.end(),
 			[&uniqueConfig](const ParticleInstance& p)
@@ -135,9 +136,7 @@ void B_S_R_T_C_Particle::Update(float dt)
 			}),
 		instances_.end());
 
-
 	// GPU転送データ作成
-	
 	for (auto& instance : instances_)
 	{
 		// 色のクランプ

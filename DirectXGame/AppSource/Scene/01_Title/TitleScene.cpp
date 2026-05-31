@@ -323,20 +323,6 @@ std::unique_ptr<IScene> TitleScene::Update() {
 		mouseCursorSprite_->CopyBufferData(1, &mouseCursorTextureIndex_, sizeof(int));
 	}
 
-	if (keys[Key::Correct]) {
-		switch (titleUI_->GetCurrentSelect()) {
-		case Title::Select::Start:
-			fadeManager_->StartFadeIn([]() { return std::make_unique<ShigeScene>(); });
-			break;
-		case Title::Select::Option:
-			isOptionMode_ = true;
-			break;
-		case Title::Select::Quit:
-			commonData_->shouldQuit = true;
-			break;
-		}
-	}
-
 	if (auto next = fadeManager_->TakeNextScene()) {
 		return next;
 	}
@@ -456,7 +442,11 @@ void TitleScene::Draw() {
 	map_->DrawDebugGUI();
 
 	display->DrawImGui();
-	
+
+	ImGui::Begin("Depth");
+	ImGui::Image((ImTextureRef)commonData_->display->GetDisplay()->GetDepthTexture()->GetGPUHandle().ptr, ImVec2(256, 9 * 16));
+	ImGui::End();
+
 	// プレイヤーのデバッグ情報を表示
 	if (player_) {
 		player_->DrawImGui();

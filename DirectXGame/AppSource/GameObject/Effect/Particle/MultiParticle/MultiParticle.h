@@ -29,13 +29,14 @@ public:
 	void SetModelWorld(const Matrix4x4& modelWorld);
 	// 発生フラグをセット
 	void SetEmittingFlag(const int32_t id, bool flag);
+	void SetEmittingFlag(bool flag);
 	// configをセット
 	void SetConfig(const int32_t id, const ParticlePresetVariant& presetVar);
 	// Drawerを上書きする（シーン固有のDrawerを使いたい場合に使う）
 	void SetDrawer(ParticleDrawer* drawer) { drawer_ = drawer; }
 	ParticlePresetVariant GetConfig(const int32_t id);
-	// 生成された瞬間を取得
-	bool GetIsJustEmitted(const int32_t id);
+	// 生成回数を取得
+	int32_t GetEmitCount(const int32_t id);
 
 	std::vector<Matrix4x4> GetParticleWorlds(const int32_t id);
 	size_t GetAliveCount(const int32_t id) const;

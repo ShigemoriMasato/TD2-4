@@ -49,6 +49,7 @@ void IWeaponRender::Initialize(
 	if (trailname.size() != 0) {
 		trail_.Initialize(textureManager, &commonData);
 		trail_.Add(trailname);
+		trail_.SetEmittingFlag(0, false);
 	}
 }
 

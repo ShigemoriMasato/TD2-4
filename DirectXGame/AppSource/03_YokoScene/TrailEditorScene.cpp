@@ -180,12 +180,10 @@ void TrailEditorScene::BuildTextureList()
 
 	const char* kFilePath = "Assets/Texture";
 
-	//シゲモリ制===========================
 	auto textureFileNames = SearchFilePathsAddChild(kFilePath, ".png");
 	textureList_ = textureFileNames;
 	std::sort(textureList_.begin(), textureList_.end());
 	return;
-	//=====================================
 }
 // "Assets/Json/Trail"以下のjsonをリストアップしてJsonList_作成
 void TrailEditorScene::BuildJsonList()
