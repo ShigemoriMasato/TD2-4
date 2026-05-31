@@ -30,6 +30,10 @@ void IEnemy::Initialize(Vector3* playerPos, EnemyManager* manager, int id, Map* 
 	damageSounds_[0] = audio->GetData("damage1.mp3");
 	damageSounds_[1] = audio->GetData("damage2.mp3");
 	damageSounds_[2] = audio->GetData("damage3.mp3");
+
+	damageSounds_[0]->SetVolume(0.25f);
+	damageSounds_[1]->SetVolume(0.25f);
+	damageSounds_[2]->SetVolume(0.25f);
 }
 
 void IEnemy::Update(float deltaTime) { enemyHP_->Update(deltaTime, static_cast<float>(hp_), static_cast<float>(maxHp_), position_); }
@@ -95,7 +99,6 @@ void IEnemy::OnCollision(Collider* other) {
 	{
 		static std::mt19937 rng(std::random_device{}());
 		std::uniform_int_distribution<int> dist(0, 2);
-		damageSounds_[dist(rng)]->SetVolume(0.25f);
 		damageSounds_[dist(rng)]->Play();
 	}
 

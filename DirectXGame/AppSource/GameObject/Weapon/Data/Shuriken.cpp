@@ -8,6 +8,7 @@ void Shuriken::Update(float deltaTime) { IRangedWeapon::Update(deltaTime); }
 
 void Shuriken::Shot(IEnemy* target) {
 	isAnimation_ = true;
+	AudioManager::GetInstance()->GetData("Shuriken.mp3")->SetVolume(0.25f);
 	AudioManager::GetInstance()->GetData("Shuriken.mp3")->Play();
 
 	std::unique_ptr<ShurikenBullet> bullet = std::make_unique<ShurikenBullet>();

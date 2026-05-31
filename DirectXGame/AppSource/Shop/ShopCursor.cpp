@@ -88,6 +88,7 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 					// 配置成功：マージターゲットを完全に削除
 					pieceManager_->RemovePiece(mergeTarget);
 					heldPiece_->Put(backPack);
+					AudioManager::GetInstance()->GetData("gousei.mp3")->Play();
 
 					isEffect_ = true;
 					putPos_ = heldPiece_->GetPosition();
@@ -120,6 +121,7 @@ void ShopCursor::EditPiece(BackPack* backPack, float deltaTime) {
 					if (mergeTarget->CanPut(backPack)) {
 						mergeTarget->Put(backPack);
 					}
+					AudioManager::GetInstance()->GetData("gousei.mp3")->Play();
 
 					heldPiece_ = nullptr; // heldPieceはもう存在しないのでnullに設定
 				}

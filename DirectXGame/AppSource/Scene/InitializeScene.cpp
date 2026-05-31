@@ -142,6 +142,7 @@ void InitializeScene::Initialize() {
 	keyManager->SetKey(Key::Pause, DIK_ESCAPE, KeyState::Trigger);
 	keyManager->SetKey(Key::Pause, DIK_F1, KeyState::Trigger);
 	keyManager->SetButton(Key::Pause, XBoxController::kStart, KeyState::Trigger);
+	keyManager->SetMouse(Key::Pause, 2, KeyState::Trigger);
 
 	//================================================================================
 

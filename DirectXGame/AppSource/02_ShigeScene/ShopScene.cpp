@@ -1,5 +1,6 @@
 #include "ShopScene.h"
 #include <Utils/AppUtils.h>
+#include <../Engine/Assets/Audio/AudioManager.h>
 
 ShopScene::~ShopScene() {
 }
@@ -775,6 +776,11 @@ void ShopScene::InitializeRerollBar() {
 	//weaponStorageText_->Initialize(textDrawData_, fontPath_, 64);
 	//weaponStorageText_->SetText(L"武器安置所");
 
+	// リロールボタンテキストの初期化
+	rerollButtonText_ = std::make_unique<SHEngine::Text>();
+	rerollButtonText_->Initialize(textDrawData_, fontPath_, 64);
+	rerollButtonText_->SetText(L"リロール");
+
 	// 武器補充中テキストの初期化
 	replenishingText_ = std::make_unique<SHEngine::Text>();
 	replenishingText_->Initialize(textDrawData_, fontPath_, 64);
@@ -904,6 +910,38 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 
 
 
+	// リロールボタンテキストの更新とクリック判定
+	{
+		Vector2 cursorPos = commonData_->keyManager->GetCursorPos();
+		cursorPos.y *= -1.0f;
+		const Vector3& btnPos = rerollButtonTextTransform_.position;
+		float left   = btnPos.x + rerollButtonHitOffset_.x - rerollButtonHitSize_.x / 2.0f;
+		float right  = btnPos.x + rerollButtonHitOffset_.x + rerollButtonHitSize_.x / 2.0f;
+		float bottom = btnPos.y + rerollButtonHitOffset_.y - rerollButtonHitSize_.y / 2.0f;
+		float top    = btnPos.y + rerollButtonHitOffset_.y + rerollButtonHitSize_.y / 2.0f;
+		bool isHovered = (cursorPos.x >= left && cursorPos.x <= right
+					   && cursorPos.y >= bottom && cursorPos.y <= top);
+		bool canReroll = (rerollCount_ > 0 && !shopCursor_->HasHeldPiece() && !pendingReroll_);
+
+		auto keyStates = commonData_->keyManager->GetKeyStates();
+		if (isHovered && canReroll && keyStates[Key::Tr_LeftClick]) {
+			AudioManager::GetInstance()->GetData("roll.mp3")->SetVolume(1.0f);
+			AudioManager::GetInstance()->GetData("roll.mp3")->Play();
+			pieceManager_->EmitShopBreakEffects();
+			pendingReroll_ = true;
+			rerollIntervalTimer_ = 0.0f;
+			replenishingTextAnimTimer_ = 0.0f;
+			replenishingTextDotCount_ = 1;
+		}
+
+		Vector4 btnColor = (canReroll && isHovered) ? Vector4{1.0f, 1.0f, 0.0f, 1.0f}
+					: canReroll                  ? rerollButtonTextColor_
+					:                              rerollButtonTextColorDisabled_;
+		rerollButtonText_->SetColor(btnColor);
+		rerollButtonText_->SetTransform(rerollButtonTextTransform_);
+		rerollButtonText_->Update(vpMatrix);
+	}
+
 	// 武器安置所テキストの更新
 	//weaponStorageText_->SetColor(weaponStorageTextColor_);
 	//weaponStorageText_->SetTransform(weaponStorageTextTransform_);
@@ -962,6 +1000,23 @@ void ShopScene::UpdateRerollBar(Matrix4x4 vpMatrix) {
 	ImGui::ColorEdit4("Replenishing Text Color", &replenishingTextColor_.x);
 	ImGui::DragFloat("Replenishing Animation Interval", &replenishingTextAnimInterval_, 0.01f, 0.1f, 2.0f);
 	ImGui::Separator();
+	ImGui::Text("Reroll Button Settings");
+	ImGui::DragFloat2("Reroll Button Position", &rerollButtonTextTransform_.position.x, 1.0f);
+	ImGui::DragFloat3("Reroll Button Size", &rerollButtonTextTransform_.scale.x, 0.1f);
+	ImGui::ColorEdit4("Reroll Button Color", &rerollButtonTextColor_.x);
+	ImGui::ColorEdit4("Reroll Button Disabled Color", &rerollButtonTextColorDisabled_.x);
+	ImGui::Separator();
+	ImGui::Text("Reroll Button Hit Area");
+	ImGui::DragFloat2("Hit Size", &rerollButtonHitSize_.x, 1.0f);
+	ImGui::DragFloat2("Hit Offset", &rerollButtonHitOffset_.x, 1.0f);
+	{
+		// 当たり判定の実際の範囲を表示
+		float cx = rerollButtonTextTransform_.position.x + rerollButtonHitOffset_.x;
+		float cy = rerollButtonTextTransform_.position.y + rerollButtonHitOffset_.y;
+		ImGui::Text("Hit Range X: [%.0f, %.0f]", cx - rerollButtonHitSize_.x / 2.0f, cx + rerollButtonHitSize_.x / 2.0f);
+		ImGui::Text("Hit Range Y: [%.0f, %.0f]", cy - rerollButtonHitSize_.y / 2.0f, cy + rerollButtonHitSize_.y / 2.0f);
+	}
+	ImGui::Separator();
 	ImGui::Text("Mouse Sprite Settings");
 	ImGui::DragFloat3("Mouse Left Position", &mouseLeftTransform_.position.x, 1.0f);
 	ImGui::DragFloat3("Mouse Left Scale", &mouseLeftTransform_.scale.x, 1.0f);
@@ -982,6 +1037,7 @@ void ShopScene::DrawRerollBar(CmdObj* cmdObj) {
 
 	// テキスト描画
 	rerollText_->Draw(cmdObj);
+	rerollButtonText_->Draw(cmdObj);
 	//controlText_->Draw(cmdObj);
 	//easyPlaceText_->Draw(cmdObj);
 	//weaponStorageText_->Draw(cmdObj);

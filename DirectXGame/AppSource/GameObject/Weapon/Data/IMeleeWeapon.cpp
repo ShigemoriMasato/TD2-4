@@ -1,10 +1,11 @@
 #include "IMeleeWeapon.h"
+#include <Shop/Piece.h>
 
 void IMeleeWeapon::Initialize(int weaponID, Player::Base* player) {
 	IWeapon::Initialize(weaponID, player);
 
 	config_.spreadAngle = weaponData_->spreadAngle;
-	config_.damage = player->GetParameter("Damage") + (weaponData_->baseDamage + player->GetParameter("MeleeDamage"));
+	config_.damage = player->GetParameter("Damage") + (weaponData_->baseDamage + player->GetParameter("MeleeDamage")) + weaponData_->rarity * 2.0f;
 	config_.speed = weaponData_->attackSpeed + player->GetParameter("AttackSpeed");
 	config_.range = weaponData_->range + player->GetParameter("Range");
 	config_.knockbackPower = weaponData_->knockbackPower + player->GetParameter("KnockBack");
@@ -87,6 +88,10 @@ void IMeleeWeapon::Shot(IEnemy* target) {
 		config_.direction = atan2f(dir.y, dir.x);
 	}
 	config_.position = player_->GetTransform().position;
+
+	// レアリティボーナスを動的に反映
+	int rarity = piece_ ? static_cast<int>(piece_->GetRarity()) : weaponData_->rarity;
+	config_.damage = player_->GetParameter("Damage") + (weaponData_->baseDamage + player_->GetParameter("MeleeDamage")) + rarity * 2.0f;
 
 	//攻撃オブジェクトを生成
 	std::unique_ptr<Swing> swing = std::make_unique<Swing>();
