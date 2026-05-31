@@ -29,10 +29,5 @@ void Swing::Update(float deltaTime) {
 
 DrawInfo Swing::GetDrawInfo() {
 	DrawInfo info;
-	info.position = { collDirCircle_->center.x, 0.0f, collDirCircle_->center.y };
-	info.rotation = { 0.0f, -direction_, 0.0f };
-	info.scale = { radius_, 1.0f, radius_ };
-	info.modelIndex = modelManager_->LoadModel(modelPath_); // 仮のモデルインデックス
-	info.color = 0xff000030; // 赤色
 	return info;
 }

@@ -39,10 +39,6 @@ void Bullet::Update(float deltaTime) {
 
 DrawInfo Bullet::GetDrawInfo() {
 	DrawInfo info;
-	info.position = { collCircle_->center.x, 0.0f, collCircle_->center.y };
-	info.scale = { radius_ * 2.0f, radius_ * 2.0f, radius_ * 2.0f };
-	info.modelIndex = 2; // 仮のモデルインデックス
-	info.color = 0xffff00ff; // 黄色
 	return info;
 }
 
