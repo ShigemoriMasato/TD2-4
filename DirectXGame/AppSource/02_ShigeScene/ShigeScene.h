@@ -164,6 +164,8 @@ private:// UI系
 	std::unique_ptr<ShopDisplay> gameDisplay_;
 	std::unique_ptr<GameFrame> gameFrame_;
 	std::unique_ptr<GameFrame> gameFrameBG_;
+	std::unique_ptr<SHEngine::RenderObject> escIcon_;
+	std::unique_ptr<SHEngine::Text> pauseText_;
 
 	std::unique_ptr<SHEngine::Text> timerText_;
 	Transform timerTextTransform_ = { {2.0f, 2.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {550.0f, -85.0f, 0.0f} };
@@ -177,4 +179,7 @@ private:// UI系
 
 	std::unique_ptr<WeaponList> weaponList_;
 	bool isWeaponListVisible_ = false;
+
+	Transform escIconTransform_{};
+	Transform pauseTextTransform_{};
 };
