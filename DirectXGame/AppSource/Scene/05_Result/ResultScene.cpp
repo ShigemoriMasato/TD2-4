@@ -2,6 +2,7 @@
 #include "GameObject/Random/Random.h"
 #include <02_ShigeScene/ShigeScene.h>
 #include <Scene/01_Title/TitleScene.h>
+#include <Scene/01_Title/IntroScene.h>
 #include <Utility/Color.h>
 #include <format>
 #include <imgui/imgui.h>

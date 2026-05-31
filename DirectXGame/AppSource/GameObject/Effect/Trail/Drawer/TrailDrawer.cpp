@@ -59,6 +59,7 @@ void TrailDrawer::SetConfig(const Config& cfg)
 void TrailDrawer::Clear()
 {
 	trails_.clear();
+	//std::fill(batchVertices_.begin(), batchVertices_.end(), ITrail::GpuVertex{});
 }
 
 void TrailDrawer::Register(ITrail* trail)
@@ -114,17 +115,6 @@ void TrailDrawer::BuildVertices()
 
 		const size_t ss = src.size();
 
-		//if (ss != perTrail)
-		//{
-		//	assert(false && "ITrail::GetGpuVertices()の返す頂点数は、TrailDrawerのConfigで設定したmaxSegmentsPerTrail*2と同じでなければならない");
-		//}
-
-		//if (sizeof(ITrail::GpuVertex) != sizeof(src[0]))
-		//{
-		//	assert(false && "memcpy時サイズが一致していなければならない");
-		//}
-		
-		//std::memcpy(&batchVertices_[dstBase], src.data(), perTrail * sizeof(ITrail::GpuVertex));
 		std::memcpy(&batchVertices_[dstBase], src.data(), src.size() * sizeof(ITrail::GpuVertex));
 
 		// 残りはゼロ -> PSでclipされる前提

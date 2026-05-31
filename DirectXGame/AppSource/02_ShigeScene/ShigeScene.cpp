@@ -954,6 +954,7 @@ void ShigeScene::MakeWeapon() {
 		auto& wr = weaponRenders_[i];
 		if (std::find_if(commonData_->pieces.begin(), commonData_->pieces.end(), [&](const auto& p) { return wr->GetPiecePtr() == p; }) == commonData_->pieces.end()) {
 			wrDeleting_.push_back(std::make_pair(0, std::move(wr)));
+			
 			weaponRenders_.erase(weaponRenders_.begin() + i);
 		}
 	}
