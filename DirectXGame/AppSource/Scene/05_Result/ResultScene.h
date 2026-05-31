@@ -14,6 +14,7 @@ class ResultScene : public IScene {
 public:
 
 	ResultScene();
+	~ResultScene();
 
 	void Initialize() override;
 	std::unique_ptr<IScene> Update() override;
@@ -84,4 +85,6 @@ private:
 	float toTitleTextMarginX_ = 150.0f;
 
 	int lastSelectedIndex_ = -1;
+
+	std::unique_ptr<PlayData> bgm_ = nullptr;
 };

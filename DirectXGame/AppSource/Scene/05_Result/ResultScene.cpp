@@ -10,6 +10,10 @@ using namespace SHEngine;
 
 ResultScene::ResultScene() {}
 
+ResultScene::~ResultScene() {
+	bgm_->Stop();
+}
+
 void ResultScene::Initialize() {
 	camera_ = std::make_unique<Camera>();
 	PerspectiveFovDesc perspectiveDesc{};
@@ -97,6 +101,18 @@ void ResultScene::Initialize() {
 	sparkParticle_->Add("spark3");
 	sparkParticle_->SetEmittingFlag(false);
 	sparkParticleModelWorld_ = Matrix4x4::Identity();
+
+	// BGM
+	AudioData* data = nullptr;
+	if(isWin_){
+		// 勝利時
+		data = AudioManager::GetInstance()->GetData("WinSE.mp3");
+	}else{
+		// 敗北時
+		data = AudioManager::GetInstance()->GetData("LoseSE.mp3");
+	}
+	data->SetVolume(0.5f);
+	bgm_ = data->CustomPlay(0);
 }
 
 std::unique_ptr<IScene> ResultScene::Update() {
