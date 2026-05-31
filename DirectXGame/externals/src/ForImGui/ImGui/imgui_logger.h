@@ -5,7 +5,7 @@
 class imgui_logger {
 public:
 
-	static void Initialize(bool isDebugLog, bool isFilePushed);
+	static void Initialize();
 	static void Log(const std::string& message);
 
 	//ImGui::Begin()を呼び出したときに出力するログ

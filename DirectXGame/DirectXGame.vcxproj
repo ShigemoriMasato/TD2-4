@@ -301,6 +301,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClCompile Include="AppSource\GameObject\GPUParticle\GPUParticle.cpp" />
     <ClCompile Include="AppSource\GameObject\GPUParticle\GPUPRender.cpp" />
     <ClCompile Include="AppSource\Scene\01_Title\IntroScene.cpp" />
+    <ClCompile Include="AppSource\Scene\01_Title\Object\Gate.cpp" />
+    <ClCompile Include="AppSource\Scene\01_Title\Light\LightManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="AppSource\GameObject\Attack\Swing.cpp" />
     <ClCompile Include="AppSource\GameObject\Effect\Trail\ITrail.cpp" />
@@ -540,6 +542,8 @@ xcopy /E /I /Y "$(ProjectDir)Assets\*" "$(TargetDir)Assets\"</Command>
     <ClInclude Include="AppSource\UI\Game\WeaponList\WeaponList.h" />
     <ClInclude Include="AppSource\Scene\01_Title\TitleLogo\TitleLogo.h" />
     <ClInclude Include="AppSource\Scene\01_Title\IntroScene.h" />
+    <ClInclude Include="AppSource\Scene\01_Title\Object\Gate.h" />
+    <ClInclude Include="AppSource\Scene\01_Title\Light\LightManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Assets\Audio\Data\AudioData.h" />

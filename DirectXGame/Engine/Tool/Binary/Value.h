@@ -32,6 +32,9 @@ enum class TypeID : uint8_t {
 
 	//構造体とか
 	Custom = 0x80,
+	DirectionalLight,
+	PointLight,
+
 };
 
 struct Vector2;
@@ -42,6 +45,8 @@ struct Matrix3x3;
 struct Matrix4x4;
 struct Quaternion;
 struct Transform;
+struct DirectionalLight;
+struct PointLight;
 
 template<typename T>
 struct TypeIDResolver {
@@ -66,3 +71,5 @@ template<> struct TypeIDResolver<Matrix3x3> { static constexpr TypeID id = TypeI
 template<> struct TypeIDResolver<Matrix4x4> { static constexpr TypeID id = TypeID::Matrix4x4; };
 template<> struct TypeIDResolver<Quaternion> { static constexpr TypeID id = TypeID::Quaternion; };
 template<> struct TypeIDResolver<Transform> { static constexpr TypeID id = TypeID::Transform; };
+template<> struct TypeIDResolver<DirectionalLight> { static constexpr TypeID id = TypeID::DirectionalLight; };
+template<> struct TypeIDResolver<PointLight> { static constexpr TypeID id = TypeID::PointLight; };

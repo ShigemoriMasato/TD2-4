@@ -68,6 +68,7 @@ struct PSInput
     float2 texCoord : TEXCOORD0;
     float3 normal : NORMAL0;
     float3 worldPos : WORLDPOS0;
+    uint materialIndex : MATERIAL0;
 };
 
 struct PSOutput
@@ -75,13 +76,13 @@ struct PSOutput
     float4 color : SV_TARGET;
 };
 
-cbuffer Material : register(b0)
+struct Material
 {
-    float4 materialColor;
+    float4 color;
     int textureIndex;
 };
 
-cbuffer LightCount : register(b1)
+cbuffer LightCount : register(b0)
 {
     int dirLightCount;
     int pointLightCount;
@@ -89,6 +90,7 @@ cbuffer LightCount : register(b1)
 
 StructuredBuffer<DirectionalLight> dirLights : register(t0);
 StructuredBuffer<PointLight> pointLights : register(t1);
+StructuredBuffer<Material> materials : register(t2);
 
 Texture2D textures[] : register(t8);
 SamplerState gSampler : register(s0);
@@ -97,8 +99,8 @@ PSOutput main(PSInput input)
 {
     PSOutput output;
     
-    float4 textureColor = textures[textureIndex].Sample(gSampler, input.texCoord);
-    float4 baseColor = materialColor * textureColor;
+    float4 textureColor = textures[materials[input.materialIndex].textureIndex].Sample(gSampler, input.texCoord);
+    float4 baseColor = materials[input.materialIndex].color * textureColor;
     
     output.color = baseColor / 4.0f;
     

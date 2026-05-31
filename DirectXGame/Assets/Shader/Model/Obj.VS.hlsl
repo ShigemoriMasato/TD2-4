@@ -11,6 +11,7 @@ struct VSOutput
     float2 texCoord : TEXCOORD0;
     float3 normal : NORMAL0;
     float3 worldPos : WORLDPOS0;
+    uint materialID : MATERIAL0;
 };
 
 struct VSData
@@ -19,13 +20,15 @@ struct VSData
     float4x4 wvp;
 };
 StructuredBuffer<VSData> matrices : register(t0);
+StructuredBuffer<uint> materialIDs : register(t1);
 
-VSOutput main(VSInput input, uint id : SV_InstanceID)
+VSOutput main(VSInput input, uint id : SV_InstanceID, uint vertexID : SV_VertexID)
 {
     VSOutput output;
     output.position = mul(input.position, matrices[id].wvp);
     output.texCoord = input.texCoord;
     output.normal = mul(input.normal, (float3x3) matrices[id].world);
     output.worldPos = mul(input.position, matrices[id].world).xyz;
+    output.materialID = materialIDs[vertexID];
     return output;
 }

@@ -63,7 +63,7 @@ void SHEngine::Screen::WindowsAPI::Initialize(WindowDesc& desc, HINSTANCE hInsta
 	ShowWindow(hwnd_, SW_SHOW);
 
 	// マウスカーソルを非表示にする
-#ifdef _DEBUG
+#ifdef USE_IMGUI
 	ShowCursor(TRUE);
 #else
 	ShowCursor(FALSE);

@@ -29,6 +29,9 @@ public:
 
 	void AddWave(const Wave& wave);
 
+	void Mist();
+	void Default();
+
 private:
 
 	void Save();
@@ -48,6 +51,8 @@ private:
 		uint32_t seed;
 		int textureIndex;
 	} emitData_;
+	EmitData defaultData_;
+	EmitData mistData_;
 	SHEngine::GPUBuffer* emitBuffer_ = nullptr;
 
 	struct UpdateData {
@@ -72,7 +77,7 @@ private:
 		Matrix4x4 vpMatrix;
 		Matrix4x4 billboardMatrix;
 	}matrixData_;
-	SHEngine::GPUBuffer* matrixBuffer_ = nullptr;
+	SHEngine::GPUBuffer* gateBuffer_ = nullptr;
 
 	
 	

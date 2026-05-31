@@ -11,6 +11,8 @@ public:
 	void Update(float deltaTime, Camera* camera);
 	void Draw(SHEngine::Screen::IDisplay* disp);
 
+	TitleLogo* GetTitleLogo() { return titleLogo_.get(); }
+
 private:
 
 	SHEngine::Engine* engine_ = nullptr;

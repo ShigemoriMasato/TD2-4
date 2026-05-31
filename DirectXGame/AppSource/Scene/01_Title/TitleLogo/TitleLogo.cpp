@@ -28,7 +28,7 @@ void TitleLogo::Initialize(SHEngine::Engine* enigne, CmdObj* compute) {
 	emitBuffer_ = container_->Create(BufferType::CBV, sizeof(EmitData));
 	updateBuffer_ = container_->Create(BufferType::CBV, sizeof(UpdateData));
 	sizeBuffer_ = container_->Create(BufferType::CBV, sizeof(float));
-	matrixBuffer_ = container_->Create(BufferType::CBV, sizeof(MatrixData));
+	gateBuffer_ = container_->Create(BufferType::CBV, sizeof(MatrixData));
 	waveBuffer_ = container_->Create(BufferType::CBV, sizeof(Wave) * 16);
 
 	init_ = std::make_unique<SHEngine::ComputeObject>();
@@ -60,15 +60,18 @@ void TitleLogo::Initialize(SHEngine::Engine* enigne, CmdObj* compute) {
 	renderer_->SetVS("Particle/Title.VS.hlsl");
 	renderer_->SetPS("Particle/Title.PS.hlsl");
 	renderer_->SetGPUBuffer(sizeBuffer_, ShaderType::VERTEX_SHADER, BufferType::CBV);
-	renderer_->SetGPUBuffer(matrixBuffer_, ShaderType::VERTEX_SHADER, BufferType::CBV);
+	renderer_->SetGPUBuffer(gateBuffer_, ShaderType::VERTEX_SHADER, BufferType::CBV);
 	renderer_->SetGPUBuffer(d_positions, ShaderType::VERTEX_SHADER, BufferType::SRV);
 	renderer_->SetGPUBuffer(d_colors, ShaderType::PIXEL_SHADER, BufferType::SRV);
 	renderer_->instanceNum_ = kParticleNum;
 
 	waves_.resize(16);
-	emitData_.textureIndex = textureIndex;
+	defaultData_.textureIndex = textureIndex;
+	mistData_.textureIndex = textureIndex;
 
 	Load();
+
+	emitData_ = defaultData_;
 }
 
 void TitleLogo::Update(float deltaTime, Camera* camera, CmdObj* compute) {
@@ -76,14 +79,14 @@ void TitleLogo::Update(float deltaTime, Camera* camera, CmdObj* compute) {
 	emitBuffer_->CopyBuffer(&emitData_, sizeof(emitData_));
 
 	updateData_.deltaTime = deltaTime;
-	updateData_.fieldSize = emitData_.fieldSize;
-	updateData_.lifetime = emitData_.lifeTime;
+	updateData_.fieldSize = defaultData_.fieldSize;
+	updateData_.lifetime = defaultData_.lifeTime;
 	updateData_.worldMatrix = parentTransform_.GetMatrix();
 	updateBuffer_->CopyBuffer(&updateData_, sizeof(updateData_));
 
 	matrixData_.vpMatrix = camera->GetVPMatrix();
 	matrixData_.billboardMatrix = camera->GetBillboardMatrix();
-	matrixBuffer_->CopyBuffer(&matrixData_, sizeof(matrixData_));
+	gateBuffer_->CopyBuffer(&matrixData_, sizeof(matrixData_));
 
 	sizeBuffer_->CopyBuffer(&size_, sizeof(float));
 
@@ -92,7 +95,7 @@ void TitleLogo::Update(float deltaTime, Camera* camera, CmdObj* compute) {
 	}
 	waveBuffer_->CopyBuffer(waves_.data(), sizeof(Wave) * waves_.size());
 
-	emit_->SetThreadGroupSize(emitData_.emitNum / 64 + 1, 1, 1);
+	emit_->SetThreadGroupSize(defaultData_.emitNum / 64 + 1, 1, 1);
 	
 	emit_->Execute(compute);
 	update_->Execute(compute);
@@ -105,16 +108,31 @@ void TitleLogo::Update(float deltaTime, Camera* camera, CmdObj* compute) {
 	ImGui::Checkbox("Save", &isSave_);
 	ImGui::Separator();
 
-	ImGui::DragFloat3("FieldSize", &emitData_.fieldSize.x, 1.0f, 0.0f);
-	ImGui::DragFloat("Speed", &emitData_.speed, 0.1f, 0.0f);
-	ImGui::DragFloat("LifeTime", &emitData_.lifeTime, 0.1f, 0.0f);
-	ImGui::DragInt("EmitNum", &emitData_.emitNum, 1.0f, 0);
+	ImGui::PushID("Default");
+
+	ImGui::DragFloat3("FieldSize", &defaultData_.fieldSize.x, 1.0f, 0.0f);
+	ImGui::DragFloat("Speed", &defaultData_.speed, 0.1f, 0.0f);
+	ImGui::DragFloat("LifeTime", &defaultData_.lifeTime, 0.1f, 0.0f);
+	ImGui::DragInt("EmitNum", &defaultData_.emitNum, 1.0f, 0);
 	ImGui::ColorEdit3("Color", &updateData_.color.x);
 	ImGui::DragFloat("Size", &size_, 0.001f, 0.001f, 1.0f);
 
 	ImGui::DragFloat3("Scale", &parentTransform_.scale.x, 0.01f);
 	ImGui::DragFloat3("Rotate", &parentTransform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("Position", &parentTransform_.position.x, 0.1f);
+
+	ImGui::PopID();
+
+	ImGui::Separator();
+
+	ImGui::PushID("Mist");
+
+	ImGui::DragFloat3("FieldSize", &mistData_.fieldSize.x, 1.0f, 0.0f);
+	ImGui::DragFloat("Speed", &mistData_.speed, 0.1f, 0.0f);
+	ImGui::DragFloat("LifeTime", &mistData_.lifeTime, 0.1f, 0.0f);
+	ImGui::DragInt("EmitNum", &mistData_.emitNum, 1.0f, 0);
+
+	ImGui::PopID();
 
 	ImGui::End();
 
@@ -134,6 +152,13 @@ void TitleLogo::AddWave(const Wave& wave) {
 	}
 }
 
+void TitleLogo::Mist() {
+	emitData_ = mistData_;
+}
+
+void TitleLogo::Default() {
+	emitData_ = defaultData_;
+}
 
 void TitleLogo::Save() {
 	if (!isSave_) {
@@ -143,13 +168,19 @@ void TitleLogo::Save() {
 	BinaryManager bin;
 	const std::string saveFile = "TitleLogoData.bin";
 
-	bin.Register<Vector3>(&emitData_.fieldSize);
-	bin.Register<float>(&emitData_.speed);
-	bin.Register<float>(&emitData_.lifeTime);
-	bin.Register<int>(&emitData_.emitNum);
+	bin.Register<Vector3>(&defaultData_.fieldSize);
+	bin.Register<float>(&defaultData_.speed);
+	bin.Register<float>(&defaultData_.lifeTime);
+	bin.Register<int>(&defaultData_.emitNum);
 	bin.Register<Vector3>(&updateData_.color);
 	bin.Register<float>(&size_);
 	bin.Register<Transform>(&parentTransform_);
+
+	bin.Register<Vector3>(&mistData_.fieldSize);
+	bin.Register<float>(&mistData_.speed);
+	bin.Register<float>(&mistData_.lifeTime);
+	bin.Register<int>(&mistData_.emitNum);
+
 	bin.Write(saveFile);
 }
 
@@ -161,11 +192,16 @@ void TitleLogo::Load() {
 		return;
 	}
 
-	emitData_.fieldSize = bin.Reverse<Vector3>();
-	emitData_.speed = bin.Reverse<float>();
-	emitData_.lifeTime = bin.Reverse<float>();
-	emitData_.emitNum = bin.Reverse<int>();
+	defaultData_.fieldSize = bin.Reverse<Vector3>();
+	defaultData_.speed = bin.Reverse<float>();
+	defaultData_.lifeTime = bin.Reverse<float>();
+	defaultData_.emitNum = bin.Reverse<int>();
 	updateData_.color = bin.Reverse<Vector3>();
 	size_ = bin.Reverse<float>();
 	parentTransform_ = bin.Reverse<Transform>();
+
+	mistData_.fieldSize = bin.Reverse<Vector3>();
+	mistData_.speed = bin.Reverse<float>();
+	mistData_.lifeTime = bin.Reverse<float>();
+	mistData_.emitNum = bin.Reverse<int>();
 }

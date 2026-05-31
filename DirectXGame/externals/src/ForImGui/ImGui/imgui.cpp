@@ -4170,9 +4170,9 @@ void ImGui::GetAllocatorFunctions(ImGuiMemAllocFunc* p_alloc_func, ImGuiMemFreeF
     *p_user_data = GImAllocatorUserData;
 }
 
-ImGuiContext* ImGui::CreateContext(ImFontAtlas* shared_font_atlas, bool isDebugLog, bool isFilePushed)
+ImGuiContext* ImGui::CreateContext(ImFontAtlas* shared_font_atlas)
 {
-    imgui_logger::Initialize(isDebugLog, isFilePushed);
+    imgui_logger::Initialize();
     ImGuiContext* prev_ctx = GetCurrentContext();
     ImGuiContext* ctx = IM_NEW(ImGuiContext)(shared_font_atlas);
     SetCurrentContext(ctx);
@@ -6682,9 +6682,6 @@ ImGuiItemFlags ImGui::GetItemFlags()
 // ImGuiChildFlags_Borders is defined as always == 1 in order to allow old code passing 'true'. Read comments in imgui.h for details!
 bool ImGui::BeginChild(const char* str_id, const ImVec2& size_arg, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags)
 {
-	std::string windowName;
-    windowName = "C_" + std::string(str_id);
-    imgui_logger::Begin(windowName);
     ImGuiID id = GetCurrentWindow()->GetID(str_id);
     return BeginChildEx(str_id, id, size_arg, child_flags, window_flags);
 }
@@ -6696,9 +6693,6 @@ bool ImGui::BeginChild(ImGuiID id, const ImVec2& size_arg, ImGuiChildFlags child
 
 bool ImGui::BeginChildEx(const char* name, ImGuiID id, const ImVec2& size_arg, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags)
 {
-    std::string windowName;
-    windowName = "C_" + std::string(name);
-    imgui_logger::Begin(windowName);
     ImGuiContext& g = *GImGui;
     ImGuiWindow* parent_window = g.CurrentWindow;
     IM_ASSERT(id != 0);
@@ -6826,8 +6820,6 @@ bool ImGui::BeginChildEx(const char* name, ImGuiID id, const ImVec2& size_arg, I
 
 void ImGui::EndChild()
 {
-	imgui_logger::End();
-
     ImGuiContext& g = *GImGui;
     ImGuiWindow* child_window = g.CurrentWindow;
 
@@ -7798,8 +7790,9 @@ static void SetWindowActiveForSkipRefresh(ImGuiWindow* window)
 // - Return false when window is collapsed, so you can early out in your code. You always need to call ImGui::End() even if false is returned.
 // - Passing 'bool* p_open' displays a Close button on the upper-right corner of the window, the pointed value will be set to false when the button is pressed.
 bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags) {
-	std::string windowName = name ? name : "";
-	imgui_logger::Begin(windowName);
+    if (!imgui_logger::Begin(name)) {
+
+    }
 
     ImGuiContext& g = *GImGui;
     const ImGuiStyle& style = g.Style;
